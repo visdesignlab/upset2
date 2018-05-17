@@ -1,0 +1,18 @@
+[
+    "data/simpsons/simpsons.json",
+    "data/fruit/fruit.json",
+    "data/movies/movies.json",
+
+    "data/mutations/mutations20.json",
+
+    "data/compounds/comp-protein.json",
+    "data/compounds/comp-family.json",
+
+    "data/countries/countries.json",
+
+    "data/socialgraph/socialgraph.json",
+
+    "data/test/rand.json",
+    "data/test/test.json",
+    "data/test/test_2set.json"
+]

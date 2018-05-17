@@ -1,0 +1,34 @@
+{
+    "file": "data/compounds/CpdsVsProteinTable.txt",
+    "name": "Compound - Protein Interaction",
+    "header": 0,
+    "separator": "\t",
+    "skip": 0,
+    "meta": [
+        {
+            "type": "id",
+            "index": 0,
+            "name": "Name"
+        },
+        {
+            "type": "float",
+            "index": 101,
+            "name": "ALogP"
+        },
+        {
+            "type": "string",
+            "index": 102,
+            "name": "Smiles"
+        }
+    ],
+    "sets": [
+        {
+            "format": "binary",
+            "start": 1,
+            "end": 100
+        }
+    ],
+    "author": "Gleeson et al.",
+    "description": "Protein binding of small molecules.",
+    "source": "http://dx.doi.org/10.1073/pnas.1012741107"
+}
