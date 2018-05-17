@@ -38618,6 +38618,8 @@ var ViewBase = /** @class */ (function () {
     function ViewBase(root) {
         this.Root = root;
     }
+    ViewBase.prototype.create = function () { };
+    ViewBase.prototype.update = function () { };
     return ViewBase;
 }());
 exports.ViewBase = ViewBase;
@@ -38726,29 +38728,29 @@ class Data {
     }
     static getDataSetInfo(data) {
         let info = {
-            'Name': "",
-            'SetCount': 0,
-            'AttributeCount': 0,
-            '_data': null
+            Name: "",
+            SetCount: 0,
+            AttributeCount: 0,
+            _data: null
         };
         info.Name = data.name;
         info.AttributeCount = data.meta.length;
         info.SetCount = 0;
         for (let i = 0; i < data.sets.length; ++i) {
             let sdb = data.sets[i];
-            if (sdb.format === 'binary') {
+            if (sdb.format === "binary") {
                 info.SetCount += sdb.end - sdb.start + 1;
             }
             else {
-                console.error('Set Definition Format $`sdb.format` not supported');
+                console.error("Set Definition Format $`sdb.format` not supported");
             }
         }
         info._data = data;
         // console.log(info)
         return info;
     }
-    static setDataSet(event, data) {
-        Data.trigger('load-data', data);
+    static changeDataSet(event, data) {
+        Data.trigger("change-dataset", data);
     }
     static on(event, handler) {
         jquery__WEBPACK_IMPORTED_MODULE_0__(Data.EventObject).on(event, handler);
@@ -38761,6 +38763,137 @@ class Data {
     }
 }
 Data.EventObject = {};
+
+
+/***/ }),
+
+/***/ "./src/DataSetInfoView/DataSetInfoView.ts":
+/*!************************************************!*\
+  !*** ./src/DataSetInfoView/DataSetInfoView.ts ***!
+  \************************************************/
+/*! exports provided: DataSetInfoView */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DataSetInfoView", function() { return DataSetInfoView; });
+/* harmony import */ var mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mvvm_ts_fwork/dist */ "./node_modules/mvvm_ts_fwork/dist/index.js");
+/* harmony import */ var mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+
+
+class DataSetInfoView extends mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__["ViewBase"] {
+    constructor(root) {
+        super(root);
+    }
+    create() {
+        console.log("created");
+        d3__WEBPACK_IMPORTED_MODULE_1__["select"]("#dataset-info-box")
+            .style("padding", "5px")
+            .append("div")
+            .style("padding", "10px")
+            .style("border-radius", "5px")
+            .style("background-color", "rgba(0,0,0,0.7)")
+            .style("color", "#FFF");
+    }
+    update(event, data) {
+        console.log(data);
+        let box = d3__WEBPACK_IMPORTED_MODULE_1__["select"]("#dataset-info-box").select("div");
+        box.html("");
+        box
+            .append("div")
+            .text("Dataset Information")
+            .style("font-weight", "bold");
+        box
+            .append("div")
+            .append("span")
+            .text("Name: ")
+            .style("font-weight", "bold")
+            .select(function () {
+            return this.parentNode;
+        })
+            .append("span")
+            .text(`${data.Name}`);
+        box
+            .append("div")
+            .append("span")
+            .text("# Sets: ")
+            .style("font-weight", "bold")
+            .select(function () {
+            return this.parentNode;
+        })
+            .append("span")
+            .text(`${data.SetCount}`);
+        box
+            .append("div")
+            .append("span")
+            .text("# Attributes: ")
+            .style("font-weight", "bold")
+            .select(function () {
+            return this.parentNode;
+        })
+            .append("span")
+            .text(`${data.AttributeCount}`);
+        box
+            .append("div")
+            .append("span")
+            .text("Author: ")
+            .style("font-weight", "bold")
+            .select(function () {
+            return this.parentNode;
+        })
+            .append("span")
+            .text(`${data._data.author}`);
+        box
+            .append("div")
+            .append("span")
+            .text("Description: ")
+            .style("font-weight", "bold")
+            .select(function () {
+            return this.parentNode;
+        })
+            .append("span")
+            .text(`${data._data.description}`);
+        box
+            .append("div")
+            .append("span")
+            .text("Source: ")
+            .style("font-weight", "bold")
+            .select(function () {
+            return this.parentNode;
+        })
+            .append("a")
+            .attr("href", data._data.source)
+            .text(`${data._data.source}`);
+    }
+}
+
+
+/***/ }),
+
+/***/ "./src/DataSetInfoView/DataSetInfoViewModel.ts":
+/*!*****************************************************!*\
+  !*** ./src/DataSetInfoView/DataSetInfoViewModel.ts ***!
+  \*****************************************************/
+/*! exports provided: DataSetInfoViewModel */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "DataSetInfoViewModel", function() { return DataSetInfoViewModel; });
+/* harmony import */ var mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! mvvm_ts_fwork/dist */ "./node_modules/mvvm_ts_fwork/dist/index.js");
+/* harmony import */ var mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _Data__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ../Data */ "./src/Data.ts");
+
+
+class DataSetInfoViewModel extends mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__["ViewModelBase"] {
+    constructor(view) {
+        super(view);
+        this.datasets = [];
+        this.View.create();
+        _Data__WEBPACK_IMPORTED_MODULE_1__["Data"].on("change-dataset", this.View.update);
+    }
+}
 
 
 /***/ }),
@@ -38785,28 +38918,34 @@ class NavBarView extends mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__["ViewBa
         super(root);
     }
     create() {
-        this.Context.on('set-dataset', this.setDSS);
+        this.Context.on("change-dataset", this.setDSS);
     }
     update() {
         let temp = this.Context.datasets;
         let datasets_options = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this.Root)
-            .select('#dropdown-item-container')
-            .selectAll('a')
+            .select("#dropdown-item-container")
+            .selectAll("a")
             .data(this.Context.datasets)
             .enter()
-            .append('a')
-            .text((d, i) => { return `${d.Name} (${d.SetCount} sets, ${d.AttributeCount} attributes)`; })
-            .attr('class', 'dropdown-item')
-            .on('click', (d) => {
-            this.Context.trigger('set-dataset', d);
+            .append("a")
+            .text((d, i) => {
+            return `${d.Name} (${d.SetCount} sets, ${d.AttributeCount} attributes)`;
+        })
+            .attr("class", "dropdown-item")
+            .on("click", (d) => {
+            this.Context.trigger("change-dataset", d);
         });
-        let d = datasets_options.filter((d, i) => { return i == 0; }).data()[0];
+        let d = datasets_options
+            .filter((d, i) => {
+            return i == 0;
+        })
+            .data()[0];
         if (d) {
-            this.Context.trigger('set-dataset', d);
+            this.Context.trigger("change-dataset", d);
         }
     }
     setDSS(event, data) {
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"]('#data-dropdown-btn')
+        d3__WEBPACK_IMPORTED_MODULE_1__["select"]("#data-dropdown-btn")
             .text(`${data.Name} (${data.SetCount} sets, ${data.AttributeCount} attributes)`);
     }
 }
@@ -38833,13 +38972,14 @@ class NavBarViewModel extends mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_0__["V
     constructor(view) {
         super(view);
         this.datasets = [];
-        this.on('set-dataset', _Data__WEBPACK_IMPORTED_MODULE_1__["Data"].setDataSet);
+        this.on("change-dataset", _Data__WEBPACK_IMPORTED_MODULE_1__["Data"].changeDataSet);
         this.View.create();
+        this.populateDatasetSelector();
     }
     populateDatasetSelector() {
-        fetch('data/datasets.json')
+        fetch("data/datasets.json")
             .then(results => results.json())
-            .then((jsondata) => {
+            .then(jsondata => {
             jsondata.forEach((d) => {
                 fetch(d)
                     .then(res => res.json())
@@ -38868,11 +39008,15 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./NavBarView/NavBarViewModel */ "./src/NavBarView/NavBarViewModel.ts");
 /* harmony import */ var _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./NavBarView/NavBarView */ "./src/NavBarView/NavBarView.ts");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _DataSetInfoView_DataSetInfoViewModel__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./DataSetInfoView/DataSetInfoViewModel */ "./src/DataSetInfoView/DataSetInfoViewModel.ts");
+/* harmony import */ var _DataSetInfoView_DataSetInfoView__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./DataSetInfoView/DataSetInfoView */ "./src/DataSetInfoView/DataSetInfoView.ts");
 
 
 
-let navbar = new _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_0__["NavBarViewModel"](new _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_1__["NavBarView"](d3__WEBPACK_IMPORTED_MODULE_2__["select"]('#top-bar').node()));
-navbar.populateDatasetSelector();
+
+
+let navbar = new _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_0__["NavBarViewModel"](new _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_1__["NavBarView"](d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#top-bar").node()));
+let datasetinfo = new _DataSetInfoView_DataSetInfoViewModel__WEBPACK_IMPORTED_MODULE_3__["DataSetInfoViewModel"](new _DataSetInfoView_DataSetInfoView__WEBPACK_IMPORTED_MODULE_4__["DataSetInfoView"](d3__WEBPACK_IMPORTED_MODULE_2__["select"]("#dataset-info-box").node()));
 
 
 /***/ })
