@@ -16,7 +16,8 @@ export class DataSetInfoView extends ViewBase {
       .style("padding", "10px")
       .style("border-radius", "5px")
       .style("background-color", "rgba(0,0,0,0.7)")
-      .style("color", "#FFF");
+      .style("color", "#FFF")
+      .style("overflow-wrap", "break-word");
   }
 
   update(event: any, data: IDataSetInfo) {
