@@ -3,7 +3,7 @@ const webpack = require("webpack");
 
 module.exports = {
   entry: "./src/main.ts",
-  mode: "production",
+  mode: "development",
   resolve: {
     extensions: [".ts", ".tsx", ".js"]
   },

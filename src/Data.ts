@@ -1,6 +1,14 @@
 import * as d3 from "d3";
 import * as $ from "jquery";
 
+export var AggregationOption: string[] = [
+  "Degree",
+  "Sets",
+  "Deviation",
+  "Overlaps",
+  "None"
+];
+
 export interface IDataSetInfo {
   Name: string;
   SetCount: number;

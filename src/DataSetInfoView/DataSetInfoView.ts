@@ -8,7 +8,6 @@ export class DataSetInfoView extends ViewBase {
   }
 
   create() {
-    console.log("created");
     d3
       .select("#dataset-info-box")
       .style("padding", "5px")
