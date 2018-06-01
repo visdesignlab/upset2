@@ -1,13 +1,21 @@
-import { ViewModelBase } from "mvvm_ts_fwork/dist";
+import {
+  ViewModelBase,
+  IProvenanceGraph,
+  IActionFunctionRegistry
+} from "provenance_mvvm_framework";
 import { NavBarView } from "./NavBarView";
 import { IDataSetInfo, IDataSetJSON } from "../Data";
 import { Data } from "../Data";
 
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
-  constructor(view: NavBarView) {
-    super(view);
-    this.on("change-dataset", Data.changeDataSet);
+  constructor(
+    view: NavBarView,
+    graph: IProvenanceGraph,
+    registry: IActionFunctionRegistry
+  ) {
+    super(view, graph, registry);
+    // this.on("change-dataset", Data.changeDataSet);
     this.View.create();
     this.populateDatasetSelector();
   }
