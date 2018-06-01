@@ -22,18 +22,27 @@ export class NavBarViewModel extends ViewModelBase {
   }
 
   populateDatasetSelector() {
-    fetch("data/datasets.json")
+    let results: Promise<any>[] = [];
+    let p = fetch("data/datasets.json")
       .then(results => results.json())
       .then(jsondata => {
         jsondata.forEach((d: string) => {
-          fetch(d)
-            .then(res => res.json())
-            .then(resjson => {
-              let dataSetJSON: IDataSetJSON = Data.getDataSetJSON(resjson);
-              this.datasets.push(Data.getDataSetInfo(dataSetJSON));
-              (<NavBarView>this.View).update();
-            });
+          let a = fetch(d).then(res => res.json());
+
+          results.push(a);
         });
       });
+    Promise.resolve(p).then(() => {
+      Promise.all(results)
+        .then(d => {
+          d.forEach(j => {
+            let a: IDataSetJSON = Data.getDataSetJSON(j);
+            this.datasets.push(Data.getDataSetInfo(a));
+          });
+        })
+        .then(() => {
+          (<NavBarView>this.View).update();
+        });
+    });
   }
 }
