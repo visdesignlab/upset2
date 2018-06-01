@@ -38971,6 +38971,42 @@ class FilterBoxView extends mvvm_ts_fwork_dist__WEBPACK_IMPORTED_MODULE_1__["Vie
             .attr("data-toggle", "dropdown")
             .attr("type", "button")
             .style("width", "160px");
+        // Sort By (Radio Button)
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root)
+            .append("div")
+            .style("font-weight", "bold")
+            .text("Sort by:");
+        // let radio_button = d3
+        //                     .select(this.Root)
+        //                     .append("div")
+        //                     .attr("class", "radio_button");
+        // //radio_button
+        //  //           .append("label")
+        //  //           .text("Degree")
+        // let lab = radio_button   
+        //             .append("label") 
+        //   lab.append("input")
+        //             .attr("class", "btn btn-radio sort-by")
+        //             .attr("id", "sort-by-option")
+        //             .attr("type", "radio")
+        //             .attr("name", "optradio");
+        //             lab.append("span").style("margin", "5px").text("text")
+        let sort_by_options = ["Degree", "Cardinality", "Deviation"];
+        let test_radio_button = d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root)
+            .selectAll("foo")
+            .data(sort_by_options)
+            .enter()
+            .append("div")
+            .attr("class", "radio_button");
+        test_radio_button.append("input")
+            .attr("class", "btn btn-radio sort-by")
+            .attr("id", "sort-by-option")
+            .attr("type", "radio")
+            .attr("name", "optradio");
+        test_radio_button
+            .append("span")
+            .style("margin", "5px")
+            .text(function (d, i) { return d; });
     }
     update() { }
 }
