@@ -6,6 +6,7 @@ import {
 import { NavBarView } from "./NavBarView";
 import { IDataSetInfo, IDataSetJSON } from "../Data";
 import { Data } from "../Data";
+import { Handler } from "../../../provenance_mvvm_framework/dist/types/Provenance/Handler";
 
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
@@ -15,7 +16,7 @@ export class NavBarViewModel extends ViewModelBase {
     registry: IActionFunctionRegistry
   ) {
     super(view, graph, registry);
-    // this.on("change-dataset", Data.changeDataSet);
+    this.on("change-dataset", <Handler>Data.changeDataSet);
     this.View.create();
     this.populateDatasetSelector();
   }

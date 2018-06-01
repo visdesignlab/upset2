@@ -16,7 +16,7 @@ export class DataSetInfoViewModel extends ViewModelBase {
   ) {
     super(view, graph, registry);
     this.View.create();
-    Data.on("change-dataset", this.View.update);
+    Data.mitt.on("change-dataset", this.View.update);
     console.log(this._uuid);
   }
 }

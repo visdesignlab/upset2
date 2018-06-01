@@ -34,7 +34,7 @@ export class NavBarView extends ViewBase {
       })
       .data()[0];
     if (d) {
-      this.DataContext.trigger("change-dataset", d);
+      this.DataContext.emit("change-dataset", d);
     }
   }
 

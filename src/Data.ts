@@ -1,4 +1,5 @@
 import * as d3 from "d3";
+import { Mitt } from "../../provenance_mvvm_framework/dist/types/Provenance/Mitt";
 
 export var AggregationOption: string[] = [
   "Degree",
@@ -41,7 +42,7 @@ export interface IDataSetJSON {
 }
 
 export class Data {
-  static EventObject: any = {};
+  static mitt = new Mitt();
 
   static getDataSetJSON(data: any): IDataSetJSON {
     let metas: IMetaData[] = [];
@@ -76,7 +77,6 @@ export class Data {
       description: data.description,
       source: data.source
     };
-
     return d;
   }
 
@@ -104,5 +104,7 @@ export class Data {
     return info;
   }
 
-  static changeDataSet(event: any, data: IDataSetJSON) {}
+  static changeDataSet(event: any, data: IDataSetJSON) {
+    this.mitt.emit("change-dataset", data);
+  }
 }
