@@ -28,21 +28,20 @@ export class NavBarViewModel extends ViewModelBase {
       .then(jsondata => {
         jsondata.forEach((d: string) => {
           let a = fetch(d).then(res => res.json());
-
           results.push(a);
         });
-      });
-    Promise.resolve(p).then(() => {
-      Promise.all(results)
-        .then(d => {
-          d.forEach(j => {
-            let a: IDataSetJSON = Data.getDataSetJSON(j);
-            this.datasets.push(Data.getDataSetInfo(a));
+      })
+      .then(() => {
+        Promise.all(results)
+          .then(d => {
+            d.forEach(j => {
+              let a: IDataSetJSON = Data.getDataSetJSON(j);
+              this.datasets.push(Data.getDataSetInfo(a));
+            });
+          })
+          .then(() => {
+            (<NavBarView>this.View).update();
           });
-        })
-        .then(() => {
-          (<NavBarView>this.View).update();
-        });
-    });
+      });
   }
 }
