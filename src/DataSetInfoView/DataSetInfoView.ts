@@ -19,8 +19,7 @@ export class DataSetInfoView extends ViewBase {
       .style("overflow-wrap", "break-word");
   }
 
-  update(event: any, data: IDataSetInfo) {
-    console.log(data);
+  update(data: IDataSetInfo) {
     let box = d3.select("#dataset-info-box").select("div");
     box.html("");
     box

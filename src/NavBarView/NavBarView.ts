@@ -38,7 +38,7 @@ export class NavBarView extends ViewBase {
     }
   }
 
-  setDSS(event: any, data: IDataSetInfo) {
+  setDSS(data: IDataSetInfo) {
     d3
       .select("#data-dropdown-btn")
       .text(
