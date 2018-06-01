@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import * as $ from "jquery";
+import { Mitt } from "provenance_mvvm_framework";
 
 export var AggregationOption: string[] = [
   "Degree",
@@ -42,7 +42,7 @@ export interface IDataSetJSON {
 }
 
 export class Data {
-  static EventObject: any = {};
+  static mitt = new Mitt();
 
   static getDataSetJSON(data: any): IDataSetJSON {
     let metas: IMetaData[] = [];
@@ -77,7 +77,6 @@ export class Data {
       description: data.description,
       source: data.source
     };
-
     return d;
   }
 
@@ -105,19 +104,7 @@ export class Data {
     return info;
   }
 
-  static changeDataSet(event: any, data: IDataSetJSON) {
-    Data.trigger("change-dataset", data);
-  }
-
-  static on(event: any, handler: any) {
-    $(Data.EventObject).on(event, handler);
-  }
-
-  static trigger(event: any, params: any) {
-    $(Data.EventObject).trigger(event, params);
-  }
-
-  static off(event: any) {
-    $(Data.EventObject).off(event);
+  static changeDataSet(data: IDataSetJSON) {
+    Data.mitt.emit("change-dataset", data);
   }
 }

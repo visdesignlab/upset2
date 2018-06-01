@@ -1,4 +1,4 @@
-import { ViewBase } from "mvvm_ts_fwork/dist";
+import { ViewBase } from "provenance_mvvm_framework";
 import * as d3 from "d3";
 import { IDataSetInfo } from "../Data";
 
@@ -19,8 +19,7 @@ export class DataSetInfoView extends ViewBase {
       .style("overflow-wrap", "break-word");
   }
 
-  update(event: any, data: IDataSetInfo) {
-    console.log(data);
+  update(data: IDataSetInfo) {
     let box = d3.select("#dataset-info-box").select("div");
     box.html("");
     box

@@ -1,4 +1,4 @@
-import { ViewBase } from "mvvm_ts_fwork/dist";
+import { ViewBase } from "provenance_mvvm_framework";
 import * as d3 from "d3";
 import { IDataSetInfo } from "../Data";
 
@@ -8,16 +8,16 @@ export class NavBarView extends ViewBase {
   }
 
   create() {
-    this.Context.on("change-dataset", this.setDSS);
+    this.DataContext.on("change-dataset", this.setDSS);
   }
 
   update() {
-    let temp = this.Context.datasets;
+    let temp = this.DataContext.datasets;
     let datasets_options = d3
       .select(this.Root)
       .select("#dropdown-item-container")
       .selectAll("a")
-      .data(this.Context.datasets)
+      .data(this.DataContext.datasets)
       .enter()
       .append("a")
       .text((d: any, i: number) => {
@@ -25,7 +25,7 @@ export class NavBarView extends ViewBase {
       })
       .attr("class", "dropdown-item")
       .on("click", (d: any) => {
-        this.Context.trigger("change-dataset", d);
+        this.DataContext.emit("change-dataset", d);
       });
 
     let d: any = datasets_options
@@ -34,11 +34,11 @@ export class NavBarView extends ViewBase {
       })
       .data()[0];
     if (d) {
-      this.Context.trigger("change-dataset", d);
+      this.DataContext.emit("change-dataset", d);
     }
   }
 
-  setDSS(event: any, data: IDataSetInfo) {
+  setDSS(data: IDataSetInfo) {
     d3
       .select("#data-dropdown-btn")
       .text(
