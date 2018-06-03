@@ -15,12 +15,6 @@ let navbar = new NavBarViewModel(
   application.registry
 );
 
-navbar.on("log", logger);
-
-function logger(a: string) {
-  console.log(a);
-}
-
 let datasetinfo = new DataSetInfoViewModel(
   new DataSetInfoView(<HTMLElement>d3.select("#dataset-info-box").node()),
   application.graph,

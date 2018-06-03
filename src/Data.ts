@@ -1,5 +1,7 @@
+import { DataSetInfoView } from "./DataSetInfoView/DataSetInfoView";
 import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
+import { interpolateBasis } from "d3";
 
 export var AggregationOption: string[] = [
   "Degree",
@@ -9,36 +11,41 @@ export var AggregationOption: string[] = [
   "None"
 ];
 
-export interface IDataSetInfo {
+export type IDataSetInfo = {
   Name: string;
   SetCount: number;
   AttributeCount: number;
   _data: IDataSetJSON;
-}
+};
 
-export interface IMetaData {
+export type IMetaData = {
   type: string;
   index: number;
   name: string;
-}
+};
 
-export interface ISet {
+export type ISetInfo = {
   format: string;
   start: number;
   end: number;
-}
+};
 
-export interface IDataSetJSON {
+export type IDataSetJSON = {
   file: string;
   name: string;
   header: number;
   separator: string;
   skip: number;
   meta: Array<IMetaData>;
-  sets: Array<ISet>;
+  sets: Array<ISetInfo>;
   author: string;
   description: string;
   source: string;
+};
+
+export interface IData {
+  RawSets: Array<Array<number>>;
+  SetNames: Array<string>;
 }
 
 export class Data {
@@ -55,9 +62,9 @@ export class Data {
       metas.push(m);
     });
 
-    let sets: ISet[] = [];
+    let sets: ISetInfo[] = [];
     data.sets.forEach((d: any) => {
-      let s: ISet = {
+      let s: ISetInfo = {
         format: d.format,
         start: d.start,
         end: d.end
@@ -104,7 +111,79 @@ export class Data {
     return info;
   }
 
+  static processDataSet(datasetinfo: IDataSetInfo): IData {
+    let filePath: string = datasetinfo._data.file;
+    let dataSetDesc: IDataSetJSON = datasetinfo._data;
+    let processedData: IData = {
+      RawSets: [],
+      SetNames: []
+    };
+    d3.dsv(dataSetDesc.separator, filePath).then(data => {
+      console.log(data);
+      let headers = data.columns;
+      console.log(headers);
+      let processedSetsCount = 0;
+      for (let i = 0; i < dataSetDesc.sets.length; ++i) {
+        let sdb = dataSetDesc.sets[i];
+        if (sdb.format === "binary") {
+          let sdblength = sdb.end - sdb.start + 1;
+
+          for (let setCount = 0; setCount < sdblength; ++setCount) {
+            processedData.RawSets.push(new Array<number>());
+          }
+          var rows = data.map((row, row_idx) => {
+            return (<any>Object)
+              .entries(row)
+              .map((t: any) => t[1])
+              .map((val: any, col_idx: number) => {
+                if (col_idx >= sdb.start && col_idx <= sdb.end) {
+                  let intVal = parseInt(val, 10);
+                  if (isNaN(intVal)) {
+                    console.error(
+                      `Unable to convert ${val} to integer (row: ${row_idx}, col: ${col_idx}.`
+                    );
+                  }
+                  return intVal;
+                }
+                return null;
+              });
+          });
+
+          for (let r = 0; r < rows.length; ++r) {
+            if (i === 0) {
+            }
+            for (let s = 0; s < sdblength; ++s) {
+              processedData.RawSets[processedSetsCount + s].push(
+                rows[r][sdb.start + s]
+              );
+              if (r === 1) {
+                processedData.SetNames.push(headers[sdb.start + s]);
+              }
+            }
+          }
+          processedSetsCount += sdblength;
+          console.log(processedData);
+        } else {
+          console.error(`Set definition format ${sdb.format} not supported`);
+        }
+      }
+    });
+
+    let setPrefix = "S_";
+
+    for (let i = 0; i < processedData.RawSets.length; ++i) {
+      let combinedSets = Array.apply(
+        null,
+        new Array(processedData.RawSets.length)
+      ).map(Number.prototype.valueOf, 0);
+      combinedSets[i] = 1;
+    }
+
+    return null;
+  }
+
   static changeDataSet(data: IDataSetJSON) {
+    Data.mitt.on("change-dataset", Data.processDataSet);
     Data.mitt.emit("change-dataset", data);
   }
 }

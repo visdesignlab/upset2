@@ -28,22 +28,6 @@ export class FilterBoxView extends ViewBase {
       .attr("data-toggle", "dropdown")
       .attr("type", "button")
       .style("width", "160px");
-    //   .text(AggregationOption[0]);
-
-    // let f_options = first_dropdown
-    //   .append("div")
-    //   .attr("class", "dropdown-menu")
-    //   .selectAll("a")
-    //   .data(AggregationOption)
-    //   .enter()
-    //   .append("a")
-    //   .attr("class", "dropdown-item")
-    //   .text((d, i) => {
-    //     return d;
-    //   })
-    //   .on("click", d => {
-    //     console.log(d);
-    //   });
 
     // Second dropdown
     d3
@@ -72,47 +56,29 @@ export class FilterBoxView extends ViewBase {
       .style("font-weight", "bold")
       .text("Sort by:");
 
-    // let radio_button = d3
-    //                     .select(this.Root)
-    //                     .append("div")
-    //                     .attr("class", "radio_button");
-    // //radio_button
-    //  //           .append("label")
-    //  //           .text("Degree")
+    let sort_by_options = ["Degree", "Cardinality", "Deviation"];
 
-    // let lab = radio_button   
-    //             .append("label") 
+    let test_radio_button = d3
+      .select(this.Root)
+      .selectAll("foo")
+      .data(sort_by_options)
+      .enter()
+      .append("div")
+      .attr("class", "radio_button");
 
-    //   lab.append("input")
-    //             .attr("class", "btn btn-radio sort-by")
-    //             .attr("id", "sort-by-option")
-    //             .attr("type", "radio")
-    //             .attr("name", "optradio");
-
-    //             lab.append("span").style("margin", "5px").text("text")
-              
-
-    let sort_by_options = ["Degree","Cardinality","Deviation"]
-
-    let test_radio_button = d3.select(this.Root)
-                              .selectAll("foo")
-                              .data(sort_by_options)
-                              .enter()
-                              .append("div")
-                              .attr("class", "radio_button");
-
-    test_radio_button.append("input")
-                    .attr("class", "btn btn-radio sort-by")
-                    .attr("id", "sort-by-option")
-                    .attr("type", "radio")
-                    .attr("name", "optradio");
-      
     test_radio_button
-                    .append("span")
-                    .style("margin", "5px")                    
-                    .text(function(d,i) { return d;})
+      .append("input")
+      .attr("class", "btn btn-radio sort-by")
+      .attr("id", "sort-by-option")
+      .attr("type", "radio")
+      .attr("name", "optradio");
 
-
+    test_radio_button
+      .append("span")
+      .style("margin", "5px")
+      .text(function(d, i) {
+        return d;
+      });
   }
 
   update() {}

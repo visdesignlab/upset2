@@ -12,7 +12,6 @@ export class NavBarView extends ViewBase {
   }
 
   update() {
-    let temp = this.DataContext.datasets;
     let datasets_options = d3
       .select(this.Root)
       .select("#dropdown-item-container")
