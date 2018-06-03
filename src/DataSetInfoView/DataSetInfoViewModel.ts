@@ -1,8 +1,8 @@
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:29 
- * @Last Modified by:   Kiran Gadhave 
- * @Last Modified time: 2018-06-03 14:36:29 
+ * @Last Modified by: Kiran Gadhave
+ * @Last Modified time: 2018-06-03 14:42:17
  */
 import {
   ViewModelBase,
@@ -23,6 +23,5 @@ export class DataSetInfoViewModel extends ViewModelBase {
     super(view, graph, registry);
     this.View.create();
     Data.mitt.on("change-dataset", this.View.update);
-    console.log(this._uuid);
   }
 }
