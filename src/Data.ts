@@ -1,3 +1,9 @@
+/*
+ * @Author: Kiran Gadhave 
+ * @Date: 2018-06-03 14:36:05 
+ * @Last Modified by:   Kiran Gadhave 
+ * @Last Modified time: 2018-06-03 14:36:05 
+ */
 import { DataSetInfoView } from "./DataSetInfoView/DataSetInfoView";
 import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
@@ -119,9 +125,7 @@ export class Data {
       SetNames: []
     };
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
-      console.log(data);
       let headers = data.columns;
-      console.log(headers);
       let processedSetsCount = 0;
       for (let i = 0; i < dataSetDesc.sets.length; ++i) {
         let sdb = dataSetDesc.sets[i];
