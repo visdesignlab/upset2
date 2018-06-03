@@ -1,17 +1,17 @@
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:36:29 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:36:29
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-03 14:42:17
  */
 import {
-  ViewModelBase,
+  IActionFunctionRegistry,
   IProvenanceGraph,
-  IActionFunctionRegistry
+  ViewModelBase
 } from "provenance_mvvm_framework";
+import { DataUtils } from "./../DataStructure/DataUtils";
+import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
 import { DataSetInfoView } from "./DataSetInfoView";
-import { IDataSetInfo, IDataSetJSON } from "../Data";
-import { Data } from "../Data";
 
 export class DataSetInfoViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
@@ -22,6 +22,6 @@ export class DataSetInfoViewModel extends ViewModelBase {
   ) {
     super(view, graph, registry);
     this.View.create();
-    Data.mitt.on("change-dataset", this.View.update);
+    DataUtils.mitt.on("change-dataset", this.View.update);
   }
 }

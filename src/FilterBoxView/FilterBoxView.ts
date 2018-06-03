@@ -4,11 +4,9 @@
  * @Last Modified by:   Kiran Gadhave 
  * @Last Modified time: 2018-06-03 14:36:32 
  */
-import { IDataSetInfo } from "./../Data";
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
-import { AggregationOption } from "../Data";
-``;
+
 export class FilterBoxView extends ViewBase {
   constructor(root: HTMLElement) {
     super(root);

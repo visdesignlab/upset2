@@ -1,18 +1,19 @@
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:38:33 
- * @Last Modified by:   Kiran Gadhave 
- * @Last Modified time: 2018-06-03 14:38:33 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:38:33
+ * @Last Modified by:   Kiran Gadhave
+ * @Last Modified time: 2018-06-03 14:38:33
  */
 import {
-  ViewModelBase,
+  IActionFunctionRegistry,
   IProvenanceGraph,
-  IActionFunctionRegistry
+  ViewModelBase
 } from "provenance_mvvm_framework";
-import { NavBarView } from "./NavBarView";
-import { IDataSetInfo, IDataSetJSON } from "../Data";
-import { Data } from "../Data";
 import { Handler } from "../../../provenance_mvvm_framework/dist/types/Provenance/Handler";
+import { DataUtils } from "./../DataStructure/DataUtils";
+import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
+import { IDataSetJSON } from "./../DataStructure/IDataSetJSON";
+import { NavBarView } from "./NavBarView";
 
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
@@ -22,7 +23,7 @@ export class NavBarViewModel extends ViewModelBase {
     registry: IActionFunctionRegistry
   ) {
     super(view, graph, registry);
-    this.on("change-dataset", <Handler>Data.changeDataSet);
+    this.on("change-dataset", <Handler>DataUtils.changeDataSet);
     this.View.create();
     this.populateDatasetSelector();
   }
@@ -41,8 +42,8 @@ export class NavBarViewModel extends ViewModelBase {
         Promise.all(results)
           .then(d => {
             d.forEach(j => {
-              let a: IDataSetJSON = Data.getDataSetJSON(j);
-              this.datasets.push(Data.getDataSetInfo(a));
+              let a: IDataSetJSON = DataUtils.getDataSetJSON(j);
+              this.datasets.push(DataUtils.getDataSetInfo(a));
             });
           })
           .then(() => {

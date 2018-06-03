@@ -1,60 +1,22 @@
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:36:05 
- * @Last Modified by:   Kiran Gadhave 
- * @Last Modified time: 2018-06-03 14:36:05 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:36:05
+ * @Last Modified by:   Kiran Gadhave
+ * @Last Modified time: 2018-06-03 14:36:05
  */
-import { DataSetInfoView } from "./DataSetInfoView/DataSetInfoView";
 import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
-import { interpolateBasis } from "d3";
+import { IDataSetInfo } from "./IDataSetInfo";
+import { IDataSetJSON } from "./IDataSetJSON";
+import { IMetaData } from "./IMetaData";
+import { ISetInfo } from "./ISetInfo";
 
-export var AggregationOption: string[] = [
-  "Degree",
-  "Sets",
-  "Deviation",
-  "Overlaps",
-  "None"
-];
-
-export type IDataSetInfo = {
-  Name: string;
-  SetCount: number;
-  AttributeCount: number;
-  _data: IDataSetJSON;
+type temp = {
+  RawSets: any[];
+  SetNames: any[];
 };
 
-export type IMetaData = {
-  type: string;
-  index: number;
-  name: string;
-};
-
-export type ISetInfo = {
-  format: string;
-  start: number;
-  end: number;
-};
-
-export type IDataSetJSON = {
-  file: string;
-  name: string;
-  header: number;
-  separator: string;
-  skip: number;
-  meta: Array<IMetaData>;
-  sets: Array<ISetInfo>;
-  author: string;
-  description: string;
-  source: string;
-};
-
-export interface IData {
-  RawSets: Array<Array<number>>;
-  SetNames: Array<string>;
-}
-
-export class Data {
+export class DataUtils {
   static mitt = new Mitt();
 
   static getDataSetJSON(data: any): IDataSetJSON {
@@ -117,10 +79,10 @@ export class Data {
     return info;
   }
 
-  static processDataSet(datasetinfo: IDataSetInfo): IData {
+  static processDataSet(datasetinfo: IDataSetInfo): any {
     let filePath: string = datasetinfo._data.file;
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
-    let processedData: IData = {
+    let processedData: temp = {
       RawSets: [],
       SetNames: []
     };
@@ -187,7 +149,7 @@ export class Data {
   }
 
   static changeDataSet(data: IDataSetJSON) {
-    Data.mitt.on("change-dataset", Data.processDataSet);
-    Data.mitt.emit("change-dataset", data);
+    DataUtils.mitt.on("change-dataset", DataUtils.processDataSet);
+    DataUtils.mitt.emit("change-dataset", data);
   }
 }
