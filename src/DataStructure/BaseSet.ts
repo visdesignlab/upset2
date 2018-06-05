@@ -25,7 +25,7 @@ export class BaseSet extends BaseElement {
    * @memberof BaseSet
    */
   constructor(
-    setId: number,
+    setId: number | string,
     setName: string,
     combinedSets: number[],
     setData: number[]

@@ -7,6 +7,7 @@
 import { Aggregate } from "./Aggregate";
 import { SubSet } from "./SubSet";
 import { BaseElement } from "./BaseElement";
+import { RowType } from "./RowType";
 
 export class Group extends BaseElement {
   aggregate: Aggregate;
@@ -21,6 +22,7 @@ export class Group extends BaseElement {
   isCollapsed: boolean;
   constructor(groupId: number | string, groupName: string, level: number) {
     super(groupId, groupName);
+    this.type = RowType.GROUP;
     this.isCollapsed = false;
     this.nestedGroups = false;
     this.level = 1;

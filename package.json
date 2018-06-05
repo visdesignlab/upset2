@@ -4,18 +4,25 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack"
+    "start": "webpack",
+    "start2": "webpack-dev-server"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "@types/d3": "^5.0.0",
     "awesome-typescript-loader": "^5.0.0",
+    "css-loader": "0.28.11",
+    "mini-css-extract-plugin": "0.4.0",
+    "node-sass": "4.9.0",
+    "postcss-loader": "2.1.5",
+    "sass-loader": "7.0.3",
+    "style-loader": "0.21.0",
     "tslint": "^5.10.0",
     "typescript": "^2.8.3",
     "webpack": "^4.8.3",
     "webpack-cli": "^2.1.3",
-    "webpack-dev-server": "^3.1.4"
+    "webpack-dev-server": "3.1.4"
   },
   "dependencies": {
     "@types/jquery": "^3.3.1",

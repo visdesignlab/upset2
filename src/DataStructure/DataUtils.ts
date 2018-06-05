@@ -1,8 +1,9 @@
+import { Data } from "./Data";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:05
- * @Last Modified by:   Kiran Gadhave
- * @Last Modified time: 2018-06-03 14:36:05
+ * @Last Modified by: Kiran Gadhave
+ * @Last Modified time: 2018-06-05 15:18:56
  */
 import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
@@ -11,13 +12,10 @@ import { IDataSetJSON } from "./IDataSetJSON";
 import { IMetaData } from "./IMetaData";
 import { ISetInfo } from "./ISetInfo";
 
-type temp = {
-  RawSets: any[];
-  SetNames: any[];
-};
-
 export class DataUtils {
   static mitt = new Mitt();
+
+  static data: Data;
 
   static getDataSetJSON(data: any): IDataSetJSON {
     let metas: IMetaData[] = [];
@@ -82,70 +80,12 @@ export class DataUtils {
   static processDataSet(datasetinfo: IDataSetInfo): any {
     let filePath: string = datasetinfo._data.file;
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
-    let processedData: temp = {
-      RawSets: [],
-      SetNames: []
-    };
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
-      let headers = data.columns;
-      let processedSetsCount = 0;
-      for (let i = 0; i < dataSetDesc.sets.length; ++i) {
-        let sdb = dataSetDesc.sets[i];
-        if (sdb.format === "binary") {
-          let sdblength = sdb.end - sdb.start + 1;
-
-          for (let setCount = 0; setCount < sdblength; ++setCount) {
-            processedData.RawSets.push(new Array<number>());
-          }
-          var rows = data.map((row, row_idx) => {
-            return (<any>Object)
-              .entries(row)
-              .map((t: any) => t[1])
-              .map((val: any, col_idx: number) => {
-                if (col_idx >= sdb.start && col_idx <= sdb.end) {
-                  let intVal = parseInt(val, 10);
-                  if (isNaN(intVal)) {
-                    console.error(
-                      `Unable to convert ${val} to integer (row: ${row_idx}, col: ${col_idx}.`
-                    );
-                  }
-                  return intVal;
-                }
-                return null;
-              });
-          });
-
-          for (let r = 0; r < rows.length; ++r) {
-            if (i === 0) {
-            }
-            for (let s = 0; s < sdblength; ++s) {
-              processedData.RawSets[processedSetsCount + s].push(
-                rows[r][sdb.start + s]
-              );
-              if (r === 1) {
-                processedData.SetNames.push(headers[sdb.start + s]);
-              }
-            }
-          }
-          processedSetsCount += sdblength;
-          console.log(processedData);
-        } else {
-          console.error(`Set definition format ${sdb.format} not supported`);
-        }
-      }
+      DataUtils.data = new Data();
+      DataUtils.data.load(data, dataSetDesc).then(() => {
+        console.log(DataUtils.data);
+      });
     });
-
-    let setPrefix = "S_";
-
-    for (let i = 0; i < processedData.RawSets.length; ++i) {
-      let combinedSets = Array.apply(
-        null,
-        new Array(processedData.RawSets.length)
-      ).map(Number.prototype.valueOf, 0);
-      combinedSets[i] = 1;
-    }
-
-    return null;
   }
 
   static changeDataSet(data: IDataSetJSON) {

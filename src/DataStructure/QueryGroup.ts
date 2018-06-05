@@ -6,6 +6,7 @@
  */
 import { Group } from "./Group";
 import { Clause } from "./Clause";
+import { RowType } from "./RowType";
 
 export class QueryGroup extends Group {
   combinedSets: any[];
@@ -17,7 +18,7 @@ export class QueryGroup extends Group {
   ) {
     super(groupId, groupName, 1);
     this.orClauses = orClauses;
-
+    this.type = RowType.QUERY_GROUP;
     if (orClauses.length == 1) {
       this.combinedSets = Object.keys(orClauses[0]).map(key => {
         return orClauses[0][key].state;

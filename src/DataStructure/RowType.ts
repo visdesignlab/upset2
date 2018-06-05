@@ -1,0 +1,9 @@
+export enum RowType {
+  SET,
+  SUBSET,
+  GROUP,
+  AGGREGATE,
+  QUERY_GROUP,
+  SEPERATOR,
+  UNDEFINED
+}

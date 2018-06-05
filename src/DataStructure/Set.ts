@@ -5,12 +5,13 @@
  * @Last Modified time: 2018-06-03 16:58:07 
  */
 import { BaseSet } from "./BaseSet";
+import { RowType } from "./RowType";
 export class Set extends BaseSet {
   isSelected: boolean;
   itemList: number[];
 
   constructor(
-    setId: number,
+    setId: number | string,
     setName: string,
     combinedSets: number[],
     itemList: number[]
@@ -19,5 +20,6 @@ export class Set extends BaseSet {
     this.dataRatio = this.setSize / this.depth;
     this.itemList = itemList;
     this.isSelected = false;
+    this.type = RowType.SET;
   }
 }

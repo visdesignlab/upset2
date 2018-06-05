@@ -2,8 +2,9 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-03 15:22:01
+ * @Last Modified time: 2018-06-05 15:18:32
  */
+
 import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
 import { DataSetInfoView } from "./DataSetInfoView/DataSetInfoView";
@@ -12,6 +13,7 @@ import { FilterBoxView } from "./FilterBoxView/FilterBoxView";
 import { FilterBoxViewModel } from "./FilterBoxView/FilterBoxViewModel";
 import { NavBarView } from "./NavBarView/NavBarView";
 import { NavBarViewModel } from "./NavBarView/NavBarViewModel";
+import { Data } from "./DataStructure/Data";
 
 let application = new Application("Upset2.0", "1.0.0");
 

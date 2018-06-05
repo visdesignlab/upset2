@@ -13,12 +13,10 @@ module.exports = {
   },
   devtool: "source-map",
   module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        loader: "awesome-typescript-loader"
-      }
-    ]
+    rules: [{
+      test: /\.ts$/,
+      loader: "awesome-typescript-loader"
+    }],
   },
   plugins: [
     new webpack.ProvidePlugin({

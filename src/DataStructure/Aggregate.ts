@@ -6,6 +6,7 @@
  */
 import { SubSet } from "./SubSet";
 import { BaseElement } from "./BaseElement";
+import { RowType } from "./RowType";
 
 export class Aggregate extends BaseElement {
   disproportionality: number;
@@ -20,6 +21,7 @@ export class Aggregate extends BaseElement {
     level: number
   ) {
     super(aggregateId, aggregateName);
+    this.type = RowType.AGGREGATE;
     this.subSets = [];
     this.isCollapsed = true;
     this.level = level;
