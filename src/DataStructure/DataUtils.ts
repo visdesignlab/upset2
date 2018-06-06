@@ -3,7 +3,7 @@ import { Data } from "./Data";
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:05
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 15:18:56
+ * @Last Modified time: 2018-06-05 16:00:53
  */
 import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
@@ -13,7 +13,7 @@ import { IMetaData } from "./IMetaData";
 import { ISetInfo } from "./ISetInfo";
 
 export class DataUtils {
-  static mitt = new Mitt();
+  static app: Application;
 
   static data: Data;
 
@@ -89,7 +89,7 @@ export class DataUtils {
   }
 
   static changeDataSet(data: IDataSetJSON) {
-    DataUtils.mitt.on("change-dataset", DataUtils.processDataSet);
-    DataUtils.mitt.emit("change-dataset", data);
+    DataUtils.app.on("change-dataset", DataUtils.processDataSet);
+    DataUtils.app.emit("change-dataset", data);
   }
 }

@@ -1,8 +1,9 @@
+import { Application } from "provenance_mvvm_framework";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:38:25 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-03 14:47:46
+ * @Last Modified time: 2018-06-05 15:59:46
  */
 import * as d3 from "d3";
 import {
@@ -13,12 +14,8 @@ import {
 import { FilterBoxView } from "./FilterBoxView";
 
 export class FilterBoxViewModel extends ViewModelBase {
-  constructor(
-    view: FilterBoxView,
-    graph: IProvenanceGraph,
-    registry: IActionFunctionRegistry
-  ) {
-    super(view, graph, registry);
+  constructor(view: FilterBoxView, app: Application) {
+    super(view, app);
 
     this.View.create();
   }

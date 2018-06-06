@@ -1,8 +1,8 @@
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:29
- * @Last Modified by:   Kiran Gadhave
- * @Last Modified time: 2018-06-03 14:38:29
+ * @Last Modified by: Kiran Gadhave
+ * @Last Modified time: 2018-06-05 16:02:01
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -14,7 +14,7 @@ export class NavBarView extends ViewBase {
   }
 
   create() {
-    this.DataContext.on("change-dataset", this.setDSS);
+    this.DataContext.App.on("change-dataset", this.setDSS);
   }
 
   update() {
@@ -30,7 +30,7 @@ export class NavBarView extends ViewBase {
       })
       .attr("class", "dropdown-item")
       .on("click", (d: any) => {
-        this.DataContext.emit("change-dataset", d);
+        this.DataContext.App.emit("change-dataset", d);
       });
 
     let d: any = datasets_options
@@ -39,7 +39,7 @@ export class NavBarView extends ViewBase {
       })
       .data()[0];
     if (d) {
-      this.DataContext.emit("change-dataset", d);
+      this.DataContext.App.emit("change-dataset", d);
     }
   }
 
