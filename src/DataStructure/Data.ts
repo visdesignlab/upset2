@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 15:56:16 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 14:18:55
+ * @Last Modified time: 2018-06-05 18:41:22
  */
 
 import { DSVParsedArray, DSVRowString } from "d3";
@@ -229,8 +229,7 @@ export class Data {
     for (let i = 0; i < dataSetDesc.meta.length; ++i) {
       let metaDefinition = dataSetDesc.meta[i];
       this.attributes[i].values = data.map((row, row_idx) => {
-        let val = row[metaDefinition.index];
-
+        let val = (<any>Object).values(row)[metaDefinition.index];
         switch (metaDefinition.type) {
           case "integer": {
             let intVal = parseInt(val, 10);

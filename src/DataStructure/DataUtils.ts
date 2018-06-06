@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:05
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 18:28:20
+ * @Last Modified time: 2018-06-05 18:42:27
  */
 import * as d3 from "d3";
 import { Data } from "./Data";
@@ -14,7 +14,6 @@ import { ISetInfo } from "./ISetInfo";
 
 export class DataUtils {
   static app: Application;
-
   static data: Data;
 
   static getDataSetJSON(data: any): IDataSetJSON {
@@ -73,7 +72,6 @@ export class DataUtils {
       }
     }
     info._data = data;
-    // console.log(info)
     return info;
   }
 
@@ -83,12 +81,8 @@ export class DataUtils {
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
       DataUtils.data = new Data();
       DataUtils.data.load(data, dataSetDesc).then(() => {
-        console.log(DataUtils.data);
+        DataUtils.app.on("dataset-changed", null);
       });
     });
-  }
-
-  static changeDataSet(data: IDataSetJSON) {
-    DataUtils.app.emit("change-dataset", data);
   }
 }
