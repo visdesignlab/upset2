@@ -14,9 +14,21 @@ export class Set extends BaseSet {
     setId: number | string,
     setName: string,
     combinedSets: number[],
-    itemList: number[]
+    itemList: number[],
+    depth: number,
+    isSuperCall: boolean = false
   ) {
-    super(setId, setName, combinedSets, []);
+    if (isSuperCall) super(setId, setName, combinedSets, itemList, depth);
+    else {
+      super(setId, setName, combinedSets, [], depth);
+      for (let i = 0; i < itemList.length; ++i) {
+        if (itemList[i] !== 0) {
+          this.items.push(i);
+          this.setSize++;
+        }
+      }
+    }
+    this.depth = depth;
     this.dataRatio = this.setSize / this.depth;
     this.itemList = itemList;
     this.isSelected = false;

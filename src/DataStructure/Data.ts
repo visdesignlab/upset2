@@ -1,3 +1,5 @@
+import { BaseSet } from "./BaseSet";
+import { SimilarityFunctions } from "./SimilarityFunctions";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 15:56:16 
@@ -39,6 +41,28 @@ export class Data {
       a[this.sets[i].id] = this.sets[i];
     }
     return a;
+  }
+
+  private getSimilarityMatrix(
+    indexFn: (intersection: number, length1: number, length2: number) => number
+  ) {
+    let temp: { [key: string]: { [key: string]: number } } = {};
+    let sets: BaseSet[] = [];
+    this.sets.forEach(set => {
+      sets.push(set);
+    });
+    this.subSets.forEach(set => {
+      sets.push(set);
+    });
+    sets.forEach(set1 => {
+      temp[set1.elementName] = {};
+      sets.forEach(set2 => {
+        temp[set1.elementName][set2.elementName] = set1.getSimilarityScore(
+          set2,
+          indexFn
+        );
+      });
+    });
   }
 
   private createSignature(
@@ -155,13 +179,16 @@ export class Data {
 
         let name = "";
         if (names.length > 0) name = names.reverse().join(" ") + " ";
-
+        if (name === "") {
+          name = "UNINCLUDED";
+        }
         let subset = new SubSet(
           bitMask,
           name,
           combinedSets,
           list,
-          expectedValue
+          expectedValue,
+          this.depth
         );
         this.subSets.push(subset);
       }
@@ -306,7 +333,8 @@ export class Data {
         setPrefix + i,
         data.setNames[i],
         combinedSets,
-        data.rawSets[i]
+        data.rawSets[i],
+        this.depth
       );
       this.sets.push(set);
       if (i < this.noDefaultSets) {
