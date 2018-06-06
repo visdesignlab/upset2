@@ -1,14 +1,14 @@
-import { Data } from "./Data";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:05
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 16:00:53
+ * @Last Modified time: 2018-06-05 18:28:20
  */
 import * as d3 from "d3";
-import { Mitt } from "provenance_mvvm_framework";
+import { Data } from "./Data";
 import { IDataSetInfo } from "./IDataSetInfo";
 import { IDataSetJSON } from "./IDataSetJSON";
+import { Application } from "provenance_mvvm_framework";
 import { IMetaData } from "./IMetaData";
 import { ISetInfo } from "./ISetInfo";
 
@@ -89,7 +89,6 @@ export class DataUtils {
   }
 
   static changeDataSet(data: IDataSetJSON) {
-    DataUtils.app.on("change-dataset", DataUtils.processDataSet);
     DataUtils.app.emit("change-dataset", data);
   }
 }

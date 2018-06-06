@@ -3,7 +3,7 @@ import { Application } from "provenance_mvvm_framework";
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:29
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 16:01:35
+ * @Last Modified time: 2018-06-05 18:24:04
  */
 import {
   IActionFunctionRegistry,
@@ -19,6 +19,5 @@ export class DataSetInfoViewModel extends ViewModelBase {
   constructor(view: DataSetInfoView, app: Application) {
     super(view, app);
     this.View.create();
-    DataUtils.app.on("change-dataset", this.View.update);
   }
 }

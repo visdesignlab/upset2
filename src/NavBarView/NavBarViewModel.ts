@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 15:57:33
+ * @Last Modified time: 2018-06-05 18:27:24
  */
 import {
   IActionFunctionRegistry,
@@ -20,7 +20,6 @@ export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application) {
     super(view, app);
-    this.App.on("change-dataset", <Handler>DataUtils.changeDataSet);
     this.View.create();
     this.populateDatasetSelector();
   }
@@ -44,7 +43,7 @@ export class NavBarViewModel extends ViewModelBase {
             });
           })
           .then(() => {
-            (<NavBarView>this.View).update();
+            this.View.update();
           });
       });
   }
