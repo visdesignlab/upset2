@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:05
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 18:42:27
+ * @Last Modified time: 2018-06-06 12:13:45
  */
 import * as d3 from "d3";
 import { Data } from "./Data";
@@ -68,7 +68,7 @@ export class DataUtils {
       if (sdb.format === "binary") {
         info.SetCount += sdb.end - sdb.start + 1;
       } else {
-        console.error("Set Definition Format $`sdb.format` not supported");
+        console.error(`Set Definition Format ${sdb.format} not supported`);
       }
     }
     info._data = data;
@@ -81,6 +81,11 @@ export class DataUtils {
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
       DataUtils.data = new Data();
       DataUtils.data.load(data, dataSetDesc).then(() => {
+        d3
+          .select("#cen-col")
+          .append("pre")
+          .html(JSON.stringify(DataUtils.data, undefined, 1));
+        console.log(DataUtils.data);
         DataUtils.app.on("dataset-changed", null);
       });
     });
