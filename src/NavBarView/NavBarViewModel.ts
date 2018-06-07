@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 18:27:24
+ * @Last Modified time: 2018-06-07 16:55:08
  */
 import {
   IActionFunctionRegistry,
@@ -26,7 +26,7 @@ export class NavBarViewModel extends ViewModelBase {
 
   populateDatasetSelector() {
     let results: Promise<any>[] = [];
-    let p = fetch("data/datasets.json")
+    let p = fetch("../../data/datasets.json")
       .then(results => results.json())
       .then(jsondata => {
         jsondata.forEach((d: string) => {
