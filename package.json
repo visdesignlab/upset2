@@ -33,6 +33,6 @@
   "dependencies": {
     "@types/jquery": "3.3.2",
     "d3": "^5.4.0",
-    "hoek": "5.0.3"
+    "hoek": "4.2.1"
   }
 }
