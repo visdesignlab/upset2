@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-08 14:44:55
+ * @Last Modified time: 2018-06-08 14:55:52
  */
 
 import * as d3 from "d3";
@@ -14,12 +14,12 @@ import { DataUtils } from "../DataStructure/DataUtils";
 import { FilterBoxViewModel } from "../FilterBoxView/FilterBoxViewModel";
 import { NavBarView } from "../NavBarView/NavBarView";
 import { NavBarViewModel } from "../NavBarView/NavBarViewModel";
+import { ViewFactory } from "./ViewFactory";
 
 // Importing styles
 import "popper.js";
 import "bootstrap";
 import "./styles.scss";
-import { ViewFactory } from "./ViewFactory";
 
 let application = new Application("Upset2.0", "1.0.0");
 DataUtils.app = application;
