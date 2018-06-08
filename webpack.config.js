@@ -7,7 +7,7 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
 module.exports = {
-  entry: "./src/main.ts",
+  entry: "./src/app/app.ts",
   mode: "development",
   optimization: {
     splitChunks: {
@@ -20,8 +20,8 @@ module.exports = {
       exclude: ["vendors*.js"]
     }),
     new HtmlWebpackPlugin({
-      template: './src/index.html',
-      filename: "../../index.html"
+      template: './src/app/index.html',
+      filename: "../../../index.html"
     }),
     new WebpackMd5Hash(),
     new MiniCssExtractPlugin({

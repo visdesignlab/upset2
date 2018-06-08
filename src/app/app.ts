@@ -5,17 +5,24 @@
  * @Last Modified time: 2018-06-08 08:20:43
  */
 
-import * as $ from "jquery";
 import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
-import { DataSetInfoView } from "./DataSetInfoView/DataSetInfoView";
-import { DataSetInfoViewModel } from "./DataSetInfoView/DataSetInfoViewModel";
-import { FilterBoxView } from "./FilterBoxView/FilterBoxView";
-import { DataUtils } from "./DataStructure/DataUtils";
-import { FilterBoxViewModel } from "./FilterBoxView/FilterBoxViewModel";
-import { NavBarView } from "./NavBarView/NavBarView";
-import { NavBarViewModel } from "./NavBarView/NavBarViewModel";
-import { Data } from "./DataStructure/Data";
+import { DataSetInfoView } from "../DataSetInfoView/DataSetInfoView";
+import { DataSetInfoViewModel } from "../DataSetInfoView/DataSetInfoViewModel";
+import { FilterBoxView } from "../FilterBoxView/FilterBoxView";
+import { DataUtils } from "../DataStructure/DataUtils";
+import { FilterBoxViewModel } from "../FilterBoxView/FilterBoxViewModel";
+import { NavBarView } from "../NavBarView/NavBarView";
+import { NavBarViewModel } from "../NavBarView/NavBarViewModel";
+
+// Importing goldenlayout
+import { GoldenLayout } from "golden-layout/dist/goldenlayout";
+import "golden-layout/src/css/goldenlayout-base.css";
+import "./goldenlayout-theme.less";
+// Importing styles
+import "popper.js";
+import "bootstrap";
+import "./styles.scss";
 
 let application = new Application("Upset2.0", "1.0.0");
 DataUtils.app = application;

@@ -81,10 +81,6 @@ export class DataUtils {
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
       DataUtils.data = new Data();
       DataUtils.data.load(data, dataSetDesc).then(() => {
-        d3
-          .select("#cen-col")
-          .append("pre")
-          .html(JSON.stringify(DataUtils.data, undefined, 1));
         console.log(DataUtils.data);
         DataUtils.app.on("dataset-changed", null);
       });
