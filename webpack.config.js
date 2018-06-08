@@ -21,7 +21,7 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/app/index.html',
-      filename: "../../../index.html"
+      filename: "../../index.html"
     }),
     new WebpackMd5Hash(),
     new MiniCssExtractPlugin({
