@@ -7,6 +7,7 @@
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
 import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
+import template from "./navbar.view.html";
 
 export class NavBarView extends ViewBase {
   constructor(root: HTMLElement) {
@@ -14,6 +15,7 @@ export class NavBarView extends ViewBase {
   }
 
   create() {
+    d3.select(this.Root).html(template);
     this.DataContext.App.on("change-dataset", this.setDSS);
   }
 
@@ -44,12 +46,8 @@ export class NavBarView extends ViewBase {
   }
 
   setDSS(data: IDataSetInfo) {
-    d3
-      .select("#data-dropdown-btn")
-      .text(
-        `${data.Name} (${data.SetCount} sets, ${
-          data.AttributeCount
-        } attributes)`
-      );
+    d3.select("#data-dropdown-btn").text(
+      `${data.Name} (${data.SetCount} sets, ${data.AttributeCount} attributes)`
+    );
   }
 }
