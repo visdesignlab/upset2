@@ -18,8 +18,7 @@ export class DataSetInfoView extends ViewBase {
   }
 
   create() {
-    d3
-      .select("#dataset-info-box")
+    d3.select(this.Root)
       .style("padding", "5px")
       .append("div")
       .style("padding", "10px")

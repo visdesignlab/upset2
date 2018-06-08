@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-08 10:24:49
+ * @Last Modified time: 2018-06-08 14:44:55
  */
 
 import * as d3 from "d3";
@@ -15,30 +15,29 @@ import { FilterBoxViewModel } from "../FilterBoxView/FilterBoxViewModel";
 import { NavBarView } from "../NavBarView/NavBarView";
 import { NavBarViewModel } from "../NavBarView/NavBarViewModel";
 
-// Importing goldenlayout
-import { GoldenLayout } from "golden-layout/dist/goldenlayout";
-import "golden-layout/src/css/goldenlayout-base.css";
-import "./goldenlayout-theme.less";
 // Importing styles
 import "popper.js";
 import "bootstrap";
 import "./styles.scss";
+import { ViewFactory } from "./ViewFactory";
 
 let application = new Application("Upset2.0", "1.0.0");
 DataUtils.app = application;
 DataUtils.app.on("change-dataset", DataUtils.processDataSet);
 
-let navbar = new NavBarViewModel(
-  new NavBarView(<HTMLElement>d3.select("#top-bar").node()),
+let vf = new ViewFactory();
+
+vf.views["DataSetInfo"] = new DataSetInfoViewModel(
+  new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
   application
 );
 
-let datasetinfo = new DataSetInfoViewModel(
-  new DataSetInfoView(<HTMLElement>d3.select("#dataset-info-box").node()),
+vf.views["FilterBox"] = new FilterBoxViewModel(
+  new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
   application
 );
 
-let filterBox = new FilterBoxViewModel(
-  new FilterBoxView(<HTMLElement>d3.select("#filter-box").node()),
+vf.views["NavBar"] = new NavBarViewModel(
+  new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
   application
 );
