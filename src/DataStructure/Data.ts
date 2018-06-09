@@ -4,7 +4,7 @@ import { SimilarityFunctions } from "./SimilarityFunctions";
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 15:56:16 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 18:41:22
+ * @Last Modified time: 2018-06-09 14:25:49
  */
 
 import { DSVParsedArray, DSVRowString } from "d3";
@@ -27,11 +27,17 @@ export class Data {
   noDefaultSets: number = 6;
   maxCardinality: number = 0;
 
-  async load(data: DSVParsedArray<DSVRowString>, dataSetDesc: IDataSetJSON) {
+  async load(
+    data: DSVParsedArray<DSVRowString>,
+    dataSetDesc: IDataSetJSON
+  ): Promise<any> {
     await this.getRawData(data, dataSetDesc).then(rawData => {
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
+    });
+    return new Promise((res, rej) => {
+      res(<any>this);
     });
   }
 

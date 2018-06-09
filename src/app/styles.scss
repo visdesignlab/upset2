@@ -1,1 +1,8 @@
 @import "~bootstrap/scss/bootstrap.scss";
+.container {
+  max-width: 100vw;
+}
+
+.layout {
+  border: 2px solid black
+}

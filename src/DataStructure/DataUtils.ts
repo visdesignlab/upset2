@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:05
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-06 12:13:45
+ * @Last Modified time: 2018-06-09 14:31:43
  */
 import * as d3 from "d3";
 import { Data } from "./Data";
@@ -79,10 +79,9 @@ export class DataUtils {
     let filePath: string = datasetinfo._data.file;
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
-      DataUtils.data = new Data();
-      DataUtils.data.load(data, dataSetDesc).then(() => {
-        console.log(DataUtils.data);
-        DataUtils.app.on("dataset-changed", null);
+      let d: Data = new Data();
+      d.load(data, dataSetDesc).then(data => {
+        DataUtils.app.emit("data-loaded", data);
       });
     });
   }

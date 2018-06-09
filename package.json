@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack"
+    "start": "webpack",
+    "lite": "lite-server -c bs-config.json",
+    "serve": "npm run lite"
   },
   "author": "",
   "license": "ISC",
@@ -17,6 +19,7 @@
     "html-webpack-plugin": "^3.1.0",
     "less": "3.0.4",
     "less-loader": "4.1.0",
+    "lite-server": "2.3.0",
     "mini-css-extract-plugin": "^0.4.0",
     "node-sass": "^4.8.3",
     "postcss-loader": "^2.1.3",
