@@ -18,6 +18,10 @@ export class DataSetInfoViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: DataSetInfoView, app: Application) {
     super(view, app);
-    this.View.create();
+    this.App.on("change-dataset", this.update, this);
+  }
+
+  update(dataset: IDataSetInfo) {
+    this.comm.emit("update", dataset);
   }
 }

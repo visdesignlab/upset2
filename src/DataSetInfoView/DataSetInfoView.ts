@@ -13,9 +13,7 @@ export class DataSetInfoView extends ViewBase {
     super(root);
   }
 
-  setup() {
-    this.DataContext.App.on("change-dataset", this.update);
-  }
+  setup() {}
 
   create() {
     d3.select(this.Root)

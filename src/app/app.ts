@@ -29,11 +29,6 @@ DataUtils.app.on("change-dataset", DataUtils.processDataSet);
 
 let vf = new ViewFactory();
 
-vf.views["Upset"] = new UpsetViewModel(
-  new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
-  application
-);
-
 vf.views["DataSetInfo"] = new DataSetInfoViewModel(
   new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
   application
@@ -46,5 +41,10 @@ vf.views["FilterBox"] = new FilterBoxViewModel(
 
 vf.views["NavBar"] = new NavBarViewModel(
   new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
+  application
+);
+
+vf.views["Upset"] = new UpsetViewModel(
+  new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
   application
 );

@@ -20,8 +20,10 @@ export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application) {
     super(view, app);
-    this.View.create();
     this.populateDatasetSelector();
+    this.comm.on("change-dataset", dataset => {
+      this.App.emit("change-dataset", dataset);
+    });
   }
 
   populateDatasetSelector() {
@@ -43,7 +45,7 @@ export class NavBarViewModel extends ViewModelBase {
             });
           })
           .then(() => {
-            this.View.update();
+            this.comm.emit("update", this.datasets);
           });
       });
   }

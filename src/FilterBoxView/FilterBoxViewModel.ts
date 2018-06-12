@@ -16,7 +16,5 @@ import { FilterBoxView } from "./FilterBoxView";
 export class FilterBoxViewModel extends ViewModelBase {
   constructor(view: FilterBoxView, app: Application) {
     super(view, app);
-
-    this.View.create();
   }
 }

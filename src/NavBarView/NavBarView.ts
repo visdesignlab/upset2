@@ -16,15 +16,15 @@ export class NavBarView extends ViewBase {
 
   create() {
     d3.select(this.Root).html(template);
-    this.DataContext.App.on("change-dataset", this.setDSS);
+    this.comm.on("change-dataset", this.setDSS);
   }
 
-  update() {
+  update(datasets: any[]) {
     let datasets_options = d3
       .select(this.Root)
       .select("#dropdown-item-container")
       .selectAll("a")
-      .data(this.DataContext.datasets)
+      .data(datasets)
       .enter()
       .append("a")
       .text((d: any, i: number) => {
@@ -32,7 +32,7 @@ export class NavBarView extends ViewBase {
       })
       .attr("class", "dropdown-item")
       .on("click", (d: any) => {
-        this.DataContext.App.emit("change-dataset", d);
+        this.comm.emit("change-dataset", d);
       });
 
     let d: any = datasets_options
@@ -41,7 +41,7 @@ export class NavBarView extends ViewBase {
       })
       .data()[0];
     if (d) {
-      this.DataContext.App.emit("change-dataset", d);
+      this.comm.emit("change-dataset", d);
     }
   }
 
