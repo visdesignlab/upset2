@@ -1,3 +1,5 @@
+import { RenderConfig } from "./AggregateAndFilters";
+import { Application } from "provenance_mvvm_framework";
 import { BaseSet } from "./BaseSet";
 import { SimilarityFunctions } from "./SimilarityFunctions";
 /*
@@ -15,9 +17,10 @@ import { Set } from "./Set";
 import { SubSet } from "./SubSet";
 
 export class Data {
+  app: Application;
   sets: Array<Set> = [];
   usedSets: Array<Set> = [];
-  renderRows: Array<{ [key: string]: BaseElement }>;
+  renderRows: Array<{ [key: string]: BaseElement }> = [];
   subSets: Array<SubSet> = [];
   attributes: Array<Attribute> = [];
   selectedAttributes: Array<Attribute> = [];
@@ -27,6 +30,11 @@ export class Data {
   noDefaultSets: number = 6;
   maxCardinality: number = 0;
 
+  constructor(app: Application) {
+    this.app = app;
+    this.app.on("filter-changed", this.setupRenderRows, this);
+  }
+
   async load(
     data: DSVParsedArray<DSVRowString>,
     dataSetDesc: IDataSetJSON
@@ -35,6 +43,7 @@ export class Data {
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
+      this.setupRenderRows(new RenderConfig());
     });
     return new Promise((res, rej) => {
       res(<any>this);
@@ -420,6 +429,11 @@ export class Data {
     return new Promise((res, rej) => {
       res(rawData);
     });
+  }
+
+  private setupRenderRows(renderConfig: RenderConfig) {
+    console.log(renderConfig);
+    this.app.emit("render-rows-changed", this);
   }
 }
 

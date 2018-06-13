@@ -13,7 +13,7 @@ import "./styles.scss";
 export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
-    this.App.on("data-loaded", this.update, this);
+    this.App.on("render-rows-changed", this.update, this);
   }
 
   update(data: Data) {

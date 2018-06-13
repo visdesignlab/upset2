@@ -11,6 +11,7 @@ import { IDataSetJSON } from "./IDataSetJSON";
 import { Application } from "provenance_mvvm_framework";
 import { IMetaData } from "./IMetaData";
 import { ISetInfo } from "./ISetInfo";
+import { RenderConfig } from "./AggregateAndFilters";
 
 export class DataUtils {
   static app: Application;
@@ -79,10 +80,7 @@ export class DataUtils {
     let filePath: string = datasetinfo._data.file;
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
-      let d: Data = new Data();
-      d.load(data, dataSetDesc).then(data => {
-        DataUtils.app.emit("data-loaded", data);
-      });
+      new Data(DataUtils.app).load(data, dataSetDesc);
     });
   }
 }

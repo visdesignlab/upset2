@@ -55,6 +55,7 @@ export class UpsetView extends ViewBase {
       data.usedSets,
       d3.max(data.sets.map(d => d.setSize))
     );
+    (window as any).data = data;
   }
 
   /**
