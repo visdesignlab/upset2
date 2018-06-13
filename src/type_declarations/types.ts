@@ -5,3 +5,9 @@ export type d3Selection = d3.Selection<d3.BaseType, {}, HTMLElement, any>;
 export type RenderRow = { id: string; data: BaseElement };
 
 export type AggregationFn = (data: RenderRow[]) => RenderRow[];
+
+export type RawData = {
+  rawSets: Array<Array<number>>;
+  setNames: Array<string>;
+  header: Array<string>;
+};

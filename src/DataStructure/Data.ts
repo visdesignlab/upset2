@@ -1,23 +1,23 @@
-import { Group } from "./Group";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 15:56:16 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-09 14:25:49
+ * @Last Modified time: 2018-06-13 15:37:45
  */
-
-import { RenderRow, AggregationFn, Agg } from "./../type_declarations/types";
-import { RenderConfig, AggregateBy } from "./AggregateAndFilters";
-import { Application } from "provenance_mvvm_framework";
-import { BaseSet } from "./BaseSet";
-import { SimilarityFunctions } from "./SimilarityFunctions";
 import { DSVParsedArray, DSVRowString } from "d3";
+import { Application } from "provenance_mvvm_framework";
+import {
+  AggregationFn,
+  RawData,
+  RenderRow
+} from "./../type_declarations/types";
+import { RenderConfig } from "./AggregateAndFilters";
 import { Attribute } from "./Attribute";
-import { BaseElement } from "./BaseElement";
+import { BaseSet } from "./BaseSet";
+import { Group } from "./Group";
 import { IDataSetJSON } from "./IDataSetJSON";
 import { Set } from "./Set";
 import { SubSet } from "./SubSet";
-import { RowType } from "./RowType";
 
 export class Data {
   app: Application;
@@ -465,43 +465,11 @@ export class Data {
     agg = firstAggFn(agg);
     if (secondAggFn) agg = applySecondAggregation(agg, secondAggFn);
     agg = applySort(agg, sortByFn);
-    console.log(agg);
-    let rr: Array<RenderRow> = [];
-    let i = 0;
-    let name = `test_${i}`;
 
-    for (let el in agg) {
-      let g = new Group(`Group_${i}`, `temp_${i++}`, 1);
-      let val = agg[el];
+    if (this.renderConfig.hideEmptyIntersection)
+      agg = agg.filter(set => set.data.setSize > 0);
 
-      if (val instanceof Array && val.length > 0)
-        rr.push({ id: `1_${g.id}`, data: g });
-
-      if (val instanceof Array) {
-        val.forEach((set: SubSet) => {
-          g.addSubSet(set);
-          rr.push({ id: `SubSet_${set.id}`, data: set });
-          i++;
-        });
-      } else {
-        for (let el2 in val) {
-          let g2 = new Group(`Group_${i}`, `temp_${i++}`, 2);
-          let val2 = val[el2];
-          rr.push({ id: `2_${g2.id}`, data: g2 });
-
-          val2.forEach((set: SubSet) => {
-            rr.push({ id: `SubSet_${set.id}`, data: set });
-            i++;
-          });
-          g.addNestedGroup(g2);
-        }
-      }
-    }
-
-    rr = rr.filter((set: RenderRow) => {
-      return set.data.setSize > 0;
-    });
-    return rr;
+    return agg;
   }
 }
 
@@ -516,23 +484,28 @@ function applySort(agg: RenderRow[], fn: Function): RenderRow[] {
   return agg;
 }
 
-function aggregateByDegree(data: RenderRow[]): RenderRow[] {
+function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
   let groups = data.reduce((groups: any, item) => {
     let val = (item.data as SubSet).noCombinedSets;
     groups[val] = groups[val] || [];
     groups[val].push(item);
     return groups;
   }, {});
+  let rr: RenderRow[] = [];
 
-  let rr: RenderRow;
+  for (let group in groups) {
+    let g = new Group(`Group_Deg_${group}`, `Degree ${0}`, level);
+    rr.push({ id: g.id.toString(), data: g });
+    let subsets = groups[group] as RenderRow[];
+    subsets.forEach(subset => {
+      g.addSubSet(subset.data as SubSet);
+      rr.push({ id: subset.id.toString(), data: subset.data });
+    });
+  }
+
+  return rr;
 }
 
-function sortByDegree(data: Agg): Agg {
+function sortByDegree(data: RenderRow[]): RenderRow[] {
   return data;
 }
-
-type RawData = {
-  rawSets: Array<Array<number>>;
-  setNames: Array<string>;
-  header: Array<string>;
-};
