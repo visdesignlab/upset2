@@ -2,16 +2,16 @@ svg {
   border: 1px solid black
 }
 
-.setSize {
-  fill: #636363;
-  stroke: white;
-  stroke-width: 1px;
-}
-
-.sizeBackground {
+.setSizeBackground {
   fill: #ddd;
 }
 
-.highlightColOnHover:hover {
+.setSizeForeground {
+  stroke: white;
+  stroke-width: 1px;
+  fill: #636363;
+}
+
+.highlightSet {
   fill: rgb(254, 217, 166);
 }
