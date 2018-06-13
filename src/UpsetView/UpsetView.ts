@@ -37,6 +37,7 @@ export class UpsetView extends ViewBase {
       .append("svg")
       .style("width", width)
       .style("height", params.header_height);
+
     this.usedSetsHeaderGroup = this.headerSVG
       .append("g")
       .attr("class", "usedSetGroup")
@@ -44,6 +45,8 @@ export class UpsetView extends ViewBase {
   }
 
   update(data: Data) {
+    this.usedSetsHeaderGroup.html("");
+
     this.updateUsedSetHeader(
       data.usedSets,
       d3.max(data.sets.map(d => d.setSize))
@@ -54,6 +57,12 @@ export class UpsetView extends ViewBase {
     );
   }
 
+  /**
+   * @private
+   * @param {Set[]} data
+   * @param {number} maxSetSize
+   * @memberof UpsetView
+   */
   private updateUsedSetConnectors(data: Set[], maxSetSize: number) {
     let usedSetConnectorGroup = this.usedSetsHeaderGroup
       .append("g")
@@ -62,7 +71,9 @@ export class UpsetView extends ViewBase {
 
     let connectors = usedSetConnectorGroup
       .selectAll(".usedSetConnector")
-      .data(data);
+      .data(data, (d: Set, i) => {
+        return d.elementName;
+      });
 
     connectors.exit().remove();
 
@@ -93,8 +104,9 @@ export class UpsetView extends ViewBase {
       })
       .style("text-anchor", "end");
 
-    let textHeight = (connectorsEnter.select("text").node() as any).getBBox()
-      .height;
+    let textHeight = 17;
+    // // (connectorsEnter.select("text").node() as any).getBBox()
+    //   .height;
 
     connectorsEnter
       .selectAll("text")
@@ -106,12 +118,22 @@ export class UpsetView extends ViewBase {
       );
   }
 
+  /**
+   * @private
+   * @param {Set[]} data
+   * @param {number} maxSetSize
+   * @memberof UpsetView
+   */
   private updateUsedSetHeader(data: Set[], maxSetSize: number) {
     let usedSetsGroup = this.usedSetsHeaderGroup
       .append("g")
       .attr("class", "usedSets");
 
-    let usedSets = usedSetsGroup.selectAll(".usedSet").data(data);
+    let usedSets = usedSetsGroup
+      .selectAll(".usedSet")
+      .data(data, (d: Set, i) => {
+        return d.elementName;
+      });
 
     usedSets.exit().remove();
 
