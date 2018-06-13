@@ -113,13 +113,13 @@ export class UpsetView extends ViewBase {
         return `translate(0, ${params.row_height * i})`;
       });
 
-    rowsEnter
-      .append("rect")
-      .attr("width", "100%")
-      .attr("height", 30)
-      .attr("fill", "none")
-      .attr("stroke", "black")
-      .attr("stroke-width", 1);
+    // rowsEnter
+    //   .append("rect")
+    //   .attr("width", "100%")
+    //   .attr("height", 30)
+    //   .attr("fill", "none")
+    //   .attr("stroke", "black")
+    //   .attr("stroke-width", 1);
 
     let groups = rowsEnter.filter(d => d.data.type === RowType.GROUP);
     let subset = rowsEnter.filter(d => d.data.type === RowType.SUBSET);
@@ -131,6 +131,13 @@ export class UpsetView extends ViewBase {
       .attr("height", 30)
       .attr("rx", 5)
       .attr("ry", 5);
+
+    groups
+      .append("text")
+      .text((d, i) => {
+        return d.data.elementName;
+      })
+      .attr("transform", `translate(4, ${params.row_height - 17 / 2})`);
 
     subset
       .append("rect")
