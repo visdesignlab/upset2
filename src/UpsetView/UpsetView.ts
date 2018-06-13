@@ -12,7 +12,7 @@ import { Data } from "./../DataStructure/Data";
 import { ViewBase } from "provenance_mvvm_framework";
 import html from "./upset.view.html";
 import params from "./ui_params";
-import { RowType } from "../DataStructure/RowType";
+import "./styles.scss";
 export class UpsetView extends ViewBase {
   headerVis: d3Selection;
   bodyVis: d3Selection;

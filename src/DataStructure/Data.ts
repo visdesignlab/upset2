@@ -456,10 +456,16 @@ export class Data {
     minDegree: number,
     maxDegree: number
   ): Array<RenderRow> {
-    let agg = firstAggFn(this.subSets);
+    let agg: RenderRow[] = [];
+
+    this.subSets.forEach((set: SubSet) => {
+      agg.push({ id: set.id.toString(), data: set });
+    });
+
+    agg = firstAggFn(agg);
     if (secondAggFn) agg = applySecondAggregation(agg, secondAggFn);
     agg = applySort(agg, sortByFn);
-
+    console.log(agg);
     let rr: Array<RenderRow> = [];
     let i = 0;
     let name = `test_${i}`;
@@ -499,21 +505,26 @@ export class Data {
   }
 }
 
-function applySecondAggregation(agg: Agg, fn: AggregationFn): Agg {
+function applySecondAggregation(
+  agg: RenderRow[],
+  fn: AggregationFn
+): RenderRow[] {
   return null;
 }
 
-function applySort(agg: Agg, fn: Function): Agg {
+function applySort(agg: RenderRow[], fn: Function): RenderRow[] {
   return agg;
 }
 
-function aggregateByDegree(data: SubSet[]): Agg {
-  return data.reduce((groups: any, item) => {
-    let val = item.noCombinedSets;
+function aggregateByDegree(data: RenderRow[]): RenderRow[] {
+  let groups = data.reduce((groups: any, item) => {
+    let val = (item.data as SubSet).noCombinedSets;
     groups[val] = groups[val] || [];
     groups[val].push(item);
     return groups;
   }, {});
+
+  let rr: RenderRow;
 }
 
 function sortByDegree(data: Agg): Agg {

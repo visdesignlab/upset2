@@ -9,7 +9,6 @@ import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import { UpsetView } from "./UpsetView";
-import "./styles.scss";
 export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
