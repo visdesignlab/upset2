@@ -20,7 +20,7 @@ module.exports = {
       exclude: ["vendors*.js"]
     }),
     new HtmlWebpackPlugin({
-      template: './src/app/index.html',
+      template: './src/app/_index.html',
       filename: "../../index.html"
     }),
     new WebpackMd5Hash(),
