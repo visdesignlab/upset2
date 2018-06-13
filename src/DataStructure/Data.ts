@@ -17,6 +17,7 @@ import { BaseElement } from "./BaseElement";
 import { IDataSetJSON } from "./IDataSetJSON";
 import { Set } from "./Set";
 import { SubSet } from "./SubSet";
+import { RowType } from "./RowType";
 
 export class Data {
   app: Application;
@@ -437,7 +438,7 @@ export class Data {
   private setupRenderRows(renderConfig: RenderConfig = null) {
     if (renderConfig) this.renderConfig = renderConfig;
 
-    this.render(
+    this.renderRows = this.render(
       aggregateByDegree,
       null,
       sortByDegree,
@@ -454,7 +455,7 @@ export class Data {
     sortByFn: Function,
     minDegree: number,
     maxDegree: number
-  ) {
+  ): Array<RenderRow> {
     let agg = firstAggFn(this.subSets);
     if (secondAggFn) agg = applySecondAggregation(agg, secondAggFn);
     agg = applySort(agg, sortByFn);
@@ -465,33 +466,36 @@ export class Data {
 
     for (let el in agg) {
       let g = new Group(`Group_${i}`, `temp_${i++}`, 1);
-
       let val = agg[el];
+
+      if (val instanceof Array && val.length > 0)
+        rr.push({ id: `1_${g.id}`, data: g });
+
       if (val instanceof Array) {
         val.forEach((set: SubSet) => {
-          if (set.setSize > 0) {
-            g.addSubSet(set);
-            rr.push({ name: set });
-            i++;
-          }
+          g.addSubSet(set);
+          rr.push({ id: `SubSet_${set.id}`, data: set });
+          i++;
         });
       } else {
         for (let el2 in val) {
           let g2 = new Group(`Group_${i}`, `temp_${i++}`, 2);
           let val2 = val[el2];
+          rr.push({ id: `2_${g2.id}`, data: g2 });
+
           val2.forEach((set: SubSet) => {
-            if (set.setSize > 0) {
-              rr.push({ name: set });
-              i++;
-            }
+            rr.push({ id: `SubSet_${set.id}`, data: set });
+            i++;
           });
           g.addNestedGroup(g2);
-          if (g2.setSize > 0) rr.push({ name: g2 });
         }
       }
-      if (g.setSize > 0) rr.push({ name: g });
     }
-    console.log(rr);
+
+    rr = rr.filter((set: RenderRow) => {
+      return set.data.setSize > 0;
+    });
+    return rr;
   }
 }
 

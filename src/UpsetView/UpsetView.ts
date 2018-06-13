@@ -1,10 +1,10 @@
-import { d3Selection } from "./../type_declarations/types";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-11 17:28:26
  */
+import { d3Selection, RenderRow } from "./../type_declarations/types";
 
 import * as d3 from "d3";
 import { Set } from "./../DataStructure/Set";
@@ -12,11 +12,13 @@ import { Data } from "./../DataStructure/Data";
 import { ViewBase } from "provenance_mvvm_framework";
 import html from "./upset.view.html";
 import params from "./ui_params";
+import { RowType } from "../DataStructure/RowType";
 export class UpsetView extends ViewBase {
   headerVis: d3Selection;
   bodyVis: d3Selection;
   headerSVG: d3Selection;
   usedSetsHeaderGroup: d3Selection;
+  bodySVG: d3Selection;
 
   constructor(root: HTMLElement) {
     super(root);
@@ -38,6 +40,11 @@ export class UpsetView extends ViewBase {
       .style("width", width)
       .style("height", params.header_height);
 
+    this.bodySVG = this.bodyVis
+      .append("svg")
+      .style("width", width)
+      .style("height", 1000);
+
     this.usedSetsHeaderGroup = this.headerSVG
       .append("g")
       .attr("class", "usedSetGroup")
@@ -55,7 +62,35 @@ export class UpsetView extends ViewBase {
       data.usedSets,
       d3.max(data.sets.map(d => d.setSize))
     );
+
+    this.updateRows(data.renderRows);
+
     (window as any).data = data;
+  }
+
+  private updateRows(data: Array<RenderRow>) {
+    let body = this.bodySVG.selectAll(".subSetView").data([1]);
+
+    let ssv = body
+      .enter()
+      .append("g")
+      .attr("class", "subSetView")
+      .attr("transform", `translate(0, ${params.padding})`);
+
+    let rows = ssv.selectAll(".seperators").data(data);
+    rows.exit().enter();
+
+    let rowsEnter = rows
+      .enter()
+      .append("rect")
+      .attr("width", 1000)
+      .attr("height", 30)
+      .attr("transform", (d, i) => {
+        return `translate(0, ${30 * i})`;
+      })
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .attr("stroke-width", 1);
   }
 
   /**
@@ -105,9 +140,8 @@ export class UpsetView extends ViewBase {
       })
       .style("text-anchor", "end");
 
-    let textHeight = 17;
-    // // (connectorsEnter.select("text").node() as any).getBBox()
-    //   .height;
+    let textHeight = (connectorsEnter.select("text").node() as any).getBBox()
+      .height;
 
     connectorsEnter
       .selectAll("text")
