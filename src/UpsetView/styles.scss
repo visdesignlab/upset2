@@ -6,6 +6,25 @@ svg {
   fill: #ddd;
 }
 
+.columns {
+  fill: #ddd;
+}
+
+.groupBackgroundRect {
+  fill: #cccccc;
+  stroke: #555555;
+  stroke-width: 1px;
+  opacity: 0.3;
+}
+
+.subsetBackgroundRect {
+  opacity: 00;
+}
+
+.combinationRect {
+  opacity: 00;
+}
+
 .setSizeForeground {
   stroke: white;
   stroke-width: 1px;

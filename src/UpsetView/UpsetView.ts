@@ -13,6 +13,8 @@ import { ViewBase } from "provenance_mvvm_framework";
 import html from "./upset.view.html";
 import params from "./ui_params";
 import "./styles.scss";
+import { RowType } from "../DataStructure/RowType";
+import { SubSet } from "../DataStructure/SubSet";
 export class UpsetView extends ViewBase {
   headerVis: d3Selection;
   bodyVis: d3Selection;
@@ -29,7 +31,7 @@ export class UpsetView extends ViewBase {
     this.headerVis = d3
       .select(this.Root)
       .select("#header-vis")
-      .style("padding", "5px 0px");
+      .style("padding", "5px 0px 0px 0px");
     this.bodyVis = d3.select(this.Root).select("#body-vis");
 
     let width = (this.headerVis.node() as HTMLElement).getBoundingClientRect()
@@ -43,7 +45,8 @@ export class UpsetView extends ViewBase {
     this.bodySVG = this.bodyVis
       .append("svg")
       .style("width", width)
-      .style("height", 1000);
+      .style("height", 1000)
+      .style("padding", "0px 7px");
 
     this.usedSetsHeaderGroup = this.headerSVG
       .append("g")
@@ -53,7 +56,7 @@ export class UpsetView extends ViewBase {
 
   update(data: Data) {
     this.usedSetsHeaderGroup.html("");
-
+    this.bodySVG.html("");
     this.updateUsedSetHeader(
       data.usedSets,
       d3.max(data.sets.map(d => d.setSize))
@@ -63,34 +66,108 @@ export class UpsetView extends ViewBase {
       d3.max(data.sets.map(d => d.setSize))
     );
 
-    this.updateRows(data.renderRows);
+    this.updateRows(data.renderRows, data.usedSets);
 
     (window as any).data = data;
   }
 
-  private updateRows(data: Array<RenderRow>) {
+  private updateRows(data: Array<RenderRow>, usedSets: Set[]) {
     let body = this.bodySVG.selectAll(".subSetView").data([1]);
 
     let ssv = body
       .enter()
       .append("g")
-      .attr("class", "subSetView")
-      .attr("transform", `translate(0, ${params.padding})`);
+      .attr("class", "subSetView");
 
-    let rows = ssv.selectAll(".seperators").data(data);
+    let colGroup = ssv.append("g").attr("class", "colGroup");
+    colGroup.attr(
+      "transform",
+      `translate(${params.connector_height - 17 / 2}, 0)`
+    );
+    let cols = colGroup.selectAll(".columns").data(usedSets);
+
+    cols.exit().remove();
+
+    cols
+      .enter()
+      .append("rect")
+      .attr("class", (d, i) => {
+        return `columns ${d.id}`;
+      })
+      .attr("height", params.row_height * data.length)
+      .attr("width", params.col_width)
+      .attr("transform", (d, i) => {
+        return `translate(${params.row_height * i})`;
+      });
+
+    let rows = ssv.selectAll(".row").data(data);
     rows.exit().enter();
 
     let rowsEnter = rows
       .enter()
-      .append("rect")
-      .attr("width", 1000)
-      .attr("height", 30)
-      .attr("transform", (d, i) => {
-        return `translate(0, ${30 * i})`;
+      .append("g")
+      .attr("class", (d, i) => {
+        return `row ${d.data.type.toString()}`;
       })
+      .attr("transform", (d, i) => {
+        return `translate(0, ${params.row_height * i})`;
+      });
+
+    rowsEnter
+      .append("rect")
+      .attr("width", "100%")
+      .attr("height", 30)
       .attr("fill", "none")
       .attr("stroke", "black")
       .attr("stroke-width", 1);
+
+    let groups = rowsEnter.filter(d => d.data.type === RowType.GROUP);
+    let subset = rowsEnter.filter(d => d.data.type === RowType.SUBSET);
+
+    groups
+      .append("rect")
+      .attr("class", "groupBackgroundRect")
+      .attr("width", "100%")
+      .attr("height", 30)
+      .attr("rx", 5)
+      .attr("ry", 5);
+
+    subset
+      .append("rect")
+      .attr("class", "subsetBackgroundRect")
+      .attr("width", "70%")
+      .attr("height", 30)
+      .attr("rx", 5)
+      .attr("ry", 5)
+      .attr("transform", `translate(${params.connector_height - 17 / 2}, 0)`);
+
+    let combinations = subset
+      .append("g")
+      .attr("class", "combinations")
+      .attr("transform", `translate(${params.connector_height - 17 / 2}, 0)`);
+
+    combinations.each(function(d, i) {
+      let combs = d3
+        .select(this)
+        .selectAll("circle")
+        .data((d.data as SubSet).combinedSets);
+      combs.exit().remove();
+      combs
+        .enter()
+        .append("circle")
+        .attr("r", params.col_width / 2 - 5)
+        .attr("cy", params.row_height / 2)
+        .attr("cx", (d, i) => {
+          return params.row_height * i + params.row_height / 2;
+        })
+        // .attr("transform", (d, i) => {
+        //   return `translate(${(params.col_width / 2 - 5) * 2 * i + 10}, 0)`;
+        // })
+        .attr("fill", (d, i) => {
+          if (d === 0) return "rgb(240,240,240)";
+          return "rgb(99,99,99)";
+        });
+    });
   }
 
   /**
@@ -209,7 +286,7 @@ export class UpsetView extends ViewBase {
   }
 
   private mouseover(data: Set, idx: number) {
-    this.headerSVG
+    d3.select(this.Root)
       .selectAll(`.${data.id}`)
       .style("fill", "rgb(254, 217, 166)")
       .style("stroke", "#aaa")
@@ -217,7 +294,7 @@ export class UpsetView extends ViewBase {
   }
 
   private mouseout(data: Set, idx: number) {
-    this.headerSVG
+    d3.select(this.Root)
       .selectAll(`.${data.id}`)
       .style("fill", "#ddd")
       .style("stroke", "")

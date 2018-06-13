@@ -1,5 +1,5 @@
 let params = {
-  padding: 7,
+  padding: 2,
 
   col_width: 30,
 
@@ -9,7 +9,9 @@ let params = {
     return (
       this.used_set_header_height + this.connector_height + this.padding * 2
     );
-  }
+  },
+
+  row_height: 30
 };
 
 export default params;
