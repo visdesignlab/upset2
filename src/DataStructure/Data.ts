@@ -1,7 +1,4 @@
-import { RenderConfig } from "./AggregateAndFilters";
-import { Application } from "provenance_mvvm_framework";
-import { BaseSet } from "./BaseSet";
-import { SimilarityFunctions } from "./SimilarityFunctions";
+import { Group } from "./Group";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 15:56:16 
@@ -9,6 +6,11 @@ import { SimilarityFunctions } from "./SimilarityFunctions";
  * @Last Modified time: 2018-06-09 14:25:49
  */
 
+import { RenderRow, AggregationFn, Agg } from "./../type_declarations/types";
+import { RenderConfig, AggregateBy } from "./AggregateAndFilters";
+import { Application } from "provenance_mvvm_framework";
+import { BaseSet } from "./BaseSet";
+import { SimilarityFunctions } from "./SimilarityFunctions";
 import { DSVParsedArray, DSVRowString } from "d3";
 import { Attribute } from "./Attribute";
 import { BaseElement } from "./BaseElement";
@@ -20,7 +22,7 @@ export class Data {
   app: Application;
   sets: Array<Set> = [];
   usedSets: Array<Set> = [];
-  renderRows: Array<{ [key: string]: BaseElement }> = [];
+  renderRows: Array<RenderRow> = [];
   subSets: Array<SubSet> = [];
   attributes: Array<Attribute> = [];
   selectedAttributes: Array<Attribute> = [];
@@ -29,9 +31,10 @@ export class Data {
   depth: number = 0;
   noDefaultSets: number = 6;
   maxCardinality: number = 0;
-
+  renderConfig: RenderConfig;
   constructor(app: Application) {
     this.app = app;
+    this.renderConfig = new RenderConfig();
     this.app.on("filter-changed", this.setupRenderRows, this);
   }
 
@@ -43,7 +46,7 @@ export class Data {
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
-      this.setupRenderRows(new RenderConfig());
+      this.setupRenderRows();
     });
     return new Promise((res, rej) => {
       res(<any>this);
@@ -431,10 +434,86 @@ export class Data {
     });
   }
 
-  private setupRenderRows(renderConfig: RenderConfig) {
-    console.log(renderConfig);
+  private setupRenderRows(renderConfig: RenderConfig = null) {
+    if (renderConfig) this.renderConfig = renderConfig;
+
+    this.render(
+      aggregateByDegree,
+      null,
+      sortByDegree,
+      this.renderConfig.minDegree,
+      this.renderConfig.maxDegree
+    );
+
     this.app.emit("render-rows-changed", this);
   }
+
+  private render(
+    firstAggFn: AggregationFn,
+    secondAggFn: AggregationFn,
+    sortByFn: Function,
+    minDegree: number,
+    maxDegree: number
+  ) {
+    let agg = firstAggFn(this.subSets);
+    if (secondAggFn) agg = applySecondAggregation(agg, secondAggFn);
+    agg = applySort(agg, sortByFn);
+
+    let rr: Array<RenderRow> = [];
+    let i = 0;
+    let name = `test_${i}`;
+
+    for (let el in agg) {
+      let g = new Group(`Group_${i}`, `temp_${i++}`, 1);
+
+      let val = agg[el];
+      if (val instanceof Array) {
+        val.forEach((set: SubSet) => {
+          if (set.setSize > 0) {
+            g.addSubSet(set);
+            rr.push({ name: set });
+            i++;
+          }
+        });
+      } else {
+        for (let el2 in val) {
+          let g2 = new Group(`Group_${i}`, `temp_${i++}`, 2);
+          let val2 = val[el2];
+          val2.forEach((set: SubSet) => {
+            if (set.setSize > 0) {
+              rr.push({ name: set });
+              i++;
+            }
+          });
+          g.addNestedGroup(g2);
+          if (g2.setSize > 0) rr.push({ name: g2 });
+        }
+      }
+      if (g.setSize > 0) rr.push({ name: g });
+    }
+    console.log(rr);
+  }
+}
+
+function applySecondAggregation(agg: Agg, fn: AggregationFn): Agg {
+  return null;
+}
+
+function applySort(agg: Agg, fn: Function): Agg {
+  return agg;
+}
+
+function aggregateByDegree(data: SubSet[]): Agg {
+  return data.reduce((groups: any, item) => {
+    let val = item.noCombinedSets;
+    groups[val] = groups[val] || [];
+    groups[val].push(item);
+    return groups;
+  }, {});
+}
+
+function sortByDegree(data: Agg): Agg {
+  return data;
 }
 
 type RawData = {

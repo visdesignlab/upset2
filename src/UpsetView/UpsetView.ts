@@ -175,11 +175,19 @@ export class UpsetView extends ViewBase {
   }
 
   private mouseover(data: Set, idx: number) {
-    this.headerSVG.selectAll(`.${data.id}`).style("fill", "rgb(254, 217, 166)");
+    this.headerSVG
+      .selectAll(`.${data.id}`)
+      .style("fill", "rgb(254, 217, 166)")
+      .style("stroke", "#aaa")
+      .style("stroke-width", "1px");
   }
 
   private mouseout(data: Set, idx: number) {
-    this.headerSVG.selectAll(`.${data.id}`).style("fill", "#ddd");
+    this.headerSVG
+      .selectAll(`.${data.id}`)
+      .style("fill", "#ddd")
+      .style("stroke", "")
+      .style("stroke-width", "0px");
   }
 
   private click(data: Set, idx: number) {}
