@@ -494,7 +494,7 @@ function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
   let rr: RenderRow[] = [];
 
   for (let group in groups) {
-    let g = new Group(`Group_Deg_${group}`, `Degree ${0}`, level);
+    let g = new Group(`Group_Deg_${group}`, `Degree ${group}`, level);
     rr.push({ id: g.id.toString(), data: g });
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
