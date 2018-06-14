@@ -1,3 +1,4 @@
+import { AggregateBy, SortBy } from "./AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 15:56:16
@@ -418,9 +419,9 @@ export class Data {
     if (renderConfig) this.renderConfig = renderConfig;
 
     this.renderRows = this.render(
-      AggregationStrategy[this.renderConfig.firstLevelAggregateBy],
+      this.renderConfig.firstLevelAggregateBy,
       null,
-      SortStrategy[this.renderConfig.sortBy],
+      this.renderConfig.sortBy,
       this.renderConfig.minDegree,
       this.renderConfig.maxDegree
     );
@@ -429,9 +430,9 @@ export class Data {
   }
 
   private render(
-    firstAggFn: AggregationFn,
-    secondAggFn: AggregationFn,
-    sortByFn: Function,
+    firstAggBy: AggregateBy,
+    secondAggBy: AggregateBy,
+    sortBy: SortBy,
     minDegree: number,
     maxDegree: number
   ): Array<RenderRow> {
@@ -441,13 +442,13 @@ export class Data {
       agg.push({ id: set.id.toString(), data: set });
     });
 
-    agg = firstAggFn(agg);
-    if (secondAggFn) agg = applySecondAggregation(agg, secondAggFn);
+    agg = AggregationStrategy[firstAggBy](agg);
+    if (secondAggBy) agg = applySecondAggregation(agg, secondAggBy);
 
     if (this.renderConfig.hideEmptyIntersection)
       agg = agg.filter(set => set.data.setSize > 0);
 
-    if (sortByFn) agg = applySort(agg, sortByFn);
+    if (sortBy) agg = applySort(agg, sortBy);
 
     return agg;
   }
@@ -455,11 +456,11 @@ export class Data {
 
 function applySecondAggregation(
   agg: RenderRow[],
-  fn: AggregationFn
+  fn: AggregateBy
 ): RenderRow[] {
   return null;
 }
 
-function applySort(agg: RenderRow[], fn: Function): RenderRow[] {
-  return fn(agg);
+function applySort(agg: RenderRow[], sortBy: SortBy): RenderRow[] {
+  return SortStrategy[sortBy](agg);
 }
