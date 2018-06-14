@@ -1,7 +1,7 @@
 export class RenderConfig {
   firstLevelAggregateBy: AggregateBy = AggregateBy.DEGREE;
   secondLevelAggregateBy: AggregateBy = AggregateBy.NONE;
-  sortBy: SortBy = SortBy.DEGREE;
+  sortBy: SortBy = SortBy.CARDINALITY;
   collapseAll: boolean = false;
   hideEmptyIntersection: boolean = true;
   minDegree: number = 0;
@@ -9,15 +9,15 @@ export class RenderConfig {
 }
 
 export enum AggregateBy {
-  DEGREE,
-  SETS,
-  DEVIATION,
-  OVERLAPS,
-  NONE
+  DEGREE = "DEGREE",
+  SETS = "SETS",
+  DEVIATION = "DEVIATION",
+  OVERLAPS = "OVERLAPS",
+  NONE = "NONE"
 }
 
 export enum SortBy {
-  DEGREE,
-  CARDINALITY,
-  DEVIATION
+  DEGREE = "DEGREE",
+  CARDINALITY = "CARDINALITY",
+  DEVIATION = "DEVIATION"
 }

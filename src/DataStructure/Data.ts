@@ -1,3 +1,4 @@
+import { AggregateBy } from "./AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 15:56:16 
@@ -16,9 +17,11 @@ import { Attribute } from "./Attribute";
 import { BaseSet } from "./BaseSet";
 import { Group } from "./Group";
 import { IDataSetJSON } from "./IDataSetJSON";
-import { Set } from "./Set";
-import { SubSet } from "./SubSet";
 import { RowType } from "./RowType";
+import { Set } from "./Set";
+import SortStrategy from "./SortingStrategy";
+import { SubSet } from "./SubSet";
+import AggregationStrategy from "./AggregationStrategy";
 
 export class Data {
   app: Application;
@@ -440,9 +443,9 @@ export class Data {
     if (renderConfig) this.renderConfig = renderConfig;
 
     this.renderRows = this.render(
-      aggregateByDegree,
+      AggregationStrategy[this.renderConfig.firstLevelAggregateBy],
       null,
-      sortByCardinality,
+      SortStrategy[this.renderConfig.sortBy],
       this.renderConfig.minDegree,
       this.renderConfig.maxDegree
     );
@@ -484,47 +487,4 @@ function applySecondAggregation(
 
 function applySort(agg: RenderRow[], fn: Function): RenderRow[] {
   return fn(agg);
-}
-
-function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
-  let groups = data.reduce((groups: any, item) => {
-    let val = (item.data as SubSet).noCombinedSets;
-    groups[val] = groups[val] || [];
-    groups[val].push(item);
-    return groups;
-  }, {});
-  let rr: RenderRow[] = [];
-
-  for (let group in groups) {
-    let g = new Group(`Group_Deg_${group}`, `Degree ${group}`, level);
-    rr.push({ id: g.id.toString(), data: g });
-    let subsets = groups[group] as RenderRow[];
-    subsets.forEach(subset => {
-      g.addSubSet(subset.data as SubSet);
-      rr.push({ id: subset.id.toString(), data: subset.data });
-    });
-  }
-
-  return rr;
-}
-
-function sortByCardinality(data: RenderRow[]): RenderRow[] {
-  console.log("presort", data);
-  let groups = data.reduce((p, c, i) => {
-    if (c.data.type === RowType.GROUP) p.push(i);
-    return p;
-  }, []);
-  let rr: Array<RenderRow> = [];
-
-  groups.forEach((g, idx) => {
-    rr.push(data[g]);
-    let els = data.slice(g + 1, groups[idx + 1]);
-    els = els.sort((d1, d2) => {
-      return d2.data.setSize - d1.data.setSize;
-    });
-    rr = rr.concat(els);
-  });
-
-  console.log("sort", rr);
-  return rr;
 }
