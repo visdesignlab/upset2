@@ -10,6 +10,10 @@ svg {
   fill: #ddd;
 }
 
+g .row {
+  pointer-events: none;
+}
+
 .groupBackgroundRect {
   fill: #cccccc;
   stroke: #555555;

@@ -84,12 +84,19 @@ export class UpsetView extends ViewBase {
       "transform",
       `translate(${params.connector_height - 17 / 2}, 0)`
     );
-    let cols = colGroup.selectAll(".columns").data(usedSets);
+    let cols = colGroup.selectAll(".cols").data(usedSets);
 
     cols.exit().remove();
 
-    cols
+    let colGroups = cols
       .enter()
+      .append("g")
+      .attr("class", "cols")
+      .on("mouseover", this.mouseover.bind(this))
+      .on("mouseout", this.mouseout.bind(this))
+      .on("click", this.click.bind(this));
+
+    colGroups
       .append("rect")
       .attr("class", (d, i) => {
         return `columns ${d.id}`;
