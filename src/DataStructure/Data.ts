@@ -18,6 +18,7 @@ import { Group } from "./Group";
 import { IDataSetJSON } from "./IDataSetJSON";
 import { Set } from "./Set";
 import { SubSet } from "./SubSet";
+import { RowType } from "./RowType";
 
 export class Data {
   app: Application;
@@ -464,10 +465,11 @@ export class Data {
 
     agg = firstAggFn(agg);
     if (secondAggFn) agg = applySecondAggregation(agg, secondAggFn);
-    agg = applySort(agg, sortByFn);
 
     if (this.renderConfig.hideEmptyIntersection)
       agg = agg.filter(set => set.data.setSize > 0);
+
+    if (sortByFn) agg = applySort(agg, sortByFn);
 
     return agg;
   }
@@ -481,7 +483,7 @@ function applySecondAggregation(
 }
 
 function applySort(agg: RenderRow[], fn: Function): RenderRow[] {
-  return agg;
+  return fn(agg);
 }
 
 function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
@@ -507,7 +509,22 @@ function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
 }
 
 function sortByCardinality(data: RenderRow[]): RenderRow[] {
-  console.log(data);
+  console.log("presort", data);
+  let groups = data.reduce((p, c, i) => {
+    if (c.data.type === RowType.GROUP) p.push(i);
+    return p;
+  }, []);
+  let rr: Array<RenderRow> = [];
 
-  return data;
+  groups.forEach((g, idx) => {
+    rr.push(data[g]);
+    let els = data.slice(g + 1, groups[idx + 1]);
+    els = els.sort((d1, d2) => {
+      return d2.data.setSize - d1.data.setSize;
+    });
+    rr = rr.concat(els);
+  });
+
+  console.log("sort", rr);
+  return rr;
 }
