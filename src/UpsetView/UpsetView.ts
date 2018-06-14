@@ -182,6 +182,18 @@ export class UpsetView extends ViewBase {
           return "rgb(99,99,99)";
         });
     });
+
+    // ! Temp Hack
+    subset
+      .append("text")
+      .text((d, i) => {
+        return d.data.setSize;
+      })
+      .attr("transform", (d, i) => {
+        return `translate(${params.connector_height +
+          (d.data as SubSet).combinedSets.length * 30}, ${params.row_height -
+          17 / 2})`;
+      });
   }
 
   /**

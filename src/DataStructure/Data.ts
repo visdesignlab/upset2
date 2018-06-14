@@ -441,7 +441,7 @@ export class Data {
     this.renderRows = this.render(
       aggregateByDegree,
       null,
-      sortByDegree,
+      sortByCardinality,
       this.renderConfig.minDegree,
       this.renderConfig.maxDegree
     );
@@ -506,6 +506,8 @@ function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
   return rr;
 }
 
-function sortByDegree(data: RenderRow[]): RenderRow[] {
+function sortByCardinality(data: RenderRow[]): RenderRow[] {
+  console.log(data);
+
   return data;
 }
