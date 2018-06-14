@@ -1,7 +1,6 @@
-import { AggregateBy } from "./AggregateAndFilters";
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 15:56:16 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 15:56:16
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-13 15:37:45
  */
@@ -13,15 +12,13 @@ import {
   RenderRow
 } from "./../type_declarations/types";
 import { RenderConfig } from "./AggregateAndFilters";
+import AggregationStrategy from "./AggregationStrategy";
 import { Attribute } from "./Attribute";
 import { BaseSet } from "./BaseSet";
-import { Group } from "./Group";
 import { IDataSetJSON } from "./IDataSetJSON";
-import { RowType } from "./RowType";
 import { Set } from "./Set";
 import SortStrategy from "./SortingStrategy";
 import { SubSet } from "./SubSet";
-import AggregationStrategy from "./AggregationStrategy";
 
 export class Data {
   app: Application;
@@ -64,28 +61,6 @@ export class Data {
       a[this.sets[i].id] = this.sets[i];
     }
     return a;
-  }
-
-  private getSimilarityMatrix(
-    indexFn: (intersection: number, length1: number, length2: number) => number
-  ) {
-    let temp: { [key: string]: { [key: string]: number } } = {};
-    let sets: BaseSet[] = [];
-    this.sets.forEach(set => {
-      sets.push(set);
-    });
-    this.subSets.forEach(set => {
-      sets.push(set);
-    });
-    sets.forEach(set1 => {
-      temp[set1.elementName] = {};
-      sets.forEach(set2 => {
-        temp[set1.elementName][set2.elementName] = set1.getSimilarityScore(
-          set2,
-          indexFn
-        );
-      });
-    });
   }
 
   private createSignature(
