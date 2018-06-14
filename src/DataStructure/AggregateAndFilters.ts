@@ -19,5 +19,6 @@ export enum AggregateBy {
 export enum SortBy {
   DEGREE = "DEGREE",
   CARDINALITY = "CARDINALITY",
-  DEVIATION = "DEVIATION"
+  DEVIATION = "DEVIATION",
+  _SET = "_SET"
 }

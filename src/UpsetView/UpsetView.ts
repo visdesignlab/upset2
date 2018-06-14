@@ -56,7 +56,6 @@ export class UpsetView extends ViewBase {
 
   update(data: Data) {
     this.usedSetsHeaderGroup.html("");
-    this.bodySVG.html("");
     this.updateUsedSetHeader(
       data.usedSets,
       d3.max(data.sets.map(d => d.setSize))
@@ -73,30 +72,44 @@ export class UpsetView extends ViewBase {
 
   private updateRows(data: Array<RenderRow>, usedSets: Set[]) {
     let body = this.bodySVG.selectAll(".subSetView").data([1]);
+    body.exit().remove();
 
-    let ssv = body
+    body
       .enter()
       .append("g")
       .attr("class", "subSetView");
 
-    let colGroup = ssv.append("g").attr("class", "colGroup");
-    colGroup.attr(
+    let ssv = this.bodySVG.select(".subSetView");
+
+    let colGroup = ssv.selectAll(".colGroup").data([1]);
+
+    colGroup.exit().remove();
+
+    colGroup
+      .enter()
+      .append("g")
+      .attr("class", "colGroup");
+
+    let colGroupSel = ssv.select(".colGroup");
+
+    colGroupSel.attr(
       "transform",
       `translate(${params.connector_height - 17 / 2}, 0)`
     );
-    let cols = colGroup.selectAll(".cols").data(usedSets);
+
+    let cols = colGroupSel.selectAll(".col").data(usedSets);
 
     cols.exit().remove();
 
-    let colGroups = cols
+    cols
       .enter()
       .append("g")
-      .attr("class", "cols")
+      .attr("class", "col")
+      .merge(cols)
       .on("mouseover", this.mouseover.bind(this))
       .on("mouseout", this.mouseout.bind(this))
-      .on("click", this.click.bind(this));
-
-    colGroups
+      .on("click", this.click.bind(this))
+      .html("")
       .append("rect")
       .attr("class", (d, i) => {
         return `columns ${d.id}`;
@@ -107,15 +120,28 @@ export class UpsetView extends ViewBase {
         return `translate(${params.row_height * i})`;
       });
 
-    let rows = ssv.selectAll(".row").data(data);
-    rows.exit().enter();
+    let rows = ssv.selectAll(".row").data(data, (d: RenderRow) => {
+      return d.data.elementName;
+    });
 
-    let rowsEnter = rows
+    rows
+      .exit()
+      .transition()
+      .duration(10)
+      .remove();
+
+    let rowsMerged = rows
       .enter()
       .append("g")
+      .merge(rows);
+
+    rowsMerged
+      .html("")
       .attr("class", (d, i) => {
         return `row ${d.data.type.toString()}`;
       })
+      .transition()
+      .duration(500)
       .attr("transform", (d, i) => {
         return `translate(0, ${params.row_height * i})`;
       });
@@ -128,8 +154,8 @@ export class UpsetView extends ViewBase {
     //   .attr("stroke", "black")
     //   .attr("stroke-width", 1);
 
-    let groups = rowsEnter.filter(d => d.data.type === RowType.GROUP);
-    let subset = rowsEnter.filter(d => d.data.type === RowType.SUBSET);
+    let groups = rowsMerged.filter(d => d.data.type === RowType.GROUP);
+    let subset = rowsMerged.filter(d => d.data.type === RowType.SUBSET);
 
     groups
       .append("rect")
@@ -165,18 +191,17 @@ export class UpsetView extends ViewBase {
         .select(this)
         .selectAll("circle")
         .data((d.data as SubSet).combinedSets);
+
       combs.exit().remove();
       combs
         .enter()
         .append("circle")
+        .merge(combs)
         .attr("r", params.col_width / 2 - 5)
         .attr("cy", params.row_height / 2)
         .attr("cx", (d, i) => {
           return params.row_height * i + params.row_height / 2;
         })
-        // .attr("transform", (d, i) => {
-        //   return `translate(${(params.col_width / 2 - 5) * 2 * i + 10}, 0)`;
-        // })
         .attr("fill", (d, i) => {
           if (d === 0) return "rgb(240,240,240)";
           return "rgb(99,99,99)";
@@ -225,7 +250,7 @@ export class UpsetView extends ViewBase {
       })
       .on("mouseover", this.mouseover.bind(this))
       .on("mouseout", this.mouseout.bind(this))
-      .on("click", this.click.bind(this));
+      .on("click", this.connectorClick.bind(this));
 
     connectorsEnter
       .append("rect")
@@ -328,6 +353,10 @@ export class UpsetView extends ViewBase {
   }
 
   private click(data: Set, idx: number) {}
+
+  private connectorClick(data: Set, idx: number) {
+    this.comm.emit("set-filter", idx);
+  }
 }
 
 function setSizeScale(

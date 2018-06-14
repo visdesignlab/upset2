@@ -1,10 +1,14 @@
+import { SubSet } from "./SubSet";
 import { RowType } from "./RowType";
 import { RenderRow } from "./../type_declarations/types";
 import { SortBy } from "./AggregateAndFilters";
 
-let SortStrategy: { [key: string]: (data: RenderRow[]) => RenderRow[] } = {};
+let SortStrategy: {
+  [key: string]: (data: RenderRow[], setId?: number) => RenderRow[];
+} = {};
 
 SortStrategy[SortBy.CARDINALITY] = sortByCardinality;
+SortStrategy[SortBy._SET] = sortBySet;
 
 export default SortStrategy;
 
@@ -27,4 +31,13 @@ function sortByCardinality(data: RenderRow[]): RenderRow[] {
   });
 
   return rr;
+}
+
+function sortBySet(data: RenderRow[], setId: number): RenderRow[] {
+  return data.sort((d1, d2) => {
+    return (
+      (d2.data as SubSet).combinedSets[setId] -
+      (d1.data as SubSet).combinedSets[setId]
+    );
+  });
 }

@@ -415,17 +415,20 @@ export class Data {
     });
   }
 
-  private setupRenderRows(renderConfig: RenderConfig = null) {
+  private setupRenderRows(
+    renderConfig: RenderConfig = null,
+    sortBySetId?: number
+  ) {
     if (renderConfig) this.renderConfig = renderConfig;
 
     this.renderRows = this.render(
-      this.renderConfig.firstLevelAggregateBy,
       null,
-      this.renderConfig.sortBy,
+      null,
+      SortBy._SET,
       this.renderConfig.minDegree,
-      this.renderConfig.maxDegree
+      this.renderConfig.maxDegree,
+      sortBySetId
     );
-
     this.app.emit("render-rows-changed", this);
   }
 
@@ -434,21 +437,21 @@ export class Data {
     secondAggBy: AggregateBy,
     sortBy: SortBy,
     minDegree: number,
-    maxDegree: number
+    maxDegree: number,
+    sortBySetId?: number
   ): Array<RenderRow> {
     let agg: RenderRow[] = [];
 
     this.subSets.forEach((set: SubSet) => {
       agg.push({ id: set.id.toString(), data: set });
     });
-
-    agg = AggregationStrategy[firstAggBy](agg);
+    if (firstAggBy) agg = AggregationStrategy[firstAggBy](agg);
     if (secondAggBy) agg = applySecondAggregation(agg, secondAggBy);
 
     if (this.renderConfig.hideEmptyIntersection)
       agg = agg.filter(set => set.data.setSize > 0);
 
-    if (sortBy) agg = applySort(agg, sortBy);
+    if (sortBy) agg = applySort(agg, sortBy, sortBySetId);
 
     return agg;
   }
@@ -461,6 +464,11 @@ function applySecondAggregation(
   return null;
 }
 
-function applySort(agg: RenderRow[], sortBy: SortBy): RenderRow[] {
-  return SortStrategy[sortBy](agg);
+function applySort(
+  agg: RenderRow[],
+  sortBy: SortBy,
+  sortBySetId?: number
+): RenderRow[] {
+  let a = SortStrategy[sortBy](agg, sortBySetId);
+  return a;
 }

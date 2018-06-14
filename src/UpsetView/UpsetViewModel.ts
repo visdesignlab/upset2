@@ -13,6 +13,9 @@ export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
+    this.comm.on("set-filter", idx => {
+      this.App.emit("filter-changed", null, idx);
+    });
   }
 
   update(data: Data) {
