@@ -24,7 +24,7 @@ function sortByCardinality(data: RenderRow[]): RenderRow[] {
   let rr: Array<RenderRow> = [];
   if (groups.length === 0) {
     return data.sort((d1, d2) => {
-      d2.data.setSize - d1.data.setSize;
+      return d2.data.setSize - d1.data.setSize;
     });
   }
   groups.forEach((g, idx) => {
@@ -46,7 +46,6 @@ function sortBySet(data: RenderRow[], setId: number): RenderRow[] {
       (d1.data as SubSet).combinedSets[setId]
     );
   });
-  console.log(a);
   return a;
 }
 

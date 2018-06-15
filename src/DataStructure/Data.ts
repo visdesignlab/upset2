@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 15:56:16
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-15 16:15:11
+ * @Last Modified time: 2018-06-15 16:42:08
  */
 import { DSVParsedArray, DSVRowString } from "d3";
 import { Application } from "provenance_mvvm_framework";
@@ -424,6 +424,7 @@ export class Data {
         sortBySetId
       );
     } else {
+      if (!sortBySetId) sortBySetId = 0;
       this.renderRows = this.render(
         null,
         null,
@@ -477,7 +478,7 @@ function applySort(
   sortBy: SortBy,
   sortBySetId?: number
 ): RenderRow[] {
-  console.log("Sortin");
+  console.log("Sortin", sortBy);
   let a = SortStrategy[sortBy](agg, sortBySetId);
   return a;
 }

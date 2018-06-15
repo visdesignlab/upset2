@@ -3,7 +3,7 @@ import { Data } from "./../DataStructure/Data";
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:38:25 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-09 16:19:53
+ * @Last Modified time: 2018-06-15 16:30:38
  */
 import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
@@ -15,6 +15,7 @@ export class UpsetViewModel extends ViewModelBase {
     this.App.on("render-rows-changed", this.update, this);
     this.comm.on("set-filter", idx => {
       this.App.emit("filter-changed", null, idx);
+      this.App.emit("set-agg-none");
     });
   }
 

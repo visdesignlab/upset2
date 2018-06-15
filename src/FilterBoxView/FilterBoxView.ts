@@ -2,8 +2,8 @@ import { AggregateBy, SortBy } from "./../DataStructure/AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
- * @Last Modified by:   Kiran Gadhave 
- * @Last Modified time: 2018-06-03 14:36:32 
+ * @Last Modified by: Kiran Gadhave
+ * @Last Modified time: 2018-06-15 16:43:33
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -19,6 +19,14 @@ export class FilterBoxView extends ViewBase {
 
   constructor(root: HTMLElement) {
     super(root);
+    this.comm.on("set-agg-none", () => {
+      let rc = this.config;
+      rc.firstLevelAggregateBy = AggregateBy.NONE;
+      rc.secondLevelAggregateBy = AggregateBy.NONE;
+      rc.sortBy = SortBy.SET;
+      this.saveConfig(rc, false);
+      this.update();
+    });
   }
 
   create() {
@@ -132,6 +140,11 @@ export class FilterBoxView extends ViewBase {
         if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
           rc.secondLevelAggregateBy = AggregateBy.NONE;
         }
+        if (
+          rc.firstLevelAggregateBy !== AggregateBy.NONE &&
+          rc.sortBy === SortBy.SET
+        )
+          rc.sortBy = SortBy.DEGREE;
         this.saveConfig(rc);
         this.update();
       });
@@ -158,13 +171,20 @@ export class FilterBoxView extends ViewBase {
       .on("click", (d: any, i) => {
         let rc = this.config;
         rc.secondLevelAggregateBy = <AggregateBy>AggregateBy[d];
+
+        if (
+          rc.secondLevelAggregateBy !== AggregateBy.NONE &&
+          rc.sortBy === SortBy.SET
+        )
+          rc.sortBy = SortBy.DEGREE;
+
         this.saveConfig(rc);
         this.update();
       });
   }
 
-  private saveConfig(config: RenderConfig) {
+  private saveConfig(config: RenderConfig, update: boolean = true) {
     sessionStorage["render_config"] = JSON.stringify(config);
-    this.comm.emit("filter-changed", this.config);
+    if (update) this.comm.emit("filter-changed", this.config);
   }
 }
