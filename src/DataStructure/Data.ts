@@ -7,11 +7,7 @@ import { AggregateBy, SortBy } from "./AggregateAndFilters";
  */
 import { DSVParsedArray, DSVRowString } from "d3";
 import { Application } from "provenance_mvvm_framework";
-import {
-  AggregationFn,
-  RawData,
-  RenderRow
-} from "./../type_declarations/types";
+import { RawData, RenderRow } from "./../type_declarations/types";
 import { RenderConfig } from "./AggregateAndFilters";
 import AggregationStrategy from "./AggregationStrategy";
 import { Attribute } from "./Attribute";

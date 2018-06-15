@@ -80,7 +80,10 @@ export class DataUtils {
     let filePath: string = datasetinfo._data.file;
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
     d3.dsv(dataSetDesc.separator, filePath).then(data => {
-      new Data(DataUtils.app).load(data, dataSetDesc);
+      let d = new Data(DataUtils.app).load(data, dataSetDesc);
+      d.then((d2: Data) => {
+        DataUtils.app.emit("render-config", d2.renderConfig);
+      });
     });
   }
 }

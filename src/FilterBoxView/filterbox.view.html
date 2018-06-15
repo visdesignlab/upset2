@@ -1,29 +1,81 @@
-<div>
-
+<div class="container is-fluid override">
   <div>
-    <span style="font-weight: bold"> First, aggregate by:</span>
-    <div class="btn-group">
-      <button id='firstAggregateButton' class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true"
-        aria-expanded="false">
-        Small button
-      </button>
-      <div id="firstAggregateOptions" class="dropdown-menu">
-
-      </div>
+    <div class="make-bold">
+      First, aggregate by:
     </div>
-  </div>
-  <div>
-    <span style="font-weight: bold"> Then, aggregate by:</span>
-    <div class="btn-group">
-      <button id='secondAggregateButton' class="btn btn-secondary btn-sm dropdown-toggle" type="button" data-toggle="dropdown"
-        aria-haspopup="true" aria-expanded="false">
-        Small button
-      </button>
-      <div id="secondAggregateOptions" class="dropdown-menu">
+    <div class="dropdown is-hoverable">
+      <div id="firstAggByDropdown" class="dropdown-trigger navbar-link">
+        temp
+      </div>
+      <div class="dropdown-menu">
+        <div id="firstAggByOptions" class="dropdown-content">
+          <!-- <div class="dropdown-item">Test</div> -->
+        </div>
       </div>
     </div>
   </div>
 
+  <div id="secondAgg">
+    <div>
+      <div class="make-bold">
+        Then, aggregate by:
+      </div>
+      <div class="dropdown is-hoverable">
+        <div id="secondAggByDropdown" class="dropdown-trigger navbar-link">
+          temp
+        </div>
+        <div class="dropdown-menu">
+          <div id="secondAggByOptions" class="dropdown-content">
+            <!-- <div class="dropdown-item">Test</div> -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="make-bold">
+    Sort By:
+  </div>
+
+  <div id="sortByOptions" class="control">
+    <!-- <div>
+      <label for="" class="radio">
+        <input type="radio" name="answer"> Test
+      </label>
+    </div> -->
+  </div>
+
+  <div id="collaseOptions">
+    <div>
+      <button class="button">Collapse All</button>
+    </div>
+    <div>
+      <button class="button">Expand All</button>
+    </div>
+  </div>
+
+  <div id="Data">
+    <div class="make-bold">Data:</div>
+
+    <div class="field">
+      <label for="" class="label">Min Degree:</label>
+      <div class="control">
+        <input id="minDegree" type="text" class="input">
+      </div>
+    </div>
+    <div class="field">
+      <label for="" class="label">Max Degree</label>
+      <div class="control">
+        <input id="maxDegree" type="text" class="input">
+      </div>
+    </div>
+    <div class="field">
+      <div class="control">
+        <input id="hideEmpty" type="checkbox">
+        <label class="checkbox">Hide Empty Intersections</label>
+      </div>
+    </div>
+
+  </div>
 
 </div>

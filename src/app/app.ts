@@ -29,13 +29,13 @@ DataUtils.app.on("change-dataset", DataUtils.processDataSet);
 
 let vf = new ViewFactory();
 
-vf.views["DataSetInfo"] = new DataSetInfoViewModel(
-  new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
+vf.views["FilterBox"] = new FilterBoxViewModel(
+  new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
   application
 );
 
-vf.views["FilterBox"] = new FilterBoxViewModel(
-  new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
+vf.views["DataSetInfo"] = new DataSetInfoViewModel(
+  new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
   application
 );
 
