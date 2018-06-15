@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "webpack",
+    "build": "npm run start",
     "lite": "lite-server -c bs-config.json",
     "serve": "npm run lite"
   },
