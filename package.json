@@ -39,6 +39,7 @@
   "dependencies": {
     "@types/jquery": "3.3.2",
     "bootstrap": "4.1.1",
+    "bulma": "0.7.1",
     "d3": "^5.4.0",
     "hoek": "4.2.1",
     "jquery": "3.3.1",

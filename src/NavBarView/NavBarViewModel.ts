@@ -15,7 +15,7 @@ import { DataUtils } from "./../DataStructure/DataUtils";
 import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
 import { IDataSetJSON } from "./../DataStructure/IDataSetJSON";
 import { NavBarView } from "./NavBarView";
-
+import './styles.scss'
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application) {
