@@ -8,6 +8,9 @@ let AggregationStrategy: {
 } = {};
 
 AggregationStrategy[AggregateBy.DEGREE] = aggregateByDegree;
+AggregationStrategy[AggregateBy.SETS] = aggregateBySets;
+AggregationStrategy[AggregateBy.DEVIATION] = aggregateByDeviation;
+AggregationStrategy[AggregateBy.OVERLAPS] = aggregateByOverlap;
 
 export default AggregationStrategy;
 
@@ -32,4 +35,19 @@ function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
   }
 
   return rr;
+}
+
+function aggregateByDeviation(
+  data: RenderRow[],
+  level: number = 1
+): RenderRow[] {
+  return data;
+}
+
+function aggregateByOverlap(data: RenderRow[], level: number = 1): RenderRow[] {
+  return data;
+}
+
+function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
+  return data;
 }

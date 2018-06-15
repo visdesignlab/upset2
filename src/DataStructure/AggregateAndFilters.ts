@@ -20,5 +20,5 @@ export enum SortBy {
   DEGREE = "DEGREE",
   CARDINALITY = "CARDINALITY",
   DEVIATION = "DEVIATION",
-  _SET = "_SET"
+  SET = "SET"
 }

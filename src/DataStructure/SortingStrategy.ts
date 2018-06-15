@@ -8,7 +8,9 @@ let SortStrategy: {
 } = {};
 
 SortStrategy[SortBy.CARDINALITY] = sortByCardinality;
-SortStrategy[SortBy._SET] = sortBySet;
+SortStrategy[SortBy.DEGREE] = sortByDegree;
+SortStrategy[SortBy.DEVIATION] = sortByDeviation;
+SortStrategy[SortBy.SET] = sortBySet;
 
 export default SortStrategy;
 
@@ -20,7 +22,11 @@ function sortByCardinality(data: RenderRow[]): RenderRow[] {
     return p;
   }, []);
   let rr: Array<RenderRow> = [];
-
+  if (groups.length === 0) {
+    return data.sort((d1, d2) => {
+      d2.data.setSize - d1.data.setSize;
+    });
+  }
   groups.forEach((g, idx) => {
     rr.push(data[g]);
     let els = data.slice(g + 1, groups[idx + 1]);
@@ -34,10 +40,20 @@ function sortByCardinality(data: RenderRow[]): RenderRow[] {
 }
 
 function sortBySet(data: RenderRow[], setId: number): RenderRow[] {
-  return data.sort((d1, d2) => {
+  let a = data.sort((d1, d2) => {
     return (
       (d2.data as SubSet).combinedSets[setId] -
       (d1.data as SubSet).combinedSets[setId]
     );
   });
+  console.log(a);
+  return a;
+}
+
+function sortByDegree(data: RenderRow[], setId: number): RenderRow[] {
+  return data;
+}
+
+function sortByDeviation(data: RenderRow[], setId: number): RenderRow[] {
+  return data;
 }

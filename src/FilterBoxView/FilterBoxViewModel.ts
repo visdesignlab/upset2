@@ -3,7 +3,7 @@ import { Application } from "provenance_mvvm_framework";
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:38:25 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-05 15:59:46
+ * @Last Modified time: 2018-06-15 15:57:39
  */
 import {
   ViewModelBase,
@@ -18,7 +18,7 @@ export class FilterBoxViewModel extends ViewModelBase {
   constructor(view: FilterBoxView, app: Application) {
     super(view, app);
     this.comm.on("filter-changed", (config: RenderConfig) => {
-      this.App.emit("filter-changed", config);
+      this.App.emit("filter-changed", config, null);
     });
   }
 }

@@ -1,17 +1,15 @@
-import { AggregateBy, SortBy } from "./AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 15:56:16
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-13 15:37:45
+ * @Last Modified time: 2018-06-15 16:15:11
  */
 import { DSVParsedArray, DSVRowString } from "d3";
 import { Application } from "provenance_mvvm_framework";
 import { RawData, RenderRow } from "./../type_declarations/types";
-import { RenderConfig } from "./AggregateAndFilters";
+import { AggregateBy, RenderConfig, SortBy } from "./AggregateAndFilters";
 import AggregationStrategy from "./AggregationStrategy";
 import { Attribute } from "./Attribute";
-import { BaseSet } from "./BaseSet";
 import { IDataSetJSON } from "./IDataSetJSON";
 import { Set } from "./Set";
 import SortStrategy from "./SortingStrategy";
@@ -415,16 +413,27 @@ export class Data {
     renderConfig: RenderConfig = null,
     sortBySetId?: number
   ) {
-    if (renderConfig) this.renderConfig = renderConfig;
+    if (renderConfig) {
+      this.renderConfig = renderConfig;
+      this.renderRows = this.render(
+        this.renderConfig.firstLevelAggregateBy,
+        this.renderConfig.secondLevelAggregateBy,
+        this.renderConfig.sortBy,
+        this.renderConfig.minDegree,
+        this.renderConfig.maxDegree,
+        sortBySetId
+      );
+    } else {
+      this.renderRows = this.render(
+        null,
+        null,
+        SortBy.SET,
+        this.renderConfig.minDegree,
+        this.renderConfig.maxDegree,
+        sortBySetId
+      );
+    }
 
-    this.renderRows = this.render(
-      null,
-      null,
-      SortBy._SET,
-      this.renderConfig.minDegree,
-      this.renderConfig.maxDegree,
-      sortBySetId
-    );
     this.app.emit("render-rows-changed", this);
   }
 
@@ -441,8 +450,11 @@ export class Data {
     this.subSets.forEach((set: SubSet) => {
       agg.push({ id: set.id.toString(), data: set });
     });
-    if (firstAggBy) agg = AggregationStrategy[firstAggBy](agg);
-    if (secondAggBy) agg = applySecondAggregation(agg, secondAggBy);
+
+    if (firstAggBy && firstAggBy !== AggregateBy.NONE)
+      agg = AggregationStrategy[firstAggBy](agg);
+    if (secondAggBy && secondAggBy !== AggregateBy.NONE)
+      agg = applySecondAggregation(agg, secondAggBy);
 
     if (this.renderConfig.hideEmptyIntersection)
       agg = agg.filter(set => set.data.setSize > 0);
@@ -457,7 +469,7 @@ function applySecondAggregation(
   agg: RenderRow[],
   fn: AggregateBy
 ): RenderRow[] {
-  return null;
+  return agg;
 }
 
 function applySort(
@@ -465,6 +477,7 @@ function applySort(
   sortBy: SortBy,
   sortBySetId?: number
 ): RenderRow[] {
+  console.log("Sortin");
   let a = SortStrategy[sortBy](agg, sortBySetId);
   return a;
 }
