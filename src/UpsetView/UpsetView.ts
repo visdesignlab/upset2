@@ -231,7 +231,8 @@ export class UpsetView extends ViewBase {
     let usedSetConnectorGroup = this.usedSetsHeaderGroup
       .append("g")
       .attr("class", "usedSetsConnector")
-      .attr("transform", `translate(0, ${params.used_set_header_height})`);
+      .attr("transform", `translate(0, ${params.used_set_header_height})`)
+      .attr("cursor", "pointer");
 
     let connectors = usedSetConnectorGroup
       .selectAll(".usedSetConnector")
