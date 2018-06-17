@@ -1,3 +1,4 @@
+import { IDataSetInfo } from "./IDataSetInfo";
 export class RenderConfig {
   firstLevelAggregateBy: AggregateBy = AggregateBy.DEGREE;
   secondLevelAggregateBy: AggregateBy = AggregateBy.NONE;
@@ -6,6 +7,7 @@ export class RenderConfig {
   hideEmptyIntersection: boolean = true;
   minDegree: number = 0;
   maxDegree: number = 3;
+  currentFile: IDataSetInfo;
 }
 
 export enum AggregateBy {
