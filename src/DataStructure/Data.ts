@@ -84,8 +84,6 @@ export class Data {
 
     let signature: string = "";
 
-    let itemList: Array<number>;
-
     setsAttribute.values.forEach((listOfSets, idx) => {
       signature = this.createSignature(listOfUsedSets, listOfSets);
       if (aggregateIntersection[signature] == null) {
