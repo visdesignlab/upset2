@@ -49,8 +49,6 @@ function aggregateByOverlap(data: RenderRow[], level: number = 1): RenderRow[] {
 }
 
 function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
-  console.log(data);
-
   let subSetNames: { [key: number]: string } = {};
   data.filter(d => (d.data as SubSet).noCombinedSets === 1).map(d => {
     subSetNames[(d.data as SubSet).combinedSets.findIndex(i => i === 1)] =
@@ -74,7 +72,6 @@ function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
     return groups;
   }, {});
 
-  console.log(groups);
   let rr: RenderRow[] = [];
 
   for (let group in groups) {

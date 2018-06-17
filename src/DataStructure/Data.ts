@@ -43,7 +43,7 @@ export class Data {
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
-      this.setupRenderRows();
+      this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
     });
     return new Promise((res, rej) => {
       res(<any>this);
@@ -476,7 +476,6 @@ function applySort(
   sortBy: SortBy,
   sortBySetId?: number
 ): RenderRow[] {
-  console.log("Sortin", sortBy);
   let a = SortStrategy[sortBy](agg, sortBySetId);
   return a;
 }
