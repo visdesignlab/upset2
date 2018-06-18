@@ -27,8 +27,12 @@ export class Data {
   allItems: Array<number> = [];
   depth: number = 0;
   noDefaultSets: number = 6;
-  maxCardinality: number = 0;
   renderConfig: RenderConfig;
+
+  get maxCardinality(): number {
+    return Math.max(...this.renderRows.map(d => d.data.setSize));
+  }
+
   constructor(app: Application) {
     this.app = app;
     this.renderConfig = new RenderConfig();
@@ -298,11 +302,11 @@ export class Data {
       }
     }
 
-    this.maxCardinality = this.attributes[this.attributes.length - 2].max;
-    // hack
-    if (isNaN(this.maxCardinality)) {
-      this.maxCardinality = this.sets.length;
-    }
+    // this.maxCardinality = this.attributes[this.attributes.length - 2].max;
+    // // hack
+    // if (isNaN(this.maxCardinality)) {
+    //   this.maxCardinality = this.sets.length;
+    // }
   }
 
   /**
@@ -432,7 +436,7 @@ export class Data {
         sortBySetId
       );
     }
-
+    console.log(this.maxCardinality);
     this.app.emit("render-rows-changed", this);
   }
 

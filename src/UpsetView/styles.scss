@@ -22,7 +22,11 @@ g .row {
   fill: #cccccc;
   stroke: #555555;
   stroke-width: 1px;
-  opacity: 1;
+  opacity: 0.3;
+}
+
+.cardinalityBar {
+  fill: rgb(189, 189, 189)
 }
 
 .subsetBackgroundRect {
@@ -37,4 +41,9 @@ g .row {
   stroke: white;
   stroke-width: 1px;
   fill: #636363;
+}
+
+.cardinalityScaleGroup {
+  stroke: black;
+  stroke-width: 1px;
 }

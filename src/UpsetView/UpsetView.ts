@@ -45,8 +45,7 @@ export class UpsetView extends ViewBase {
     this.bodySVG = this.bodyVis
       .append("svg")
       .style("width", width)
-      .style("height", 1000)
-      .style("padding", "0px 7px");
+      .style("height", 1000);
 
     this.usedSetsHeaderGroup = this.headerSVG
       .append("g")
@@ -60,14 +59,36 @@ export class UpsetView extends ViewBase {
       data.usedSets,
       d3.max(data.sets.map(d => d.setSize))
     );
-    this.updateUsedSetConnectors(
-      data.usedSets,
-      d3.max(data.sets.map(d => d.setSize))
-    );
-
+    this.updateUsedSetConnectors(data.usedSets);
+    this.updateCardinalityScale(data.usedSets.length);
     this.updateRows(data.renderRows, data.usedSets);
 
     (window as any).data = data;
+  }
+
+  private updateCardinalityScale(usedSetCount: number) {
+    let cardinalityScaleGroup = this.headerSVG
+      .selectAll(".cardinalityScaleGroup")
+      .data([1]);
+
+    cardinalityScaleGroup.exit().remove();
+
+    let enter = cardinalityScaleGroup
+      .enter()
+      .append("g")
+      .attr("class", "cardinalityScaleGroup");
+
+    enter
+      .merge(cardinalityScaleGroup)
+      .attr(
+        "transform",
+        `translate(${params.connector_height +
+          (usedSetCount + 1) * params.col_width}, ${params.header_height -
+          params.cardinality_scale_height})`
+      )
+      .append("rect")
+      .attr("height", params.cardinality_scale_height)
+      .attr("width", params.cardinality_scale_width);
   }
 
   private updateRows(data: Array<RenderRow>, usedSets: Set[]) {
@@ -92,10 +113,7 @@ export class UpsetView extends ViewBase {
 
     let colGroupSel = ssv.select(".colGroup");
 
-    colGroupSel.attr(
-      "transform",
-      `translate(${params.connector_height - 17 / 2}, 0)`
-    );
+    colGroupSel.attr("transform", `translate(${params.connector_height}, 0)`);
 
     let cols = colGroupSel.selectAll(".col").data(usedSets);
 
@@ -146,14 +164,6 @@ export class UpsetView extends ViewBase {
         return `translate(0, ${params.row_height * i})`;
       });
 
-    // rowsEnter
-    //   .append("rect")
-    //   .attr("width", "100%")
-    //   .attr("height", 30)
-    //   .attr("fill", "none")
-    //   .attr("stroke", "black")
-    //   .attr("stroke-width", 1);
-
     let groups = rowsMerged.filter(d => d.data.type === RowType.GROUP);
     let subset = rowsMerged.filter(d => d.data.type === RowType.SUBSET);
 
@@ -170,7 +180,7 @@ export class UpsetView extends ViewBase {
       .text((d, i) => {
         return d.data.elementName;
       })
-      .attr("transform", `translate(4, ${params.row_height - 17 / 2})`);
+      .attr("transform", `translate(4, ${params.row_height})`);
 
     subset
       .append("rect")
@@ -179,12 +189,12 @@ export class UpsetView extends ViewBase {
       .attr("height", 30)
       .attr("rx", 5)
       .attr("ry", 5)
-      .attr("transform", `translate(${params.connector_height - 17 / 2}, 0)`);
+      .attr("transform", `translate(${params.connector_height}, 0)`);
 
     let combinations = subset
       .append("g")
       .attr("class", "combinations")
-      .attr("transform", `translate(${params.connector_height - 17 / 2}, 0)`);
+      .attr("transform", `translate(${params.connector_height}, 0)`);
 
     combinations.each(function(d, i) {
       let combs = d3
@@ -208,16 +218,46 @@ export class UpsetView extends ViewBase {
         });
     });
 
-    // ! Temp Hack
+    let t = data.filter(d => d.data.type === RowType.SUBSET)[0];
+
+    let cardinality_offset =
+      params.connector_height +
+      (t.data as SubSet).combinedSets.length * params.col_width +
+      params.col_width;
+
+    // Add cardinality bars
     subset
-      .append("text")
-      .text((d, i) => {
-        return d.data.setSize;
-      })
+      .append("g")
+      .attr("class", "cardinalityBarG")
       .attr("transform", (d, i) => {
-        return `translate(${params.connector_height +
-          (d.data as SubSet).combinedSets.length * 30}, ${params.row_height -
-          17 / 2})`;
+        return `translate(${cardinality_offset}, ${(params.row_height -
+          params.cardinality_height) /
+          2})`;
+      });
+
+    groups
+      .append("g")
+      .attr("class", "cardinalityBarG")
+      .attr("transform", (d, i) => {
+        return `translate(${cardinality_offset}, ${(params.row_height -
+          params.cardinality_height) /
+          2})`;
+      });
+
+    let maxCardinality = Math.max(...data.map(d => d.data.setSize));
+
+    let cardinalityBars = rowsMerged.selectAll(".cardinalityBarG");
+
+    cardinalityBars
+      .append("rect")
+      .attr("class", "cardinalityBar")
+      .attr("height", params.cardinality_height)
+      .attr("width", (d: RenderRow, i) => {
+        return setSizeScale(
+          maxCardinality,
+          params.max_cardinality_width,
+          d.data.setSize
+        );
       });
   }
 
@@ -227,7 +267,7 @@ export class UpsetView extends ViewBase {
    * @param {number} maxSetSize
    * @memberof UpsetView
    */
-  private updateUsedSetConnectors(data: Set[], maxSetSize: number) {
+  private updateUsedSetConnectors(data: Set[]) {
     let usedSetConnectorGroup = this.usedSetsHeaderGroup
       .append("g")
       .attr("class", "usedSetsConnector")
@@ -269,8 +309,9 @@ export class UpsetView extends ViewBase {
       })
       .style("text-anchor", "end");
 
-    let textHeight = (connectorsEnter.select("text").node() as any).getBBox()
-      .height;
+    params.textHeight = (connectorsEnter
+      .select("text")
+      .node() as any).getBBox().height;
 
     connectorsEnter
       .selectAll("text")
@@ -278,7 +319,7 @@ export class UpsetView extends ViewBase {
         "transform",
         `translate(${params.connector_height / Math.sqrt(2) +
           params.col_width / Math.sqrt(2) +
-          textHeight / 2}, ${params.connector_height})rotate(45)`
+          params.textHeight}, ${params.connector_height})rotate(45)`
       );
   }
 
