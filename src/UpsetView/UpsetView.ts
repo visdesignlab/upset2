@@ -60,17 +60,34 @@ export class UpsetView extends ViewBase {
       d3.max(data.sets.map(d => d.setSize))
     );
     this.updateUsedSetConnectors(data.usedSets);
-    this.updateCardinalityScale(data.usedSets.length, data.allItems.length);
-    this.updateRows(data.renderRows, data.usedSets);
+    this.updateCardinalityScale(
+      data.usedSets.length,
+      data.allItems.length,
+      Math.max(...data.renderRows.map(d => d.data.setSize))
+    );
+    this.updateRows(data.renderRows, data.usedSets, data.allItems.length);
 
     (window as any).data = data;
   }
 
-  private updateCardinalityScale(usedSetCount: number, rowCount: number) {
+  private updateCardinalityScale(
+    usedSetCount: number,
+    totalItems: number,
+    maxCardinality: number
+  ) {
+    let domainTicksArr: Array<number> = [...Array(6).keys()];
+    let t = totalItems / 5;
+    domainTicksArr.forEach((d, i) => {
+      domainTicksArr[i] = Math.floor(t * i);
+    });
+
+    let cardinalityScale = getCardinalityScaleData(
+      totalItems,
+      params.max_cardinality_width
+    );
+
     let csg = this.headerSVG.selectAll(".cardinalityScaleGroup").data([1]);
-
     csg.exit().remove();
-
     csg
       .enter()
       .append("g")
@@ -88,47 +105,74 @@ export class UpsetView extends ViewBase {
 
     let cardinalityScaleGroup = d3.select(".cardinalityScaleGroup");
 
-    let topAxisG = cardinalityScaleGroup.append("g").attr("class", "topAxis");
+    let topAxisG = cardinalityScaleGroup
+      .html("")
+      .append("g")
+      .attr("class", "overViewTopAxis");
 
     let topAxis = topAxisG
       .append("path")
-      .attr("class", "axis domain")
+      .attr("class", "axis domain up")
       .attr("d", `M0 6 V0 H${params.cardinality_scale_width} V6`);
-
-    let domainTicksArr = [...Array<number>(rowCount + 1).keys()].filter(
-      (d, i) => i % 2 === 0
-    );
 
     let ticksU = topAxisG.selectAll(".tick").data(domainTicksArr);
     ticksU.exit().enter();
 
-    let ticks = ticksU
+    let ticksUpper = ticksU
       .enter()
       .append("g")
       .attr("class", "tick")
       .merge(ticksU)
       .attr("transform", (d, i) => {
-        return `translate(${(params.cardinality_scale_width /
-          (domainTicksArr.length - 1)) *
-          i}, 0)`;
+        return `translate(${cardinalityScale(d)}, 0)`;
       });
-
-    ticks
+    ticksUpper
       .html("")
       .append("line")
       .attr("y2", 6)
       .style("stroke", "black");
 
-    ticks
+    ticksUpper
       .append("text")
       .text((d, i) => {
         return d;
       })
       .attr("dy", "1.5em")
       .attr("text-anchor", "middle");
+
+    let bottomAxisG = cardinalityScaleGroup
+      .append("g")
+      .attr("class", "overViewBottomAxis");
+
+    bottomAxisG
+      .append("path")
+      .attr("class", "axis domain down")
+      .attr("d", `M0,18 v6 H${params.cardinality_scale_width} v-6`);
+
+    let ticksB = bottomAxisG.selectAll(".tick").data(domainTicksArr);
+    ticksB.exit().enter();
+
+    let ticksBottom = ticksB
+      .enter()
+      .append("g")
+      .attr("class", "tick")
+      .merge(ticksB)
+      .attr("transform", (d, i) => {
+        return `translate(${cardinalityScale(d)}, 18)`;
+      });
+
+    ticksBottom
+      .html("")
+      .append("line")
+      .attr("y2", 6)
+      .style("stroke", "black");
   }
 
-  private updateRows(data: Array<RenderRow>, usedSets: Set[]) {
+  private updateRows(
+    data: Array<RenderRow>,
+    usedSets: Set[],
+    totalItems: number
+  ) {
     let body = this.bodySVG.selectAll(".subSetView").data([1]);
     body.exit().remove();
 
@@ -288,17 +332,25 @@ export class UpsetView extends ViewBase {
 
     let cardinalityBars = rowsMerged.selectAll(".cardinalityBarG");
 
+    let scale = getCardinalityScaleData(
+      totalItems,
+      params.max_cardinality_width
+    );
+
     cardinalityBars
       .append("rect")
       .attr("class", "cardinalityBar")
       .attr("height", params.cardinality_height)
       .attr("width", (d: RenderRow, i) => {
-        return setSizeScale(
-          maxCardinality,
-          params.max_cardinality_width,
-          d.data.setSize
-        );
+        return scale(d.data.setSize);
       });
+
+    cardinalityBars
+      .append("text")
+      .text((d: RenderRow, i) => {
+        return d.data.setSize;
+      })
+      .attr("transform", `translate(4,${params.textHeight})`);
   }
 
   /**
@@ -452,4 +504,27 @@ function setSizeScale(
     .nice()
     .range([0, maxRange]);
   return scale(size);
+}
+
+function getCardinalityScaleData(
+  noItems: number,
+  max_cardinality_width: number
+): d3.ScaleContinuousNumeric<any, any> {
+  let totalSizeRange = noItems.toString().length;
+  let scale: any;
+
+  if (totalSizeRange > 3) {
+    scale = d3
+      .scalePow()
+      .exponent(0.8)
+      .domain([0, noItems])
+      .range([0, max_cardinality_width]);
+  } else {
+    scale = d3
+      .scaleLinear()
+      .domain([0, noItems])
+      .range([0, max_cardinality_width]);
+  }
+
+  return scale;
 }
