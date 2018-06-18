@@ -60,26 +60,22 @@ export class UpsetView extends ViewBase {
       d3.max(data.sets.map(d => d.setSize))
     );
     this.updateUsedSetConnectors(data.usedSets);
-    this.updateCardinalityScale(data.usedSets.length);
+    this.updateCardinalityScale(data.usedSets.length, data.allItems.length);
     this.updateRows(data.renderRows, data.usedSets);
 
     (window as any).data = data;
   }
 
-  private updateCardinalityScale(usedSetCount: number) {
-    let cardinalityScaleGroup = this.headerSVG
-      .selectAll(".cardinalityScaleGroup")
-      .data([1]);
+  private updateCardinalityScale(usedSetCount: number, rowCount: number) {
+    let csg = this.headerSVG.selectAll(".cardinalityScaleGroup").data([1]);
 
-    cardinalityScaleGroup.exit().remove();
+    csg.exit().remove();
 
-    let enter = cardinalityScaleGroup
+    csg
       .enter()
       .append("g")
-      .attr("class", "cardinalityScaleGroup");
-
-    enter
-      .merge(cardinalityScaleGroup)
+      .attr("class", "cardinalityScaleGroup")
+      .merge(csg)
       .attr(
         "transform",
         `translate(${params.connector_height +
@@ -89,6 +85,47 @@ export class UpsetView extends ViewBase {
       .append("rect")
       .attr("height", params.cardinality_scale_height)
       .attr("width", params.cardinality_scale_width);
+
+    let cardinalityScaleGroup = d3.select(".cardinalityScaleGroup");
+
+    let topAxisG = cardinalityScaleGroup.append("g").attr("class", "topAxis");
+
+    let topAxis = topAxisG
+      .append("path")
+      .attr("class", "axis domain")
+      .attr("d", `M0 6 V0 H${params.cardinality_scale_width} V6`);
+
+    let domainTicksArr = [...Array<number>(rowCount + 1).keys()].filter(
+      (d, i) => i % 2 === 0
+    );
+
+    let ticksU = topAxisG.selectAll(".tick").data(domainTicksArr);
+    ticksU.exit().enter();
+
+    let ticks = ticksU
+      .enter()
+      .append("g")
+      .attr("class", "tick")
+      .merge(ticksU)
+      .attr("transform", (d, i) => {
+        return `translate(${(params.cardinality_scale_width /
+          (domainTicksArr.length - 1)) *
+          i}, 0)`;
+      });
+
+    ticks
+      .html("")
+      .append("line")
+      .attr("y2", 6)
+      .style("stroke", "black");
+
+    ticks
+      .append("text")
+      .text((d, i) => {
+        return d;
+      })
+      .attr("dy", "1.5em")
+      .attr("text-anchor", "middle");
   }
 
   private updateRows(data: Array<RenderRow>, usedSets: Set[]) {
@@ -180,7 +217,10 @@ export class UpsetView extends ViewBase {
       .text((d, i) => {
         return d.data.elementName;
       })
-      .attr("transform", `translate(4, ${params.row_height})`);
+      .attr(
+        "transform",
+        `translate(4, ${params.row_height - params.textHeight / 2})`
+      );
 
     subset
       .append("rect")

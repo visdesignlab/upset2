@@ -44,6 +44,15 @@ g .row {
 }
 
 .cardinalityScaleGroup {
-  stroke: black;
-  stroke-width: 1px;
+  // stroke: black;
+  // stroke-width: 1px;
+  fill: none
+}
+
+.axis {
+  stroke: black
+}
+
+.tick text {
+  font-size: 0.6em;
 }
