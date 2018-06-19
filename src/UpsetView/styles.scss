@@ -54,10 +54,15 @@ g .row {
 }
 
 .tick text {
-  font-size: 0.7em;
+  font-size: 0.5em;
 }
 
 .sliderEl {
   fill: black;
   opacity: 0.4;
+}
+
+.drawBrush {
+  fill: gray;
+  opacity: 0.2
 }

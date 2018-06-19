@@ -4,18 +4,17 @@
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-11 17:28:26
  */
-import { d3Selection, RenderRow } from "./../type_declarations/types";
-
 import * as d3 from "d3";
-import { Set } from "./../DataStructure/Set";
-import { Data } from "./../DataStructure/Data";
+import { ScaleContinuousNumeric } from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
-import html from "./upset.view.html";
-import params from "./ui_params";
-import "./styles.scss";
 import { RowType } from "../DataStructure/RowType";
 import { SubSet } from "../DataStructure/SubSet";
-import { ScaleContinuousNumeric } from "d3";
+import { Data } from "./../DataStructure/Data";
+import { Set } from "./../DataStructure/Set";
+import { d3Selection, RenderRow } from "./../type_declarations/types";
+import "./styles.scss";
+import params from "./ui_params";
+import html from "./upset.view.html";
 export class UpsetView extends ViewBase {
   headerVis: d3Selection;
   bodyVis: d3Selection;
@@ -78,8 +77,12 @@ export class UpsetView extends ViewBase {
     totalItems: number,
     maxCardinality: number
   ) {
-    let domainTicksArr: Array<number> = [...Array(6).keys()];
-    let t = totalItems / 5;
+    let sections = 5;
+
+    if (totalItems > 10000) sections = 4;
+
+    let domainTicksArr: Array<number> = [...Array(sections + 1).keys()];
+    let t = totalItems / sections;
     domainTicksArr.forEach((d, i) => {
       domainTicksArr[i] = Math.floor(t * i);
     });
@@ -140,7 +143,7 @@ export class UpsetView extends ViewBase {
       .text((d, i) => {
         return d;
       })
-      .attr("dy", "1.5em")
+      .attr("dy", "1.8em")
       .attr("text-anchor", "middle");
 
     let bottomAxisG = cardinalityScaleGroup
@@ -185,6 +188,14 @@ export class UpsetView extends ViewBase {
       .attr("height", 10)
       .attr("width", 10);
 
+    cardinalityScaleGroup
+      .append("rect")
+      .attr("class", "drawBrush")
+      .attr("height", 24)
+      .attr("width", () => {
+        return this.cardinalityScale(maxCardinality);
+      });
+
     let comm = this.comm;
     this.comm.on("slider-changed", this.sliderChanged, this);
     sliderGroup.call(
@@ -212,6 +223,11 @@ export class UpsetView extends ViewBase {
   }
 
   private sliderChanged(newSliderPosition: number) {
+    let drawBrush = d3.select(".drawBrush");
+    drawBrush.attr("width", () => {
+      return newSliderPosition;
+    });
+
     let cardinalityBars = d3.selectAll(".cardinalityBarG");
     let data = cardinalityBars.data() as RenderRow[];
     let domEnd = this.cardinalityScale.invert(newSliderPosition);
@@ -447,8 +463,14 @@ export class UpsetView extends ViewBase {
           2})`;
       });
 
-    let maxCardinality = Math.max(...data.map(d => d.data.setSize));
+    this.addCardinalityBars(rowsMerged as any, data, totalItems);
+  }
 
+  private addCardinalityBars(
+    rowsMerged: d3Selection,
+    data: RenderRow[],
+    totalItems: number
+  ) {
     let cardinalityBars = rowsMerged.selectAll(".cardinalityBarG");
 
     this.cardinalityScale = getCardinalityScaleData(
@@ -637,7 +659,7 @@ function getCardinalityScaleData(
   if (totalSizeRange > 3) {
     scale = d3
       .scalePow()
-      .exponent(0.8)
+      .exponent(0.5)
       .domain([0, noItems])
       .range([0, max_cardinality_width]);
   } else {
