@@ -213,20 +213,64 @@ export class UpsetView extends ViewBase {
 
   private sliderChanged(newSliderPosition: number) {
     let cardinalityBars = d3.selectAll(".cardinalityBarG");
-
+    let data = cardinalityBars.data() as RenderRow[];
     let domEnd = this.cardinalityScale.invert(newSliderPosition);
 
     let scale = getCardinalityScaleData(domEnd, params.max_cardinality_width);
+    let rowWidths = data.map(d => scale(d.data.setSize));
 
-    cardinalityBars
-      .html("")
-      .append("rect")
-      .attr("class", "cardinalityBar")
-      .attr("height", params.cardinality_height)
-      .attr("width", (d: RenderRow, i) => {
-        return scale(d.data.setSize);
-      });
+    let horizonCalc: Array<Array<number>> = [];
 
+    rowWidths.forEach(d => {
+      let a = [];
+      a.push(Math.floor(d / 200));
+      a.push(d % 200);
+      horizonCalc.push(a);
+    });
+
+    cardinalityBars.each(function(d, i) {
+      let cardinalityBar = d3.select(this).html("");
+
+      let card_data = horizonCalc[i];
+
+      let offset = 0;
+
+      for (let i = 0; i < card_data[0]; ++i) {
+        cardinalityBar
+          .append("rect")
+          .attr("class", "cardinalityBar")
+          .attr("height", params.cardinality_height - offset)
+          .attr("width", 200)
+          .attr("transform", `translate(0, ${offset / 2})`)
+          .style(
+            "fill",
+            `rgba(${50 - (offset / 10) * 10}, ${50 - (offset / 10) * 10}, ${50 -
+              (offset / 10) * 10}, 0.5 )`
+          );
+        offset += 10;
+      }
+
+      cardinalityBar
+        .append("rect")
+        .attr("class", "cardinalityBar")
+        .attr("height", params.cardinality_height - offset)
+        .attr("width", card_data[1])
+        .attr("transform", `translate(0, ${offset / 2})`)
+        .style(
+          "fill",
+          `rgba(${50 - (offset / 10) * 10}, ${50 - (offset / 10) * 10}, ${50 -
+            (offset / 10) * 10}, 0.5 )`
+        );
+    });
+
+    // cardinalityBars
+    //   .html("")
+    //   .append("rect")
+    //   .attr("class", "cardinalityBar")
+    //   .attr("height", params.cardinality_height)
+    //   .attr("width", (d: RenderRow, i) => {
+    //     return rowWidths[i];
+    //   });
     cardinalityBars
       .append("text")
       .text((d: RenderRow, i) => {
@@ -404,12 +448,14 @@ export class UpsetView extends ViewBase {
       params.max_cardinality_width
     );
 
+    let rowWidths = data.map(d => this.cardinalityScale(d.data.setSize));
+
     cardinalityBars
       .append("rect")
       .attr("class", "cardinalityBar")
       .attr("height", params.cardinality_height)
       .attr("width", (d: RenderRow, i) => {
-        return this.cardinalityScale(d.data.setSize);
+        return rowWidths[i];
       });
 
     cardinalityBars
