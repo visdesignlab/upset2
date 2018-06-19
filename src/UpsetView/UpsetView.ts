@@ -234,8 +234,8 @@ export class UpsetView extends ViewBase {
       let card_data = horizonCalc[i];
 
       let offset = 0;
-
-      for (let i = 0; i < card_data[0]; ++i) {
+      let j = 0;
+      for (j = 0; j < card_data[0] && j < 3; ++j) {
         cardinalityBar
           .append("rect")
           .attr("class", "cardinalityBar")
@@ -249,18 +249,34 @@ export class UpsetView extends ViewBase {
           );
         offset += 10;
       }
-
-      cardinalityBar
-        .append("rect")
-        .attr("class", "cardinalityBar")
-        .attr("height", params.cardinality_height - offset)
-        .attr("width", card_data[1])
-        .attr("transform", `translate(0, ${offset / 2})`)
-        .style(
-          "fill",
-          `rgba(${50 - (offset / 10) * 10}, ${50 - (offset / 10) * 10}, ${50 -
-            (offset / 10) * 10}, 0.5 )`
-        );
+      if (j < 3) {
+        cardinalityBar
+          .append("rect")
+          .attr("class", "cardinalityBar")
+          .attr("height", params.cardinality_height - offset)
+          .attr("width", card_data[1])
+          .attr("transform", `translate(0, ${offset / 2})`)
+          .style(
+            "fill",
+            `rgba(${50 - (offset / 10) * 10}, ${50 - (offset / 10) * 10}, ${50 -
+              (offset / 10) * 10}, 0.5 )`
+          );
+      } else {
+        cardinalityBar
+          .append("line")
+          .attr("x1", 170)
+          .attr("y1", 0)
+          .attr("x2", 190)
+          .attr("y2", params.row_height)
+          .attr("stroke", "white");
+        cardinalityBar
+          .append("line")
+          .attr("x1", 175)
+          .attr("y1", 0)
+          .attr("x2", 195)
+          .attr("y2", params.row_height)
+          .attr("stroke", "white");
+      }
     });
 
     cardinalityBars
