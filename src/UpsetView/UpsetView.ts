@@ -15,12 +15,14 @@ import params from "./ui_params";
 import "./styles.scss";
 import { RowType } from "../DataStructure/RowType";
 import { SubSet } from "../DataStructure/SubSet";
+import { ScaleContinuousNumeric } from "d3";
 export class UpsetView extends ViewBase {
   headerVis: d3Selection;
   bodyVis: d3Selection;
   headerSVG: d3Selection;
   usedSetsHeaderGroup: d3Selection;
   bodySVG: d3Selection;
+  cardinalityScale: ScaleContinuousNumeric<any, any>;
 
   constructor(root: HTMLElement) {
     super(root);
@@ -60,12 +62,13 @@ export class UpsetView extends ViewBase {
       d3.max(data.sets.map(d => d.setSize))
     );
     this.updateUsedSetConnectors(data.usedSets);
+    this.updateRows(data.renderRows, data.usedSets, data.allItems.length);
+
     this.updateCardinalityScale(
       data.usedSets.length,
       data.allItems.length,
       Math.max(...data.renderRows.map(d => d.data.setSize))
     );
-    this.updateRows(data.renderRows, data.usedSets, data.allItems.length);
 
     (window as any).data = data;
   }
@@ -81,7 +84,7 @@ export class UpsetView extends ViewBase {
       domainTicksArr[i] = Math.floor(t * i);
     });
 
-    let cardinalityScale = getCardinalityScaleData(
+    this.cardinalityScale = getCardinalityScaleData(
       totalItems,
       params.max_cardinality_width
     );
@@ -124,7 +127,7 @@ export class UpsetView extends ViewBase {
       .attr("class", "tick")
       .merge(ticksU)
       .attr("transform", (d, i) => {
-        return `translate(${cardinalityScale(d)}, 0)`;
+        return `translate(${this.cardinalityScale(d)}, 0)`;
       });
     ticksUpper
       .html("")
@@ -158,7 +161,7 @@ export class UpsetView extends ViewBase {
       .attr("class", "tick")
       .merge(ticksB)
       .attr("transform", (d, i) => {
-        return `translate(${cardinalityScale(d)}, 18)`;
+        return `translate(${this.cardinalityScale(d)}, 18)`;
       });
 
     ticksBottom
@@ -166,6 +169,70 @@ export class UpsetView extends ViewBase {
       .append("line")
       .attr("y2", 6)
       .style("stroke", "black");
+
+    let sliderGroup = cardinalityScaleGroup
+      .append("g")
+      .attr("class", "sliderGroup")
+      .attr(
+        "transform",
+        `translate(${this.cardinalityScale(maxCardinality)}, 3)`
+      );
+
+    sliderGroup
+      .append("rect")
+      .attr("class", "sliderEl")
+      .attr("transform", "rotate(45)")
+      .attr("height", 10)
+      .attr("width", 10);
+
+    let comm = this.comm;
+    this.comm.on("slider-changed", this.sliderChanged, this);
+    sliderGroup.call(
+      d3
+        .drag()
+        .on("start", dragStarted)
+        .on("drag", function() {
+          dragged.call(this);
+          let transformStr = d3.select(this).attr("transform");
+          let x = transformStr
+            .substring(transformStr.indexOf("(") + 1, transformStr.indexOf(")"))
+            .split(",")[0];
+          comm.emit("slider-changed", x);
+        })
+        .on("end", function() {
+          dragEnded.call(this);
+        })
+    );
+
+    let transformStr = sliderGroup.attr("transform");
+    let x = transformStr
+      .substring(transformStr.indexOf("(") + 1, transformStr.indexOf(")"))
+      .split(",")[0];
+    this.comm.emit("slider-changed", x);
+  }
+
+  private sliderChanged(newSliderPosition: number) {
+    let cardinalityBars = d3.selectAll(".cardinalityBarG");
+
+    let domEnd = this.cardinalityScale.invert(newSliderPosition);
+
+    let scale = getCardinalityScaleData(domEnd, params.max_cardinality_width);
+
+    cardinalityBars
+      .html("")
+      .append("rect")
+      .attr("class", "cardinalityBar")
+      .attr("height", params.cardinality_height)
+      .attr("width", (d: RenderRow, i) => {
+        return scale(d.data.setSize);
+      });
+
+    cardinalityBars
+      .append("text")
+      .text((d: RenderRow, i) => {
+        return d.data.setSize;
+      })
+      .attr("transform", `translate(4,${params.textHeight})`);
   }
 
   private updateRows(
@@ -332,7 +399,7 @@ export class UpsetView extends ViewBase {
 
     let cardinalityBars = rowsMerged.selectAll(".cardinalityBarG");
 
-    let scale = getCardinalityScaleData(
+    this.cardinalityScale = getCardinalityScaleData(
       totalItems,
       params.max_cardinality_width
     );
@@ -342,7 +409,7 @@ export class UpsetView extends ViewBase {
       .attr("class", "cardinalityBar")
       .attr("height", params.cardinality_height)
       .attr("width", (d: RenderRow, i) => {
-        return scale(d.data.setSize);
+        return this.cardinalityScale(d.data.setSize);
       });
 
     cardinalityBars
@@ -527,4 +594,23 @@ function getCardinalityScaleData(
   }
 
   return scale;
+}
+
+function dragStarted() {
+  d3.select(this)
+    .raise()
+    .classed("active", true);
+}
+
+function dragged() {
+  let m = d3.event.x;
+  if (m >= 0 && m <= 200) {
+    if (Math.abs(m - 0) <= 0.9) m = 0;
+    if (Math.abs(m - 200) <= 0.9) m = 200;
+    d3.select(this).attr("transform", `translate(${m}, 3)`);
+  }
+}
+
+function dragEnded() {
+  d3.select(this).classed("active", false);
 }
