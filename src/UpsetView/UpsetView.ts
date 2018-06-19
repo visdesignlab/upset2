@@ -643,7 +643,7 @@ function dragStarted() {
 function dragged() {
   let m = d3.event.x;
   if (m >= 0 && m <= 200) {
-    if (Math.abs(m - 0) <= 0.9) m = 0;
+    if (Math.abs(m - 0) <= 0.9) m = 1;
     if (Math.abs(m - 200) <= 0.9) m = 200;
     d3.select(this).attr("transform", `translate(${m}, 3)`);
   }
