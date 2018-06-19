@@ -333,26 +333,7 @@ export class UpsetView extends ViewBase {
 
     let cols = colGroupSel.selectAll(".col").data(usedSets);
 
-    cols.exit().remove();
-
-    cols
-      .enter()
-      .append("g")
-      .attr("class", "col")
-      .merge(cols)
-      .on("mouseover", this.mouseover.bind(this))
-      .on("mouseout", this.mouseout.bind(this))
-      .on("click", this.click.bind(this))
-      .html("")
-      .append("rect")
-      .attr("class", (d, i) => {
-        return `columns ${d.id}`;
-      })
-      .attr("height", params.row_height * data.length)
-      .attr("width", params.col_width)
-      .attr("transform", (d, i) => {
-        return `translate(${params.row_height * i})`;
-      });
+    this.addColumns(cols, data);
 
     let rows = ssv.selectAll(".row").data(data, (d: RenderRow) => {
       return d.data.elementName;
@@ -364,78 +345,21 @@ export class UpsetView extends ViewBase {
       .duration(10)
       .remove();
 
-    let rowsMerged = rows
-      .enter()
-      .append("g")
-      .merge(rows);
-
-    rowsMerged
-      .html("")
-      .attr("class", (d, i) => {
-        return `row ${d.data.type.toString()}`;
-      })
-      .transition()
-      .duration(500)
-      .attr("transform", (d, i) => {
-        return `translate(0, ${params.row_height * i})`;
-      });
+    let rowsMerged = this.addRows(rows);
 
     let groups = rowsMerged.filter(d => d.data.type === RowType.GROUP);
     let subset = rowsMerged.filter(d => d.data.type === RowType.SUBSET);
 
-    groups
-      .append("rect")
-      .attr("class", "groupBackgroundRect")
-      .attr("width", "100%")
-      .attr("height", 30)
-      .attr("rx", 5)
-      .attr("ry", 5);
+    this.updateGroups(groups);
 
-    groups
-      .append("text")
-      .text((d, i) => {
-        return d.data.elementName;
-      })
-      .attr(
-        "transform",
-        `translate(4, ${params.row_height - params.textHeight / 2})`
-      );
-
-    subset
-      .append("rect")
-      .attr("class", "subsetBackgroundRect")
-      .attr("width", "70%")
-      .attr("height", 30)
-      .attr("rx", 5)
-      .attr("ry", 5)
-      .attr("transform", `translate(${params.connector_height}, 0)`);
+    this.updateSubsets(subset);
 
     let combinations = subset
       .append("g")
       .attr("class", "combinations")
       .attr("transform", `translate(${params.connector_height}, 0)`);
 
-    combinations.each(function(d, i) {
-      let combs = d3
-        .select(this)
-        .selectAll("circle")
-        .data((d.data as SubSet).combinedSets);
-
-      combs.exit().remove();
-      combs
-        .enter()
-        .append("circle")
-        .merge(combs)
-        .attr("r", params.col_width / 2 - 5)
-        .attr("cy", params.row_height / 2)
-        .attr("cx", (d, i) => {
-          return params.row_height * i + params.row_height / 2;
-        })
-        .attr("fill", (d, i) => {
-          if (d === 0) return "rgb(240,240,240)";
-          return "rgb(99,99,99)";
-        });
-    });
+    this.addCombinations(combinations);
 
     let t = data.filter(d => d.data.type === RowType.SUBSET)[0];
 
@@ -444,7 +368,7 @@ export class UpsetView extends ViewBase {
       (t.data as SubSet).combinedSets.length * params.col_width +
       params.col_width;
 
-    // Add cardinality bars
+    // * Add cardinality bars
     subset
       .append("g")
       .attr("class", "cardinalityBarG")
@@ -464,6 +388,108 @@ export class UpsetView extends ViewBase {
       });
 
     this.addCardinalityBars(rowsMerged as any, data, totalItems);
+  }
+
+  private updateSubsets(
+    subset: d3.Selection<d3.BaseType, RenderRow, d3.BaseType, {}>
+  ) {
+    subset
+      .append("rect")
+      .attr("class", "subsetBackgroundRect")
+      .attr("width", "70%")
+      .attr("height", 30)
+      .attr("rx", 5)
+      .attr("ry", 5)
+      .attr("transform", `translate(${params.connector_height}, 0)`);
+  }
+
+  private updateGroups(
+    groups: d3.Selection<d3.BaseType, RenderRow, d3.BaseType, {}>
+  ) {
+    groups
+      .append("rect")
+      .attr("class", "groupBackgroundRect")
+      .attr("width", "100%")
+      .attr("height", 30)
+      .attr("rx", 5)
+      .attr("ry", 5);
+    groups
+      .append("text")
+      .text((d, i) => {
+        return d.data.elementName;
+      })
+      .attr(
+        "transform",
+        `translate(4, ${params.row_height - params.textHeight / 2})`
+      );
+  }
+
+  private addRows(rows: d3.Selection<d3.BaseType, RenderRow, d3.BaseType, {}>) {
+    let rowsMerged = rows
+      .enter()
+      .append("g")
+      .merge(rows);
+    rowsMerged
+      .html("")
+      .attr("class", (d, i) => {
+        return `row ${d.data.type.toString()}`;
+      })
+      .transition()
+      .duration(500)
+      .attr("transform", (d, i) => {
+        return `translate(0, ${params.row_height * i})`;
+      });
+    return rowsMerged;
+  }
+
+  private addColumns(
+    cols: d3.Selection<d3.BaseType, Set, d3.BaseType, {}>,
+    data: RenderRow[]
+  ) {
+    cols.exit().remove();
+    cols
+      .enter()
+      .append("g")
+      .attr("class", "col")
+      .merge(cols)
+      .on("mouseover", this.mouseover.bind(this))
+      .on("mouseout", this.mouseout.bind(this))
+      .on("click", this.click.bind(this))
+      .html("")
+      .append("rect")
+      .attr("class", (d, i) => {
+        return `columns ${d.id}`;
+      })
+      .attr("height", params.row_height * data.length)
+      .attr("width", params.col_width)
+      .attr("transform", (d, i) => {
+        return `translate(${params.row_height * i})`;
+      });
+  }
+
+  private addCombinations(
+    combinations: d3.Selection<d3.BaseType, RenderRow, d3.BaseType, {}>
+  ) {
+    combinations.each(function(d, i) {
+      let combs = d3
+        .select(this)
+        .selectAll("circle")
+        .data((d.data as SubSet).combinedSets);
+      combs.exit().remove();
+      combs
+        .enter()
+        .append("circle")
+        .merge(combs)
+        .attr("r", params.col_width / 2 - 5)
+        .attr("cy", params.row_height / 2)
+        .attr("cx", (d, i) => {
+          return params.row_height * i + params.row_height / 2;
+        })
+        .attr("fill", (d, i) => {
+          if (d === 0) return "rgb(240,240,240)";
+          return "rgb(99,99,99)";
+        });
+    });
   }
 
   private addCardinalityBars(
@@ -496,12 +522,6 @@ export class UpsetView extends ViewBase {
       .attr("transform", `translate(4,${params.textHeight})`);
   }
 
-  /**
-   * @private
-   * @param {Set[]} data
-   * @param {number} maxSetSize
-   * @memberof UpsetView
-   */
   private updateUsedSetConnectors(data: Set[]) {
     let usedSetConnectorGroup = this.usedSetsHeaderGroup
       .append("g")
@@ -558,12 +578,6 @@ export class UpsetView extends ViewBase {
       );
   }
 
-  /**
-   * @private
-   * @param {Set[]} data
-   * @param {number} maxSetSize
-   * @memberof UpsetView
-   */
   private updateUsedSetHeader(data: Set[], maxSetSize: number) {
     let usedSetsGroup = this.usedSetsHeaderGroup
       .append("g")
