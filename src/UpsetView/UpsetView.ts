@@ -263,20 +263,12 @@ export class UpsetView extends ViewBase {
         );
     });
 
-    // cardinalityBars
-    //   .html("")
-    //   .append("rect")
-    //   .attr("class", "cardinalityBar")
-    //   .attr("height", params.cardinality_height)
-    //   .attr("width", (d: RenderRow, i) => {
-    //     return rowWidths[i];
-    //   });
     cardinalityBars
       .append("text")
       .text((d: RenderRow, i) => {
         return d.data.setSize;
       })
-      .attr("transform", `translate(4,${params.textHeight})`);
+      .attr("transform", `translate(204,${params.textHeight})`);
   }
 
   private updateRows(
