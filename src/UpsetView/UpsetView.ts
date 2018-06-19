@@ -6,7 +6,7 @@
  */
 import * as d3 from "d3";
 import { ScaleContinuousNumeric } from "d3";
-import { ViewBase } from "provenance_mvvm_framework";
+import { ViewBase, Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { SubSet } from "../DataStructure/SubSet";
 import { Data } from "./../DataStructure/Data";
@@ -111,93 +111,26 @@ export class UpsetView extends ViewBase {
 
     let cardinalityScaleGroup = d3.select(".cardinalityScaleGroup");
 
-    let topAxisG = cardinalityScaleGroup
-      .html("")
-      .append("g")
-      .attr("class", "overViewTopAxis");
+    this.addTopAxis(cardinalityScaleGroup, domainTicksArr);
+    this.addBottomAxis(cardinalityScaleGroup, domainTicksArr);
 
-    let topAxis = topAxisG
-      .append("path")
-      .attr("class", "axis domain up")
-      .attr("d", `M0 6 V0 H${params.cardinality_scale_width} V6`);
-
-    let ticksU = topAxisG.selectAll(".tick").data(domainTicksArr);
-    ticksU.exit().enter();
-
-    let ticksUpper = ticksU
-      .enter()
-      .append("g")
-      .attr("class", "tick")
-      .merge(ticksU)
-      .attr("transform", (d, i) => {
-        return `translate(${this.cardinalityScale(d)}, 0)`;
-      });
-    ticksUpper
-      .html("")
-      .append("line")
-      .attr("y2", 6)
-      .style("stroke", "black");
-
-    ticksUpper
-      .append("text")
-      .text((d, i) => {
-        return d;
-      })
-      .attr("dy", "1.8em")
-      .attr("text-anchor", "middle");
-
-    let bottomAxisG = cardinalityScaleGroup
-      .append("g")
-      .attr("class", "overViewBottomAxis");
-
-    bottomAxisG
-      .append("path")
-      .attr("class", "axis domain down")
-      .attr("d", `M0,18 v6 H${params.cardinality_scale_width} v-6`);
-
-    let ticksB = bottomAxisG.selectAll(".tick").data(domainTicksArr);
-    ticksB.exit().enter();
-
-    let ticksBottom = ticksB
-      .enter()
-      .append("g")
-      .attr("class", "tick")
-      .merge(ticksB)
-      .attr("transform", (d, i) => {
-        return `translate(${this.cardinalityScale(d)}, 18)`;
-      });
-
-    ticksBottom
-      .html("")
-      .append("line")
-      .attr("y2", 6)
-      .style("stroke", "black");
-
-    let sliderGroup = cardinalityScaleGroup
-      .append("g")
-      .attr("class", "sliderGroup")
-      .attr(
-        "transform",
-        `translate(${this.cardinalityScale(maxCardinality)}, 3)`
-      );
-
-    sliderGroup
-      .append("rect")
-      .attr("class", "sliderEl")
-      .attr("transform", "rotate(45)")
-      .attr("height", 10)
-      .attr("width", 10);
-
-    cardinalityScaleGroup
-      .append("rect")
-      .attr("class", "drawBrush")
-      .attr("height", 24)
-      .attr("width", () => {
-        return this.cardinalityScale(maxCardinality);
-      });
+    let sliderGroup = this.addSlider(cardinalityScaleGroup, maxCardinality);
 
     let comm = this.comm;
     this.comm.on("slider-changed", this.sliderChanged, this);
+    this.addDragToSlider(sliderGroup, comm);
+
+    let transformStr = sliderGroup.attr("transform");
+    let x = transformStr
+      .substring(transformStr.indexOf("(") + 1, transformStr.indexOf(")"))
+      .split(",")[0];
+    this.comm.emit("slider-changed", x);
+  }
+
+  private addDragToSlider(
+    sliderGroup: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
+    comm: Mitt
+  ) {
     sliderGroup.call(
       d3
         .drag()
@@ -214,12 +147,97 @@ export class UpsetView extends ViewBase {
           dragEnded.call(this);
         })
     );
+  }
 
-    let transformStr = sliderGroup.attr("transform");
-    let x = transformStr
-      .substring(transformStr.indexOf("(") + 1, transformStr.indexOf(")"))
-      .split(",")[0];
-    this.comm.emit("slider-changed", x);
+  private addSlider(
+    cardinalityScaleGroup: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
+    maxCardinality: number
+  ) {
+    let sliderGroup = cardinalityScaleGroup
+      .append("g")
+      .attr("class", "sliderGroup")
+      .attr(
+        "transform",
+        `translate(${this.cardinalityScale(maxCardinality)}, 3)`
+      );
+    sliderGroup
+      .append("rect")
+      .attr("class", "sliderEl")
+      .attr("transform", "rotate(45)")
+      .attr("height", 10)
+      .attr("width", 10);
+    cardinalityScaleGroup
+      .append("rect")
+      .attr("class", "drawBrush")
+      .attr("height", 24)
+      .attr("width", () => {
+        return this.cardinalityScale(maxCardinality);
+      });
+    return sliderGroup;
+  }
+
+  private addBottomAxis(
+    cardinalityScaleGroup: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
+    domainTicksArr: number[]
+  ) {
+    let bottomAxisG = cardinalityScaleGroup
+      .append("g")
+      .attr("class", "overViewBottomAxis");
+    bottomAxisG
+      .append("path")
+      .attr("class", "axis domain down")
+      .attr("d", `M0,18 v6 H${params.cardinality_scale_width} v-6`);
+    let ticksB = bottomAxisG.selectAll(".tick").data(domainTicksArr);
+    ticksB.exit().enter();
+    let ticksBottom = ticksB
+      .enter()
+      .append("g")
+      .attr("class", "tick")
+      .merge(ticksB)
+      .attr("transform", (d, i) => {
+        return `translate(${this.cardinalityScale(d)}, 18)`;
+      });
+    ticksBottom
+      .html("")
+      .append("line")
+      .attr("y2", 6)
+      .style("stroke", "black");
+  }
+
+  private addTopAxis(
+    cardinalityScaleGroup: d3.Selection<d3.BaseType, {}, HTMLElement, any>,
+    domainTicksArr: number[]
+  ) {
+    let topAxisG = cardinalityScaleGroup
+      .html("")
+      .append("g")
+      .attr("class", "overViewTopAxis");
+    topAxisG
+      .append("path")
+      .attr("class", "axis domain up")
+      .attr("d", `M0 6 V0 H${params.cardinality_scale_width} V6`);
+    let ticksU = topAxisG.selectAll(".tick").data(domainTicksArr);
+    ticksU.exit().enter();
+    let ticksUpper = ticksU
+      .enter()
+      .append("g")
+      .attr("class", "tick")
+      .merge(ticksU)
+      .attr("transform", (d, i) => {
+        return `translate(${this.cardinalityScale(d)}, 0)`;
+      });
+    ticksUpper
+      .html("")
+      .append("line")
+      .attr("y2", 6)
+      .style("stroke", "black");
+    ticksUpper
+      .append("text")
+      .text((d, i) => {
+        return d;
+      })
+      .attr("dy", "1.8em")
+      .attr("text-anchor", "middle");
   }
 
   private sliderChanged(newSliderPosition: number) {
