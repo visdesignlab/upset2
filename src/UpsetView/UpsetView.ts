@@ -70,7 +70,110 @@ export class UpsetView extends ViewBase {
       Math.max(...data.renderRows.map(d => d.data.setSize))
     );
 
+    this.updateDeviationScale(data.renderRows, data.usedSets.length);
+
     (window as any).data = data;
+  }
+
+  private updateDeviationScale(data: RenderRow[], usedSetLength: number) {
+    let dsg = this.headerSVG.selectAll(".devScaleGroup").data([1]);
+    dsg.exit().remove();
+
+    dsg
+      .enter()
+      .append("g")
+      .attr("class", "devScaleGroup")
+      .merge(dsg)
+      .html("")
+      .attr(
+        "transform",
+        `translate(${params.connector_height +
+          params.row_height * (usedSetLength + 1) +
+          params.cardinality_scale_width +
+          params.col_width}, ${params.header_height - params.dev_scale_height})`
+      );
+    let devScaleGroup = this.headerSVG.select(".devScaleGroup");
+
+    let devScale = devScaleGroup.append("g").attr("class", "deviationScale");
+
+    devScale
+      .append("path")
+      .attr(
+        "d",
+        `M0,${params.dev_scale_height - 6} v6 h${params.deviation_width} v-6`
+      )
+      .attr("stroke", "black")
+      .style("fill", "none");
+
+    let maxDev = Math.max(
+      ...data.map(d => Math.abs((d.data as Group | SubSet).disproportionality))
+    );
+
+    maxDev = Math.ceil((maxDev + 1) / 10) * 10;
+    let upperLimit = maxDev;
+    if (maxDev < 90) upperLimit += 10;
+
+    let domain = [-upperLimit, -upperLimit / 2, 0, upperLimit / 2, upperLimit];
+
+    let scale = d3
+      .scaleLinear()
+      .domain([-upperLimit, upperLimit])
+      .range([0, params.deviation_width]);
+
+    let ticksGroup = devScale
+      .append("g")
+      .attr("class", "tickGroup")
+      .attr("transform", `translate(0,${params.dev_scale_height - 6})`);
+
+    let ticks = ticksGroup.selectAll("tick").data(domain);
+
+    ticks.exit().remove();
+
+    let ticksColl = ticks
+      .enter()
+      .append("g")
+      .attr("class", "tickG")
+      .merge(ticks)
+      .attr("transform", (d, i) => {
+        return `translate(${scale(d)},0)`;
+      });
+
+    ticksColl
+      .append("line")
+      .attr("x1", 0)
+      .attr("x2", 0)
+      .attr("y1", 0)
+      .attr("y2", 6)
+      .attr("stroke", "black");
+
+    ticksColl
+      .append("text")
+      .attr("class", "devScaleText")
+      .text((d, i) => `${d}%`)
+      .attr("text-anchor", "middle")
+      .attr("dy", "-0.3em");
+
+    devScaleGroup
+      .append("rect")
+      .attr("height", 30)
+      .attr("width", params.deviation_width)
+      .attr("fill", "#ccc")
+      .on("mouseover", function() {
+        d3.select(this).attr("fill", "#999");
+      })
+      .on("mouseout", function() {
+        d3.select(this).attr("fill", "#ccc");
+      })
+      .on("click", () => {});
+
+    devScaleGroup
+      .append("text")
+      .text("Deviation")
+      .attr("text-anchor", "middle")
+      .attr(
+        "transform",
+        `translate(${params.deviation_width / 2}, ${params.textHeight})`
+      );
   }
 
   private updateCardinalityScale(
@@ -323,10 +426,11 @@ export class UpsetView extends ViewBase {
 
     cardinalityBars
       .append("text")
+      .attr("class", "cardinalityText")
       .text((d: RenderRow, i) => {
         return d.data.setSize;
       })
-      .attr("transform", `translate(204,${params.textHeight})`);
+      .attr("transform", `translate(4,${params.textHeight})`);
   }
 
   private updateRows(
@@ -368,7 +472,7 @@ export class UpsetView extends ViewBase {
     rows
       .exit()
       .transition()
-      .duration(10)
+      .duration(100)
       .remove();
 
     let rowsMerged = this.addRows(rows);
@@ -410,8 +514,9 @@ export class UpsetView extends ViewBase {
       .append("g")
       .attr("class", "deviationBarGroup")
       .attr("transform", (d, i) => {
-        return `translate(${cardinality_offset + 250}, ${(params.row_height -
-          params.cardinality_height) /
+        return `translate(${cardinality_offset +
+          params.deviation_width +
+          params.col_width}, ${(params.row_height - params.cardinality_height) /
           2})`;
       });
 
@@ -431,18 +536,16 @@ export class UpsetView extends ViewBase {
       })
     );
 
-    let scale = getDeviationScale(maxDeviation * 1000, params.deviation_width);
+    let scale = getDeviationScale(maxDeviation, params.deviation_width);
 
     devBarGroups
       .append("rect")
       .attr("height", params.deviation_bar_height)
       .attr("width", (d: RenderRow, i) => {
-        return scale(
-          Math.abs((d.data as SubSet | Group).disproportionality * 1000)
-        );
+        return scale(Math.abs((d.data as SubSet | Group).disproportionality));
       })
       .attr("transform", (d: RenderRow, i) => {
-        let dev = (d.data as SubSet | Group).disproportionality * 1000;
+        let dev = (d.data as SubSet | Group).disproportionality;
         if (dev < 0) {
           return `translate(${params.deviation_width / 2 -
             scale(Math.abs(dev))}, 0)`;
@@ -451,7 +554,7 @@ export class UpsetView extends ViewBase {
         return `translate(${params.deviation_width / 2}, 0)`;
       })
       .attr("class", (d: RenderRow, i) => {
-        let dev = (d.data as SubSet | Group).disproportionality * 1000;
+        let dev = (d.data as SubSet | Group).disproportionality;
         if (dev < 0) return "negative";
         return "positive";
       });
@@ -502,7 +605,7 @@ export class UpsetView extends ViewBase {
         return `row ${d.data.type.toString()}`;
       })
       .transition()
-      .duration(500)
+      .duration(100)
       .attr("transform", (d, i) => {
         return `translate(0, ${params.row_height * i})`;
       });

@@ -27,6 +27,7 @@ let params = {
     return this.cardinality_height;
   },
 
+  dev_scale_height: 60,
   deviation_width: 200
 };
 
