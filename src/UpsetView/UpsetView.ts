@@ -1,3 +1,4 @@
+import { Group } from "./../DataStructure/Group";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
@@ -394,16 +395,7 @@ export class UpsetView extends ViewBase {
       params.col_width;
 
     // * Add cardinality bars
-    subset
-      .append("g")
-      .attr("class", "cardinalityBarG")
-      .attr("transform", (d, i) => {
-        return `translate(${cardinality_offset}, ${(params.row_height -
-          params.cardinality_height) /
-          2})`;
-      });
-
-    groups
+    rowsMerged
       .append("g")
       .attr("class", "cardinalityBarG")
       .attr("transform", (d, i) => {
@@ -413,6 +405,56 @@ export class UpsetView extends ViewBase {
       });
 
     this.addCardinalityBars(rowsMerged as any, data, totalItems);
+
+    rowsMerged
+      .append("g")
+      .attr("class", "deviationBarGroup")
+      .attr("transform", (d, i) => {
+        return `translate(${cardinality_offset + 250}, ${(params.row_height -
+          params.cardinality_height) /
+          2})`;
+      });
+
+    this.addDeviationBars(rowsMerged as any, data, totalItems);
+  }
+
+  private addDeviationBars(
+    rowsMerged: d3Selection,
+    data: RenderRow[],
+    totalItems: number
+  ) {
+    let devBarGroups = rowsMerged.selectAll(".deviationBarGroup");
+
+    let maxDeviation = Math.max(
+      ...data.map((d: RenderRow) => {
+        return Math.abs((d.data as SubSet | Group).disproportionality);
+      })
+    );
+
+    let scale = getDeviationScale(maxDeviation * 1000, params.deviation_width);
+
+    devBarGroups
+      .append("rect")
+      .attr("height", params.deviation_bar_height)
+      .attr("width", (d: RenderRow, i) => {
+        return scale(
+          Math.abs((d.data as SubSet | Group).disproportionality * 1000)
+        );
+      })
+      .attr("transform", (d: RenderRow, i) => {
+        let dev = (d.data as SubSet | Group).disproportionality * 1000;
+        if (dev < 0) {
+          return `translate(${params.deviation_width / 2 -
+            scale(Math.abs(dev))}, 0)`;
+        }
+
+        return `translate(${params.deviation_width / 2}, 0)`;
+      })
+      .attr("class", (d: RenderRow, i) => {
+        let dev = (d.data as SubSet | Group).disproportionality * 1000;
+        if (dev < 0) return "negative";
+        return "positive";
+      });
   }
 
   private updateSubsets(
@@ -706,6 +748,16 @@ function setSizeScale(
     .nice()
     .range([0, maxRange]);
   return scale(size);
+}
+
+function getDeviationScale(
+  maxDeviation: number,
+  max_dev_bar_width: number
+): d3.ScaleContinuousNumeric<any, any> {
+  return d3
+    .scaleLinear()
+    .domain([0, maxDeviation])
+    .range([0, max_dev_bar_width / 2]);
 }
 
 function getCardinalityScaleData(

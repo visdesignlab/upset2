@@ -21,7 +21,13 @@ let params = {
   cardinality_scale_height: 100,
   get cardinality_scale_width(): number {
     return this.max_cardinality_width;
-  }
+  },
+
+  get deviation_bar_height(): number {
+    return this.cardinality_height;
+  },
+
+  deviation_width: 200
 };
 
 export default params;
