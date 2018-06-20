@@ -23,7 +23,7 @@ export class SubSet extends Set {
     this.selections = {};
     this.depth = depth;
     this.expectedProb = expectedProb;
-    let observedProb = this.setSize * 1.0 / this.depth;
+    let observedProb = (this.setSize * 1.0) / this.depth;
     this.disproportionality = observedProb - expectedProb;
     this.type = RowType.SUBSET;
   }

@@ -66,13 +66,11 @@ export class Group extends BaseElement {
 
     this.items = this.items.concat(group.items);
     this.setSize += group.setSize;
-    this.expectedProb = group.expectedProb;
-    this.disproportionality = group.disproportionality;
+    this.expectedProb += group.expectedProb;
+    this.disproportionality += group.disproportionality;
   }
 
   contains(element: SubSet): boolean {
-    if (this.subSets.indexOf(element) >= 0) return true;
-    // if (element === this.aggregate) return true;
-    return false;
+    return this.subSets.indexOf(element) >= 0;
   }
 }

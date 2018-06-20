@@ -165,7 +165,7 @@ export class Data {
           }
         });
 
-        expectedValue += notExpectedValue;
+        expectedValue *= notExpectedValue;
 
         let list = aggregateIntersection[combinedSetsFlat];
         if (list == null) {
