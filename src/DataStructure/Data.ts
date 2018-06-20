@@ -28,6 +28,7 @@ export class Data {
   depth: number = 0;
   noDefaultSets: number = 6;
   renderConfig: RenderConfig;
+  unusedSets: Array<Set> = [];
 
   get maxCardinality(): number {
     return Math.max(...this.renderRows.map(d => d.data.setSize));
@@ -37,6 +38,7 @@ export class Data {
     this.app = app;
     this.renderConfig = new RenderConfig();
     this.app.on("filter-changed", this.setupRenderRows, this);
+    this.app.on("add-subset", this.addSet, this);
   }
 
   async load(
@@ -335,8 +337,23 @@ export class Data {
       if (i < this.noDefaultSets) {
         set.isSelected = true;
         this.usedSets.push(set);
+      } else {
+        set.isSelected = false;
+        this.unusedSets.push(set);
       }
     }
+  }
+
+  public addSet(idx: number) {
+    let set = this.sets[idx];
+    set.isSelected = true;
+    this.usedSets.push(set);
+    console.log(this.unusedSets);
+    let toRemove = this.unusedSets.findIndex((s, i) => s.id === set.id);
+    this.unusedSets.splice(toRemove, 1);
+    console.log(this.unusedSets);
+    this.setUpSubSets();
+    this.app.emit("render-config", this.renderConfig);
   }
 
   /**
