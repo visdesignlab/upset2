@@ -77,37 +77,14 @@ export class UpsetView extends ViewBase {
     totalItems: number,
     maxCardinality: number
   ) {
-    let sections = 5;
-
-    if (totalItems > 10000) sections = 4;
-
-    let domainTicksArr: Array<number> = [...Array(sections + 1).keys()];
-    let t = totalItems / sections;
-    domainTicksArr.forEach((d, i) => {
-      domainTicksArr[i] = Math.floor(t * i);
-    });
+    let domainTicksArr: Array<number> = this.getDomainTicksArr(totalItems);
 
     this.cardinalityScale = getCardinalityScaleData(
       totalItems,
       params.max_cardinality_width
     );
 
-    let csg = this.headerSVG.selectAll(".cardinalityScaleGroup").data([1]);
-    csg.exit().remove();
-    csg
-      .enter()
-      .append("g")
-      .attr("class", "cardinalityScaleGroup")
-      .merge(csg)
-      .attr(
-        "transform",
-        `translate(${params.connector_height +
-          (usedSetCount + 1) * params.col_width}, ${params.header_height -
-          params.cardinality_scale_height})`
-      )
-      .append("rect")
-      .attr("height", params.cardinality_scale_height)
-      .attr("width", params.cardinality_scale_width);
+    this.addCardinalityScaleGroup(usedSetCount);
 
     let cardinalityScaleGroup = d3.select(".cardinalityScaleGroup");
 
@@ -125,6 +102,36 @@ export class UpsetView extends ViewBase {
       .substring(transformStr.indexOf("(") + 1, transformStr.indexOf(")"))
       .split(",")[0];
     this.comm.emit("slider-changed", x);
+  }
+
+  private getDomainTicksArr(totalItems: number) {
+    let sections = 5;
+    if (totalItems > 10000) sections = 4;
+    let domainTicksArr: Array<number> = [...Array(sections + 1).keys()];
+    let t = totalItems / sections;
+    domainTicksArr.forEach((d, i) => {
+      domainTicksArr[i] = Math.floor(t * i);
+    });
+    return domainTicksArr;
+  }
+
+  private addCardinalityScaleGroup(usedSetCount: number) {
+    let csg = this.headerSVG.selectAll(".cardinalityScaleGroup").data([1]);
+    csg.exit().remove();
+    csg
+      .enter()
+      .append("g")
+      .attr("class", "cardinalityScaleGroup")
+      .merge(csg)
+      .attr(
+        "transform",
+        `translate(${params.connector_height +
+          (usedSetCount + 1) * params.col_width}, ${params.header_height -
+          params.cardinality_scale_height})`
+      )
+      .append("rect")
+      .attr("height", params.cardinality_scale_height)
+      .attr("width", params.cardinality_scale_width);
   }
 
   private addDragToSlider(
@@ -489,6 +496,8 @@ export class UpsetView extends ViewBase {
     combinations: d3.Selection<d3.BaseType, RenderRow, d3.BaseType, {}>
   ) {
     combinations.each(function(d, i) {
+      let combo = d3.select(this);
+
       let combs = d3
         .select(this)
         .selectAll("circle")
@@ -507,6 +516,24 @@ export class UpsetView extends ViewBase {
           if (d === 0) return "rgb(240,240,240)";
           return "rgb(99,99,99)";
         });
+
+      let combSet = (d.data as SubSet).combinedSets;
+      if (d3.sum(combSet) > 1) {
+        let first = combSet.indexOf(1);
+        let last = combSet.lastIndexOf(1);
+
+        let firstX = params.row_height * first + params.row_height / 2;
+        let lastX = params.row_height * last + params.row_height / 2;
+        let y = params.row_height / 2;
+
+        combo
+          .append("line")
+          .attr("x1", firstX)
+          .attr("y1", y)
+          .attr("x2", lastX)
+          .attr("y2", y)
+          .attr("class", "cellConnector");
+      }
     });
   }
 
