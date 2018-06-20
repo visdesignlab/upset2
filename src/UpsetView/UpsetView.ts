@@ -472,7 +472,7 @@ export class UpsetView extends ViewBase {
     rows
       .exit()
       .transition()
-      .duration(100)
+      .duration(50)
       .remove();
 
     let rowsMerged = this.addRows(rows);
@@ -605,7 +605,7 @@ export class UpsetView extends ViewBase {
         return `row ${d.data.type.toString()}`;
       })
       .transition()
-      .duration(100)
+      .duration(500)
       .attr("transform", (d, i) => {
         return `translate(0, ${params.row_height * i})`;
       });
