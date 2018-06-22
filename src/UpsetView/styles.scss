@@ -84,3 +84,9 @@ g .row {
   fill: #ccc;
   pointer-events: all
 }
+
+#mid-bar {
+  height: 1000px;
+  overflow-y: scroll;
+  overflow-x: scroll;
+}

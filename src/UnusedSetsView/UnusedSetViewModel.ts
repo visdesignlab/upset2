@@ -1,3 +1,4 @@
+import { Set } from "./../DataStructure/Set";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:29
@@ -16,6 +17,9 @@ export class UnusedSetViewModel extends ViewModelBase {
   constructor(view: UnusedSetView, app: Application) {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
+    this.comm.on("add-set-trigger", (d: Set) => {
+      this.App.emit("add-set", d);
+    });
   }
 
   update(data: Data) {

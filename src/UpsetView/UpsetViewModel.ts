@@ -1,3 +1,4 @@
+import { Set } from "./../DataStructure/Set";
 import { Data } from "./../DataStructure/Data";
 /*
  * @Author: Kiran Gadhave 
@@ -13,6 +14,9 @@ export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
+    this.comm.on("remove-set-trigger", (set: Set) => {
+      this.App.emit("remove-set", set);
+    });
     this.comm.on("set-filter", idx => {
       this.App.emit("filter-changed", null, idx);
       this.App.emit("set-agg-none");

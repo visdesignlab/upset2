@@ -31,24 +31,17 @@ export class UpsetView extends ViewBase {
   create() {
     let root = d3.select(this.Root);
     root.html(root.html() + html);
-    this.headerVis = d3
-      .select(this.Root)
-      .select("#header-vis")
-      .style("padding", "5px 0px 0px 0px");
-    this.bodyVis = d3.select(this.Root).select("#body-vis");
 
-    let width = (this.headerVis.node() as HTMLElement).getBoundingClientRect()
-      .width;
+    this.headerVis = d3.select(this.Root).select("#header-vis");
+
+    this.bodyVis = d3.select(this.Root).select("#body-vis");
 
     this.headerSVG = this.headerVis
       .append("svg")
-      .style("width", width)
+      .attr("width", "100%")
       .style("height", params.header_height);
 
-    this.bodySVG = this.bodyVis
-      .append("svg")
-      .style("width", width)
-      .style("height", 1000);
+    this.bodySVG = this.bodyVis.append("svg").attr("width", "100%");
 
     this.usedSetsHeaderGroup = this.headerSVG
       .append("g")
@@ -73,7 +66,14 @@ export class UpsetView extends ViewBase {
 
     this.updateDeviationScale(data.renderRows, data.usedSets.length);
 
-    (window as any).data = data;
+    let box = (this.bodySVG.node() as any).getBBox();
+    this.bodySVG.attr("height", box.height);
+    this.bodySVG.attr("width", box.width + 50);
+    this.headerSVG.attr("width", box.width + 50);
+
+    // box = (this.headerSVG.node() as any).getBBox();
+    // viewbox = [box.x, box.y, box.width, box.height].join(" ");
+    // this.headerSVG.attr("viewBox", viewbox);
   }
 
   private updateDeviationScale(data: RenderRow[], usedSetLength: number) {
@@ -834,7 +834,9 @@ export class UpsetView extends ViewBase {
       .style("stroke-width", "0px");
   }
 
-  private click(data: Set, idx: number) {}
+  private click(data: Set, idx: number) {
+    this.comm.emit("remove-set-trigger", data);
+  }
 
   private connectorClick(data: Set, idx: number) {
     this.comm.emit("set-filter", idx);

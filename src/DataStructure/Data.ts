@@ -38,7 +38,8 @@ export class Data {
     this.app = app;
     this.renderConfig = new RenderConfig();
     this.app.on("filter-changed", this.setupRenderRows, this);
-    this.app.on("add-subset", this.addSet, this);
+    this.app.on("add-set", this.addSet, this);
+    this.app.on("remove-set", this.removeSet, this);
   }
 
   async load(
@@ -305,7 +306,7 @@ export class Data {
     }
 
     // this.maxCardinality = this.attributes[this.attributes.length - 2].max;
-    // // hack
+    // // hackthis.renderConfig
     // if (isNaN(this.maxCardinality)) {
     //   this.maxCardinality = this.sets.length;
     // }
@@ -344,15 +345,23 @@ export class Data {
     }
   }
 
-  public addSet(idx: number) {
-    let set = this.sets[idx];
+  public addSet(set: Set) {
     set.isSelected = true;
     this.usedSets.push(set);
-    console.log(this.unusedSets);
     let toRemove = this.unusedSets.findIndex((s, i) => s.id === set.id);
     this.unusedSets.splice(toRemove, 1);
-    console.log(this.unusedSets);
     this.setUpSubSets();
+    this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+    this.app.emit("render-config", this.renderConfig);
+  }
+
+  public removeSet(set: Set) {
+    set.isSelected = false;
+    let toRemove = this.usedSets.findIndex((s, i) => s.id === set.id);
+    this.usedSets.splice(toRemove, 1);
+    this.unusedSets.push(set);
+    this.setUpSubSets();
+    this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
     this.app.emit("render-config", this.renderConfig);
   }
 

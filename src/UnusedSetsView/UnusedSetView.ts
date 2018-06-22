@@ -1,5 +1,3 @@
-import { Set } from "./../DataStructure/Set";
-import { d3Selection } from "./../type_declarations/types";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:24
@@ -10,6 +8,7 @@ import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
 import { Data } from "./../DataStructure/Data";
 import { d3Selection } from "./../type_declarations/types";
+import { Set } from "./../DataStructure/Set";
 import html from "./unusedset.view.html";
 export class UnusedSetView extends ViewBase {
   headerVis: d3Selection;
@@ -48,6 +47,9 @@ export class UnusedSetView extends ViewBase {
       .attr("class", "dropdown-item")
       .text((d, i) => {
         return d.elementName;
+      })
+      .on("click", (d, i) => {
+        this.comm.emit("add-set-trigger", d);
       });
   }
 }
