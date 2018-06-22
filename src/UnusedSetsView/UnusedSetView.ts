@@ -4,9 +4,8 @@
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-05 18:26:24
  */
-import * as d3 from "d3";
+import { Data } from "./../DataStructure/Data";
 import { ViewBase } from "provenance_mvvm_framework";
-import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
 
 export class UnusedSetInfoView extends ViewBase {
   constructor(root: HTMLElement) {
@@ -15,5 +14,5 @@ export class UnusedSetInfoView extends ViewBase {
 
   create() {}
 
-  update(data: IDataSetInfo) {}
+  update(data: Data) {}
 }
