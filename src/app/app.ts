@@ -1,3 +1,4 @@
+import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 /*
  * @Author: Kiran Gadhave 
@@ -22,6 +23,7 @@ import "popper.js";
 import "bootstrap";
 import "./styles.scss";
 import { UpsetView } from "../UpsetView/UpsetView";
+import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
 
 let application = new Application("Upset2.0", "1.0.0");
 DataUtils.app = application;
@@ -41,6 +43,11 @@ vf.views["DataSetInfo"] = new DataSetInfoViewModel(
 
 vf.views["NavBar"] = new NavBarViewModel(
   new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
+  application
+);
+
+vf.views["Upset"] = new UnusedSetViewModel(
+  new UnusedSetView(d3.select("#mid-bar").node() as HTMLElement),
   application
 );
 

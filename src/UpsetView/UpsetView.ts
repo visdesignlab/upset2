@@ -29,7 +29,8 @@ export class UpsetView extends ViewBase {
   }
 
   create() {
-    d3.select(this.Root).html(html);
+    let root = d3.select(this.Root);
+    root.html(root.html() + html);
     this.headerVis = d3
       .select(this.Root)
       .select("#header-vis")

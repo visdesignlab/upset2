@@ -5,14 +5,15 @@
  * @Last Modified time: 2018-06-08 15:33:52
  */
 import { ViewModelBase } from "provenance_mvvm_framework";
-import { UnusedSetInfoView } from "./UnusedSetView";
+import { UnusedSetView } from "./UnusedSetView";
 import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
 import { Application } from "provenance_mvvm_framework";
 import { Data } from "./../DataStructure/Data";
+import "./style.scss";
 
-export class UnusedSetInfoViewModel extends ViewModelBase {
+export class UnusedSetViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
-  constructor(view: UnusedSetInfoView, app: Application) {
+  constructor(view: UnusedSetView, app: Application) {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
   }
