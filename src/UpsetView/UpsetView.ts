@@ -38,7 +38,6 @@ export class UpsetView extends ViewBase {
 
     this.headerSVG = this.headerVis
       .append("svg")
-      .attr("width", "100%")
       .style("height", params.header_height);
 
     this.bodySVG = this.bodyVis.append("svg").attr("width", "100%");
@@ -68,8 +67,8 @@ export class UpsetView extends ViewBase {
 
     let box = (this.bodySVG.node() as any).getBBox();
     this.bodySVG.attr("height", box.height);
-    this.bodySVG.attr("width", box.width + 50);
-    this.headerSVG.attr("width", box.width + 50);
+    this.bodySVG.attr("width", box.width + 100);
+    this.headerSVG.attr("width", box.width + 100);
 
     // box = (this.headerSVG.node() as any).getBBox();
     // viewbox = [box.x, box.y, box.width, box.height].join(" ");
@@ -567,7 +566,7 @@ export class UpsetView extends ViewBase {
     subset
       .append("rect")
       .attr("class", "subsetBackgroundRect")
-      .attr("width", "70%")
+      .attr("width", "100%")
       .attr("height", 30)
       .attr("rx", 5)
       .attr("ry", 5)
