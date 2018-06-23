@@ -462,7 +462,6 @@ export class Data {
         sortBySetId
       );
     }
-    console.log(this.maxCardinality);
     this.app.emit("render-rows-changed", this);
   }
 
