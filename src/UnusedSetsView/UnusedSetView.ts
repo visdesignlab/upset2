@@ -21,7 +21,7 @@ export class UnusedSetView extends ViewBase {
 
     let view = this.headerVis.append("div").attr("class", "unused-set-view");
 
-    view.html(html);
+    view.html(view.html() + html);
   }
 
   update(data: Data) {
