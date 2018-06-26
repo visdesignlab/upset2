@@ -6,14 +6,24 @@
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
+import { Data } from "./../DataStructure/Data";
 import { d3Selection } from "./../type_declarations/types";
 import "./styles.scss";
 import html from "./upset.view.html";
+import { usedSetsHeader } from "./uiBuilderFunctions";
 
 export class UpsetView extends ViewBase {
   svg: d3Selection;
   headerGroup: d3Selection;
   bodyGroup: d3Selection;
+  selectedSetHeaderGroup: d3Selection;
+  cardinalityScaleGroup: d3Selection;
+  deviationGroup: d3Selection;
+  attributeHeaders: d3Selection;
+  setsComboGroup: d3Selection;
+  cardinalityBarGroup: d3Selection;
+  deviationBars: d3Selection;
+  attributeBars: d3Selection;
 
   constructor(root: HTMLElement) {
     super(root);
@@ -29,17 +39,35 @@ export class UpsetView extends ViewBase {
       .append("svg");
 
     this.headerGroup = this.svg.append("g").attr("class", "header");
-    this.headerGroup.append("g").attr("class", "selected-sets-header");
-    this.headerGroup.append("g").attr("class", "cardinality-scale-group");
-    this.headerGroup.append("g").attr("class", "deviation-group");
-    this.headerGroup.append("g").attr("class", "attribute-headers");
+    this.selectedSetHeaderGroup = this.headerGroup
+      .append("g")
+      .attr("class", "selected-sets-header");
+    this.cardinalityScaleGroup = this.headerGroup
+      .append("g")
+      .attr("class", "cardinality-scale-group");
+    this.deviationGroup = this.headerGroup
+      .append("g")
+      .attr("class", "deviation-group");
+    this.attributeHeaders = this.headerGroup
+      .append("g")
+      .attr("class", "attribute-headers");
 
     this.bodyGroup = this.svg.append("g").attr("class", "body");
-    this.bodyGroup.append("g").attr("class", "sets-combo-group");
-    this.bodyGroup.append("g").attr("class", "cardinality-bar-group");
-    this.bodyGroup.append("g").attr("class", "deviation-bars");
-    this.bodyGroup.append("g").attr("class", "attribute-bars");
+    this.setsComboGroup = this.bodyGroup
+      .append("g")
+      .attr("class", "sets-combo-group");
+    this.cardinalityBarGroup = this.bodyGroup
+      .append("g")
+      .attr("class", "cardinality-bar-group");
+    this.deviationBars = this.bodyGroup
+      .append("g")
+      .attr("class", "deviation-bars");
+    this.attributeBars = this.bodyGroup
+      .append("g")
+      .attr("class", "attribute-bars");
   }
 
-  update() {}
+  update(data: Data) {
+    usedSetsHeader(data.usedSets, this.selectedSetHeaderGroup);
+  }
 }
