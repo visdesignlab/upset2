@@ -34,6 +34,12 @@ export class UnusedSetView extends ViewBase {
       .select("#unused-set-options");
 
     this.updateDropdownOptions(options, data.unusedSets);
+
+    if (data.unusedSets.length < 1) {
+      dropDown.style("display", "none");
+    } else {
+      dropDown.style("display", "block");
+    }
   }
 
   updateDropdownOptions(opt: d3Selection, data: Set[]) {

@@ -68,6 +68,12 @@ export class UpsetView extends ViewBase {
   }
 
   update(data: Data) {
-    usedSetsHeader(data.usedSets, this.selectedSetHeaderGroup);
+    usedSetsHeader(
+      data.usedSets,
+      this.selectedSetHeaderGroup,
+      d3.max(data.sets, d => {
+        return d.setSize;
+      })
+    );
   }
 }

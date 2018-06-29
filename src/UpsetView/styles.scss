@@ -5,8 +5,12 @@
 }
 
 .used-set-background {
-  fill: #ccc;
-  opacity: 0.5;
-  stroke: #bbb;
+  fill: rgb(240, 240, 240);
+  stroke: none;
+}
+
+.used-set-foreground {
+  fill: #636363;
+  stroke: white;
   stroke-width: 1px;
 }
