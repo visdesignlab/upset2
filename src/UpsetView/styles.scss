@@ -34,8 +34,7 @@
 
 .subset-background-rect {
   fill: none;
-  stroke: black;
-  stroke-width: 0.1px;
+  stroke: none;
 }
 
 .group-background-rect {
@@ -55,4 +54,9 @@
 
 .member {
   fill: rgb(99, 99, 99);
+}
+
+.combination-line {
+  stroke: rgb(99, 99, 99);
+  stroke-width: 3px;
 }

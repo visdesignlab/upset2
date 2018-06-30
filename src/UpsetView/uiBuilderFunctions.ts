@@ -228,10 +228,16 @@ function addCombinations(subset: d3Selection) {
   let combinationsGroup = subset.append("g").attr("class", "combination");
 
   combinationsGroup.each(function(d: RenderRow, i) {
+    let membershipDetails = (d.data as SubSet).combinedSets;
+
+    let degree = membershipDetails.reduce((i, j) => i + j, 0);
+    let first = membershipDetails.indexOf(1);
+    let last = membershipDetails.lastIndexOf(1);
+
     let comboGroup = d3
       .select(this)
       .selectAll(".set-membership")
-      .data((d.data as SubSet).combinedSets);
+      .data(membershipDetails);
 
     comboGroup
       .exit()
@@ -252,6 +258,16 @@ function addCombinations(subset: d3Selection) {
         if (d === 0) return `set-membership not-member`;
         return `set-membership member`;
       });
+
+    if (degree > 1) {
+      d3.select(this)
+        .append("line")
+        .attr("class", "combination-line")
+        .attr("x1", params.column_width / 2 + params.column_width * first)
+        .attr("x2", params.column_width / 2 + params.column_width * last)
+        .attr("y1", params.row_height / 2)
+        .attr("y2", params.row_height / 2);
+    }
   });
 }
 
