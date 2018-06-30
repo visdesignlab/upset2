@@ -10,7 +10,8 @@ import { Data } from "./../DataStructure/Data";
 import { d3Selection } from "./../type_declarations/types";
 import "./styles.scss";
 import html from "./upset.view.html";
-import { usedSetsHeader } from "./uiBuilderFunctions";
+import { usedSetsHeader, addRenderRows } from "./uiBuilderFunctions";
+import params from "./ui_params";
 
 export class UpsetView extends ViewBase {
   svg: d3Selection;
@@ -52,7 +53,10 @@ export class UpsetView extends ViewBase {
       .append("g")
       .attr("class", "attribute-headers");
 
-    this.bodyGroup = this.svg.append("g").attr("class", "body");
+    this.bodyGroup = this.svg
+      .append("g")
+      .attr("class", "body")
+      .attr("transform", `translate(0,${params.header_body_padding})`);
     this.setsComboGroup = this.bodyGroup
       .append("g")
       .attr("class", "sets-combo-group");
@@ -73,7 +77,17 @@ export class UpsetView extends ViewBase {
       this.selectedSetHeaderGroup,
       d3.max(data.sets, d => {
         return d.setSize;
-      })
+      }),
+      this.comm
     );
+
+    addRenderRows(
+      data.renderRows,
+      this.setsComboGroup,
+      data.usedSets.length,
+      this.comm
+    );
+
+    this.svg.attr("height", params.svg_height).attr("width", params.svg_width);
   }
 }

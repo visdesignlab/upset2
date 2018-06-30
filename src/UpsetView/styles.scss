@@ -14,3 +14,32 @@
   stroke: white;
   stroke-width: 1px;
 }
+
+.header {
+  cursor: pointer;
+}
+
+.connector {
+  cursor: s-resize;
+}
+
+.connector-rect {
+  fill: rgb(240, 240, 240);
+  stroke: none;
+}
+
+.set-label {
+  font-size: 12px;
+}
+
+.subset-background-rect {
+  fill: none;
+  stroke: black;
+  stroke-width: 0.1px;
+}
+
+.group-background-rect {
+  fill: none;
+  stroke: black;
+  stroke-width: 0.1px;
+}
