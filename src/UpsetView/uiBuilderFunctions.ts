@@ -1,3 +1,4 @@
+import { SubSet } from "./../DataStructure/SubSet";
 import { d3Selection, RenderRow } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
 import params, { deg2rad } from "./ui_params";
@@ -159,8 +160,8 @@ export function addRenderRows(
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
   params.row_group_height = params.row_height * data.length;
-  params.used_set_width = params.column_width * usedSetCount;
-
+  params.subset_row_width = params.column_width * usedSetCount;
+  params.used_sets = usedSetCount;
   let rows: d3Selection;
   let groups: d3Selection;
   let subsets: d3Selection;
@@ -211,6 +212,7 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
 
 function setupSubsets(subsets: d3Selection) {
   addSubsetBackgroundRects(subsets);
+  addCombinations(subsets);
 }
 
 function addSubsetBackgroundRects(subsets: d3Selection) {
@@ -219,7 +221,38 @@ function addSubsetBackgroundRects(subsets: d3Selection) {
     .append("rect")
     .attr("class", "subset-background-rect")
     .attr("height", params.row_height)
-    .attr("width", 100);
+    .attr("width", params.subset_row_width);
+}
+
+function addCombinations(subset: d3Selection) {
+  let combinationsGroup = subset.append("g").attr("class", "combination");
+
+  combinationsGroup.each(function(d: RenderRow, i) {
+    let comboGroup = d3
+      .select(this)
+      .selectAll(".set-membership")
+      .data((d.data as SubSet).combinedSets);
+
+    comboGroup
+      .exit()
+      .transition()
+      .duration(100)
+      .remove();
+
+    comboGroup
+      .enter()
+      .append("circle")
+      .merge(comboGroup)
+      .attr("r", params.combo_circle_radius)
+      .attr("cy", params.row_height / 2)
+      .attr("cx", (d, i) => {
+        return params.column_width / 2 + params.column_width * i;
+      })
+      .attr("class", (d, i) => {
+        if (d === 0) return `set-membership not-member`;
+        return `set-membership member`;
+      });
+  });
 }
 
 function setupGroups(groups: d3Selection) {
@@ -232,5 +265,7 @@ function addGroupBackgroundRects(groups: d3Selection) {
     .append("rect")
     .attr("class", "group-background-rect")
     .attr("height", params.row_height)
-    .attr("width", params.group_row_width);
+    .attr("width", params.group_row_width)
+    .attr("rx", 5)
+    .attr("ry", 10);
 }

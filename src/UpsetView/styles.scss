@@ -39,7 +39,20 @@
 }
 
 .group-background-rect {
-  fill: none;
-  stroke: black;
-  stroke-width: 0.1px;
+  fill: #ccc;
+  stroke: #555;
+  stroke-width: 1px;
+  opacity: 0.3;
+}
+
+.set-membership {
+  stroke: none;
+}
+
+.not-member {
+  fill: rgb(240, 240, 240);
+}
+
+.member {
+  fill: rgb(99, 99, 99);
 }

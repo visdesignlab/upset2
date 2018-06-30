@@ -1,7 +1,8 @@
 let params = {
   header_body_padding: 5,
-
+  used_sets: 0,
   column_width: 20,
+  row_height: 20,
 
   used_set_header_height: 75,
   used_set_connector_height: 100,
@@ -16,13 +17,14 @@ let params = {
     );
   },
 
-  row_height: 20,
   row_group_height: 20,
 
-  used_set_width: 0,
+  subset_row_width: 0,
   get group_row_width() {
-    return params.skew_offset + params.used_set_width + params.column_width;
+    return params.skew_offset + params.subset_row_width + params.column_width;
   },
+
+  combo_circle_radius: 9,
 
   get svg_height() {
     return (
