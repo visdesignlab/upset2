@@ -10,7 +10,11 @@ import { Data } from "./../DataStructure/Data";
 import { d3Selection } from "./../type_declarations/types";
 import "./styles.scss";
 import html from "./upset.view.html";
-import { usedSetsHeader, addRenderRows } from "./uiBuilderFunctions";
+import {
+  usedSetsHeader,
+  addRenderRows,
+  addCardinalityHeader
+} from "./uiBuilderFunctions";
 import params from "./ui_params";
 
 export class UpsetView extends ViewBase {
@@ -82,6 +86,12 @@ export class UpsetView extends ViewBase {
     );
 
     addRenderRows(data.renderRows, this.setsComboGroup, data.usedSets.length);
+
+    addCardinalityHeader(
+      data.allItems.length,
+      d3.max(data.renderRows.map(d => d.data.setSize)),
+      this.cardinalityScaleGroup
+    );
 
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);
   }

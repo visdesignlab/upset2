@@ -18,13 +18,33 @@ let params = {
   },
 
   row_group_height: 20,
-
-  subset_row_width: 0,
-  get group_row_width() {
-    return params.skew_offset + params.subset_row_width + params.column_width;
+  combinations_width: 0,
+  get subset_row_width() {
+    return (
+      params.combinations_width +
+      params.cardinality_width +
+      params.column_width * 2
+    );
   },
-
+  get group_row_width() {
+    return (
+      params.skew_offset +
+      params.combinations_width +
+      params.cardinality_width +
+      params.column_width * 2
+    );
+  },
   combo_circle_radius: 9,
+
+  cardinality_width: 200,
+  get cardinality_bar_height() {
+    return params.row_height - 4;
+  },
+  cardinality_scale_group_height: 80,
+
+  get header_height() {
+    return params.used_set_group_height;
+  },
 
   get svg_height() {
     return (

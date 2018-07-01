@@ -76,3 +76,24 @@
   stroke-width: 3px;
   pointer-events: none;
 }
+
+.cardinality-bar {
+  fill: rgb(189, 189, 189);
+}
+
+.axis {
+  stroke: black;
+  stroke-width: 1px;
+  fill: none;
+  shape-rendering: crispEdges;
+}
+
+.tick {
+  stroke: black;
+  stroke-width: 1px;
+  shape-rendering: crispEdges;
+}
+
+.tick-label {
+  font-size: 0.7em;
+}

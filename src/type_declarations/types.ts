@@ -7,6 +7,8 @@ export type d3Selection = d3.Selection<
   any
 >;
 
+export type d3Scale = d3.ScaleContinuousNumeric<any, any>;
+
 export type RenderRow = { id: string; data: BaseElement };
 
 export type AggregationFn = (data: RenderRow[]) => RenderRow[];

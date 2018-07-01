@@ -1,6 +1,6 @@
 import { BaseElement } from "./../DataStructure/BaseElement";
 import { SubSet } from "./../DataStructure/SubSet";
-import { d3Selection, RenderRow } from "./../type_declarations/types";
+import { d3Selection, RenderRow, d3Scale } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
 import params, { deg2rad } from "./ui_params";
 import * as d3 from "d3";
@@ -172,6 +172,141 @@ function addConnectorLabels(connectors: d3Selection) {
     );
 }
 
+export function addCardinalityHeader(
+  totalSize: number,
+  maxSetSize: number,
+  el: d3Selection
+) {
+  el.attr(
+    "transform",
+    `translate(${params.skew_offset +
+      params.combinations_width +
+      params.column_width}, ${params.header_height -
+      params.header_body_padding -
+      params.cardinality_scale_group_height})`
+  );
+
+  el.html("");
+  let overviewTop = el.append("g").attr("class", "overview-upper-axis");
+  let overviewBottom = el.append("g").attr("class", "overview-lower-axis");
+  let detailsTop = el.append("g").attr("class", "details-upper-axis");
+  let detailsBottom = el.append("g").attr("class", "details-lower-axis");
+  let cardinalitySlider = el.append("g").attr("class", "cardinality-slider");
+  let cardinalityLabel = el.append("g").attr("class", "cardinality-label");
+
+  let scale = getCardinalityScale(totalSize, params.cardinality_width);
+  addOverviewAxis(overviewTop, scale, totalSize);
+}
+
+function addOverviewAxis(el: d3Selection, scale: d3Scale, totalSize: number) {
+  el.attr("transform", "translate(0,0)");
+
+  let top = el.append("g");
+  top
+    .append("path")
+    .attr("class", "axis")
+    .attr("d", "M0,6 V0 h200 v6");
+
+  let ticksArr = calculateTicksToShow(totalSize);
+  let ticksG = addTicks(top, ticksArr, scale, 0);
+  addTickLabels(ticksG);
+
+  let bottom = el.append("g");
+  bottom
+    .append("path")
+    .attr("class", "axis")
+    .attr("d", "M0,17 v6 H200 V16");
+  addTicks(bottom, ticksArr, scale, 17);
+}
+
+function addTicks(
+  el: d3Selection,
+  ticksArr: number[],
+  scale: d3Scale,
+  y_offset: number
+): d3Selection {
+  let ticksG = el.selectAll(".tick-g").data(ticksArr);
+  ticksG.exit().remove();
+  let ticks = ticksG
+    .enter()
+    .append("g")
+    .attr("class", "tick-g")
+    .merge(ticksG)
+    .attr("transform", (d, i) => {
+      return `translate(${scale(d)}, ${y_offset})`;
+    });
+
+  ticks
+    .append("path")
+    .attr("class", "tick")
+    .attr("d", "M0,6 V0");
+  return ticks;
+}
+
+function addTickLabels(ticks: d3Selection) {
+  ticks
+    .append("text")
+    .attr("class", "tick-label")
+    .text((d, i) => {
+      if (i % 2 === 0) return d;
+    })
+    .attr("text-anchor", "middle")
+    .attr("dy", 15);
+}
+
+function calculateTicksToShow(setSize: number): number[] {
+  if (setSize <= 10) return [...Array(setSize).keys(), setSize];
+  else if (setSize <= 25)
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 2 === 0;
+      }),
+      setSize
+    ];
+  else if (setSize <= 100)
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 20 === 0;
+      }),
+      setSize
+    ];
+  else if (setSize <= 300)
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 40 === 0;
+      }),
+      setSize
+    ];
+  else if (setSize <= 1000)
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 100 === 0;
+      }),
+      setSize
+    ];
+  else if (setSize <= 2000)
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 200 === 0;
+      }),
+      setSize
+    ];
+  else if (setSize <= 6000)
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 500 === 0;
+      }),
+      setSize
+    ];
+  else
+    return [
+      ...[...Array(setSize).keys()].filter(n => {
+        return n % 2000 === 0;
+      }),
+      setSize
+    ];
+}
+
 export function addRenderRows(
   data: RenderRow[],
   el: d3Selection,
@@ -179,7 +314,7 @@ export function addRenderRows(
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
   params.row_group_height = params.row_height * data.length;
-  params.subset_row_width = params.column_width * usedSetCount;
+  params.combinations_width = params.column_width * usedSetCount;
   params.used_sets = usedSetCount;
   let rows: d3Selection;
   let groups: d3Selection;
@@ -191,6 +326,8 @@ export function addRenderRows(
 
   setupSubsets(subsets);
   setupGroups(groups);
+
+  addCardinalityBars(rows, data);
 }
 
 function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
@@ -246,7 +383,8 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
       return `translate(${params.skew_offset}, ${params.row_height * i})`;
     });
 
-  rows.append("g").attr("class", "background-rect-g");
+  setupElementGroups(rows);
+
   let groups = rows.filter((d: RenderRow, i) => {
     return d.data.type === RowType.GROUP;
   });
@@ -257,6 +395,25 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
   });
 
   return [rows, groups, subsets];
+}
+
+function setupElementGroups(rows: d3Selection) {
+  rows.append("g").attr("class", "background-rect-g");
+  rows
+    .append("g")
+    .attr("class", "cardinality-bar-group")
+    .attr("transform", (d, i) => {
+      if (d.data.type === RowType.GROUP)
+        return `translate(${params.skew_offset +
+          params.combinations_width +
+          params.column_width}, ${(params.row_height -
+          params.cardinality_bar_height) /
+          2})`;
+      return `translate(${params.combinations_width +
+        params.column_width}, ${(params.row_height -
+        params.cardinality_bar_height) /
+        2})`;
+    });
 }
 
 function setupSubsets(subsets: d3Selection) {
@@ -388,4 +545,24 @@ function addGroupLabels(groups: d3Selection) {
     .attr("transform", (d, i) => {
       return `translate(10, ${params.row_height - 4})`;
     });
+}
+
+function addCardinalityBars(rows: d3Selection, data: RenderRow[]) {
+  let maxSubsetSize = d3.max(data.map(d => d.data.setSize));
+  let scale = getCardinalityScale(maxSubsetSize, params.cardinality_width);
+  let cardinalityGroups = rows.selectAll(".cardinality-bar-group");
+  cardinalityGroups
+    .append("rect")
+    .attr("class", "cardinality-bar")
+    .attr("width", (d: RenderRow, i) => {
+      return scale(d.data.setSize);
+    })
+    .attr("height", params.cardinality_bar_height);
+}
+
+function getCardinalityScale(maxSize: number, maxWidth: number) {
+  return d3
+    .scaleLinear()
+    .domain([0, maxSize])
+    .range([0, maxWidth]);
 }
