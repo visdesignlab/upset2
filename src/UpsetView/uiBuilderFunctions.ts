@@ -728,7 +728,21 @@ function renderBars(el: d3Selection, scale: d3Scale) {
   });
 }
 
-function getCardinalityScale(maxSize: number, maxWidth: number) {
+function getCardinalityScale(maxSize: number, maxWidth: number): d3Scale {
+  if (maxSize > 8000) {
+    return d3
+      .scalePow()
+      .exponent(0.75)
+      .domain([0.01, maxSize])
+      .range([0.01, maxWidth]);
+  }
+  if (maxSize > 2000) {
+    return d3
+      .scalePow()
+      .exponent(0.8)
+      .domain([0.01, maxSize])
+      .range([0.01, maxWidth]);
+  }
   return d3
     .scaleLinear()
     .domain([0, maxSize])
