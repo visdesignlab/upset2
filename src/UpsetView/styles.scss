@@ -97,3 +97,12 @@
 .tick-label {
   font-size: 0.7em;
 }
+
+.cardinality-slider-rect {
+  fill: #ccc;
+  pointer-events: all;
+  opacity: 0.5;
+  stroke: black;
+  stroke-width: 1px;
+  cursor: col-resize;
+}

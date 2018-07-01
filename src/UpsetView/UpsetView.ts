@@ -90,7 +90,8 @@ export class UpsetView extends ViewBase {
     addCardinalityHeader(
       data.allItems.length,
       d3.max(data.renderRows.map(d => d.data.setSize)),
-      this.cardinalityScaleGroup
+      this.cardinalityScaleGroup,
+      this.comm
     );
 
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);

@@ -1,4 +1,3 @@
-import { BaseElement } from "./../DataStructure/BaseElement";
 import { SubSet } from "./../DataStructure/SubSet";
 import { d3Selection, RenderRow, d3Scale } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
@@ -8,6 +7,7 @@ import { Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 
+// ################################################################################################
 export function usedSetsHeader(
   data: Set[],
   el: d3Selection,
@@ -172,10 +172,12 @@ function addConnectorLabels(connectors: d3Selection) {
     );
 }
 
+// ################################################################################################
 export function addCardinalityHeader(
   totalSize: number,
   maxSetSize: number,
-  el: d3Selection
+  el: d3Selection,
+  comm: Mitt
 ) {
   el.attr(
     "transform",
@@ -187,21 +189,24 @@ export function addCardinalityHeader(
   );
 
   el.html("");
-  let overviewTop = el.append("g").attr("class", "overview-upper-axis");
-  let overviewBottom = el.append("g").attr("class", "overview-lower-axis");
-  let detailsTop = el.append("g").attr("class", "details-upper-axis");
-  let detailsBottom = el.append("g").attr("class", "details-lower-axis");
+  let overviewAxis = el.append("g").attr("class", "overview-axis");
+  let detailsAxis = el.append("g").attr("class", "details-axis");
   let cardinalitySlider = el.append("g").attr("class", "cardinality-slider");
   let cardinalityLabel = el.append("g").attr("class", "cardinality-label");
 
-  let scale = getCardinalityScale(totalSize, params.cardinality_width);
-  addOverviewAxis(overviewTop, scale, totalSize);
+  let scaleOverview = getCardinalityScale(totalSize, params.cardinality_width);
+  addOverviewAxis(overviewAxis, scaleOverview, totalSize);
+
+  addCardinalitySlider(cardinalitySlider, scaleOverview, comm);
+
+  let scaleDetails = getCardinalityScale(maxSetSize, params.cardinality_width);
+  addDetailAxis(detailsAxis, scaleDetails, maxSetSize);
 }
 
 function addOverviewAxis(el: d3Selection, scale: d3Scale, totalSize: number) {
   el.attr("transform", "translate(0,0)");
 
-  let top = el.append("g");
+  let top = el.append("g").attr("class", "top-axis");
   top
     .append("path")
     .attr("class", "axis")
@@ -211,7 +216,78 @@ function addOverviewAxis(el: d3Selection, scale: d3Scale, totalSize: number) {
   let ticksG = addTicks(top, ticksArr, scale, 0);
   addTickLabels(ticksG);
 
-  let bottom = el.append("g");
+  let bottom = el.append("g").attr("class", "bottom-axis");
+  bottom
+    .append("path")
+    .attr("class", "axis")
+    .attr("d", `M0,${params.axis_offset} H200`);
+  addTicks(bottom, ticksArr, scale, 17);
+}
+
+function addCardinalitySlider(el: d3Selection, scale: d3Scale, comm: Mitt) {
+  el.attr("transform", `translate(0,${params.axis_offset / 2 - 7})`);
+
+  addDragEvents(el, scale, comm);
+
+  let slider = el
+    .append("rect")
+    .attr("class", "cardinality-slider-rect")
+    .attr("transform", "rotate(45)")
+    .attr("height", params.cardinality_slider_dims)
+    .attr("width", params.cardinality_slider_dims);
+}
+
+function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
+  comm.on("slider-moved", adjustCardinalityBars);
+
+  el.call(
+    d3
+      .drag()
+      .on("start", dragStart)
+      .on("drag", dragged)
+      .on("end", dragEnd)
+  );
+
+  function dragStart() {
+    d3.select(this)
+      .raise()
+      .classed("active", true);
+  }
+  function dragged() {
+    let x = d3.event.x;
+    if (x >= 0 && x <= params.cardinality_width) {
+      if (Math.abs(x - 0) <= 0.9) x = 1;
+      if (Math.abs(x - params.cardinality_width) <= 0.9)
+        x = params.cardinality_width;
+      d3.select(this).attr(
+        "transform",
+        `translate(${x}, ${params.axis_offset / 2 - 7})`
+      );
+      comm.emit("slider-moved", scale.invert(x));
+    }
+  }
+  function dragEnd() {
+    d3.select(this).classed("active", false);
+  }
+}
+
+function addDetailAxis(el: d3Selection, scale: d3Scale, size: number) {
+  el.attr(
+    "transform",
+    `translate(0,${params.cardinality_scale_group_height - params.axis_offset})`
+  );
+
+  let top = el.append("g").attr("class", "top-axis");
+  top
+    .append("path")
+    .attr("class", "axis")
+    .attr("d", "M0,6 V0 h200 v6");
+
+  let ticksArr = calculateTicksToShow(size);
+  let ticksG = addTicks(top, ticksArr, scale, 0);
+  addTickLabels(ticksG);
+
+  let bottom = el.append("g").attr("class", "bottom-axis");
   bottom
     .append("path")
     .attr("class", "axis")
@@ -307,6 +383,7 @@ function calculateTicksToShow(setSize: number): number[] {
     ];
 }
 
+// ################################################################################################
 export function addRenderRows(
   data: RenderRow[],
   el: d3Selection,
@@ -551,8 +628,18 @@ function addCardinalityBars(rows: d3Selection, data: RenderRow[]) {
   let maxSubsetSize = d3.max(data.map(d => d.data.setSize));
   let scale = getCardinalityScale(maxSubsetSize, params.cardinality_width);
   let cardinalityGroups = rows.selectAll(".cardinality-bar-group");
-  cardinalityGroups
-    .append("rect")
+  renderBars(cardinalityGroups, scale);
+}
+
+function adjustCardinalityBars(maxDomain: number) {
+  let scale = getCardinalityScale(maxDomain, params.cardinality_width);
+  let el = d3.selectAll(".row").selectAll(".cardinality-bar-group");
+  renderBars(el, scale);
+}
+
+function renderBars(el: d3Selection, scale: d3Scale) {
+  el.html("");
+  el.append("rect")
     .attr("class", "cardinality-bar")
     .attr("width", (d: RenderRow, i) => {
       return scale(d.data.setSize);

@@ -41,6 +41,10 @@ let params = {
     return params.row_height - 4;
   },
   cardinality_scale_group_height: 80,
+  axis_offset: 23,
+  cardinality_label_height: 20,
+  cardinality_padding: 2,
+  cardinality_slider_dims: 10,
 
   get header_height() {
     return params.used_set_group_height;
