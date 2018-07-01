@@ -53,9 +53,16 @@ function addHeaderBars(
       return `translate(${params.column_width * i}, 0)`;
     });
 
-  headers.on("click", (d, i) => {
-    comm.emit("remove-set-trigger", d);
-  });
+  headers
+    .on("click", (d, i) => {
+      comm.emit("remove-set-trigger", d);
+    })
+    .on("mouseover", (d, i) => {
+      d3.selectAll(`.S_${i}`).classed("highlight", true);
+    })
+    .on("mouseout", (d, i) => {
+      d3.selectAll(`.S_${i}`).classed("highlight", false);
+    });
 
   addBackgroundBars(headers);
   addForegroundBars(headers, maxSetSize);
@@ -66,7 +73,9 @@ function addBackgroundBars(headers: d3Selection) {
     .append("rect")
     .attr("height", params.used_set_header_height)
     .attr("width", params.column_width)
-    .attr("class", "used-set-background");
+    .attr("class", (d, i) => {
+      return `used-set-background S_${i}`;
+    });
 }
 
 function addForegroundBars(headers: d3Selection, maxSetSize: number) {
@@ -112,7 +121,14 @@ function addConnectors(data: Set[], el: d3Selection) {
     .append("g")
     .merge(_connectors)
     .html("")
-    .attr("class", "connector");
+    .attr("class", "connector")
+    .on("mouseover", (d, i) => {
+      d3.selectAll(`.S_${i}`).classed("highlight", true);
+    })
+    .on("mouseout", (d, i) => {
+      d3.selectAll(`.S_${i}`).classed("highlight", false);
+    });
+
   connectors
     .transition()
     .duration(100)
@@ -127,7 +143,9 @@ function addConnectors(data: Set[], el: d3Selection) {
 function addConnectorBars(connectors: d3Selection) {
   connectors
     .append("rect")
-    .attr("class", "connector-rect")
+    .attr("class", (d, i) => {
+      return `connector-rect S_${i}`;
+    })
     .attr("width", params.column_width)
     .attr("height", params.used_set_connector_height)
     .attr("transform", `skewX(${params.used_set_connector_skew})`);
@@ -166,18 +184,25 @@ export function addRenderRows(
   let groups: d3Selection;
   let subsets: d3Selection;
 
+  setupColumnBackgrounds(el, usedSetCount);
+
   [rows, groups, subsets] = addRows(data, el);
 
-  setupColumnBackgrounds(el, usedSetCount);
   setupSubsets(subsets);
   setupGroups(groups);
 }
 
 function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
-  let backgroundGroup = el
+  let _bg = el.selectAll(".column-background-group").data([1]);
+  _bg.exit().remove();
+  let backgroundGroup = _bg
+    .enter()
     .append("g")
+    .merge(_bg)
+    .html("")
     .attr("class", "column-background-group")
     .attr("transform", `translate(${params.skew_offset}, 0)`);
+
   let arr = [...Array(usedSets).keys()];
   let rects = backgroundGroup.selectAll(".vert-set-rect").data(arr);
   rects.exit().remove();
@@ -185,7 +210,9 @@ function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
     .enter()
     .append("rect")
     .merge(rects)
-    .attr("class", "vert-set-rect")
+    .attr("class", (d, i) => {
+      return `vert-set-rect S_${i}`;
+    })
     .attr("width", params.column_width)
     .attr("height", params.row_group_height)
     .attr("transform", (d, i) => {
@@ -240,7 +267,7 @@ function addSubsetBackgroundRects(subsets: d3Selection) {
   subsets
     .selectAll(".background-rect-g")
     .append("rect")
-    .attr("class", "subset-background-rect")
+    .attr("class", "subset-background-rect ")
     .attr("height", params.row_height)
     .attr("width", params.subset_row_width);
 }
@@ -278,6 +305,36 @@ function addCombinations(subset: d3Selection) {
       .attr("class", (d, i) => {
         if (d === 0) return `set-membership not-member`;
         return `set-membership member`;
+      })
+      .on("mouseover", function(d, i) {
+        let parentG = (d3.select(this).node() as any).parentNode;
+        let rect = (d3.select(parentG).node() as any).parentNode;
+        d3.select(rect)
+          .select("rect")
+          .classed("highlight highlight2", true);
+
+        d3.selectAll(`.S_${i}`).classed("highlight", true);
+      })
+      .on("mouseout", function(d, i) {
+        let parentG = (d3.select(this).node() as any).parentNode;
+        let rect = (d3.select(parentG).node() as any).parentNode;
+        d3.select(rect)
+          .select("rect")
+          .classed("highlight highlight2", false);
+
+        d3.selectAll(`.S_${i}`).classed("highlight", false);
+      });
+
+    d3.select(this)
+      .on("mouseover", function(d: RenderRow) {
+        (d.data as SubSet).combinedSets.forEach((idx, i) => {
+          if (idx === 1) d3.selectAll(`.S_${i}`).classed("highlight", true);
+        });
+      })
+      .on("mouseout", function(d: RenderRow, i) {
+        (d.data as SubSet).combinedSets.forEach((idx, i) => {
+          d3.selectAll(`.S_${i}`).classed("highlight", false);
+        });
       });
 
     if (degree > 1) {

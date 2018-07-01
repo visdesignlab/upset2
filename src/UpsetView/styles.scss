@@ -45,7 +45,18 @@
 }
 
 .vert-set-rect {
-  opacity: 0.3;
+  fill: none;
+  opacity: 0.1;
+}
+
+.highlight {
+  fill: rgb(254, 217, 166);
+  opacity: 1;
+}
+
+.highlight2 {
+  stroke: black;
+  stroke-width: 0.5px;
 }
 
 .set-membership {
@@ -63,4 +74,5 @@
 .combination-line {
   stroke: rgb(99, 99, 99);
   stroke-width: 3px;
+  pointer-events: none;
 }
