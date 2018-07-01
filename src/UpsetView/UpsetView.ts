@@ -81,12 +81,7 @@ export class UpsetView extends ViewBase {
       this.comm
     );
 
-    addRenderRows(
-      data.renderRows,
-      this.setsComboGroup,
-      data.usedSets.length,
-      this.comm
-    );
+    addRenderRows(data.renderRows, this.setsComboGroup, data.usedSets.length);
 
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);
   }

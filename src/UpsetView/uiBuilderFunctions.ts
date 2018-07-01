@@ -1,3 +1,4 @@
+import { BaseElement } from "./../DataStructure/BaseElement";
 import { SubSet } from "./../DataStructure/SubSet";
 import { d3Selection, RenderRow } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
@@ -5,6 +6,7 @@ import params, { deg2rad } from "./ui_params";
 import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
+import { BaseType } from "d3";
 
 export function usedSetsHeader(
   data: Set[],
@@ -173,8 +175,7 @@ function addConnectorLabels(connectors: d3Selection) {
 export function addRenderRows(
   data: RenderRow[],
   el: d3Selection,
-  usedSetCount: number,
-  comm: Mitt
+  usedSetCount: number
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
   params.row_group_height = params.row_height * data.length;
@@ -275,78 +276,89 @@ function addSubsetBackgroundRects(subsets: d3Selection) {
 function addCombinations(subset: d3Selection) {
   let combinationsGroup = subset.append("g").attr("class", "combination");
 
-  combinationsGroup.each(function(d: RenderRow, i) {
+  combinationsGroup.each(function(d: RenderRow) {
     let membershipDetails = (d.data as SubSet).combinedSets;
 
     let degree = membershipDetails.reduce((i, j) => i + j, 0);
-    let first = membershipDetails.indexOf(1);
-    let last = membershipDetails.lastIndexOf(1);
 
     let comboGroup = d3
       .select(this)
       .selectAll(".set-membership")
       .data(membershipDetails);
 
-    comboGroup
-      .exit()
-      .transition()
-      .duration(100)
-      .remove();
-
-    comboGroup
-      .enter()
-      .append("circle")
-      .merge(comboGroup)
-      .attr("r", params.combo_circle_radius)
-      .attr("cy", params.row_height / 2)
-      .attr("cx", (d, i) => {
-        return params.column_width / 2 + params.column_width * i;
-      })
-      .attr("class", (d, i) => {
-        if (d === 0) return `set-membership not-member`;
-        return `set-membership member`;
-      })
-      .on("mouseover", function(d, i) {
-        let parentG = (d3.select(this).node() as any).parentNode;
-        let rect = (d3.select(parentG).node() as any).parentNode;
-        d3.select(rect)
-          .select("rect")
-          .classed("highlight highlight2", true);
-
-        d3.selectAll(`.S_${i}`).classed("highlight", true);
-      })
-      .on("mouseout", function(d, i) {
-        let parentG = (d3.select(this).node() as any).parentNode;
-        let rect = (d3.select(parentG).node() as any).parentNode;
-        d3.select(rect)
-          .select("rect")
-          .classed("highlight highlight2", false);
-
-        d3.selectAll(`.S_${i}`).classed("highlight", false);
-      });
-
-    d3.select(this)
-      .on("mouseover", function(d: RenderRow) {
-        (d.data as SubSet).combinedSets.forEach((idx, i) => {
-          if (idx === 1) d3.selectAll(`.S_${i}`).classed("highlight", true);
-        });
-      })
-      .on("mouseout", function(d: RenderRow, i) {
-        (d.data as SubSet).combinedSets.forEach((idx, i) => {
-          d3.selectAll(`.S_${i}`).classed("highlight", false);
-        });
-      });
+    addCombinationCircles(comboGroup);
+    addRowHighlight(this);
 
     if (degree > 1) {
-      d3.select(this)
-        .append("line")
-        .attr("class", "combination-line")
-        .attr("x1", params.column_width / 2 + params.column_width * first)
-        .attr("x2", params.column_width / 2 + params.column_width * last)
-        .attr("y1", params.row_height / 2)
-        .attr("y2", params.row_height / 2);
+      let first = membershipDetails.indexOf(1);
+      let last = membershipDetails.lastIndexOf(1);
+      addCombinationLine(this, first, last);
     }
   });
+}
+
+function addCombinationCircles(comboGroup: d3Selection) {
+  comboGroup
+    .exit()
+    .transition()
+    .duration(100)
+    .remove();
+
+  comboGroup
+    .enter()
+    .append("circle")
+    .merge(comboGroup)
+    .attr("r", params.combo_circle_radius)
+    .attr("cy", params.row_height / 2)
+    .attr("cx", (d, i) => {
+      return params.column_width / 2 + params.column_width * i;
+    })
+    .attr("class", (d, i) => {
+      if (d === 0) return `set-membership not-member`;
+      return `set-membership member`;
+    })
+    .on("mouseover", function(d, i) {
+      let parentG = (d3.select(this).node() as any).parentNode;
+      let rect = (d3.select(parentG).node() as any).parentNode;
+      d3.select(rect)
+        .select("rect")
+        .classed("highlight highlight2", true);
+
+      d3.selectAll(`.S_${i}`).classed("highlight", true);
+    })
+    .on("mouseout", function(d, i) {
+      let parentG = (d3.select(this).node() as any).parentNode;
+      let rect = (d3.select(parentG).node() as any).parentNode;
+      d3.select(rect)
+        .select("rect")
+        .classed("highlight highlight2", false);
+
+      d3.selectAll(`.S_${i}`).classed("highlight", false);
+    });
+}
+
+function addCombinationLine(el: BaseType, first: number, last: number) {
+  d3.select(el)
+    .append("line")
+    .attr("class", "combination-line")
+    .attr("x1", params.column_width / 2 + params.column_width * first)
+    .attr("x2", params.column_width / 2 + params.column_width * last)
+    .attr("y1", params.row_height / 2)
+    .attr("y2", params.row_height / 2);
+}
+
+function addRowHighlight(el: BaseType) {
+  d3.select(el)
+    .on("mouseover", function(d: RenderRow) {
+      (d.data as SubSet).combinedSets.forEach((idx, i) => {
+        if (idx === 1) d3.selectAll(`.S_${i}`).classed("highlight", true);
+      });
+    })
+    .on("mouseout", function(d: RenderRow, i) {
+      (d.data as SubSet).combinedSets.forEach((idx, i) => {
+        d3.selectAll(`.S_${i}`).classed("highlight", false);
+      });
+    });
 }
 
 function setupGroups(groups: d3Selection) {
