@@ -198,6 +198,7 @@ export function addCardinalityHeader(
   addOverviewAxis(overviewAxis, scaleOverview, totalSize);
 
   addCardinalitySlider(cardinalitySlider, maxSetSize, scaleOverview, comm);
+  addBrush(el, scaleOverview(maxSetSize));
 
   let scaleDetails = getCardinalityScale(maxSetSize, params.cardinality_width);
   addDetailAxis(detailsAxis, scaleDetails, maxSetSize);
@@ -245,10 +246,24 @@ function addCardinalitySlider(
     .attr("width", params.cardinality_slider_dims);
 }
 
+function addBrush(el: d3Selection, pos: number) {
+  el.append("g")
+    .attr("class", "slider-brush-group")
+    .append("rect")
+    .attr("class", "slider-brush")
+    .attr("height", params.axis_offset)
+    .attr("width", pos);
+}
+
+function updateBrush(pos: number) {
+  d3.select(".slider-brush").attr("width", pos);
+}
+
 function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
   comm.on("slider-moved", (d: number) => {
     adjustCardinalityBars(d);
     updateDetailsScale(d);
+    updateBrush(scale(d));
   });
 
   el.call(
