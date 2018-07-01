@@ -247,10 +247,10 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
     });
 
   rows.append("g").attr("class", "background-rect-g");
-
   let groups = rows.filter((d: RenderRow, i) => {
     return d.data.type === RowType.GROUP;
   });
+  groups.append("g").attr("class", "group-label-g");
 
   let subsets = rows.filter((d: RenderRow, i) => {
     return d.data.type === RowType.SUBSET;
@@ -363,6 +363,7 @@ function addRowHighlight(el: BaseType) {
 
 function setupGroups(groups: d3Selection) {
   addGroupBackgroundRects(groups);
+  addGroupLabels(groups);
 }
 
 function addGroupBackgroundRects(groups: d3Selection) {
@@ -374,4 +375,17 @@ function addGroupBackgroundRects(groups: d3Selection) {
     .attr("width", params.group_row_width)
     .attr("rx", 5)
     .attr("ry", 10);
+}
+
+function addGroupLabels(groups: d3Selection) {
+  groups
+    .selectAll(".group-label-g")
+    .append("text")
+    .attr("class", "group-label-g")
+    .text((d: RenderRow, i) => {
+      return d.data.elementName;
+    })
+    .attr("transform", (d, i) => {
+      return `translate(10, ${params.row_height - 4})`;
+    });
 }
