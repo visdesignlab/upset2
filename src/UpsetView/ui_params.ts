@@ -45,6 +45,7 @@ let params = {
   cardinality_label_height: 20,
   cardinality_padding: 2,
   cardinality_slider_dims: 10,
+  horizon_offset: 6,
 
   get header_height() {
     return params.used_set_group_height;

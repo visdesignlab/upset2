@@ -197,7 +197,7 @@ export function addCardinalityHeader(
   let scaleOverview = getCardinalityScale(totalSize, params.cardinality_width);
   addOverviewAxis(overviewAxis, scaleOverview, totalSize);
 
-  addCardinalitySlider(cardinalitySlider, scaleOverview, comm);
+  addCardinalitySlider(cardinalitySlider, maxSetSize, scaleOverview, comm);
 
   let scaleDetails = getCardinalityScale(maxSetSize, params.cardinality_width);
   addDetailAxis(detailsAxis, scaleDetails, maxSetSize);
@@ -224,8 +224,16 @@ function addOverviewAxis(el: d3Selection, scale: d3Scale, totalSize: number) {
   addTicks(bottom, ticksArr, scale, 17);
 }
 
-function addCardinalitySlider(el: d3Selection, scale: d3Scale, comm: Mitt) {
-  el.attr("transform", `translate(0,${params.axis_offset / 2 - 7})`);
+function addCardinalitySlider(
+  el: d3Selection,
+  maxSetSize: number,
+  scale: d3Scale,
+  comm: Mitt
+) {
+  el.attr(
+    "transform",
+    `translate(${scale(maxSetSize)},${params.axis_offset / 2 - 7})`
+  );
 
   addDragEvents(el, scale, comm);
 
@@ -639,12 +647,57 @@ function adjustCardinalityBars(maxDomain: number) {
 
 function renderBars(el: d3Selection, scale: d3Scale) {
   el.html("");
-  el.append("rect")
-    .attr("class", "cardinality-bar")
-    .attr("width", (d: RenderRow, i) => {
-      return scale(d.data.setSize);
-    })
-    .attr("height", params.cardinality_bar_height);
+  el.each(function(d: RenderRow, i) {
+    let g = d3.select(this);
+    let width = scale(d.data.setSize);
+    let loop = Math.floor(width / params.cardinality_width) + 1;
+    let rem = width % params.cardinality_width;
+
+    let brk = false;
+    if (loop > 3) {
+      brk = true;
+      loop = 4;
+      rem = 0;
+    }
+
+    let offset = params.horizon_offset;
+
+    let hb = g.selectAll(".cardinality-bar").data([...Array(loop).keys()]);
+    hb.exit().remove();
+    hb.enter()
+      .append("rect")
+      .merge(hb)
+      .attr("class", (d, i) => {
+        return `cardinality-bar cardinality-bar${i}`;
+      })
+      .attr("width", (d, i) => {
+        if (i + 1 === loop) return rem;
+        return params.cardinality_width;
+      })
+      .attr("height", (d, i) => {
+        return params.cardinality_bar_height - offset * i;
+      })
+      .attr("transform", (d, i) => {
+        return `translate(0, ${((params.cardinality_bar_height - offset) * i) /
+          4})`;
+      });
+
+    if (brk) {
+      g.append("line")
+        .attr("class", "break-bar")
+        .attr("y1", 0)
+        .attr("y2", params.cardinality_bar_height)
+        .attr("x1", params.cardinality_width - 20)
+        .attr("x2", params.cardinality_width - 10);
+
+      g.append("line")
+        .attr("class", "break-bar")
+        .attr("y1", 0)
+        .attr("y2", params.cardinality_bar_height)
+        .attr("x1", params.cardinality_width - 25)
+        .attr("x2", params.cardinality_width - 15);
+    }
+  });
 }
 
 function getCardinalityScale(maxSize: number, maxWidth: number) {

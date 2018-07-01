@@ -77,8 +77,16 @@
   pointer-events: none;
 }
 
-.cardinality-bar {
+.cardinality-bar0 {
   fill: rgb(189, 189, 189);
+}
+
+.cardinality-bar1 {
+  fill: rgb(136, 136, 136);
+}
+
+.cardinality-bar2 {
+  fill: rgb(37, 37, 37);
 }
 
 .axis {
@@ -105,4 +113,9 @@
   stroke: black;
   stroke-width: 1px;
   cursor: col-resize;
+}
+
+.break-bar {
+  stroke: white;
+  stroke-width: 1px;
 }
