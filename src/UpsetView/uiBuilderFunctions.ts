@@ -246,7 +246,10 @@ function addCardinalitySlider(
 }
 
 function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
-  comm.on("slider-moved", adjustCardinalityBars);
+  comm.on("slider-moved", (d: number) => {
+    adjustCardinalityBars(d);
+    updateDetailsScale(d);
+  });
 
   el.call(
     d3
@@ -279,11 +282,19 @@ function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
   }
 }
 
+function updateDetailsScale(setSize: number) {
+  let el = d3.select(".details-axis");
+  let scale = getCardinalityScale(setSize, params.cardinality_width);
+  addDetailAxis(el, scale, Math.floor(setSize));
+}
+
 function addDetailAxis(el: d3Selection, scale: d3Scale, size: number) {
   el.attr(
     "transform",
     `translate(0,${params.cardinality_scale_group_height - params.axis_offset})`
   );
+
+  el.html("");
 
   let top = el.append("g").attr("class", "top-axis");
   top
@@ -675,7 +686,9 @@ function renderBars(el: d3Selection, scale: d3Scale) {
         return params.cardinality_width;
       })
       .attr("height", (d, i) => {
-        return params.cardinality_bar_height - offset * i;
+        let height = params.cardinality_bar_height - offset * i;
+        if (height < 0) return 2;
+        return height;
       })
       .attr("transform", (d, i) => {
         return `translate(0, ${((params.cardinality_bar_height - offset) * i) /
