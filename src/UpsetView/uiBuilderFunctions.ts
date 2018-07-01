@@ -168,8 +168,29 @@ export function addRenderRows(
 
   [rows, groups, subsets] = addRows(data, el);
 
+  setupColumnBackgrounds(el, usedSetCount);
   setupSubsets(subsets);
   setupGroups(groups);
+}
+
+function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
+  let backgroundGroup = el
+    .append("g")
+    .attr("class", "column-background-group")
+    .attr("transform", `translate(${params.skew_offset}, 0)`);
+  let arr = [...Array(usedSets).keys()];
+  let rects = backgroundGroup.selectAll(".vert-set-rect").data(arr);
+  rects.exit().remove();
+  rects
+    .enter()
+    .append("rect")
+    .merge(rects)
+    .attr("class", "vert-set-rect")
+    .attr("width", params.column_width)
+    .attr("height", params.row_group_height)
+    .attr("transform", (d, i) => {
+      return `translate(${params.column_width * i}, 0)`;
+    });
 }
 
 function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
