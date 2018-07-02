@@ -322,7 +322,7 @@ function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
   }
   function dragged() {
     let x = d3.event.x;
-    if (x >= 0 && x <= params.cardinality_width) {
+    if (x > scale(6) && x <= params.cardinality_width) {
       if (Math.abs(x - 0) <= 0.9) x = 1;
       if (Math.abs(x - params.cardinality_width) <= 0.9)
         x = params.cardinality_width;
