@@ -129,16 +129,18 @@
 .cardinality-label-rect {
   fill: #ccc;
   stroke: black;
+  opacity: 1;
+  transition: opacity 1s;
   stroke-width: 1px;
 }
 
 .hide {
-  display: none;
-  transition: opacity 1s ease-out;
   opacity: 0;
+  transition: opacity 1s
 }
 
 .slider-brush-path {
   fill: #ccc;
   opacity: 0.5;
+  transition: opacity 1s
 }
