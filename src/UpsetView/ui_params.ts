@@ -42,7 +42,7 @@ let params = {
   },
   cardinality_scale_group_height: 80,
   axis_offset: 23,
-  cardinality_label_height: 20,
+  cardinality_label_height: 24,
   cardinality_padding: 2,
   cardinality_slider_dims: 10,
   horizon_offset: 6,

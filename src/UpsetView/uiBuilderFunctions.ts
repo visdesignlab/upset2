@@ -192,14 +192,17 @@ export function addCardinalityHeader(
   let overviewAxis = el.append("g").attr("class", "overview-axis");
   let detailsAxis = el.append("g").attr("class", "details-axis");
   let cardinalitySlider = el.append("g").attr("class", "cardinality-slider");
-  let cardinalityLabel = el.append("g").attr("class", "cardinality-label");
+  let sliderBrush = el.append("g").attr("class", "slider-brush-group");
+  let cardinalityLabel = el
+    .append("g")
+    .attr("class", "cardinality-label-group");
 
   let scaleOverview = getCardinalityScale(totalSize, params.cardinality_width);
   addOverviewAxis(overviewAxis, scaleOverview, totalSize);
 
   addCardinalitySlider(cardinalitySlider, maxSetSize, scaleOverview, comm);
-  addBrush(el, scaleOverview(maxSetSize));
-
+  addBrush(sliderBrush, scaleOverview(maxSetSize));
+  addCardinalityLabel(cardinalityLabel);
   let scaleDetails = getCardinalityScale(maxSetSize, params.cardinality_width);
   addDetailAxis(detailsAxis, scaleDetails, maxSetSize);
 }
@@ -247,23 +250,59 @@ function addCardinalitySlider(
 }
 
 function addBrush(el: d3Selection, pos: number) {
-  el.append("g")
-    .attr("class", "slider-brush-group")
-    .append("rect")
+  el.append("rect")
     .attr("class", "slider-brush")
     .attr("height", params.axis_offset)
     .attr("width", pos);
 }
 
-function updateBrush(pos: number) {
+function addCardinalityLabel(el: d3Selection) {
+  let textGroup = el
+    .append("g")
+    .attr("class", "inner-text-group")
+    .attr(
+      "transform",
+      `translate(0, ${params.cardinality_scale_group_height / 2 -
+        params.cardinality_label_height / 2})`
+    );
+  let sliderInfluence = el.append("g").attr("class", "slider-influence hide");
+  textGroup
+    .append("rect")
+
+    .attr("class", "cardinality-label-rect")
+    .attr("width", params.cardinality_width)
+    .attr("height", params.cardinality_label_height);
+
+  textGroup
+    .append("text")
+    .text("Cardinality")
+    .attr("text-anchor", "middle")
+    .attr(
+      "transform",
+      `translate(${params.cardinality_width / 2},${
+        params.cardinality_bar_height
+      })`
+    );
+
+  sliderInfluence.append("path").attr("class", "slider-brush-path");
+}
+
+function updateBrushAndSlider(pos: number) {
   d3.select(".slider-brush").attr("width", pos);
+  d3.select(".slider-influence")
+    .select(".slider-brush-path")
+    .attr(
+      "d",
+      `M ${params.cardinality_width} ${params.cardinality_scale_group_height -
+        params.axis_offset} H0 V ${params.axis_offset} H${pos}`
+    );
 }
 
 function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
   comm.on("slider-moved", (d: number) => {
     adjustCardinalityBars(d);
     updateDetailsScale(d);
-    updateBrush(scale(d));
+    updateBrushAndSlider(scale(d));
   });
 
   el.call(
@@ -278,6 +317,8 @@ function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
     d3.select(this)
       .raise()
       .classed("active", true);
+    d3.select(".inner-text-group").classed("hide", true);
+    d3.select(".slider-influence").classed("hide", false);
   }
   function dragged() {
     let x = d3.event.x;
@@ -294,6 +335,8 @@ function addDragEvents(el: d3Selection, scale: d3Scale, comm: Mitt) {
   }
   function dragEnd() {
     d3.select(this).classed("active", false);
+    d3.select(".slider-influence").classed("hide", true);
+    d3.select(".inner-text-group").classed("hide", false);
   }
 }
 

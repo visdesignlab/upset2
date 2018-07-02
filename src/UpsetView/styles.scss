@@ -125,3 +125,20 @@
   opacity: 0.2;
   pointer-events: none;
 }
+
+.cardinality-label-rect {
+  fill: #ccc;
+  stroke: black;
+  stroke-width: 1px;
+}
+
+.hide {
+  display: none;
+  transition: opacity 1s ease-out;
+  opacity: 0;
+}
+
+.slider-brush-path {
+  fill: #ccc;
+  opacity: 0.5;
+}
