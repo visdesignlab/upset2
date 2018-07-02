@@ -768,6 +768,16 @@ function renderBars(el: d3Selection, scale: d3Scale) {
         .attr("x1", params.cardinality_width - 25)
         .attr("x2", params.cardinality_width - 15);
     }
+
+    g.append("text")
+      .attr("class", "cardinality-text")
+      .text(d.data.setSize)
+      .attr(
+        "transform",
+        `translate(${params.cardinality_width +
+          5}, ${params.cardinality_bar_height / 2})`
+      )
+      .attr("dy", "0.4em");
   });
 }
 

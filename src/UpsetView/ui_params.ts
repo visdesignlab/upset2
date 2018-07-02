@@ -23,16 +23,11 @@ let params = {
     return (
       params.combinations_width +
       params.cardinality_width +
-      params.column_width * 2
+      params.column_width * 4
     );
   },
   get group_row_width() {
-    return (
-      params.skew_offset +
-      params.combinations_width +
-      params.cardinality_width +
-      params.column_width * 2
-    );
+    return params.skew_offset + params.subset_row_width;
   },
   combo_circle_radius: 9,
 
