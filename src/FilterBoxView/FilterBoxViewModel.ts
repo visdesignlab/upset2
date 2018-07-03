@@ -39,6 +39,7 @@ export class FilterBoxViewModel extends ViewModelBase {
 
   private apply(args: any) {
     console.log(args);
+
     Command.call(this, args);
   }
 }
