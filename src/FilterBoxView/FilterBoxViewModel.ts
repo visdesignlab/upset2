@@ -1,14 +1,16 @@
-import { Application, Command } from "provenance_mvvm_framework";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:38:25 
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-15 16:31:10
  */
+import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import { FilterBoxView } from "./FilterBoxView";
 import "./styles.scss";
 import { RenderConfig } from "../DataStructure/AggregateAndFilters";
+import * as _ from "provenance_mvvm_framework";
+
 export class FilterBoxViewModel extends ViewModelBase {
   get config(): RenderConfig {
     if (!sessionStorage["render_config"]) this.saveConfig(new RenderConfig());
@@ -38,8 +40,6 @@ export class FilterBoxViewModel extends ViewModelBase {
   }
 
   private apply(args: any) {
-    console.log(args);
-
-    Command.call(this, args);
+    _.apply.call(this, ...args);
   }
 }
