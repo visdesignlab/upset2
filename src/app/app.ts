@@ -55,5 +55,3 @@ vf.views["Upset"] = new UpsetViewModel(
   new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
   application
 );
-
-(window as any).graph = application.graph;
