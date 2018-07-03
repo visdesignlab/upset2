@@ -11,3 +11,15 @@
   -ms-transform: rotate(180deg);
   transform: rotate(180deg);
 }
+
+.redo:hover {
+  background: rgba(200, 200, 200, 0.3);
+}
+
+.undo:hover {
+  background: rgba(200, 200, 200, 0.3);
+}
+
+.disable {
+  opacity: 0.1;
+}

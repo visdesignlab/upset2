@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:29
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-03 16:06:41
+ * @Last Modified time: 2018-07-03 16:56:36
  */
 import * as d3 from "d3";
 import { ViewBase, IProvenanceGraph } from "provenance_mvvm_framework";
@@ -41,6 +41,22 @@ export class ProvenanceView extends ViewBase {
   }
 
   update(graph: IProvenanceGraph) {
-    console.log(graph);
+    d3.select(this.Root)
+      .select(".redo")
+      .classed("disable", false);
+    d3.select(this.Root)
+      .select(".undo")
+      .classed("disable", false);
+
+    if (graph.current.children.length === 0) {
+      d3.select(this.Root)
+        .select(".redo")
+        .classed("disable", true);
+    }
+    if (graph.current.label === "Root") {
+      d3.select(this.Root)
+        .select(".undo")
+        .classed("disable", true);
+    }
   }
 }
