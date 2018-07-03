@@ -135,18 +135,33 @@ export class FilterBoxView extends ViewBase {
         return d;
       })
       .on("click", (d: any, i) => {
-        let rc = this.config;
-        rc.firstLevelAggregateBy = <AggregateBy>AggregateBy[d];
-        if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
-          rc.secondLevelAggregateBy = AggregateBy.NONE;
-        }
-        if (
-          rc.firstLevelAggregateBy !== AggregateBy.NONE &&
-          rc.sortBy === SortBy.SET
-        )
-          rc.sortBy = SortBy.DEGREE;
-        this.saveConfig(rc);
-        this.update();
+        let current = firstAggBy.text();
+
+        let _do = {
+          func: this.applyFirstAggregation.bind(this),
+          args: [d]
+        };
+
+        let _undo = {
+          func: this.applyFirstAggregation.bind(this),
+          args: [current]
+        };
+
+        this.comm.emit("apply", ["applyFirstAggregation", _do, _undo]);
+
+        // this.applyFirstAggregation(d);
+        // let rc = this.config;
+        // rc.firstLevelAggregateBy = <AggregateBy>AggregateBy[d];
+        // if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
+        //   rc.secondLevelAggregateBy = AggregateBy.NONE;
+        // }
+        // if (
+        //   rc.firstLevelAggregateBy !== AggregateBy.NONE &&
+        //   rc.sortBy === SortBy.SET
+        // )
+        //   rc.sortBy = SortBy.DEGREE;
+        // this.saveConfig(rc);
+        // this.update();
       });
 
     aggOptions.splice(aggOptions.indexOf(this.config.firstLevelAggregateBy), 1);
@@ -186,5 +201,20 @@ export class FilterBoxView extends ViewBase {
   private saveConfig(config: RenderConfig, update: boolean = true) {
     sessionStorage["render_config"] = JSON.stringify(config);
     if (update) this.comm.emit("filter-changed", this.config);
+  }
+
+  private applyFirstAggregation(d: any) {
+    let rc = this.config;
+    rc.firstLevelAggregateBy = <AggregateBy>AggregateBy[d];
+    if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
+      rc.secondLevelAggregateBy = AggregateBy.NONE;
+    }
+    if (
+      rc.firstLevelAggregateBy !== AggregateBy.NONE &&
+      rc.sortBy === SortBy.SET
+    )
+      rc.sortBy = SortBy.DEGREE;
+    this.saveConfig(rc);
+    this.update();
   }
 }
