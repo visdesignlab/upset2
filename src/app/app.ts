@@ -23,6 +23,8 @@ import "bootstrap";
 import "./styles.scss";
 import { UpsetView } from "../UpsetView/UpsetView";
 import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
+import { ProvenanceViewModel } from "../ProvenanceView/ProvenanceViewModel";
+import { ProvenanceView } from "../ProvenanceView/ProvenanceView";
 
 let application = new Application("Upset2.0", "1.0.0");
 DataUtils.app = application;
@@ -55,5 +57,7 @@ vf.views["Upset"] = new UpsetViewModel(
   application
 );
 
-(window as any).graph = application.graph;
-(window as any).traverser = (vf.views["Upset"] as any).traverser;
+vf.views["Provenance"] = new ProvenanceViewModel(
+  new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
+  application
+);

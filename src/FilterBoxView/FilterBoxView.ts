@@ -87,13 +87,7 @@ export class FilterBoxView extends ViewBase {
       .attr("class", "sortOption")
       .html("")
       .append("label")
-      .attr("class", "radio")
-      .on("click", (d: any, i) => {
-        let rc = this.config;
-        rc.sortBy = <SortBy>SortBy[d];
-        this.saveConfig(rc);
-        this.update();
-      });
+      .attr("class", "radio");
 
     sortLabels
       .append("input")
@@ -102,6 +96,31 @@ export class FilterBoxView extends ViewBase {
       .property("checked", (d, i) => {
         return this.config.sortBy === d;
       });
+
+    sortLabels.on("click", (d: any, i) => {
+      let current = "";
+      sortLabels.each(function(d) {
+        if (
+          d3
+            .select(this)
+            .select("input")
+            .property("checked") === true
+        )
+          current = d;
+      });
+
+      let _do = {
+        func: this.applySortBy.bind(this),
+        args: [d]
+      };
+
+      let _undo = {
+        func: this.applySortBy.bind(this),
+        args: [current]
+      };
+
+      this.comm.emit("apply", ["applySortBy", _do, _undo]);
+    });
 
     sortLabels.append("span").text((d, i) => {
       return ` ${d}`;
@@ -148,20 +167,6 @@ export class FilterBoxView extends ViewBase {
         };
 
         this.comm.emit("apply", ["applyFirstAggregation", _do, _undo]);
-
-        // this.applyFirstAggregation(d);
-        // let rc = this.config;
-        // rc.firstLevelAggregateBy = <AggregateBy>AggregateBy[d];
-        // if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
-        //   rc.secondLevelAggregateBy = AggregateBy.NONE;
-        // }
-        // if (
-        //   rc.firstLevelAggregateBy !== AggregateBy.NONE &&
-        //   rc.sortBy === SortBy.SET
-        // )
-        //   rc.sortBy = SortBy.DEGREE;
-        // this.saveConfig(rc);
-        // this.update();
       });
 
     aggOptions.splice(aggOptions.indexOf(this.config.firstLevelAggregateBy), 1);
@@ -184,17 +189,28 @@ export class FilterBoxView extends ViewBase {
         return d;
       })
       .on("click", (d: any, i) => {
-        let rc = this.config;
-        rc.secondLevelAggregateBy = <AggregateBy>AggregateBy[d];
+        let current = secondAggBy.text();
+        let _do = {
+          func: this.applySecondAggregation.bind(this),
+          args: [d]
+        };
+        let _undo = {
+          func: this.applySecondAggregation.bind(this),
+          args: [d]
+        };
 
-        if (
-          rc.secondLevelAggregateBy !== AggregateBy.NONE &&
-          rc.sortBy === SortBy.SET
-        )
-          rc.sortBy = SortBy.DEGREE;
+        this.comm.emit("apply", ["applySecondAggregation", _do, _undo]);
+        // let rc = this.config;
+        // rc.secondLevelAggregateBy = <AggregateBy>AggregateBy[d];
 
-        this.saveConfig(rc);
-        this.update();
+        // if (
+        //   rc.secondLevelAggregateBy !== AggregateBy.NONE &&
+        //   rc.sortBy === SortBy.SET
+        // )
+        //   rc.sortBy = SortBy.DEGREE;
+
+        // this.saveConfig(rc);
+        // this.update();
       });
   }
 
@@ -214,6 +230,27 @@ export class FilterBoxView extends ViewBase {
       rc.sortBy === SortBy.SET
     )
       rc.sortBy = SortBy.DEGREE;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  private applySecondAggregation(d: any) {
+    let rc = this.config;
+    rc.secondLevelAggregateBy = <AggregateBy>AggregateBy[d];
+
+    if (
+      rc.secondLevelAggregateBy !== AggregateBy.NONE &&
+      rc.sortBy === SortBy.SET
+    )
+      rc.sortBy = SortBy.DEGREE;
+
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  private applySortBy(d: any) {
+    let rc = this.config;
+    rc.sortBy = <SortBy>SortBy[d];
     this.saveConfig(rc);
     this.update();
   }

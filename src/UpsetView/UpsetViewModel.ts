@@ -14,8 +14,20 @@ export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
-    this.comm.on("remove-set-trigger", (set: Set) => {
-      this.App.emit("remove-set", set);
+    this.comm.on("remove-set-trigger", (d: Set) => {
+      let _do = {
+        func: (d: any) => {
+          this.App.emit("remove-set", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: any) => {
+          this.App.emit("add-set", d);
+        },
+        args: [d]
+      };
+      this.apply.call(this, ["remove_set", _do, _undo]);
     });
     this.comm.on("set-filter", idx => {
       this.App.emit("filter-changed", null, idx);

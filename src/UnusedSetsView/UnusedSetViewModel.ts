@@ -18,7 +18,19 @@ export class UnusedSetViewModel extends ViewModelBase {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
     this.comm.on("add-set-trigger", (d: Set) => {
-      this.App.emit("add-set", d);
+      let _do = {
+        func: (d: any) => {
+          this.App.emit("add-set", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: any) => {
+          this.App.emit("remove-set", d);
+        },
+        args: [d]
+      };
+      this.apply.call(this, ["add_set", _do, _undo]);
     });
   }
 
