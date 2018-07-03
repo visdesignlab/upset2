@@ -38,8 +38,4 @@ export class FilterBoxViewModel extends ViewModelBase {
     sessionStorage["render_config"] = JSON.stringify(config);
     if (update) this.comm.emit("filter-changed", this.config);
   }
-
-  private apply(args: any) {
-    _.apply.call(this, ...args);
-  }
 }

@@ -1,5 +1,3 @@
-import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
-import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
@@ -17,7 +15,8 @@ import { FilterBoxViewModel } from "../FilterBoxView/FilterBoxViewModel";
 import { NavBarView } from "../NavBarView/NavBarView";
 import { NavBarViewModel } from "../NavBarView/NavBarViewModel";
 import { ViewFactory } from "./ViewFactory";
-
+import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
+import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 // Importing styles
 import "popper.js";
 import "bootstrap";
@@ -55,3 +54,6 @@ vf.views["Upset"] = new UpsetViewModel(
   new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
   application
 );
+
+(window as any).graph = application.graph;
+(window as any).traverser = (vf.views["Upset"] as any).traverser;
