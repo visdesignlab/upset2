@@ -1,4 +1,8 @@
-import { IProvenanceGraph, ProvenanceNode } from "provenance_mvvm_framework";
+import {
+  IProvenanceGraph,
+  ProvenanceNode,
+  Mitt
+} from "provenance_mvvm_framework";
 import { d3Selection } from "./../type_declarations/types";
 import * as d3 from "d3";
 
@@ -14,107 +18,76 @@ export function createButtons(el: d3Selection, graph: IProvenanceGraph) {
   }
 }
 
-export function createGraph(el: d3Selection, graph: IProvenanceGraph) {
+export function createGraph(
+  el: d3Selection,
+  graph: IProvenanceGraph,
+  comm: Mitt
+) {
   addSvg(el);
 
   let g = el.select(".graph-group");
+  let h = (el.node() as any).getBoundingClientRect().width * 0.9;
 
-  let treeMap = d3.tree().size([500, 1000]);
-  let hierarchy = d3.hierarchy(graph.root);
-  let nodes = treeMap(hierarchy);
+  let height = h;
+  let width = 150;
+  let treeMap = d3.tree().size([width, height]);
 
-  // adds the links between the nodes
-  var link = g
+  let root = d3.hierarchy(graph.root, d => {
+    return d.children;
+  });
+
+  let nodes = treeMap(root);
+
+  let link = g
     .selectAll(".link")
     .data(nodes.descendants().slice(1))
     .enter()
     .append("path")
     .attr("class", "link")
-    .attr("d", function(d) {
-      return (
-        "M" +
-        d.x +
-        "," +
-        d.y +
-        "C" +
-        d.x +
-        "," +
-        (d.y + d.parent.y) / 2 +
-        " " +
-        d.parent.x +
-        "," +
-        (d.y + d.parent.y) / 2 +
-        " " +
-        d.parent.x +
-        "," +
-        d.parent.y
-      );
+    .attr("d", d => {
+      return `M ${d.y}, ${d.x}
+              C ${(d.y + d.parent.y) / 2}, ${d.x} 
+                ${(d.y + d.parent.y) / 2}, ${d.parent.x} 
+                ${d.parent.y}, ${d.parent.x}`;
     });
 
-  // adds each node as a group
-  var node = g
+  let node = g
     .selectAll(".node")
     .data(nodes.descendants())
     .enter()
     .append("g")
-    .attr("class", function(d) {
-      return "node" + (d.children ? " node--internal" : " node--leaf");
-    })
-    .attr("transform", function(d) {
-      return "translate(" + d.x + "," + d.y + ")";
+    .attr("class", d => {
+      return `node ${d.children ? "node-internal" : "node-leaf"}`;
     });
 
-  // adds the circle to the node
-  node.append("circle").attr("r", 10);
+  node.on("click", (d, i) => {
+    comm.emit("go-to-node", (d.data as any).id);
+  });
 
-  // adds the text to the node
+  node.attr("transform", d => {
+    return `translate(${d.y}, ${d.x})`;
+  });
+
+  node
+    .append("circle")
+    .attr("r", 5)
+    .attr("class", d => {
+      if ((d.data as any).id === graph.current.id) return "current";
+      return "";
+    });
+
   node
     .append("text")
-    .attr("dy", ".35em")
-    .attr("y", function(d) {
-      return d.children ? -20 : 20;
+    .attr("dy", "0.35em")
+    .attr("x", d => {
+      return d.children ? -13 : 13;
     })
-    .style("text-anchor", "middle")
-    .text(function(d) {
-      return d.data.name;
+    .style("text-anchor", d => {
+      return d.children ? "end" : "start";
+    })
+    .text((d, i) => {
+      return i;
     });
-
-  // let link = graphGroup
-  //   .selectAll(".link")
-  //   .data(nodes.descendants().slice(1))
-  //   .enter()
-  //   .append("path")
-  //   .attr("d", d => {
-  //     return `M ${d.x},${d.y}
-  //     C${d.x},${(d.y + d.parent.y) / 2}
-  //     ${d.parent.x}, ${(d.y + d.parent.y) / 2}
-  //     ${d.parent.x} ${d.parent.y}`;
-  //   });
-
-  // let node = graphGroup
-  //   .selectAll(".node")
-  //   .data(nodes.descendants())
-  //   .enter()
-  //   .append("g")
-  //   .attr("class", d => {
-  //     return `node ${d.children ? "node-internal" : "node-leaf"}`;
-  //   })
-  //   .attr("transform", d => {
-  //     return `translate(${d.x}, ${d.y});`;
-  //   });
-
-  // node.append("circle").attr("r", 10);
-
-  // node
-  //   .append("text")
-  //   .attr("y", "0.35em")
-  //   .attr("y", d => {
-  //     return d.children ? -20 : 20;
-  //   })
-  //   .style("text-anchor", "middle")
-  //   .text((d, i) => {
-  //     return i;
-  //   });
 }
 
 function addSvg(el: d3Selection) {
@@ -125,10 +98,9 @@ function addSvg(el: d3Selection) {
     .append("svg")
     .attr("class", "graph-svg")
     .attr("width", "100%")
-    .attr("height", "1000")
     .merge(_graphGroup)
     .html("")
     .append("g")
     .attr("class", "graph-group")
-    .attr("transform", `translate(20, 20)`);
+    .attr("transform", `translate(20, 0)`);
 }

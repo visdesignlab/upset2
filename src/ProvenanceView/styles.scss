@@ -26,8 +26,9 @@
 
 .node circle {
   fill: #fff;
-  stroke: steelblue;
-  stroke-width: 3px;
+  stroke: rgb(70, 130, 180);
+  stroke-width: 1.5px;
+  cursor: pointer;
 }
 
 .node text {
@@ -43,3 +44,11 @@
   stroke: #ccc;
   stroke-width: 2px;
 }
+
+.current {
+  fill: rgb(20, 80, 130) !important;
+}
+
+// .graph-view {
+//   border: 1px solid black;
+// }

@@ -12,7 +12,6 @@ import { createButtons, createGraph } from "./uiBuilderFunctions";
 export class ProvenanceView extends ViewBase {
   constructor(root: HTMLElement) {
     super(root);
-    d3.select(this.Root).style("height", "1000px");
   }
 
   create() {
@@ -44,6 +43,6 @@ export class ProvenanceView extends ViewBase {
 
   update(graph: IProvenanceGraph) {
     createButtons(d3.select(this.Root), graph);
-    createGraph(d3.select(this.Root).select(".graph-view"), graph);
+    createGraph(d3.select(this.Root).select(".graph-view"), graph, this.comm);
   }
 }
