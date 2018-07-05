@@ -7,10 +7,12 @@
 import * as d3 from "d3";
 import { ViewBase, IProvenanceGraph } from "provenance_mvvm_framework";
 import template from "./provenance.view.html";
+import { createButtons, createGraph } from "./uiBuilderFunctions";
 
 export class ProvenanceView extends ViewBase {
   constructor(root: HTMLElement) {
     super(root);
+    d3.select(this.Root).style("height", "1000px");
   }
 
   create() {
@@ -41,22 +43,7 @@ export class ProvenanceView extends ViewBase {
   }
 
   update(graph: IProvenanceGraph) {
-    d3.select(this.Root)
-      .select(".redo")
-      .classed("disable", false);
-    d3.select(this.Root)
-      .select(".undo")
-      .classed("disable", false);
-
-    if (graph.current.children.length === 0) {
-      d3.select(this.Root)
-        .select(".redo")
-        .classed("disable", true);
-    }
-    if (graph.current.label === "Root") {
-      d3.select(this.Root)
-        .select(".undo")
-        .classed("disable", true);
-    }
+    createButtons(d3.select(this.Root), graph);
+    createGraph(d3.select(this.Root).select(".graph-view"), graph);
   }
 }
