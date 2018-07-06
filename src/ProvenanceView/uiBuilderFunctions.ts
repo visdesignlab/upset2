@@ -1,8 +1,4 @@
-import {
-  IProvenanceGraph,
-  ProvenanceNode,
-  Mitt
-} from "provenance_mvvm_framework";
+import { IProvenanceGraph, Mitt } from "provenance_mvvm_framework";
 import { d3Selection } from "./../type_declarations/types";
 import * as d3 from "d3";
 
@@ -38,44 +34,22 @@ export function createGraph(
 
   let nodes = treeMap(root);
 
-  let link = g
-    .selectAll(".link")
-    .data(nodes.descendants().slice(1))
-    .enter()
-    .append("path")
-    .attr("class", "link")
-    .attr("d", d => {
-      return `M ${d.y}, ${d.x}
-              C ${(d.y + d.parent.y) / 2}, ${d.x} 
-                ${(d.y + d.parent.y) / 2}, ${d.parent.x} 
-                ${d.parent.y}, ${d.parent.x}`;
-    });
+  let link = addLinks(g, nodes);
 
-  let node = g
-    .selectAll(".node")
-    .data(nodes.descendants())
-    .enter()
-    .append("g")
-    .attr("class", d => {
-      return `node ${d.children ? "node-internal" : "node-leaf"}`;
-    });
+  let node = addNodes(g, nodes);
+  addClickToNodes(node, comm);
+  translateNodesToPosition(node);
+  addNodeElements(node, graph.current.id);
+}
 
-  node.on("click", (d, i) => {
-    comm.emit("go-to-node", (d.data as any).id);
-  });
-
-  node.attr("transform", d => {
-    return `translate(${d.y}, ${d.x})`;
-  });
-
+function addNodeElements(node: d3Selection, current: string) {
   node
     .append("circle")
     .attr("r", 5)
     .attr("class", d => {
-      if ((d.data as any).id === graph.current.id) return "current";
+      if ((d.data as any).id === current) return "current";
       return "";
     });
-
   node
     .append("text")
     .attr("dy", "0.35em")
@@ -87,6 +61,44 @@ export function createGraph(
     })
     .text((d, i) => {
       return i;
+    });
+}
+
+function translateNodesToPosition(node: d3Selection) {
+  node.attr("transform", d => {
+    return `translate(${d.y}, ${d.x})`;
+  });
+}
+
+function addClickToNodes(node: d3Selection, comm: Mitt) {
+  node.on("click", (d, i) => {
+    comm.emit("go-to-node", (d.data as any).id);
+  });
+}
+
+function addNodes(g: d3Selection, nodes: d3.HierarchyPointNode<{}>) {
+  return g
+    .selectAll(".node")
+    .data(nodes.descendants())
+    .enter()
+    .append("g")
+    .attr("class", d => {
+      return `node ${d.children ? "node-internal" : "node-leaf"}`;
+    });
+}
+
+function addLinks(g: d3Selection, nodes: d3.HierarchyPointNode<{}>) {
+  return g
+    .selectAll(".link")
+    .data(nodes.descendants().slice(1))
+    .enter()
+    .append("path")
+    .attr("class", "link")
+    .attr("d", d => {
+      return `M ${d.y}, ${d.x}
+              C ${(d.y + d.parent.y) / 2}, ${d.x} 
+                ${(d.y + d.parent.y) / 2}, ${d.parent.x} 
+                ${d.parent.y}, ${d.parent.x}`;
     });
 }
 

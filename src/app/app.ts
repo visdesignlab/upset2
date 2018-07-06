@@ -17,18 +17,24 @@ import { NavBarViewModel } from "../NavBarView/NavBarViewModel";
 import { ViewFactory } from "./ViewFactory";
 import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
-// Importing styles
-import "popper.js";
-import "bootstrap";
-import "./styles.scss";
 import { UpsetView } from "../UpsetView/UpsetView";
 import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
 import { ProvenanceViewModel } from "../ProvenanceView/ProvenanceViewModel";
 import { ProvenanceView } from "../ProvenanceView/ProvenanceView";
 
+// Importing styles
+import "popper.js";
+import "bootstrap";
+import "./styles.scss";
+
 let application = new Application("Upset2.0", "1.0.0");
 DataUtils.app = application;
 DataUtils.app.on("change-dataset", DataUtils.processDataSet);
+
+if (sessionStorage["provenance-graph"]) {
+  application.graph = JSON.parse(sessionStorage["provenance-graph"]);
+  application.registry = JSON.parse(sessionStorage["provenance-registry"]);
+}
 
 let vf = new ViewFactory();
 
@@ -61,5 +67,3 @@ vf.views["Provenance"] = new ProvenanceViewModel(
   new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
   application
 );
-
-(window as any).graph = application.graph;
