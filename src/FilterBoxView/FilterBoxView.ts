@@ -3,7 +3,7 @@ import { AggregateBy, SortBy } from "./../DataStructure/AggregateAndFilters";
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-15 16:43:33
+ * @Last Modified time: 2018-07-07 15:43:50
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -219,7 +219,7 @@ export class FilterBoxView extends ViewBase {
     if (update) this.comm.emit("filter-changed", this.config);
   }
 
-  private applyFirstAggregation(d: any) {
+  applyFirstAggregation(d: any) {
     let rc = this.config;
     rc.firstLevelAggregateBy = <AggregateBy>AggregateBy[d];
     if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
@@ -234,7 +234,7 @@ export class FilterBoxView extends ViewBase {
     this.update();
   }
 
-  private applySecondAggregation(d: any) {
+  applySecondAggregation(d: any) {
     let rc = this.config;
     rc.secondLevelAggregateBy = <AggregateBy>AggregateBy[d];
 
@@ -248,7 +248,7 @@ export class FilterBoxView extends ViewBase {
     this.update();
   }
 
-  private applySortBy(d: any) {
+  applySortBy(d: any) {
     let rc = this.config;
     rc.sortBy = <SortBy>SortBy[d];
     this.saveConfig(rc);

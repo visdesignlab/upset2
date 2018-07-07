@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-03 16:42:14
+ * @Last Modified time: 2018-07-07 01:12:36
  */
 
 import * as d3 from "d3";
@@ -67,3 +67,5 @@ vf.views["Provenance"] = new ProvenanceViewModel(
   new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
   application
 );
+
+(window as any).registry = application.registry;

@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:29
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-03 16:56:36
+ * @Last Modified time: 2018-07-06 23:51:00
  */
 import * as d3 from "d3";
 import { ViewBase, IProvenanceGraph } from "provenance_mvvm_framework";
@@ -16,6 +16,19 @@ export class ProvenanceView extends ViewBase {
 
   create() {
     d3.select(this.Root).html(template);
+
+    d3.select(this.Root)
+      .select("#save-btn")
+      .on("click", () => {
+        this.comm.emit("save-graph");
+      });
+
+    d3.select(this.Root)
+      .select("#load-btn")
+      .on("click", () => {
+        this.comm.emit("load-graph");
+      });
+
     let undo = d3.select(this.Root).select(".undo");
     let redo = d3.select(this.Root).select(".redo");
     undo

@@ -2,12 +2,13 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-03 17:00:20
+ * @Last Modified time: 2018-07-07 00:15:04
  */
 import {
   ViewModelBase,
   Application,
-  StateNode
+  StateNode,
+  ProvenanceGraph
 } from "provenance_mvvm_framework";
 import { ProvenanceView } from "./ProvenanceView";
 import "./styles.scss";
@@ -19,10 +20,13 @@ export class ProvenanceViewModel extends ViewModelBase {
     this.comm.on("undo", this.undo, this);
     this.comm.on("redo", this.redo, this);
     this.comm.on("go-to-node", this.goTo, this);
+    this.comm.on("save-graph", this.saveGraph, this);
+    this.comm.on("load-graph", this.loadGraph, this);
     this.update();
   }
 
   update() {
+    (window as any).graph = this.App.graph;
     this.comm.emit("update", this.App.graph);
   }
 
@@ -40,6 +44,20 @@ export class ProvenanceViewModel extends ViewModelBase {
 
   goTo(id: string) {
     this.traverser.toStateNode(id);
+    this.update();
+  }
+
+  saveGraph() {
+    localStorage["graph"] = JSON.stringify(
+      ProvenanceGraph.serializeProvenanceGraph(this.App.graph as any)
+    );
+  }
+
+  loadGraph() {
+    this.App.graph = ProvenanceGraph.restoreProvenanceGraph(
+      JSON.parse(localStorage["graph"])
+    );
+    this.traverser.graph = this.App.graph;
     this.update();
   }
 }
