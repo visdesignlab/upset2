@@ -14,6 +14,7 @@ import { IDataSetJSON } from "./IDataSetJSON";
 import { Set } from "./Set";
 import SortStrategy from "./SortingStrategy";
 import { SubSet } from "./SubSet";
+import { RowType } from "./RowType";
 
 export class Data {
   app: Application;
@@ -507,10 +508,33 @@ export class Data {
 
 function applySecondAggregation(
   agg: RenderRow[],
-  fn: AggregateBy,
+  aggBy: AggregateBy,
   overlap: number
 ): RenderRow[] {
-  return agg;
+  let groupIndices = agg
+    .map((v: RenderRow, i) => [i, v.data.type === RowType.GROUP])
+    .filter(v => v[1])
+    .map(v => v[0]);
+  let rr: RenderRow[] = [];
+
+  for (let i = 0; i < groupIndices.length; ++i) {
+    rr.push(agg[groupIndices[i] as number]);
+
+    let subsets: RenderRow[] = [];
+    if (i === groupIndices.length - 1) {
+      subsets = agg.slice((groupIndices[i] as number) + 1);
+    } else {
+      subsets = agg.slice((groupIndices[i] as number) + 1, groupIndices[
+        i + 1
+      ] as number);
+    }
+
+    let rendered = AggregationStrategy[aggBy](subsets, overlap, 2);
+    console.log(rendered);
+    rr = rr.concat(rendered);
+  }
+
+  return rr;
 }
 
 function applySort(

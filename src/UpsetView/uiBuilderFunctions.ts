@@ -1,3 +1,4 @@
+import { Group } from "./../DataStructure/Group";
 import { SubSet } from "./../DataStructure/SubSet";
 import { d3Selection, RenderRow, d3Scale } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
@@ -682,8 +683,19 @@ function addGroupBackgroundRects(groups: d3Selection) {
     .selectAll(".background-rect-g")
     .append("rect")
     .attr("class", "group-background-rect")
+    .classed("group-background-rect2", (d: RenderRow, i) => {
+      if ((d.data as Group).level === 2) return true;
+      return false;
+    })
     .attr("height", params.row_height)
-    .attr("width", params.group_row_width)
+    .attr("width", (d: RenderRow) => {
+      if ((d.data as Group).level === 2) return params.group_row_width - 20;
+      return params.group_row_width;
+    })
+    .attr("transform", (d: RenderRow) => {
+      if ((d.data as Group).level === 2) return `translate(20, 0)`;
+      return "translate(0,0)";
+    })
     .attr("rx", 5)
     .attr("ry", 10);
 }
@@ -696,7 +708,9 @@ function addGroupLabels(groups: d3Selection) {
     .text((d: RenderRow, i) => {
       return d.data.elementName;
     })
-    .attr("transform", (d, i) => {
+    .attr("transform", (d: RenderRow, i) => {
+      if ((d.data as Group).level === 2)
+        return `translate(30, ${params.row_height - 4})`;
       return `translate(10, ${params.row_height - 4})`;
     });
 }

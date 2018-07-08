@@ -4,7 +4,11 @@ import { AggregateBy } from "./AggregateAndFilters";
 import { RenderRow } from "./../type_declarations/types";
 
 let AggregationStrategy: {
-  [key: string]: (data: RenderRow[], overlap?: number) => RenderRow[];
+  [key: string]: (
+    data: RenderRow[],
+    overlap?: number,
+    level?: number
+  ) => RenderRow[];
 } = {};
 
 AggregationStrategy[AggregateBy.DEGREE] = aggregateByDegree;
