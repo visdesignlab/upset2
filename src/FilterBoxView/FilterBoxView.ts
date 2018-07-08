@@ -37,6 +37,7 @@ export class FilterBoxView extends ViewBase {
   update() {
     this.updateAggregationDropdowns();
     this.updateSortByOptions();
+    this.updateOverlaps();
     this.updateDataFields();
   }
 
@@ -44,6 +45,16 @@ export class FilterBoxView extends ViewBase {
     let minDegree = d3.select("#minDegree");
     let maxDegree = d3.select("#maxDegree");
     let hideEmpty = d3.select("#hideEmpty");
+
+    let firstOverlap = d3.select(this.Root).select("#overlap-one");
+    let secondOverlap = d3.select(this.Root).select("#overlap-two");
+
+    firstOverlap
+      .select("#first-overlap-input")
+      .property("value", this.config.firstOverlap);
+    secondOverlap
+      .select("#second-overlap-input")
+      .property("value", this.config.secondOverlap);
 
     minDegree.attr("value", this.config.minDegree);
     maxDegree.attr("value", this.config.maxDegree);
@@ -190,28 +201,53 @@ export class FilterBoxView extends ViewBase {
       })
       .on("click", (d: any, i) => {
         let current = secondAggBy.text();
+        let overlap = this.config.secondOverlap;
         let _do = {
           func: this.applySecondAggregation.bind(this),
           args: [d]
         };
         let _undo = {
           func: this.applySecondAggregation.bind(this),
-          args: [d]
+          args: [current]
         };
 
         this.comm.emit("apply", ["applySecondAggregation", _do, _undo]);
-        // let rc = this.config;
-        // rc.secondLevelAggregateBy = <AggregateBy>AggregateBy[d];
-
-        // if (
-        //   rc.secondLevelAggregateBy !== AggregateBy.NONE &&
-        //   rc.sortBy === SortBy.SET
-        // )
-        //   rc.sortBy = SortBy.DEGREE;
-
-        // this.saveConfig(rc);
-        // this.update();
       });
+  }
+
+  private updateOverlaps() {
+    let firstOverlap = d3.select("#first-overlap-input");
+    let secondOverlap = d3.select("#second-overlap-input");
+    let t = this;
+    firstOverlap.on("change", function() {
+      let overlap = d3.select(this).property("value");
+
+      let _do = {
+        func: t.applyFirstOverlap.bind(t),
+        args: [overlap]
+      };
+      let _undo = {
+        func: t.applyFirstOverlap.bind(t),
+        args: [t.config.firstOverlap]
+      };
+
+      t.comm.emit("apply", ["applyFirstOverlap", _do, _undo]);
+    });
+
+    secondOverlap.on("change", function() {
+      let overlap = d3.select(this).property("value");
+
+      let _do = {
+        func: t.applySecondOverlap.bind(t),
+        args: [overlap]
+      };
+      let _undo = {
+        func: t.applySecondOverlap.bind(t),
+        args: [t.config.secondOverlap]
+      };
+
+      t.comm.emit("apply", ["applySecondOverlap", _do, _undo]);
+    });
   }
 
   private saveConfig(config: RenderConfig, update: boolean = true) {
@@ -251,6 +287,20 @@ export class FilterBoxView extends ViewBase {
   applySortBy(d: any) {
     let rc = this.config;
     rc.sortBy = <SortBy>SortBy[d];
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applyFirstOverlap(d: number) {
+    let rc = this.config;
+    rc.firstOverlap = d;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applySecondOverlap(d: number) {
+    let rc = this.config;
+    rc.secondOverlap = d;
     this.saveConfig(rc);
     this.update();
   }

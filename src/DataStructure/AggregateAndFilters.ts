@@ -1,7 +1,9 @@
 import { IDataSetInfo } from "./IDataSetInfo";
 export class RenderConfig {
   firstLevelAggregateBy: AggregateBy = AggregateBy.NONE;
+  firstOverlap: number = 2;
   secondLevelAggregateBy: AggregateBy = AggregateBy.NONE;
+  secondOverlap: number = 2;
   sortBy: SortBy = SortBy.CARDINALITY;
   collapseAll: boolean = false;
   hideEmptyIntersection: boolean = true;
