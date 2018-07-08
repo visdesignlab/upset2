@@ -41,7 +41,35 @@ function aggregateByDeviation(
   data: RenderRow[],
   level: number = 1
 ): RenderRow[] {
-  return data;
+  let groups = data.reduce((groups: any, item) => {
+    let val = (item.data as SubSet).disproportionality;
+    if (val >= 0) {
+      groups["Positive"] = groups["Positive"] || [];
+      groups["Positive"].push(item);
+    } else {
+      groups["Negative"] = groups["Negative"] || [];
+      groups["Negative"].push(item);
+    }
+    return groups;
+  }, {});
+
+  let rr: RenderRow[] = [];
+
+  for (let group in groups) {
+    let g = new Group(
+      `${group}_Expected_Value`,
+      `${group} Expected Value`,
+      level
+    );
+    rr.push({ id: g.id.toString(), data: g });
+    let subsets = groups[group] as RenderRow[];
+    subsets.forEach(subset => {
+      g.addSubSet(subset.data as SubSet);
+      rr.push({ id: subset.id.toString(), data: subset.data });
+    });
+  }
+
+  return rr;
 }
 
 function aggregateByOverlap(data: RenderRow[], level: number = 1): RenderRow[] {
