@@ -4,7 +4,7 @@ import { AggregateBy } from "./AggregateAndFilters";
 import { RenderRow } from "./../type_declarations/types";
 
 let AggregationStrategy: {
-  [key: string]: (data: RenderRow[]) => RenderRow[];
+  [key: string]: (data: RenderRow[], overlap?: number) => RenderRow[];
 } = {};
 
 AggregationStrategy[AggregateBy.DEGREE] = aggregateByDegree;
@@ -72,7 +72,12 @@ function aggregateByDeviation(
   return rr;
 }
 
-function aggregateByOverlap(data: RenderRow[], level: number = 1): RenderRow[] {
+function aggregateByOverlap(
+  data: RenderRow[],
+  overlap: number,
+  level: number = 1
+): RenderRow[] {
+  console.log(overlap);
   return data;
 }
 

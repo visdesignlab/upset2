@@ -449,7 +449,9 @@ export class Data {
         this.renderConfig.sortBy,
         this.renderConfig.minDegree,
         this.renderConfig.maxDegree,
-        sortBySetId
+        sortBySetId,
+        this.renderConfig.firstOverlap,
+        this.renderConfig.secondOverlap
       );
     } else {
       if (!sortBySetId) sortBySetId = 0;
@@ -459,7 +461,9 @@ export class Data {
         SortBy.SET,
         this.renderConfig.minDegree,
         this.renderConfig.maxDegree,
-        sortBySetId
+        sortBySetId,
+        this.renderConfig.firstOverlap,
+        this.renderConfig.secondOverlap
       );
     }
     this.app.emit("render-rows-changed", this);
@@ -471,18 +475,26 @@ export class Data {
     sortBy: SortBy,
     minDegree: number,
     maxDegree: number,
+    overlap1: number,
+    overlap2: number,
     sortBySetId?: number
   ): Array<RenderRow> {
     let agg: RenderRow[] = [];
 
-    this.subSets.forEach((set: SubSet) => {
-      agg.push({ id: set.id.toString(), data: set });
-    });
+    this.subSets
+      .filter(d => {
+        return d.noCombinedSets >= minDegree && d.noCombinedSets <= maxDegree;
+      })
+      .forEach((set: SubSet) => {
+        agg.push({ id: set.id.toString(), data: set });
+      });
 
-    if (firstAggBy && firstAggBy !== AggregateBy.NONE)
+    if (firstAggBy === AggregateBy.OVERLAPS)
+      agg = AggregationStrategy[firstAggBy](agg, overlap1);
+    else if (firstAggBy && firstAggBy !== AggregateBy.NONE)
       agg = AggregationStrategy[firstAggBy](agg);
     if (secondAggBy && secondAggBy !== AggregateBy.NONE)
-      agg = applySecondAggregation(agg, secondAggBy);
+      agg = applySecondAggregation(agg, secondAggBy, overlap2);
 
     if (this.renderConfig.hideEmptyIntersection)
       agg = agg.filter(set => set.data.setSize > 0);
@@ -495,7 +507,8 @@ export class Data {
 
 function applySecondAggregation(
   agg: RenderRow[],
-  fn: AggregateBy
+  fn: AggregateBy,
+  overlap: number
 ): RenderRow[] {
   return agg;
 }
