@@ -134,10 +134,6 @@ function aggregateByOverlap(
 
 function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
   let subSetNames: { [key: number]: string } = {};
-  // data.filter(d => (d.data as SubSet).noCombinedSets === 1).map(d => {
-  //   subSetNames[(d.data as SubSet).combinedSets.findIndex(i => i === 1)] =
-  //     d.data.elementName;
-  // });
 
   let names = data
     .map((d: RenderRow) => {
@@ -146,13 +142,10 @@ function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
     .reduce((a, v) => {
       return a.concat(v);
     }, []);
-
   names = [...new Set(names)];
-
   names = names.sort((s, t) => {
     return d3.ascending(s.replace("_", " "), t.replace("_", " "));
   });
-
   names.forEach((d, i) => {
     subSetNames[i] = d;
   });
@@ -189,6 +182,5 @@ function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
       rr.push({ id: subset.id.toString(), data: subset.data });
     });
   }
-
   return rr;
 }

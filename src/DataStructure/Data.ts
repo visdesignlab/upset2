@@ -512,6 +512,7 @@ export class Data {
 
     if (sortBy) agg = applySort(agg, sortBy, sortBySetId);
 
+    console.log(agg);
     return agg;
   }
 }
@@ -540,7 +541,6 @@ function applySecondAggregation(
     }
 
     let rendered = AggregationStrategy[aggBy](subsets, overlap, 2);
-    console.log(rendered);
     rr = rr.concat(rendered);
   }
 
