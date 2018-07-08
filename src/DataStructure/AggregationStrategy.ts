@@ -2,6 +2,7 @@ import { SubSet } from "./SubSet";
 import { Group } from "./Group";
 import { AggregateBy } from "./AggregateAndFilters";
 import { RenderRow } from "./../type_declarations/types";
+import * as d3 from "d3";
 
 let AggregationStrategy: {
   [key: string]: (
@@ -133,9 +134,27 @@ function aggregateByOverlap(
 
 function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
   let subSetNames: { [key: number]: string } = {};
-  data.filter(d => (d.data as SubSet).noCombinedSets === 1).map(d => {
-    subSetNames[(d.data as SubSet).combinedSets.findIndex(i => i === 1)] =
-      d.data.elementName;
+  // data.filter(d => (d.data as SubSet).noCombinedSets === 1).map(d => {
+  //   subSetNames[(d.data as SubSet).combinedSets.findIndex(i => i === 1)] =
+  //     d.data.elementName;
+  // });
+
+  let names = data
+    .map((d: RenderRow) => {
+      return d.data.elementName.split(" ");
+    })
+    .reduce((a, v) => {
+      return a.concat(v);
+    }, []);
+
+  names = [...new Set(names)];
+
+  names = names.sort((s, t) => {
+    return d3.ascending(s.replace("_", " "), t.replace("_", " "));
+  });
+
+  names.forEach((d, i) => {
+    subSetNames[i] = d;
   });
 
   let groups = data.reduce((groups: any, item) => {

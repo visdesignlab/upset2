@@ -15,7 +15,7 @@ import { Set } from "./Set";
 import SortStrategy from "./SortingStrategy";
 import { SubSet } from "./SubSet";
 import { RowType } from "./RowType";
-
+import * as d3 from "d3";
 export class Data {
   app: Application;
   sets: Array<Set> = [];
@@ -177,7 +177,8 @@ export class Data {
         }
 
         let name = "";
-        if (names.length > 0) name = names.reverse().join(" ") + " ";
+        names = names.map(n => n.replace(" ", "_"));
+        if (names.length > 0) name = names.reverse().join(" ") + "";
         if (name === "") {
           name = "UNINCLUDED";
         }
@@ -344,11 +345,20 @@ export class Data {
         this.unusedSets.push(set);
       }
     }
+
+    this.usedSets = this.getAlphabeticalSorting(this.usedSets);
+  }
+
+  private getAlphabeticalSorting(sets: Set[]): Set[] {
+    return sets.sort((a: Set, b: Set) => {
+      return d3.ascending(a.elementName, b.elementName);
+    });
   }
 
   public addSet(set: Set) {
     set.isSelected = true;
     this.usedSets.push(set);
+    this.usedSets = this.getAlphabeticalSorting(this.usedSets);
     let toRemove = this.unusedSets.findIndex((s, i) => s.id === set.id);
     this.unusedSets.splice(toRemove, 1);
     this.setUpSubSets();
