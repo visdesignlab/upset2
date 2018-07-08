@@ -1,6 +1,6 @@
 import { IDataSetInfo } from "./IDataSetInfo";
 export class RenderConfig {
-  firstLevelAggregateBy: AggregateBy = AggregateBy.DEGREE;
+  firstLevelAggregateBy: AggregateBy = AggregateBy.NONE;
   secondLevelAggregateBy: AggregateBy = AggregateBy.NONE;
   sortBy: SortBy = SortBy.CARDINALITY;
   collapseAll: boolean = false;
