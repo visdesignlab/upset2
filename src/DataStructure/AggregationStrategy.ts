@@ -77,7 +77,25 @@ function aggregateByOverlap(
   overlap: number,
   level: number = 1
 ): RenderRow[] {
-  console.log(overlap);
+  let maxSubSet = (data[0].data as SubSet).combinedSets.length;
+  let combinations = data
+    .filter(d => {
+      return (d.data as SubSet).noCombinedSets === overlap;
+    })
+    .map(d => {
+      return {
+        name: (d.data as SubSet).elementName,
+        idx: (d.data as SubSet).combinedSets
+          .map((v, i) => [i, v === 1])
+          .filter(v => v[1])
+          .map(v => v[0])
+      };
+    });
+  console.log(combinations);
+  data = data.filter(d => {
+    return (d.data as SubSet).noCombinedSets >= overlap;
+  });
+
   return data;
 }
 

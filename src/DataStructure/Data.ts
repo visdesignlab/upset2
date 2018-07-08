@@ -449,9 +449,9 @@ export class Data {
         this.renderConfig.sortBy,
         this.renderConfig.minDegree,
         this.renderConfig.maxDegree,
-        sortBySetId,
         this.renderConfig.firstOverlap,
-        this.renderConfig.secondOverlap
+        this.renderConfig.secondOverlap,
+        sortBySetId
       );
     } else {
       if (!sortBySetId) sortBySetId = 0;
@@ -461,9 +461,9 @@ export class Data {
         SortBy.SET,
         this.renderConfig.minDegree,
         this.renderConfig.maxDegree,
-        sortBySetId,
         this.renderConfig.firstOverlap,
-        this.renderConfig.secondOverlap
+        this.renderConfig.secondOverlap,
+        sortBySetId
       );
     }
     this.app.emit("render-rows-changed", this);
