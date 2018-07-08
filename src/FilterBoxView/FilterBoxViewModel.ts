@@ -2,14 +2,13 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:38:25 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-07 15:49:08
+ * @Last Modified time: 2018-07-07 19:30:26
  */
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import { FilterBoxView } from "./FilterBoxView";
 import "./styles.scss";
 import { RenderConfig } from "../DataStructure/AggregateAndFilters";
-import { Handler } from "provenance_mvvm_framework/dist/types/Provenance/Handler";
 
 export class FilterBoxViewModel extends ViewModelBase {
   get config(): RenderConfig {
@@ -43,16 +42,25 @@ export class FilterBoxViewModel extends ViewModelBase {
     );
     this.registerFunctions("applySortBy", view.applySortBy, view);
 
+    this.registerFunctions(
+      "applyFirstAggregation",
+      view.applyFirstAggregation,
+      view,
+      false
+    );
+    this.registerFunctions(
+      "applySecondAggregation",
+      view.applySecondAggregation,
+      view,
+      false
+    );
+    this.registerFunctions("applySortBy", view.applySortBy, view, false);
+
     this.comm.on("apply", this.apply as any, this);
   }
 
   private saveConfig(config: RenderConfig, update: boolean = true) {
     sessionStorage["render_config"] = JSON.stringify(config);
     if (update) this.comm.emit("filter-changed", this.config);
-  }
-
-  private registerFunctions(str: string, func: Handler, thisArg: any) {
-    this.App.registry.register(`do_${str}`, func, thisArg);
-    this.App.registry.register(`undo_${str}`, func, thisArg);
   }
 }

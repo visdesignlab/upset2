@@ -1,16 +1,14 @@
-import { Handler } from "provenance_mvvm_framework/dist/types/Provenance/Handler";
-import { Set } from "./../DataStructure/Set";
-import { Data } from "./../DataStructure/Data";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:38:25 
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-07 16:40:19
  */
-import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import { UpsetView } from "./UpsetView";
+import { Set } from "./../DataStructure/Set";
+import { Data } from "./../DataStructure/Data";
 export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
@@ -56,15 +54,5 @@ export class UpsetViewModel extends ViewModelBase {
 
   update(data: Data) {
     this.comm.emit("update", data);
-  }
-
-  private registerFunctions(
-    str: string,
-    func: Handler,
-    thisArg: any,
-    _do: boolean = true
-  ) {
-    if (_do) this.App.registry.register(`do_${str}`, func, thisArg);
-    else this.App.registry.register(`undo_${str}`, func, thisArg);
   }
 }
