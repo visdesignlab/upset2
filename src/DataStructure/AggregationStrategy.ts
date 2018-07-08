@@ -77,10 +77,11 @@ function aggregateByOverlap(
   overlap: number,
   level: number = 1
 ): RenderRow[] {
-  let maxSubSet = (data[0].data as SubSet).combinedSets.length;
   let combinations = data
     .filter(d => {
-      return (d.data as SubSet).noCombinedSets === overlap;
+      return (
+        (d.data as SubSet).noCombinedSets.toString() === overlap.toString()
+      );
     })
     .map(d => {
       return {
@@ -91,12 +92,39 @@ function aggregateByOverlap(
           .map(v => v[0])
       };
     });
-  console.log(combinations);
+
   data = data.filter(d => {
     return (d.data as SubSet).noCombinedSets >= overlap;
   });
 
-  return data;
+  let groups = data.reduce((groups: any, item) => {
+    let idx = (item.data as SubSet).combinedSets;
+    let matches = combinations.filter(c => {
+      let match = true;
+      c.idx.forEach(i => {
+        if (idx[i as number] === 0) match = false;
+      });
+      return match;
+    });
+
+    matches.forEach(m => {
+      groups[m.name] = groups[m.name] || [];
+      groups[m.name].push(item);
+    });
+    return groups;
+  }, {});
+  let rr: RenderRow[] = [];
+
+  for (let group in groups) {
+    let g = new Group(group, group, level);
+    rr.push({ id: g.id.toString(), data: g });
+    let subsets = groups[group] as RenderRow[];
+    subsets.forEach(subset => {
+      g.addSubSet(subset.data as SubSet);
+      rr.push({ id: subset.id.toString(), data: subset.data });
+    });
+  }
+  return rr;
 }
 
 function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
