@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-07 00:15:04
+ * @Last Modified time: 2018-07-07 18:03:39
  */
 import {
   ViewModelBase,
@@ -57,6 +57,8 @@ export class ProvenanceViewModel extends ViewModelBase {
     this.App.graph = ProvenanceGraph.restoreProvenanceGraph(
       JSON.parse(localStorage["graph"])
     );
+    this.App.graph.on("currentChanged", this.update.bind(this));
+    this.App.graph.current = this.App.graph.root;
     this.traverser.graph = this.App.graph;
     this.update();
   }

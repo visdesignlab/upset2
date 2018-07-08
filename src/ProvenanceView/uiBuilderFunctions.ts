@@ -47,7 +47,10 @@ function addNodeElements(node: d3Selection, current: string) {
     .append("circle")
     .attr("r", 5)
     .attr("class", d => {
-      if ((d.data as any).id === current) return "current";
+      if ((d.data as any).id === current) {
+        console.log(d);
+        return "current";
+      }
       return "";
     });
   node
