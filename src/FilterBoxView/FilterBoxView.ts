@@ -93,10 +93,20 @@ export class FilterBoxView extends ViewBase {
       t.comm.emit("apply", ["applyMaxDegreeChange", _do, _undo]);
     });
 
-    hideEmpty.on("change", () => {
-      let rc = this.config;
-      rc.hideEmptyIntersection = hideEmpty.property("checked");
-      this.saveConfig(rc);
+    hideEmpty.on("change", function() {
+      let hide = d3.select(this).property("checked");
+
+      let _do = {
+        func: t.applyHideEmpty.bind(t),
+        args: [hide]
+      };
+
+      let _undo = {
+        func: t.applyHideEmpty.bind(t),
+        args: [t.config.hideEmptyIntersection]
+      };
+
+      t.comm.emit("apply", ["applyHideEmpty", _do, _undo]);
     });
   }
 
@@ -334,6 +344,13 @@ export class FilterBoxView extends ViewBase {
   applyMaxDegreeChange(d: number) {
     let rc = this.config;
     rc.maxDegree = d;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applyHideEmpty(d: boolean) {
+    let rc = this.config;
+    rc.hideEmptyIntersection = d;
     this.saveConfig(rc);
     this.update();
   }
