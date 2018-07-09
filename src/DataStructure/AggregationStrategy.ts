@@ -8,7 +8,8 @@ let AggregationStrategy: {
   [key: string]: (
     data: RenderRow[],
     overlap?: number,
-    level?: number
+    level?: number,
+    setNameDictionary?: { [key: number]: string }
   ) => RenderRow[];
 } = {};
 
@@ -20,7 +21,12 @@ AggregationStrategy[AggregateBy.OVERLAPS] = aggregateByOverlap;
 export default AggregationStrategy;
 
 // Functions
-function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
+function aggregateByDegree(
+  data: RenderRow[],
+  overlap?: number,
+  level?: number,
+  setNameDictionary?: { [key: number]: string }
+): RenderRow[] {
   let groups = data.reduce((groups: any, item) => {
     let val = (item.data as SubSet).noCombinedSets;
     groups[val] = groups[val] || [];
@@ -44,7 +50,9 @@ function aggregateByDegree(data: RenderRow[], level: number = 1): RenderRow[] {
 
 function aggregateByDeviation(
   data: RenderRow[],
-  level: number = 1
+  overlap?: number,
+  level?: number,
+  setNameDictionary?: { [key: number]: string }
 ): RenderRow[] {
   let groups = data.reduce((groups: any, item) => {
     let val = (item.data as SubSet).disproportionality;
@@ -79,8 +87,9 @@ function aggregateByDeviation(
 
 function aggregateByOverlap(
   data: RenderRow[],
-  overlap: number,
-  level: number = 1
+  overlap?: number,
+  level?: number,
+  setNameDictionary?: { [key: number]: string }
 ): RenderRow[] {
   let combinations = data
     .filter(d => {
@@ -132,23 +141,13 @@ function aggregateByOverlap(
   return rr;
 }
 
-function aggregateBySets(data: RenderRow[], level: number = 1): RenderRow[] {
-  let subSetNames: { [key: number]: string } = {};
-
-  let names = data
-    .map((d: RenderRow) => {
-      return d.data.elementName.split(" ");
-    })
-    .reduce((a, v) => {
-      return a.concat(v);
-    }, []);
-  names = [...new Set(names)];
-  names = names.sort((s, t) => {
-    return d3.ascending(s.replace("_", " "), t.replace("_", " "));
-  });
-  names.forEach((d, i) => {
-    subSetNames[i] = d;
-  });
+function aggregateBySets(
+  data: RenderRow[],
+  overlap?: number,
+  level?: number,
+  setNameDictionary?: { [key: number]: string }
+): RenderRow[] {
+  let subSetNames: { [key: number]: string } = setNameDictionary;
 
   let groups = data.reduce((groups: any, item) => {
     let val = (item.data as SubSet).combinedSets;

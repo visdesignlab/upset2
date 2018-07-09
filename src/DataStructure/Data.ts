@@ -4,7 +4,7 @@
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-15 16:42:08
  */
-import { DSVParsedArray, DSVRowString } from "d3";
+import { DSVParsedArray, DSVRowString, map } from "d3";
 import { Application } from "provenance_mvvm_framework";
 import { RawData, RenderRow } from "./../type_declarations/types";
 import { AggregateBy, RenderConfig, SortBy } from "./AggregateAndFilters";
@@ -35,6 +35,13 @@ export class Data {
     return Math.max(...this.renderRows.map(d => d.data.setSize));
   }
 
+  get setNameDictionary(): { [key: number]: string } {
+    return this.usedSets.reduce((map: any, object, idx) => {
+      map[idx] = object.elementName;
+      return map;
+    }, {});
+  }
+
   constructor(app: Application) {
     this.app = app;
     this.renderConfig = new RenderConfig();
@@ -52,6 +59,7 @@ export class Data {
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
       this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+      this.setNameDictionary;
     });
     return new Promise((res, rej) => {
       res(<any>this);
@@ -345,8 +353,6 @@ export class Data {
         this.unusedSets.push(set);
       }
     }
-
-    this.usedSets = this.getAlphabeticalSorting(this.usedSets);
   }
 
   private getAlphabeticalSorting(sets: Set[]): Set[] {
@@ -358,7 +364,6 @@ export class Data {
   public addSet(set: Set) {
     set.isSelected = true;
     this.usedSets.push(set);
-    this.usedSets = this.getAlphabeticalSorting(this.usedSets);
     let toRemove = this.unusedSets.findIndex((s, i) => s.id === set.id);
     this.unusedSets.splice(toRemove, 1);
     this.setUpSubSets();
@@ -501,18 +506,32 @@ export class Data {
       });
 
     if (firstAggBy === AggregateBy.OVERLAPS)
-      agg = AggregationStrategy[firstAggBy](agg, overlap1);
+      agg = AggregationStrategy[firstAggBy](
+        agg,
+        overlap1,
+        1,
+        this.setNameDictionary
+      );
     else if (firstAggBy && firstAggBy !== AggregateBy.NONE)
-      agg = AggregationStrategy[firstAggBy](agg);
+      agg = AggregationStrategy[firstAggBy](
+        agg,
+        overlap1,
+        1,
+        this.setNameDictionary
+      );
     if (secondAggBy && secondAggBy !== AggregateBy.NONE)
-      agg = applySecondAggregation(agg, secondAggBy, overlap2);
+      agg = applySecondAggregation(
+        agg,
+        secondAggBy,
+        overlap2,
+        this.setNameDictionary
+      );
 
     if (this.renderConfig.hideEmptyIntersection)
       agg = agg.filter(set => set.data.setSize > 0);
 
     if (sortBy) agg = applySort(agg, sortBy, sortBySetId);
 
-    console.log(agg);
     return agg;
   }
 }
@@ -520,7 +539,8 @@ export class Data {
 function applySecondAggregation(
   agg: RenderRow[],
   aggBy: AggregateBy,
-  overlap: number
+  overlap: number,
+  setNameDictionary: { [key: number]: string }
 ): RenderRow[] {
   let groupIndices = agg
     .map((v: RenderRow, i) => [i, v.data.type === RowType.GROUP])
@@ -540,7 +560,12 @@ function applySecondAggregation(
       ] as number);
     }
 
-    let rendered = AggregationStrategy[aggBy](subsets, overlap, 2);
+    let rendered = AggregationStrategy[aggBy](
+      subsets,
+      overlap,
+      2,
+      setNameDictionary
+    );
     rr = rr.concat(rendered);
   }
 
