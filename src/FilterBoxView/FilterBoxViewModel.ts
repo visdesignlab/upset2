@@ -43,6 +43,17 @@ export class FilterBoxViewModel extends ViewModelBase {
     this.registerFunctions("applySortBy", view.applySortBy, view);
     this.registerFunctions("applyFirstOverlap", view.applyFirstOverlap, view);
     this.registerFunctions("applySecondOverlap", view.applySecondOverlap, view);
+    this.registerFunctions(
+      "applyMinDegreeChange",
+      view.applyMinDegreeChange,
+      view
+    );
+    this.registerFunctions(
+      "applyMaxDegreeChange",
+      view.applyMaxDegreeChange,
+      view
+    );
+    this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view);
 
     this.registerFunctions(
       "applyFirstAggregation",
@@ -69,6 +80,19 @@ export class FilterBoxViewModel extends ViewModelBase {
       view,
       false
     );
+    this.registerFunctions(
+      "applyMinDegreeChange",
+      view.applyMinDegreeChange,
+      view,
+      false
+    );
+    this.registerFunctions(
+      "applyMaxDegreeChange",
+      view.applyMaxDegreeChange,
+      view,
+      false
+    );
+    this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view, false);
 
     this.comm.on("apply", this.apply as any, this);
   }

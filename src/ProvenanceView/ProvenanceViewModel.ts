@@ -58,8 +58,7 @@ export class ProvenanceViewModel extends ViewModelBase {
       JSON.parse(localStorage["graph"])
     );
     this.App.graph.on("currentChanged", this.update.bind(this));
-    this.App.graph.current = this.App.graph.root;
     this.traverser.graph = this.App.graph;
-    this.update();
+    this.goTo(this.App.graph.root.id);
   }
 }
