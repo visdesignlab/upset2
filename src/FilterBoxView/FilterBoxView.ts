@@ -59,19 +59,38 @@ export class FilterBoxView extends ViewBase {
     minDegree.attr("value", this.config.minDegree);
     maxDegree.attr("value", this.config.maxDegree);
     hideEmpty.property("checked", this.config.hideEmptyIntersection);
+    let t = this;
 
-    minDegree.on("change", () => {
-      let val = minDegree.property("value");
-      let rc = this.config;
-      rc.minDegree = val;
-      this.saveConfig(rc);
+    minDegree.on("change", function() {
+      let newVal = d3.select(this).property("value");
+
+      let _do = {
+        func: t.applyMinDegreeChange.bind(t),
+        args: [newVal]
+      };
+
+      let _undo = {
+        func: t.applyMinDegreeChange.bind(t),
+        args: [t.config.minDegree]
+      };
+
+      t.comm.emit("apply", ["applyMinDegreeChange", _do, _undo]);
     });
 
-    maxDegree.on("change", () => {
-      let val = maxDegree.property("value");
-      let rc = this.config;
-      rc.maxDegree = val;
-      this.saveConfig(rc);
+    maxDegree.on("change", function() {
+      let newVal = d3.select(this).property("value");
+
+      let _do = {
+        func: t.applyMaxDegreeChange.bind(t),
+        args: [newVal]
+      };
+
+      let _undo = {
+        func: t.applyMaxDegreeChange.bind(t),
+        args: [t.config.maxDegree]
+      };
+
+      t.comm.emit("apply", ["applyMaxDegreeChange", _do, _undo]);
     });
 
     hideEmpty.on("change", () => {
@@ -301,6 +320,20 @@ export class FilterBoxView extends ViewBase {
   applySecondOverlap(d: number) {
     let rc = this.config;
     rc.secondOverlap = d;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applyMinDegreeChange(d: number) {
+    let rc = this.config;
+    rc.minDegree = d;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applyMaxDegreeChange(d: number) {
+    let rc = this.config;
+    rc.maxDegree = d;
     this.saveConfig(rc);
     this.update();
   }
