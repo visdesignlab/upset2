@@ -1,3 +1,4 @@
+import { IProvenanceGraph } from "provenance_mvvm_framework";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
@@ -57,8 +58,8 @@ export class ProvenanceViewModel extends ViewModelBase {
     this.App.graph = ProvenanceGraph.restoreProvenanceGraph(
       JSON.parse(localStorage["graph"])
     );
+    this.App.emit("graph-loaded", this.App.graph);
     this.App.graph.on("currentChanged", this.update.bind(this));
-    this.traverser.graph = this.App.graph;
     this.goTo(this.App.graph.root.id);
   }
 }

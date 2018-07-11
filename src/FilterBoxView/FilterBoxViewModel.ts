@@ -94,7 +94,11 @@ export class FilterBoxViewModel extends ViewModelBase {
     );
     this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view, false);
 
-    this.comm.on("apply", this.apply as any, this);
+    this.comm.on("apply", args => {
+      console.log(args);
+      console.log(this.App.graph);
+      this.apply(args);
+    });
   }
 
   private saveConfig(config: RenderConfig, update: boolean = true) {
