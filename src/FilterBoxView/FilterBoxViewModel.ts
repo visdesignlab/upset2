@@ -21,9 +21,11 @@ export class FilterBoxViewModel extends ViewModelBase {
     this.comm.on("filter-changed", (config: RenderConfig) => {
       this.App.emit("filter-changed", config, null);
     });
-    this.App.on("set-agg-none", () => {
-      this.comm.emit("set-agg-none");
+
+    this.App.on("sort-by-set", (id: number) => {
+      this.comm.emit("sort-by-set", id);
     });
+
     this.App.on("change-dataset", d => {
       let rc = this.config;
       rc.currentFile = d;
@@ -54,6 +56,7 @@ export class FilterBoxViewModel extends ViewModelBase {
       view
     );
     this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view);
+    this.registerFunctions("applySortBySet", view.applySortBySet, view);
 
     this.registerFunctions(
       "applyFirstAggregation",
@@ -93,6 +96,12 @@ export class FilterBoxViewModel extends ViewModelBase {
       false
     );
     this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view, false);
+    this.registerFunctions(
+      "applySortBySet",
+      view.unApplySortBySet,
+      view,
+      false
+    );
 
     this.comm.on("apply", args => {
       console.log(args);

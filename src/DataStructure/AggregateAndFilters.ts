@@ -10,6 +10,16 @@ export class RenderConfig {
   minDegree: number = 0;
   maxDegree: number = 3;
   currentFile: IDataSetInfo;
+  sortBySetid: number;
+
+  static getSortBySetConfig(id: number): RenderConfig {
+    let rc = new RenderConfig();
+    rc.firstLevelAggregateBy = AggregateBy.NONE;
+    rc.secondLevelAggregateBy = AggregateBy.NONE;
+    rc.sortBy = SortBy.SET;
+    rc.sortBySetid = id;
+    return rc;
+  }
 }
 
 export enum AggregateBy {

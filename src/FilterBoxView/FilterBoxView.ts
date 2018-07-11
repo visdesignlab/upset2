@@ -19,13 +19,21 @@ export class FilterBoxView extends ViewBase {
 
   constructor(root: HTMLElement) {
     super(root);
-    this.comm.on("set-agg-none", () => {
-      let rc = this.config;
-      rc.firstLevelAggregateBy = AggregateBy.NONE;
-      rc.secondLevelAggregateBy = AggregateBy.NONE;
-      rc.sortBy = SortBy.SET;
-      this.saveConfig(rc, false);
-      this.update();
+    this.comm.on("sort-by-set", (id: number) => {
+      let rc = Object.assign(
+        Object.create(Object.getPrototypeOf(this.config)),
+        this.config
+      );
+      let _do = {
+        func: this.applySortBySet.bind(this),
+        args: [id]
+      };
+      let _undo = {
+        func: this.unApplySortBySet.bind(this),
+        args: [rc]
+      };
+
+      this.comm.emit("apply", ["sortBySet", _do, _undo]);
     });
   }
 
@@ -351,6 +359,21 @@ export class FilterBoxView extends ViewBase {
   applyHideEmpty(d: boolean) {
     let rc = this.config;
     rc.hideEmptyIntersection = d;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applySortBySet(id: number) {
+    let rc = this.config;
+    rc.firstLevelAggregateBy = AggregateBy.NONE;
+    rc.secondLevelAggregateBy = AggregateBy.NONE;
+    rc.sortBy = SortBy.SET;
+    rc.sortBySetid = id;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  unApplySortBySet(rc: RenderConfig) {
     this.saveConfig(rc);
     this.update();
   }

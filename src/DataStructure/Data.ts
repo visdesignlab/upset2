@@ -45,7 +45,9 @@ export class Data {
   constructor(app: Application) {
     this.app = app;
     this.renderConfig = new RenderConfig();
-    this.app.on("filter-changed", this.setupRenderRows, this);
+    this.app.on("filter-changed", (rc: RenderConfig) => {
+      this.setupRenderRows(rc);
+    });
     this.app.on("add-set", this.addSet, this);
     this.app.on("remove-set", this.removeSet, this);
   }
@@ -467,7 +469,7 @@ export class Data {
         this.renderConfig.maxDegree,
         this.renderConfig.firstOverlap,
         this.renderConfig.secondOverlap,
-        sortBySetId
+        this.renderConfig.sortBySetid
       );
     } else {
       if (!sortBySetId) sortBySetId = 0;
@@ -479,7 +481,7 @@ export class Data {
         this.renderConfig.maxDegree,
         this.renderConfig.firstOverlap,
         this.renderConfig.secondOverlap,
-        sortBySetId
+        this.renderConfig.sortBySetid
       );
     }
     this.app.emit("render-rows-changed", this);

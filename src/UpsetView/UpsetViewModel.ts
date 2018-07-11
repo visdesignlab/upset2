@@ -14,6 +14,10 @@ export class UpsetViewModel extends ViewModelBase {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
 
+    this.comm.on("sort-by-set", (id: number) => {
+      this.App.emit("sort-by-set", id);
+    });
+
     this.registerFunctions(
       "remove_set",
       (d: any) => {

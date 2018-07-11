@@ -16,7 +16,7 @@ export function usedSetsHeader(
   comm: Mitt
 ) {
   addHeaderBars(data, el, maxSetSize, comm);
-  addConnectors(data, el);
+  addConnectors(data, el, comm);
 }
 
 function addHeaderBars(
@@ -101,7 +101,7 @@ function addForegroundBars(headers: d3Selection, maxSetSize: number) {
     });
 }
 
-function addConnectors(data: Set[], el: d3Selection) {
+function addConnectors(data: Set[], el: d3Selection, comm: Mitt) {
   let connectorGroup = el.selectAll(".connector-group").data([1]);
   connectorGroup.exit().remove();
 
@@ -138,6 +138,10 @@ function addConnectors(data: Set[], el: d3Selection) {
     .attr("transform", (d, i) => {
       return `translate(${params.column_width * i}, 0)`;
     });
+
+  connectors.on("click", (d, i) => {
+    comm.emit("sort-by-set", i);
+  });
 
   addConnectorBars(connectors);
   addConnectorLabels(connectors);
