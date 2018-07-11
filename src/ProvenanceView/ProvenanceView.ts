@@ -52,6 +52,11 @@ export class ProvenanceView extends ViewBase {
     redo.on("click", () => {
       this.comm.emit("redo");
     });
+
+    d3.select("html").on("keydown", () => {
+      if (d3.event.code === "ArrowLeft") this.comm.emit("undo");
+      if (d3.event.code === "ArrowRight") this.comm.emit("redo");
+    });
   }
 
   update(graph: IProvenanceGraph) {
