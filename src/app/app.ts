@@ -4,6 +4,7 @@
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-07 01:12:36
  */
+import { EmbedGenView } from "../EmbedGenView/EmbedGenView";
 
 import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
@@ -67,5 +68,7 @@ vf.views["Provenance"] = new ProvenanceViewModel(
   new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
   application
 );
+
+EmbedGenView(d3.select("#embed-modal"));
 
 (window as any).registry = application.registry;
