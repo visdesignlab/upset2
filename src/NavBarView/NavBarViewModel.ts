@@ -2,15 +2,9 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-07 16:55:08
+ * @Last Modified time: 2018-07-16 11:15:54
  */
-import {
-  IActionFunctionRegistry,
-  IProvenanceGraph,
-  ViewModelBase,
-  Application
-} from "provenance_mvvm_framework";
-import { Handler } from "../../../provenance_mvvm_framework/dist/types/Provenance/Handler";
+import { ViewModelBase, Application } from "provenance_mvvm_framework";
 import { DataUtils } from "./../DataStructure/DataUtils";
 import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
 import { IDataSetJSON } from "./../DataStructure/IDataSetJSON";
@@ -18,17 +12,17 @@ import { NavBarView } from "./NavBarView";
 import "./styles.scss";
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
-  constructor(view: NavBarView, app: Application) {
+  constructor(view: NavBarView, app: Application, dsLocation: string) {
     super(view, app);
-    this.populateDatasetSelector();
+    this.populateDatasetSelector(dsLocation);
     this.comm.on("change-dataset", dataset => {
       this.App.emit("change-dataset", dataset);
     });
   }
 
-  populateDatasetSelector() {
+  populateDatasetSelector(dsLocation: string) {
     let results: Promise<any>[] = [];
-    let p = fetch("../../data/datasets.json")
+    let p = fetch(dsLocation)
       .then(results => results.json())
       .then(jsondata => {
         jsondata.forEach((d: string) => {

@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-07 01:12:36
+ * @Last Modified time: 2018-07-16 11:26:19
  */
 import { EmbedGenView } from "../EmbedGenView/EmbedGenView";
 
@@ -28,47 +28,108 @@ import "popper.js";
 import "bootstrap";
 import "./styles.scss";
 
-let application = new Application("Upset2.0", "1.0.0");
-DataUtils.app = application;
-DataUtils.app.on("change-dataset", DataUtils.processDataSet);
+function run() {
+  let embed = false;
 
-if (sessionStorage["provenance-graph"]) {
-  application.graph = JSON.parse(sessionStorage["provenance-graph"]);
-  application.registry = JSON.parse(sessionStorage["provenance-registry"]);
+  try {
+    let t = d3
+      .select("body")
+      .select(".embeded-true")
+      .text();
+    if (t.length > 1) embed = true;
+  } catch (err) {}
+
+  if (!embed) {
+    let application = new Application("Upset2.0", "1.0.0");
+    DataUtils.app = application;
+    DataUtils.app.on("change-dataset", DataUtils.processDataSet);
+
+    if (sessionStorage["provenance-graph"]) {
+      application.graph = JSON.parse(sessionStorage["provenance-graph"]);
+      application.registry = JSON.parse(sessionStorage["provenance-registry"]);
+    }
+
+    let vf = new ViewFactory();
+
+    vf.views["FilterBox"] = new FilterBoxViewModel(
+      new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
+      application
+    );
+
+    vf.views["DataSetInfo"] = new DataSetInfoViewModel(
+      new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
+      application
+    );
+
+    vf.views["NavBar"] = new NavBarViewModel(
+      new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
+      application,
+      "../../data/datasets.json"
+    );
+
+    vf.views["Upset"] = new UnusedSetViewModel(
+      new UnusedSetView(d3.select("#mid-bar").node() as HTMLElement),
+      application
+    );
+
+    vf.views["Upset"] = new UpsetViewModel(
+      new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
+      application
+    );
+
+    vf.views["Provenance"] = new ProvenanceViewModel(
+      new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
+      application
+    );
+
+    EmbedGenView(d3.select("#embed-modal"));
+
+    (window as any).registry = application.registry;
+  } else {
+    buildEmbed();
+  }
 }
 
-let vf = new ViewFactory();
+function buildEmbed() {
+  let application = new Application("Upset2.0", "1.0.0");
+  DataUtils.app = application;
+  DataUtils.app.on("change-dataset", () => {
+    console.log("update");
+    DataUtils.processDataSet;
+  });
 
-vf.views["FilterBox"] = new FilterBoxViewModel(
-  new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
-  application
-);
+  let vf = new ViewFactory();
 
-vf.views["DataSetInfo"] = new DataSetInfoViewModel(
-  new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
-  application
-);
+  vf.views["FilterBox"] = new FilterBoxViewModel(
+    new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
+    application
+  );
 
-vf.views["NavBar"] = new NavBarViewModel(
-  new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
-  application
-);
+  vf.views["DataSetInfo"] = new DataSetInfoViewModel(
+    new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
+    application
+  );
 
-vf.views["Upset"] = new UnusedSetViewModel(
-  new UnusedSetView(d3.select("#mid-bar").node() as HTMLElement),
-  application
-);
+  vf.views["NavBar"] = new NavBarViewModel(
+    new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
+    application,
+    "../../data/datasets.json"
+  );
 
-vf.views["Upset"] = new UpsetViewModel(
-  new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
-  application
-);
+  vf.views["Upset"] = new UnusedSetViewModel(
+    new UnusedSetView(d3.select("#mid-bar").node() as HTMLElement),
+    application
+  );
 
-vf.views["Provenance"] = new ProvenanceViewModel(
-  new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
-  application
-);
+  vf.views["Upset"] = new UpsetViewModel(
+    new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
+    application
+  );
 
-EmbedGenView(d3.select("#embed-modal"));
+  vf.views["Provenance"] = new ProvenanceViewModel(
+    new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
+    application
+  );
+}
 
-(window as any).registry = application.registry;
+run();

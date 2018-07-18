@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-11 17:28:26
+ * @Last Modified time: 2018-07-16 11:25:37
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -76,6 +76,8 @@ export class UpsetView extends ViewBase {
   }
 
   update(data: Data) {
+    console.log("Building", data);
+
     usedSetsHeader(
       data.usedSets,
       this.selectedSetHeaderGroup,

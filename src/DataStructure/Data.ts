@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 15:56:16
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-15 16:42:08
+ * @Last Modified time: 2018-07-16 11:45:52
  */
 import { DSVParsedArray, DSVRowString, map } from "d3";
 import { Application } from "provenance_mvvm_framework";
@@ -57,11 +57,11 @@ export class Data {
     dataSetDesc: IDataSetJSON
   ): Promise<any> {
     await this.getRawData(data, dataSetDesc).then(rawData => {
+      console.log("data file update");
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
       this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
-      this.setNameDictionary;
     });
     return new Promise((res, rej) => {
       res(<any>this);

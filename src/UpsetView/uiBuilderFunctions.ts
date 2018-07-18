@@ -576,6 +576,18 @@ function setupElementGroups(rows: d3Selection) {
 }
 
 function setupSubsets(subsets: d3Selection) {
+  subsets
+    .on("mouseover", function() {
+      d3.select(this)
+        .select("rect")
+        .classed("highlight highlight2", true);
+    })
+    .on("mouseout", function() {
+      d3.select(this)
+        .select("rect")
+        .classed("highlight highlight2", false);
+    });
+
   addSubsetBackgroundRects(subsets);
   addCombinations(subsets);
 }
@@ -584,7 +596,7 @@ function addSubsetBackgroundRects(subsets: d3Selection) {
   subsets
     .selectAll(".background-rect-g")
     .append("rect")
-    .attr("class", "subset-background-rect ")
+    .attr("class", `subset-background-rect`)
     .attr("height", params.row_height)
     .attr("width", params.subset_row_width);
 }
