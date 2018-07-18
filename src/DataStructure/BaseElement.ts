@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 16:44:35 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-06-03 16:50:12
+ * @Last Modified time: 2018-07-18 11:40:02
  */
 
 import { RowType } from "./RowType";
@@ -20,6 +20,7 @@ export class BaseElement {
   setSize: number;
   dataRatio: number;
   type: RowType;
+  disproportionality?: number;
   /**
    * Creates an instance of BaseElement.
    * @param {number} id

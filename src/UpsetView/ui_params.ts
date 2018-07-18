@@ -23,24 +23,32 @@ let params = {
     return (
       params.combinations_width +
       params.cardinality_width +
-      params.column_width * 4
+      params.deviation_width +
+      params.column_width * 5
     );
   },
   get group_row_width() {
     return params.skew_offset + params.subset_row_width;
   },
+
   combo_circle_radius: 9,
 
   cardinality_width: 200,
   get cardinality_bar_height() {
     return params.row_height - 4;
   },
-  cardinality_scale_group_height: 80,
-  axis_offset: 23,
+  cardinality_scale_group_height: 90,
+  axis_offset: 30,
   cardinality_label_height: 24,
-  cardinality_padding: 2,
   cardinality_slider_dims: 10,
   horizon_offset: 6,
+
+  deviation_width: 200,
+  get deviation_bar_height() {
+    return params.row_height - 4;
+  },
+  deviation_scale_group_height: 60,
+  deviation_label_height: 24,
 
   get header_height() {
     return params.used_set_group_height;

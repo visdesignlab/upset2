@@ -104,7 +104,7 @@
 }
 
 .tick-label {
-  font-size: 0.7em;
+  font-size: 0.8em;
 }
 
 .cardinality-slider-rect {
@@ -152,4 +152,24 @@
 
 .cardinality-text {
   font-size: 0.8em;
+}
+
+.disproportionality.positive {
+  fill: #74add1
+}
+
+.disproportionality.negative {
+  fill: #f46d43
+}
+
+.deviation-label {
+  fill: #ccc;
+  stroke: black;
+  opacity: 1;
+  transition: opacity 1s;
+  stroke-width: 0.3px;
+}
+
+.deviation-label:hover {
+  fill: #a3a3a3
 }

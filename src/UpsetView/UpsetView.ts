@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-16 11:25:37
+ * @Last Modified time: 2018-07-18 14:17:32
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -13,7 +13,8 @@ import html from "./upset.view.html";
 import {
   usedSetsHeader,
   addRenderRows,
-  addCardinalityHeader
+  addCardinalityHeader,
+  addDeviationHeaders
 } from "./uiBuilderFunctions";
 import params from "./ui_params";
 
@@ -94,6 +95,11 @@ export class UpsetView extends ViewBase {
       d3.max(data.renderRows.map(d => d.data.setSize)),
       this.cardinalityScaleGroup,
       this.comm
+    );
+
+    addDeviationHeaders(
+      this.deviationGroup,
+      d3.max(data.renderRows.map(d => Math.abs(d.data.disproportionality)))
     );
 
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);

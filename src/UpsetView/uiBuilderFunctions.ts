@@ -230,7 +230,7 @@ function addOverviewAxis(el: d3Selection, scale: d3Scale, totalSize: number) {
     .append("path")
     .attr("class", "axis")
     .attr("d", `M0,${params.axis_offset} H200`);
-  addTicks(bottom, ticksArr, scale, 17);
+  addTicks(bottom, ticksArr, scale, params.axis_offset - 6);
 }
 
 function addCardinalitySlider(
@@ -373,17 +373,28 @@ function addDetailAxis(el: d3Selection, scale: d3Scale, size: number) {
   bottom
     .append("path")
     .attr("class", "axis")
-    .attr("d", "M0,17 v6 H200 V16");
-  addTicks(bottom, ticksArr, scale, 17);
+    .attr("d", `M0,${params.axis_offset} H200 `);
+  addTicks(bottom, ticksArr, scale, params.axis_offset - 6);
 }
 
 function addTicks(
   el: d3Selection,
   ticksArr: number[],
   scale: d3Scale,
-  y_offset: number
+  y_offset: number,
+  x_offset: number = 0
 ): d3Selection {
-  let ticksG = el.selectAll(".tick-g").data(ticksArr);
+  let g = el.selectAll(".tick-group").data([1]);
+  g.exit().remove();
+
+  let _g = g
+    .enter()
+    .append("g")
+    .merge(g)
+    .attr("class", "tick-group")
+    .attr("transform", `translate(${x_offset}, 0)`);
+
+  let ticksG = _g.selectAll(".tick-g").data(ticksArr);
   ticksG.exit().remove();
   let ticks = ticksG
     .enter()
@@ -401,15 +412,19 @@ function addTicks(
   return ticks;
 }
 
-function addTickLabels(ticks: d3Selection) {
+function addTickLabels(
+  ticks: d3Selection,
+  skipDenominator: number = 2,
+  offset: number = 20
+) {
   ticks
     .append("text")
     .attr("class", "tick-label")
     .text((d, i) => {
-      if (i % 2 === 0) return d;
+      if (i % skipDenominator === 0) return d;
     })
     .attr("text-anchor", "middle")
-    .attr("dy", 15);
+    .attr("dy", offset);
 }
 
 function calculateTicksToShow(setSize: number): number[] {
@@ -464,6 +479,78 @@ function calculateTicksToShow(setSize: number): number[] {
       setSize
     ];
 }
+// ################################################################################################
+
+export function addDeviationHeaders(el: d3Selection, maxDisprop: number) {
+  el.html("");
+  el.attr(
+    "transform",
+    `translate(${params.skew_offset +
+      params.combinations_width +
+      params.cardinality_width +
+      params.column_width * 3}, ${params.header_height -
+      params.header_body_padding -
+      params.deviation_scale_group_height +
+      3})`
+  );
+
+  addDeviationLabel(el);
+  addDeviationScale(el, Math.ceil((maxDisprop * 100) / 5) * 5);
+}
+
+function addDeviationLabel(el: d3Selection) {
+  el.append("rect")
+    .attr("height", params.deviation_label_height)
+    .attr("width", params.deviation_width)
+    .attr("class", "deviation-label");
+
+  el.append("text")
+    .text("Deviation")
+    .attr("text-anchor", "middle")
+    .attr(
+      "transform",
+      `translate(${params.deviation_width / 2}, ${params.deviation_bar_height})`
+    );
+}
+
+function addDeviationScale(el: d3Selection, maxSize: number) {
+  let scale = d3
+    .scaleLinear()
+    .domain([-maxSize, maxSize])
+    .range([-params.deviation_width / 2, params.deviation_width / 2]);
+
+  let domain: number[] = [];
+  let start = -maxSize;
+  while (start <= maxSize) {
+    domain.push(start);
+    start += 5;
+  }
+
+  let g = el.append("g").attr("class", "scale-group");
+  g.attr(
+    "transform",
+    `translate(0, ${params.deviation_scale_group_height - params.axis_offset})`
+  );
+
+  g.append("path")
+    .attr("class", "axis")
+    .attr(
+      "d",
+      `M0,${params.deviation_scale_group_height -
+        params.axis_offset -
+        params.header_body_padding} H${params.deviation_width}`
+    );
+
+  let ticks = addTicks(
+    g,
+    domain,
+    scale,
+    params.axis_offset - params.header_body_padding - 6,
+    params.deviation_width / 2
+  );
+
+  addTickLabels(ticks, 1, -2);
+}
 
 // ################################################################################################
 export function addRenderRows(
@@ -487,8 +574,11 @@ export function addRenderRows(
   setupGroups(groups);
 
   addCardinalityBars(rows, data);
+
+  addDeviationBars(rows, data);
 }
 
+/** ************* */
 function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
   let _bg = el.selectAll(".column-background-group").data([1]);
   _bg.exit().remove();
@@ -558,6 +648,7 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
 
 function setupElementGroups(rows: d3Selection) {
   rows.append("g").attr("class", "background-rect-g");
+
   rows
     .append("g")
     .attr("class", "cardinality-bar-group")
@@ -573,8 +664,30 @@ function setupElementGroups(rows: d3Selection) {
         params.cardinality_bar_height) /
         2})`;
     });
-}
 
+  rows
+    .append("g")
+    .attr("class", "deviation-bar-group")
+    .attr("transform", (d, i) => {
+      if (d.data.type === RowType.GROUP)
+        return `translate(${params.skew_offset +
+          params.combinations_width +
+          params.cardinality_width +
+          params.column_width * 3},${(params.row_height -
+          params.deviation_bar_height) /
+          2})`;
+      else
+        return `translate(${params.combinations_width +
+          params.column_width +
+          params.deviation_width +
+          params.column_width * 2},${(params.row_height -
+          params.deviation_bar_height) /
+          2})`;
+    });
+}
+/** ************* */
+
+/** ************* */
 function setupSubsets(subsets: d3Selection) {
   subsets
     .on("mouseover", function() {
@@ -688,7 +801,9 @@ function addRowHighlight(el: BaseType) {
       });
     });
 }
+/** ************* */
 
+/** ************* */
 function setupGroups(groups: d3Selection) {
   addGroupBackgroundRects(groups);
   addGroupLabels(groups);
@@ -730,21 +845,23 @@ function addGroupLabels(groups: d3Selection) {
       return `translate(10, ${params.row_height - 4})`;
     });
 }
+/** ************* */
 
+/** ************* */
 function addCardinalityBars(rows: d3Selection, data: RenderRow[]) {
   let maxSubsetSize = d3.max(data.map(d => d.data.setSize));
   let scale = getCardinalityScale(maxSubsetSize, params.cardinality_width);
   let cardinalityGroups = rows.selectAll(".cardinality-bar-group");
-  renderBars(cardinalityGroups, scale);
+  renderCardinalityBars(cardinalityGroups, scale);
 }
 
 function adjustCardinalityBars(maxDomain: number) {
   let scale = getCardinalityScale(maxDomain, params.cardinality_width);
   let el = d3.selectAll(".row").selectAll(".cardinality-bar-group");
-  renderBars(el, scale);
+  renderCardinalityBars(el, scale);
 }
 
-function renderBars(el: d3Selection, scale: d3Scale) {
+function renderCardinalityBars(el: d3Selection, scale: d3Scale) {
   el.html("");
   el.each(function(d: RenderRow, i) {
     let g = d3.select(this);
@@ -830,4 +947,50 @@ function getCardinalityScale(maxSize: number, maxWidth: number): d3Scale {
     .scaleLinear()
     .domain([0, maxSize])
     .range([0, maxWidth]);
+}
+/** ************* */
+
+/** ************* */
+function addDeviationBars(rows: d3Selection, data: RenderRow[]) {
+  let maxDeviation = d3.max(
+    data.map(r => Math.abs(r.data.disproportionality * 100))
+  );
+  maxDeviation = Math.ceil(maxDeviation / 5) * 5;
+  let scale = getDeviationScale(maxDeviation, params.deviation_width / 2);
+  let deviationGroup = rows.selectAll(".deviation-bar-group");
+  renderDeviationBars(deviationGroup, scale);
+}
+
+function getDeviationScale(maxSize: number, maxWidth: number): d3Scale {
+  return d3
+    .scaleLinear()
+    .domain([0, maxSize])
+    .range([0, maxWidth]);
+}
+
+function renderDeviationBars(el: d3Selection, scale: d3Scale) {
+  el.html("")
+    .append("rect")
+    .attr("width", params.deviation_width)
+    .attr("height", params.deviation_bar_height)
+    .style("fill", "none");
+
+  el.append("rect")
+    .attr("class", (d: RenderRow, i) => {
+      return d.data.disproportionality >= 0
+        ? `disproportionality positive`
+        : `disproportionality negative`;
+    })
+    .attr("height", (d, i) => {
+      return params.deviation_bar_height;
+    })
+    .attr("width", (d: RenderRow, i) => {
+      return scale(Math.abs(d.data.disproportionality) * 100);
+    })
+    .attr("transform", (d: RenderRow, i) => {
+      return d.data.disproportionality >= 0
+        ? `translate(${params.deviation_width / 2}, 0)`
+        : `translate(${params.deviation_width / 2 +
+            scale(d.data.disproportionality * 100)}, 0)`;
+    });
 }

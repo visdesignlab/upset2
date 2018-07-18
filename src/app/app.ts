@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-16 11:26:19
+ * @Last Modified time: 2018-07-18 10:39:58
  */
 import { EmbedGenView } from "../EmbedGenView/EmbedGenView";
 
@@ -82,7 +82,7 @@ function run() {
       application
     );
 
-    EmbedGenView(d3.select("#embed-modal"));
+    // EmbedGenView(d3.select("#embed-modal"));
 
     (window as any).registry = application.registry;
   } else {
