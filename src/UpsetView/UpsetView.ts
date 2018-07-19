@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-18 14:17:32
+ * @Last Modified time: 2018-07-18 16:30:43
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -88,7 +88,7 @@ export class UpsetView extends ViewBase {
       this.comm
     );
 
-    addRenderRows(data.renderRows, this.setsComboGroup, data.usedSets.length);
+    addRenderRows(data, this.setsComboGroup, data.usedSets.length);
 
     addCardinalityHeader(
       data.allItems.length,

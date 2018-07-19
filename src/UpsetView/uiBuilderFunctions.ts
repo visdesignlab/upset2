@@ -1,3 +1,4 @@
+import { Data } from "./../DataStructure/Data";
 import { Group } from "./../DataStructure/Group";
 import { SubSet } from "./../DataStructure/SubSet";
 import { d3Selection, RenderRow, d3Scale } from "./../type_declarations/types";
@@ -7,6 +8,8 @@ import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
+
+let excludeSets = ["Name", "Set Count", "Sets"];
 
 // ################################################################################################
 export function usedSetsHeader(
@@ -554,12 +557,12 @@ function addDeviationScale(el: d3Selection, maxSize: number) {
 
 // ################################################################################################
 export function addRenderRows(
-  data: RenderRow[],
+  data: Data,
   el: d3Selection,
   usedSetCount: number
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
-  params.row_group_height = params.row_height * data.length;
+  params.row_group_height = params.row_height * data.renderRows.length;
   params.combinations_width = params.column_width * usedSetCount;
   params.used_sets = usedSetCount;
   let rows: d3Selection;
@@ -568,14 +571,15 @@ export function addRenderRows(
 
   setupColumnBackgrounds(el, usedSetCount);
 
-  [rows, groups, subsets] = addRows(data, el);
+  [rows, groups, subsets] = addRows(data.renderRows, el);
 
   setupSubsets(subsets);
   setupGroups(groups);
 
-  addCardinalityBars(rows, data);
+  addCardinalityBars(rows, data.renderRows);
+  addDeviationBars(rows, data.renderRows);
 
-  addDeviationBars(rows, data);
+  addAttributes(rows, data);
 }
 
 /** ************* */
@@ -995,3 +999,7 @@ function renderDeviationBars(el: d3Selection, scale: d3Scale) {
             scale(d.data.disproportionality * 100)}, 0)`;
     });
 }
+/** ************* */
+
+/** ************* */
+function addAttributes(rows: d3Selection, data: Data) {}
