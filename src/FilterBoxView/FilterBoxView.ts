@@ -35,6 +35,40 @@ export class FilterBoxView extends ViewBase {
 
       this.comm.emit("apply", ["sortBySet", _do, _undo]);
     });
+
+    this.comm.on("sort-by-cardinality", () => {
+      let rc = Object.assign(
+        Object.create(Object.getPrototypeOf(this.config)),
+        this.config
+      );
+      let _do = {
+        func: this.applySortByCardinality.bind(this),
+        args: [] as any
+      };
+      let _undo = {
+        func: this.unApplySortByCardinality.bind(this),
+        args: [rc]
+      };
+
+      this.comm.emit("apply", ["sortByCardinality", _do, _undo]);
+    });
+
+    this.comm.on("sort-by-deviation", () => {
+      let rc = Object.assign(
+        Object.create(Object.getPrototypeOf(this.config)),
+        this.config
+      );
+      let _do = {
+        func: this.applySortByDeviation.bind(this),
+        args: [] as any
+      };
+      let _undo = {
+        func: this.unApplySortByDeviation.bind(this),
+        args: [rc]
+      };
+
+      this.comm.emit("apply", ["sortByDeviation", _do, _undo]);
+    });
   }
 
   create() {
@@ -374,6 +408,34 @@ export class FilterBoxView extends ViewBase {
   }
 
   unApplySortBySet(rc: RenderConfig) {
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applySortByCardinality() {
+    let rc = this.config;
+    rc.firstLevelAggregateBy = AggregateBy.NONE;
+    rc.secondLevelAggregateBy = AggregateBy.NONE;
+    rc.sortBy = SortBy.CARDINALITY;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  unApplySortByCardinality(rc: RenderConfig) {
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applySortByDeviation() {
+    let rc = this.config;
+    rc.firstLevelAggregateBy = AggregateBy.NONE;
+    rc.secondLevelAggregateBy = AggregateBy.NONE;
+    rc.sortBy = SortBy.DEVIATION;
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  unApplySortByDeviation(rc: RenderConfig) {
     this.saveConfig(rc);
     this.update();
   }

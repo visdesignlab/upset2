@@ -54,5 +54,32 @@ function sortByDegree(data: RenderRow[], setId: number): RenderRow[] {
 }
 
 function sortByDeviation(data: RenderRow[], setId: number): RenderRow[] {
-  return data;
+  let groups = data.reduce((p, c, i) => {
+    if (c.data.type === RowType.GROUP) p.push(i);
+    return p;
+  }, []);
+
+  let rr: RenderRow[] = [];
+
+  if (groups.length === 0) {
+    return data.sort((d1, d2) => {
+      return (
+        Math.abs(d2.data.disproportionality) -
+        Math.abs(d1.data.disproportionality)
+      );
+    });
+  }
+
+  groups.forEach((g, idx) => {
+    rr.push(data[g]);
+    let els = data.slice(g + 1, groups[idx + 1]);
+    els = els.sort((d1, d2) => {
+      return (
+        Math.abs(d2.data.disproportionality) -
+        Math.abs(d1.data.disproportionality)
+      );
+    });
+    rr = rr.concat(els);
+  });
+  return rr;
 }

@@ -18,6 +18,14 @@ export class UpsetViewModel extends ViewModelBase {
       this.App.emit("sort-by-set", id);
     });
 
+    this.comm.on("sort-by-cardinality", () => {
+      this.App.emit("sort-by-cardinality");
+    });
+
+    this.comm.on("sort-by-deviation", () => {
+      this.App.emit("sort-by-deviation");
+    });
+
     this.registerFunctions(
       "remove_set",
       (d: any) => {

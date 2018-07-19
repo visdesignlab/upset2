@@ -99,7 +99,8 @@ export class UpsetView extends ViewBase {
 
     addDeviationHeaders(
       this.deviationGroup,
-      d3.max(data.renderRows.map(d => Math.abs(d.data.disproportionality)))
+      d3.max(data.renderRows.map(d => Math.abs(d.data.disproportionality))),
+      this.comm
     );
 
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);

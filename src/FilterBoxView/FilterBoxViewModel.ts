@@ -26,6 +26,14 @@ export class FilterBoxViewModel extends ViewModelBase {
       this.comm.emit("sort-by-set", id);
     });
 
+    this.App.on("sort-by-cardinality", () => {
+      this.comm.emit("sort-by-cardinality");
+    });
+
+    this.App.on("sort-by-deviation", () => {
+      this.comm.emit("sort-by-deviation");
+    });
+
     this.App.on("change-dataset", d => {
       let rc = this.config;
       rc.currentFile = d;
@@ -57,7 +65,14 @@ export class FilterBoxViewModel extends ViewModelBase {
     );
     this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view);
     this.registerFunctions("applySortBySet", view.applySortBySet, view);
+    this.registerFunctions(
+      "sortByCardinality",
+      view.applySortByCardinality,
+      view
+    );
+    this.registerFunctions("sortByDeviation", view.applySortByDeviation, view);
 
+    /** Undo Registration */
     this.registerFunctions(
       "applyFirstAggregation",
       view.applyFirstAggregation,
@@ -99,6 +114,18 @@ export class FilterBoxViewModel extends ViewModelBase {
     this.registerFunctions(
       "applySortBySet",
       view.unApplySortBySet,
+      view,
+      false
+    );
+    this.registerFunctions(
+      "sortByCardinality",
+      view.unApplySortByCardinality,
+      view,
+      false
+    );
+    this.registerFunctions(
+      "sortByDeviation",
+      view.unApplySortByDeviation,
       view,
       false
     );

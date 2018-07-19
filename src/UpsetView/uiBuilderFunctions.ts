@@ -203,7 +203,10 @@ export function addCardinalityHeader(
   let sliderBrush = el.append("g").attr("class", "slider-brush-group");
   let cardinalityLabel = el
     .append("g")
-    .attr("class", "cardinality-label-group");
+    .attr("class", "cardinality-label-group")
+    .on("click", () => {
+      comm.emit("sort-by-cardinality");
+    });
 
   let scaleOverview = getCardinalityScale(totalSize, params.cardinality_width);
   addOverviewAxis(overviewAxis, scaleOverview, totalSize);
@@ -484,7 +487,11 @@ function calculateTicksToShow(setSize: number): number[] {
 }
 // ################################################################################################
 
-export function addDeviationHeaders(el: d3Selection, maxDisprop: number) {
+export function addDeviationHeaders(
+  el: d3Selection,
+  maxDisprop: number,
+  comm: Mitt
+) {
   el.html("");
   el.attr(
     "transform",
@@ -497,15 +504,18 @@ export function addDeviationHeaders(el: d3Selection, maxDisprop: number) {
       3})`
   );
 
-  addDeviationLabel(el);
+  addDeviationLabel(el, comm);
   addDeviationScale(el, Math.ceil((maxDisprop * 100) / 5) * 5);
 }
 
-function addDeviationLabel(el: d3Selection) {
+function addDeviationLabel(el: d3Selection, comm: Mitt) {
   el.append("rect")
     .attr("height", params.deviation_label_height)
     .attr("width", params.deviation_width)
-    .attr("class", "deviation-label");
+    .attr("class", "deviation-label")
+    .on("click", () => {
+      comm.emit("sort-by-deviation");
+    });
 
   el.append("text")
     .text("Deviation")
