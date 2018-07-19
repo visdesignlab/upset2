@@ -23,6 +23,10 @@ module.exports = {
       template: './src/app/_index.html',
       filename: "../index.html"
     }),
+    new HtmlWebpackPlugin({
+      template: './src/EmbedGenView/embed.template.view.html',
+      filename: '../embed.html'
+    }),
     new WebpackMd5Hash(),
     new MiniCssExtractPlugin({
       filename: "style.[contenthash].css"
