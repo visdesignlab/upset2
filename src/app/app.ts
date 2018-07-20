@@ -85,6 +85,7 @@ run();
 
 function renderIFrame(): EmbedConfig {
   let iframe = d3.select(window.frameElement);
+  console.log(window.frameElement);
   let iframeNode = window.frameElement as any;
   let body = d3.select(
     (iframeNode.contentWindow || iframeNode.contentDocument).document.body
