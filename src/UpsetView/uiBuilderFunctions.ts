@@ -8,6 +8,7 @@ import * as d3 from "d3";
 import { Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
+import { EmbedConfig } from "../DataStructure/EmbedConfig";
 
 let excludeSets = ["Name", "Set Count", "Sets"];
 
@@ -569,7 +570,8 @@ function addDeviationScale(el: d3Selection, maxSize: number) {
 export function addRenderRows(
   data: Data,
   el: d3Selection,
-  usedSetCount: number
+  usedSetCount: number,
+  config: EmbedConfig
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
   params.row_group_height = params.row_height * data.renderRows.length;
@@ -579,6 +581,9 @@ export function addRenderRows(
   let groups: d3Selection;
   let subsets: d3Selection;
 
+  if (config && !config.CardinalityBars) params.cardinality_width = 0;
+  if (config && !config.DeviationBars) params.deviation_width = 0;
+
   setupColumnBackgrounds(el, usedSetCount);
 
   [rows, groups, subsets] = addRows(data.renderRows, el);
@@ -586,8 +591,13 @@ export function addRenderRows(
   setupSubsets(subsets);
   setupGroups(groups);
 
-  addCardinalityBars(rows, data.renderRows);
-  addDeviationBars(rows, data.renderRows);
+  if (!config || config.CardinalityBars) {
+    addCardinalityBars(rows, data.renderRows);
+  }
+
+  if (!config || config.DeviationBars) {
+    addDeviationBars(rows, data.renderRows);
+  }
 
   addAttributes(rows, data);
 }

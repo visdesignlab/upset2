@@ -1,33 +1,31 @@
-import { d3Selection } from "./../type_declarations/types";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-19 17:51:33
+ * @Last Modified time: 2018-07-20 13:58:57
  */
-import { EmbedGenView } from "../EmbedGenView/EmbedGenView";
-import { EmbedConfig, ConfigType } from "./../DataStructure/EmbedConfig";
+import "bootstrap";
 import * as d3 from "d3";
+import "popper.js";
 import { Application } from "provenance_mvvm_framework";
 import { DataSetInfoView } from "../DataSetInfoView/DataSetInfoView";
 import { DataSetInfoViewModel } from "../DataSetInfoView/DataSetInfoViewModel";
-import { FilterBoxView } from "../FilterBoxView/FilterBoxView";
 import { DataUtils } from "../DataStructure/DataUtils";
+import { EmbedGenView } from "../EmbedGenView/EmbedGenView";
+import { FilterBoxView } from "../FilterBoxView/FilterBoxView";
 import { FilterBoxViewModel } from "../FilterBoxView/FilterBoxViewModel";
 import { NavBarView } from "../NavBarView/NavBarView";
 import { NavBarViewModel } from "../NavBarView/NavBarViewModel";
-import { ViewFactory } from "./ViewFactory";
+import { ProvenanceView } from "../ProvenanceView/ProvenanceView";
+import { ProvenanceViewModel } from "../ProvenanceView/ProvenanceViewModel";
+import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
+import { UpsetView } from "../UpsetView/UpsetView";
+import { EmbedConfig } from "./../DataStructure/EmbedConfig";
+import { d3Selection } from "./../type_declarations/types";
 import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
-import { UpsetView } from "../UpsetView/UpsetView";
-import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
-import { ProvenanceViewModel } from "../ProvenanceView/ProvenanceViewModel";
-import { ProvenanceView } from "../ProvenanceView/ProvenanceView";
-
-// Importing styles
-import "popper.js";
-import "bootstrap";
 import "./styles.scss";
+import { ViewFactory } from "./ViewFactory";
 
 function run() {
   let application = new Application("Upset2.0", "1.0.0");
@@ -69,25 +67,41 @@ function run() {
 
   let isIFrame = window.self !== window.top;
 
+  let ec: EmbedConfig = null;
+
   if (!isIFrame) {
     EmbedGenView(d3.select("#embed-modal"));
   } else {
-    renderIFrame();
+    ec = renderIFrame();
   }
 
   vf.views["Upset"] = new UpsetViewModel(
-    new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
+    new UpsetView(d3.select("#mid-bar").node() as HTMLElement, ec),
     application
   );
 }
 
 run();
 
-function renderIFrame() {
+function renderIFrame(): EmbedConfig {
   let iframe = d3.select(window.frameElement);
   let iframeNode = window.frameElement as any;
   let body = d3.select(
     (iframeNode.contentWindow || iframeNode.contentDocument).document.body
   );
-  let ec = new EmbedConfig();
+  let ec = getEmbedConfig(iframe);
+
+  if (!ec.NavBar) d3.select("#navigation-bar").style("display", "none");
+  if (!ec.FilterBox) d3.select("#filter-box").style("display", "none");
+  if (!ec.DataSetInfo) d3.select("#dataset-info-box").style("display", "none");
+  if (!ec.LeftSideBar) d3.select("#left-side-bar").style("display", "none");
+  if (!ec.RightSideBar) d3.select("#right-side-bar").style("display", "none");
+  if (!ec.ProvenanceView)
+    d3.select(".provenance-view").style("display", "none");
+
+  return ec;
+}
+
+function getEmbedConfig(iframe: d3Selection): EmbedConfig {
+  return new EmbedConfig();
 }
