@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-18 16:30:43
+ * @Last Modified time: 2018-07-19 17:54:47
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -65,20 +65,9 @@ export class UpsetView extends ViewBase {
     this.setsComboGroup = this.bodyGroup
       .append("g")
       .attr("class", "sets-combo-group");
-    this.cardinalityBarGroup = this.bodyGroup
-      .append("g")
-      .attr("class", "cardinality-bar-group");
-    this.deviationBars = this.bodyGroup
-      .append("g")
-      .attr("class", "deviation-bars");
-    this.attributeBars = this.bodyGroup
-      .append("g")
-      .attr("class", "attribute-bars");
   }
 
   update(data: Data) {
-    console.log("Building", data);
-
     usedSetsHeader(
       data.usedSets,
       this.selectedSetHeaderGroup,

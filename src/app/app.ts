@@ -1,11 +1,12 @@
+import { d3Selection } from "./../type_declarations/types";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-19 16:15:47
+ * @Last Modified time: 2018-07-19 17:51:33
  */
 import { EmbedGenView } from "../EmbedGenView/EmbedGenView";
-
+import { EmbedConfig, ConfigType } from "./../DataStructure/EmbedConfig";
 import * as d3 from "d3";
 import { Application } from "provenance_mvvm_framework";
 import { DataSetInfoView } from "../DataSetInfoView/DataSetInfoView";
@@ -61,11 +62,6 @@ function run() {
     application
   );
 
-  vf.views["Upset"] = new UpsetViewModel(
-    new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
-    application
-  );
-
   vf.views["Provenance"] = new ProvenanceViewModel(
     new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
     application
@@ -76,9 +72,22 @@ function run() {
   if (!isIFrame) {
     EmbedGenView(d3.select("#embed-modal"));
   } else {
-    let i = d3.select(window.frameElement);
-    console.log(i.node());
+    renderIFrame();
   }
+
+  vf.views["Upset"] = new UpsetViewModel(
+    new UpsetView(d3.select("#mid-bar").node() as HTMLElement),
+    application
+  );
 }
 
 run();
+
+function renderIFrame() {
+  let iframe = d3.select(window.frameElement);
+  let iframeNode = window.frameElement as any;
+  let body = d3.select(
+    (iframeNode.contentWindow || iframeNode.contentDocument).document.body
+  );
+  let ec = new EmbedConfig();
+}
