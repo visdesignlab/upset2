@@ -26,7 +26,7 @@ function addInsertIFrameEvent(base: d3Selection) {
     d3.select(".embeded-view")
       .append("iframe")
       .attr("class", "upset")
-      .attr("src", "http://localhost:8010/embed.html");
+      .attr("src", "/embed.html");
   });
   // d3.select(".embeded-view")
   //   .append("iframe")
