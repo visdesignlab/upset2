@@ -39,7 +39,9 @@ function addInsertIFrameEvent(base: d3Selection) {
       })
       .attr("class", "upset")
       .attr("src", "/embed.html");
-    base.select(".modal").classed("is-active", false);
+
+    let _i = d3.select(".embeded-view");
+    base.select(".code").property("value", _i.html());
   });
 }
 
