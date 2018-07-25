@@ -104,5 +104,5 @@ function renderIFrame(): EmbedConfig {
 }
 
 function getEmbedConfig(iframe: d3Selection): EmbedConfig {
-  return new EmbedConfig();
+  return JSON.parse(iframe.attr("data"));
 }

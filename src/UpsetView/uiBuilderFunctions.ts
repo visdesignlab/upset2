@@ -703,7 +703,7 @@ function setupElementGroups(rows: d3Selection) {
       else
         return `translate(${params.combinations_width +
           params.column_width +
-          params.deviation_width +
+          params.cardinality_width +
           params.column_width * 2},${(params.row_height -
           params.deviation_bar_height) /
           2})`;
