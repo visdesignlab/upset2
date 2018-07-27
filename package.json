@@ -6,8 +6,7 @@
   "scripts": {
     "build-client": "webpack --config webpack.client.config.js",
     "build-server": "webpack --config webpack.server.config.js",
-    "lite": "lite-server -c bs-config.json",
-    "serve": "npm run lite"
+    "serve": "lite-server -c bs-config.json"
   },
   "author": "",
   "license": "ISC",
