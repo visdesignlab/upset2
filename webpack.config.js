@@ -7,7 +7,10 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 
 module.exports = {
-  entry: "./src/app/app.ts",
+  entry: {
+    app: "./src/app/app.ts",
+    server: "./src/server/server.ts"
+  },
   mode: "development",
   optimization: {
     splitChunks: {
@@ -21,11 +24,13 @@ module.exports = {
     }),
     new HtmlWebpackPlugin({
       template: './src/app/_index.html',
-      filename: "../index.html"
+      filename: "../index.html",
+      excludeChunks: ['server']
     }),
     new HtmlWebpackPlugin({
       template: './src/EmbedGenView/embed.template.view.html',
-      filename: '../embed.html'
+      filename: '../embed.html',
+      excludeChunks: ['server']
     }),
     new WebpackMd5Hash(),
     new MiniCssExtractPlugin({
