@@ -6,3 +6,4 @@ index.html
 data/.DS_Store
 package-lock.json
 embed.html
+build/
