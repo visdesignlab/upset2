@@ -13,8 +13,9 @@ import { min } from "d3";
 
 export class FilterBoxView extends ViewBase {
   get config(): RenderConfig {
-    if (!sessionStorage["render_config"]) this.saveConfig(new RenderConfig());
-    return JSON.parse(sessionStorage["render_config"]);
+    if (!(sessionStorage as any)["render_config"])
+      this.saveConfig(new RenderConfig());
+    return JSON.parse((sessionStorage as any)["render_config"]);
   }
 
   constructor(root: HTMLElement) {
@@ -322,7 +323,7 @@ export class FilterBoxView extends ViewBase {
   }
 
   private saveConfig(config: RenderConfig, update: boolean = true) {
-    sessionStorage["render_config"] = JSON.stringify(config);
+    (sessionStorage as any)["render_config"] = JSON.stringify(config);
     if (update) this.comm.emit("filter-changed", this.config);
   }
 

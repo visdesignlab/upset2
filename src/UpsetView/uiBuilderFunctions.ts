@@ -1022,4 +1022,5 @@ function renderDeviationBars(el: d3Selection, scale: d3Scale) {
 /** ************* */
 
 /** ************* */
+// ! Undefined function???
 function addAttributes(rows: d3Selection, data: Data) {}

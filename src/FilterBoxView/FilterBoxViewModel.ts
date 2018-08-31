@@ -12,8 +12,9 @@ import { RenderConfig } from "../DataStructure/AggregateAndFilters";
 
 export class FilterBoxViewModel extends ViewModelBase {
   get config(): RenderConfig {
-    if (!sessionStorage["render_config"]) this.saveConfig(new RenderConfig());
-    return JSON.parse(sessionStorage["render_config"]);
+    if (!(sessionStorage as any)["render_config"])
+      this.saveConfig(new RenderConfig());
+    return JSON.parse((sessionStorage as any)["render_config"]);
   }
 
   constructor(view: FilterBoxView, app: Application) {
@@ -138,7 +139,7 @@ export class FilterBoxViewModel extends ViewModelBase {
   }
 
   private saveConfig(config: RenderConfig, update: boolean = true) {
-    sessionStorage["render_config"] = JSON.stringify(config);
+    (sessionStorage as any)["render_config"] = JSON.stringify(config);
     if (update) this.comm.emit("filter-changed", this.config);
   }
 }
