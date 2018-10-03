@@ -4,7 +4,6 @@
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-20 13:58:57
  */
-import "bootstrap";
 import * as d3 from "d3";
 import "popper.js";
 import { Application } from "provenance_mvvm_framework";
