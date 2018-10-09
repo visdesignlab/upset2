@@ -4169,7 +4169,7 @@ __webpack_require__.r(__webpack_exports__);
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:08
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-10-09 14:38:45
+ * @Last Modified time: 2018-10-09 15:38:44
  */
 
 
@@ -4216,11 +4216,8 @@ function run() {
 }
 run();
 function renderIFrame() {
-    let iframe = d3__WEBPACK_IMPORTED_MODULE_0__["select"](window.frameElement);
+    let iframe = d3__WEBPACK_IMPORTED_MODULE_0__["select"](window.self.frameElement);
     console.log(window.self);
-    console.log(window.frameElement);
-    let iframeNode = window.frameElement;
-    let body = d3__WEBPACK_IMPORTED_MODULE_0__["select"]((iframeNode.contentWindow || iframeNode.contentDocument).document.body);
     let ec = getEmbedConfig(iframe);
     if (!ec.NavBar)
         d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#navigation-bar").style("display", "none");
@@ -4274,4 +4271,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.db8d19d6fc8256c5811a.js.map
+//# sourceMappingURL=app.a1d114c4cea4fbb17699.js.map

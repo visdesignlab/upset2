@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-10-09 14:38:45
+ * @Last Modified time: 2018-10-09 15:38:44
  */
 import * as d3 from "d3";
 import "popper.js";
@@ -82,13 +82,10 @@ function run() {
 run();
 
 function renderIFrame(): EmbedConfig {
-  let iframe = d3.select(window.frameElement);
+  let iframe = d3.select(window.self.frameElement);
+
   console.log(window.self);
-  console.log(window.frameElement);
-  let iframeNode = window.frameElement as any;
-  let body = d3.select(
-    (iframeNode.contentWindow || iframeNode.contentDocument).document.body
-  );
+
   let ec = getEmbedConfig(iframe);
 
   if (!ec.NavBar) d3.select("#navigation-bar").style("display", "none");
