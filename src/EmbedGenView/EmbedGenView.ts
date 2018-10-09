@@ -34,9 +34,6 @@ function addInsertIFrameEvent(base: d3Selection) {
     i.enter()
       .append("iframe")
       .merge(i)
-      .attr("data", () => {
-        return JSON.stringify(EmbedConfig.getConfig());
-      })
       .attr("class", "upset")
       .attr(
         "src",
