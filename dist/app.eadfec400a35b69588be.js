@@ -1570,7 +1570,7 @@ function addInsertIFrameEvent(base) {
             return JSON.stringify(_DataStructure_EmbedConfig__WEBPACK_IMPORTED_MODULE_0__["EmbedConfig"].getConfig());
         })
             .attr("class", "upset")
-            .attr("src", "https://vdl.sci.utah.edu/upset2/embed.html");
+            .attr("src", `https://vdl.sci.utah.edu/upset2/embed.html#${JSON.stringify(_DataStructure_EmbedConfig__WEBPACK_IMPORTED_MODULE_0__["EmbedConfig"].getConfig())}`);
         let _i = d3__WEBPACK_IMPORTED_MODULE_2__["select"](".embeded-view");
         base.select(".code").property("value", _i.html());
     });
@@ -4169,7 +4169,7 @@ __webpack_require__.r(__webpack_exports__);
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:08
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-10-09 15:38:44
+ * @Last Modified time: 2018-10-09 16:10:33
  */
 
 
@@ -4216,9 +4216,7 @@ function run() {
 }
 run();
 function renderIFrame() {
-    let iframe = d3__WEBPACK_IMPORTED_MODULE_0__["select"](window.self.frameElement);
-    console.log(window.self);
-    let ec = getEmbedConfig(iframe);
+    let ec = JSON.parse(unescape(window.location.hash.replace("#", "")));
     if (!ec.NavBar)
         d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#navigation-bar").style("display", "none");
     if (!ec.FilterBox)
@@ -4271,4 +4269,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.a1d114c4cea4fbb17699.js.map
+//# sourceMappingURL=app.eadfec400a35b69588be.js.map

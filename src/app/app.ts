@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-10-09 15:38:44
+ * @Last Modified time: 2018-10-09 16:10:33
  */
 import * as d3 from "d3";
 import "popper.js";
@@ -82,11 +82,7 @@ function run() {
 run();
 
 function renderIFrame(): EmbedConfig {
-  let iframe = d3.select(window.self.frameElement);
-
-  console.log(window.self);
-
-  let ec = getEmbedConfig(iframe);
+  let ec = JSON.parse(unescape(window.location.hash.replace("#", "")));
 
   if (!ec.NavBar) d3.select("#navigation-bar").style("display", "none");
   if (!ec.FilterBox) d3.select("#filter-box").style("display", "none");
