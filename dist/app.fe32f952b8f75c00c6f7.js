@@ -1570,7 +1570,7 @@ function addInsertIFrameEvent(base) {
             return JSON.stringify(_DataStructure_EmbedConfig__WEBPACK_IMPORTED_MODULE_0__["EmbedConfig"].getConfig());
         })
             .attr("class", "upset")
-            .attr("src", "/embed.html");
+            .attr("src", "embed.html");
         let _i = d3__WEBPACK_IMPORTED_MODULE_2__["select"](".embeded-view");
         base.select(".code").property("value", _i.html());
     });
@@ -4217,6 +4217,7 @@ function run() {
 run();
 function renderIFrame() {
     let iframe = d3__WEBPACK_IMPORTED_MODULE_0__["select"](window.frameElement);
+    console.log(window.self);
     console.log(window.frameElement);
     let iframeNode = window.frameElement;
     let body = d3__WEBPACK_IMPORTED_MODULE_0__["select"]((iframeNode.contentWindow || iframeNode.contentDocument).document.body);
@@ -4273,4 +4274,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.4677b58a2b1c20984ed7.js.map
+//# sourceMappingURL=app.fe32f952b8f75c00c6f7.js.map

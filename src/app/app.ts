@@ -65,7 +65,6 @@ function run() {
   );
 
   let isIFrame = window.self !== window.top;
-
   let ec: EmbedConfig = null;
 
   if (!isIFrame) {
@@ -84,6 +83,7 @@ run();
 
 function renderIFrame(): EmbedConfig {
   let iframe = d3.select(window.frameElement);
+  console.log(window.self);
   console.log(window.frameElement);
   let iframeNode = window.frameElement as any;
   let body = d3.select(

@@ -38,7 +38,7 @@ function addInsertIFrameEvent(base: d3Selection) {
         return JSON.stringify(EmbedConfig.getConfig());
       })
       .attr("class", "upset")
-      .attr("src", "/embed.html");
+      .attr("src", "embed.html");
 
     let _i = d3.select(".embeded-view");
     base.select(".code").property("value", _i.html());
