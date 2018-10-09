@@ -41,7 +41,6 @@
     "@types/express": "4.16.0",
     "@types/jquery": "3.3.2",
     "body-parser": "1.18.3",
-    "bootstrap": "4.1.1",
     "bulma": "0.7.1",
     "d3": "5.5.0",
     "express": "4.16.3",
