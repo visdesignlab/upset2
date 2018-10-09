@@ -24,7 +24,8 @@ let params = {
       params.combinations_width +
       params.cardinality_width +
       params.deviation_width +
-      params.column_width * 5
+      params.attribute_group_width +
+      params.column_width * 6
     );
   },
   get group_row_width() {
@@ -49,6 +50,12 @@ let params = {
   },
   deviation_scale_group_height: 60,
   deviation_label_height: 24,
+
+  no_attributes_shown: 0,
+  attribute_width: 100,
+  get attribute_group_width() {
+    return params.no_attributes_shown * (params.attribute_width + 20);
+  },
 
   get header_height() {
     return params.used_set_group_height;

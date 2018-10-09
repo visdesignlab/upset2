@@ -708,6 +708,28 @@ function setupElementGroups(rows: d3Selection) {
           params.deviation_bar_height) /
           2})`;
     });
+
+  rows
+    .append("g")
+    .attr("class", "attribute-group")
+    .attr("transform", d => {
+      if (d.data.type === RowType.GROUP)
+        return `translate(${params.skew_offset +
+          params.combinations_width +
+          params.cardinality_width +
+          params.deviation_width +
+          params.column_width * 4},${(params.row_height -
+          params.deviation_bar_height) /
+          2})`;
+      else
+        return `translate(${params.combinations_width +
+          params.column_width +
+          params.cardinality_width +
+          params.deviation_width +
+          params.column_width * 3},${(params.row_height -
+          params.deviation_bar_height) /
+          2})`;
+    });
 }
 /** ************* */
 

@@ -57,7 +57,6 @@ export class Data {
     dataSetDesc: IDataSetJSON
   ): Promise<any> {
     await this.getRawData(data, dataSetDesc).then(rawData => {
-      console.log("data file update");
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
