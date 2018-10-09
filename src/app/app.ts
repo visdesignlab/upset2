@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:08 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-10-09 14:21:47
+ * @Last Modified time: 2018-10-09 14:38:45
  */
 import * as d3 from "d3";
 import "popper.js";
@@ -51,7 +51,7 @@ function run() {
   vf.views["NavBar"] = new NavBarViewModel(
     new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
     application,
-    "/data/datasets.json"
+    "data/datasets.json"
   );
 
   vf.views["Upset"] = new UnusedSetViewModel(
