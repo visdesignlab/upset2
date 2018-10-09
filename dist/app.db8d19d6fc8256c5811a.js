@@ -1570,7 +1570,7 @@ function addInsertIFrameEvent(base) {
             return JSON.stringify(_DataStructure_EmbedConfig__WEBPACK_IMPORTED_MODULE_0__["EmbedConfig"].getConfig());
         })
             .attr("class", "upset")
-            .attr("src", "embed.html");
+            .attr("src", "https://vdl.sci.utah.edu/upset2/embed.html");
         let _i = d3__WEBPACK_IMPORTED_MODULE_2__["select"](".embeded-view");
         base.select(".code").property("value", _i.html());
     });
@@ -4274,4 +4274,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.fe32f952b8f75c00c6f7.js.map
+//# sourceMappingURL=app.db8d19d6fc8256c5811a.js.map
