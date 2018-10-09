@@ -4169,7 +4169,7 @@ __webpack_require__.r(__webpack_exports__);
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:08
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-10-09 14:21:47
+ * @Last Modified time: 2018-10-09 14:38:45
  */
 
 
@@ -4201,7 +4201,7 @@ function run() {
     let vf = new _ViewFactory__WEBPACK_IMPORTED_MODULE_18__["ViewFactory"]();
     vf.views["FilterBox"] = new _FilterBoxView_FilterBoxViewModel__WEBPACK_IMPORTED_MODULE_8__["FilterBoxViewModel"](new _FilterBoxView_FilterBoxView__WEBPACK_IMPORTED_MODULE_7__["FilterBoxView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#filter-box").node()), application);
     vf.views["DataSetInfo"] = new _DataSetInfoView_DataSetInfoViewModel__WEBPACK_IMPORTED_MODULE_4__["DataSetInfoViewModel"](new _DataSetInfoView_DataSetInfoView__WEBPACK_IMPORTED_MODULE_3__["DataSetInfoView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#dataset-info-box").node()), application);
-    vf.views["NavBar"] = new _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_10__["NavBarViewModel"](new _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_9__["NavBarView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#navigation-bar").node()), application, "/data/datasets.json");
+    vf.views["NavBar"] = new _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_10__["NavBarViewModel"](new _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_9__["NavBarView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#navigation-bar").node()), application, "data/datasets.json");
     vf.views["Upset"] = new _UnusedSetsView_UnusedSetViewModel__WEBPACK_IMPORTED_MODULE_15__["UnusedSetViewModel"](new _UnusedSetsView_UnusedSetView__WEBPACK_IMPORTED_MODULE_13__["UnusedSetView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#mid-bar").node()), application);
     vf.views["Provenance"] = new _ProvenanceView_ProvenanceViewModel__WEBPACK_IMPORTED_MODULE_12__["ProvenanceViewModel"](new _ProvenanceView_ProvenanceView__WEBPACK_IMPORTED_MODULE_11__["ProvenanceView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"](".provenance-view").node()), application);
     let isIFrame = window.self !== window.top;
@@ -4273,4 +4273,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.3f68ac51e0ed42252e4a.js.map
+//# sourceMappingURL=app.1a68724e23aef7a30a32.js.map
