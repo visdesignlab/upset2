@@ -1566,6 +1566,8 @@ function addInsertIFrameEvent(base) {
         i.enter()
             .append("iframe")
             .merge(i)
+            .attr("height", 500)
+            .attr("width", 1000)
             .attr("data", () => {
             return JSON.stringify(_DataStructure_EmbedConfig__WEBPACK_IMPORTED_MODULE_0__["EmbedConfig"].getConfig());
         })
@@ -1573,6 +1575,9 @@ function addInsertIFrameEvent(base) {
             .attr("src", `https://vdl.sci.utah.edu/upset2/embed.html#${JSON.stringify(_DataStructure_EmbedConfig__WEBPACK_IMPORTED_MODULE_0__["EmbedConfig"].getConfig())}`);
         let _i = d3__WEBPACK_IMPORTED_MODULE_2__["select"](".embeded-view");
         base.select(".code").property("value", _i.html());
+        base.select(".code").node().select();
+        document.execCommand("copy");
+        _i.html("");
     });
 }
 function addCheckboxEvents(base) {
@@ -4269,4 +4274,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.eadfec400a35b69588be.js.map
+//# sourceMappingURL=app.5121e9783c67d0b39a81.js.map
