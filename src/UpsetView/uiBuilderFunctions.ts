@@ -599,7 +599,7 @@ export function addRenderRows(
     addDeviationBars(rows, data.renderRows);
   }
 
-  addAttributes(rows, data);
+  addAttributes(rows, data, []);
 }
 
 /** ************* */
@@ -1042,7 +1042,16 @@ function renderDeviationBars(el: d3Selection, scale: d3Scale) {
     });
 }
 /** ************* */
+export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
+  console.log(el.node());
+  console.log(data);
+  console.log(comm);
+}
 
 /** ************* */
 // ! Undefined function???
-function addAttributes(rows: d3Selection, data: Data) {}
+function addAttributes(
+  rows: d3Selection,
+  data: Data,
+  selectedAttributes: string[]
+) {}
