@@ -72,6 +72,12 @@ export class UpsetView extends ViewBase {
   }
 
   update(data: Data) {
+    let excludeSets = ["Name", "Set Count", "Sets"];
+
+    data.selectedAttributes = data.attributes.filter(
+      d => excludeSets.indexOf(d.name) < 0
+    );
+
     usedSetsHeader(
       data.usedSets,
       this.selectedSetHeaderGroup,
@@ -81,7 +87,13 @@ export class UpsetView extends ViewBase {
       this.comm
     );
 
-    addRenderRows(data, this.setsComboGroup, data.usedSets.length, this.config);
+    addRenderRows(
+      data,
+      this.setsComboGroup,
+      data.usedSets.length,
+      this.config,
+      this.comm
+    );
 
     if (!this.config || this.config.CardinalityBars) {
       addCardinalityHeader(

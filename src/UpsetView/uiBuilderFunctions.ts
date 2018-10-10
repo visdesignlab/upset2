@@ -9,6 +9,7 @@ import { Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
+import { Attribute } from "../DataStructure/Attribute";
 
 let excludeSets = ["Name", "Set Count", "Sets"];
 
@@ -571,7 +572,8 @@ export function addRenderRows(
   data: Data,
   el: d3Selection,
   usedSetCount: number,
-  config: EmbedConfig
+  config: EmbedConfig,
+  comm: Mitt
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
   params.row_group_height = params.row_height * data.renderRows.length;
@@ -599,7 +601,38 @@ export function addRenderRows(
     addDeviationBars(rows, data.renderRows);
   }
 
-  addAttributes(rows, data, []);
+  comm.on("update-attributes", () => {
+    addAttributes(rows, data);
+  });
+
+  comm.on("add-attribute", attr => {
+    data.selectedAttributes = addAttributeToSelected(
+      data.selectedAttributes,
+      attr
+    );
+    comm.emit("update-attributes");
+  });
+
+  comm.on("remove-attribute", attr => {
+    data.selectedAttributes = removeAttributeFromSelected(
+      data.selectedAttributes,
+      attr
+    );
+    comm.emit("update-attributes");
+  });
+
+  comm.emit("update-attributes");
+}
+
+function addAttributeToSelected(selected: Attribute[], attr: Attribute) {
+  if (attr && selected.indexOf(attr) < 0) selected.push(attr);
+  return selected;
+}
+
+function removeAttributeFromSelected(selected: Attribute[], attr: Attribute) {
+  if (attr && selected.indexOf(attr) >= 0)
+    selected.splice(selected.indexOf(attr), 1);
+  return selected;
 }
 
 /** ************* */
@@ -1043,15 +1076,21 @@ function renderDeviationBars(el: d3Selection, scale: d3Scale) {
 }
 /** ************* */
 export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
-  console.log(el.node());
-  console.log(data);
-  console.log(comm);
+  el.html("");
+  el.attr(
+    "transform",
+    `translate(${params.skew_offset +
+      params.combinations_width +
+      params.cardinality_width +
+      params.deviation_width +
+      params.attribute_group_width +
+      params.column_width * 4}, 0)`
+  );
 }
 
 /** ************* */
 // ! Undefined function???
-function addAttributes(
-  rows: d3Selection,
-  data: Data,
-  selectedAttributes: string[]
-) {}
+function addAttributes(rows: d3Selection, data: Data) {
+  let attributeGroups = rows.selectAll(".attribute-group");
+  console.log(data);
+}

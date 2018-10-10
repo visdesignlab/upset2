@@ -173,3 +173,13 @@
 .deviation-label:hover {
   fill: #a3a3a3
 }
+
+.unselectedAttribute>rect {
+  stroke: black;
+  stroke-width: 1px;
+}
+
+.unselectedAttribute>text {
+  color: black;
+  writing-mode: vertical-lr;
+}
