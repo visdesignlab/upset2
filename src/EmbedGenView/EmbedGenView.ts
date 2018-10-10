@@ -44,6 +44,7 @@ function addInsertIFrameEvent(base: d3Selection) {
 
     let _i = d3.select(".embeded-view");
     base.select(".code").property("value", _i.html());
+    _i.remove();
   });
 }
 
