@@ -26,6 +26,8 @@ import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 import "./styles.scss";
 import { ViewFactory } from "./ViewFactory";
 
+export const serverUrl: string = "http://18.224.213.250";
+
 function run() {
   let application = new Application("Upset2.0", "1.0.0");
   DataUtils.app = application;
