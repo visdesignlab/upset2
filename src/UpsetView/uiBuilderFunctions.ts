@@ -1092,5 +1092,4 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
 // ! Undefined function???
 function addAttributes(rows: d3Selection, data: Data) {
   let attributeGroups = rows.selectAll(".attribute-group");
-  console.log(data);
 }
