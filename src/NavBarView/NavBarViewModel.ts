@@ -15,8 +15,10 @@ export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application, dsLocation: string) {
     super(view, app);
-    this.populateDatasetSelectorFromServer();
-    // this.populateDatasetSelector(dsLocation);
+    this.populateDatasetSelector(dsLocation);
+
+    // this.populateDatasetSelectorFromServer();
+
     this.comm.on("change-dataset", dataset => {
       this.App.emit("change-dataset", dataset);
     });
@@ -34,6 +36,7 @@ export class NavBarViewModel extends ViewModelBase {
       .then(() => {
         results.forEach(j => {
           let a: IDataSetJSON = DataUtils.getDataSetJSON(j);
+          a.file = `${serverUrl}/download/single/${a.file}`;
           this.datasets.push(DataUtils.getDataSetInfo(a));
         });
       })
