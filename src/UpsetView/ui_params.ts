@@ -20,6 +20,7 @@ let params = {
   row_group_height: 20,
   combinations_width: 0,
   get subset_row_width() {
+    console.log(params.attribute_group_width);
     return (
       params.combinations_width +
       params.cardinality_width +
@@ -55,6 +56,9 @@ let params = {
   attribute_width: 100,
   get attribute_group_width() {
     return params.no_attributes_shown * (params.attribute_width + 20);
+  },
+  get attribute_bar_height() {
+    return params.row_height - 4;
   },
   attribute_group_height: 100,
 

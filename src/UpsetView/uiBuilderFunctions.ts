@@ -10,12 +10,10 @@ import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
 import { Attribute } from "../DataStructure/Attribute";
-import * as vega from "vega";
-import { Spec } from "vega";
-import { CreateVegaVis, VisType } from "../VegaFactory/VegaFactory";
-import * as vegaEmbed from "vega-embed";
+import { CreateVegaVis } from "../VegaFactory/VegaFactory";
 
-let excludeSets = ["Name", "Set Count", "Sets"];
+const excludeSets = ["Name", "Set Count", "Sets"];
+const attributeName = "data-attribute-name";
 
 // ################################################################################################
 export function usedSetsHeader(
@@ -606,7 +604,7 @@ export function addRenderRows(
   }
 
   comm.on("update-attributes", () => {
-    addAttributes(rows, data);
+    asyncAddAttributes(rows, data);
   });
 
   comm.on("add-attribute", attr => {
@@ -1094,35 +1092,85 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
 
 /** ************* */
 // ! Undefined function???
+
+function asyncAddAttributes(rows: d3Selection, data: Data) {
+  setTimeout(() => {
+    addAttributes(rows, data);
+  }, 60);
+}
+
 function addAttributes(rows: d3Selection, data: Data) {
-  let attributeGroups = rows.selectAll(".attribute-group");
-  let vlSpec = {
-    data: {
-      values: data.selectedAttributes[0].values
-    },
-    mark: {
-      type: "boxplot",
-      extent: "min-max"
-    },
-    encoding: {
-      x: {
-        field: "data",
-        type: "quantitative",
-        scale: {
-          domain: [
-            data.selectedAttributes[0].min,
-            data.selectedAttributes[0].max
-          ]
+  let attributeGroups = rows.selectAll(".attribute-group").html("");
+
+  let attrs = attributeGroups
+    .selectAll(".attribute")
+    .data(data.selectedAttributes);
+  attrs.exit().remove();
+  attrs = attrs
+    .enter()
+    .append("g")
+    .classed("attribute", true)
+    .merge(attrs);
+
+  attrs.attr(attributeName, d => {
+    return d.name;
+  });
+
+  attrs.attr("transform", (_, i) => {
+    return `translate(${i * (params.attribute_width + 20)}, 0)`;
+  });
+
+  attributeGroups.each(function(d: RenderRow, i: number) {
+    let itemIndices = d.data.items;
+    let attrs = d3.select(this).selectAll(".attribute");
+
+    attrs.each(function(d) {
+      let attrs = data.selectedAttributes[i].values.filter(
+        (_, i) => itemIndices.indexOf(i) > 0
+      );
+      let spec = {
+        width: params.attribute_width,
+        height: params.attribute_bar_height,
+        padding: 0,
+        data: {
+          values: attrs.map(_ => {
+            return {
+              d: _
+            };
+          })
+        },
+        mark: {
+          type: "boxplot",
+          extent: "min-max"
+        },
+        config: {
+          style: {
+            cell: {
+              stroke: "transparent"
+            }
+          }
+        },
+        encoding: {
+          x: {
+            field: "d",
+            type: "quantitative",
+            axis: {
+              labels: false,
+              ticks: false,
+              title: null as any,
+              domain: false
+            },
+            scale: {
+              domain: [
+                data.selectedAttributes[i].min,
+                data.selectedAttributes[i].max
+              ]
+            }
+          }
         }
-      }
-    }
-  };
-  vegaEmbed.default("#test", vlSpec as any, {
-    mode: "vega-lite",
-    hover: false,
-    renderer: "svg",
-    runAsync: true,
-    logLevel: vega.None,
-    actions: false
+      };
+
+      CreateVegaVis(spec, d3.select(this));
+    });
   });
 }
