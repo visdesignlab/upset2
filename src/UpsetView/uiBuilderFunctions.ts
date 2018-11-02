@@ -604,7 +604,7 @@ export function addRenderRows(
   }
 
   comm.on("update-attributes", () => {
-    asyncAddAttributes(rows, data);
+    asyncAddAttributes(rows, groups, subsets, data);
   });
 
   comm.on("add-attribute", attr => {
@@ -795,6 +795,13 @@ function addSubsetBackgroundRects(subsets: d3Selection) {
     .attr("width", params.subset_row_width);
 }
 
+function updateSubsetBackgroundRects(subsets: d3Selection) {
+  subsets
+    .selectAll(".background-rect-g")
+    .selectAll("rect")
+    .attr("width", params.subset_row_width);
+}
+
 function addCombinations(subset: d3Selection) {
   let combinationsGroup = subset.append("g").attr("class", "combination");
 
@@ -910,6 +917,16 @@ function addGroupBackgroundRects(groups: d3Selection) {
     })
     .attr("rx", 5)
     .attr("ry", 10);
+}
+
+function updateGroupBackgroundRects(groups: d3Selection) {
+  groups
+    .selectAll(".background-rect-g")
+    .selectAll("rect")
+    .attr("width", (d: RenderRow) => {
+      if ((d.data as Group).level === 2) return params.group_row_width - 20;
+      return params.group_row_width;
+    });
 }
 
 function addGroupLabels(groups: d3Selection) {
@@ -1093,7 +1110,15 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
 /** ************* */
 // ! Undefined function???
 
-function asyncAddAttributes(rows: d3Selection, data: Data) {
+function asyncAddAttributes(
+  rows: d3Selection,
+  groups: d3Selection,
+  subset: d3Selection,
+  data: Data
+) {
+  params.no_attributes_shown = data.selectedAttributes.length;
+  updateGroupBackgroundRects(groups);
+  updateSubsetBackgroundRects(subset);
   setTimeout(() => {
     addAttributes(rows, data);
   }, 60);
@@ -1120,14 +1145,20 @@ function addAttributes(rows: d3Selection, data: Data) {
     return `translate(${i * (params.attribute_width + 20)}, 0)`;
   });
 
-  attributeGroups.each(function(d: RenderRow, i: number) {
+  attributeGroups.each(function(d: RenderRow) {
     let itemIndices = d.data.items;
     let attrs = d3.select(this).selectAll(".attribute");
 
     attrs.each(function(d) {
-      let attrs = data.selectedAttributes[i].values.filter(
+      let attrName = d3.select(this).attr(attributeName);
+      let currentAttribute = data.selectedAttributes.filter(
+        _ => _.name === attrName
+      )[0];
+
+      let attrs = currentAttribute.values.filter(
         (_, i) => itemIndices.indexOf(i) > 0
       );
+
       let spec = {
         width: params.attribute_width,
         height: params.attribute_bar_height,
@@ -1161,10 +1192,7 @@ function addAttributes(rows: d3Selection, data: Data) {
               domain: false
             },
             scale: {
-              domain: [
-                data.selectedAttributes[i].min,
-                data.selectedAttributes[i].max
-              ]
+              domain: [currentAttribute.min, currentAttribute.max]
             }
           }
         }

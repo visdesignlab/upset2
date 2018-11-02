@@ -5,14 +5,12 @@ import * as vegaEmbed from "vega-embed";
 import * as vega from "vega";
 
 export function CreateVegaVis(spec: any, el: d3Selection) {
-  setTimeout(() => {
-    vegaEmbed.default(el.node() as any, spec as any, {
-      mode: "vega-lite",
-      hover: false,
-      renderer: "svg",
-      runAsync: true,
-      logLevel: vega.None,
-      actions: false
-    });
-  }, 0);
+  vegaEmbed.default(el.node() as any, spec as any, {
+    mode: "vega-lite",
+    hover: false,
+    renderer: "svg",
+    runAsync: true,
+    logLevel: vega.None,
+    actions: false
+  });
 }
