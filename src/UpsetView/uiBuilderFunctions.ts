@@ -10,6 +10,10 @@ import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
 import { Attribute } from "../DataStructure/Attribute";
+import * as vega from "vega";
+import { Spec } from "vega";
+import { CreateVegaVis, VisType } from "../VegaFactory/VegaFactory";
+import * as vegaEmbed from "vega-embed";
 
 let excludeSets = ["Name", "Set Count", "Sets"];
 
@@ -1092,4 +1096,33 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
 // ! Undefined function???
 function addAttributes(rows: d3Selection, data: Data) {
   let attributeGroups = rows.selectAll(".attribute-group");
+  let vlSpec = {
+    data: {
+      values: data.selectedAttributes[0].values
+    },
+    mark: {
+      type: "boxplot",
+      extent: "min-max"
+    },
+    encoding: {
+      x: {
+        field: "data",
+        type: "quantitative",
+        scale: {
+          domain: [
+            data.selectedAttributes[0].min,
+            data.selectedAttributes[0].max
+          ]
+        }
+      }
+    }
+  };
+  vegaEmbed.default("#test", vlSpec as any, {
+    mode: "vega-lite",
+    hover: false,
+    renderer: "svg",
+    runAsync: true,
+    logLevel: vega.None,
+    actions: false
+  });
 }
