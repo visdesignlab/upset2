@@ -1,3 +1,4 @@
+import { Attribute } from "./../DataStructure/Attribute";
 import { Data } from "./../DataStructure/Data";
 import { Group } from "./../DataStructure/Group";
 import { SubSet } from "./../DataStructure/SubSet";
@@ -9,8 +10,6 @@ import { Mitt } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
-import { Attribute } from "../DataStructure/Attribute";
-import { CreateVegaVis } from "../VegaFactory/VegaFactory";
 
 const excludeSets = ["Name", "Set Count", "Sets"];
 const attributeName = "data-attribute-name";
@@ -1102,9 +1101,43 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
       params.combinations_width +
       params.cardinality_width +
       params.deviation_width +
-      params.attribute_group_width +
-      params.column_width * 4}, 0)`
+      params.column_width * 4}, ${params.header_height -
+      params.header_body_padding -
+      29})`
   );
+
+  let attrHeaders = el.selectAll(".attribute").data(data.selectedAttributes);
+  attrHeaders.exit().remove();
+  attrHeaders = attrHeaders
+    .enter()
+    .append("g")
+    .classed("attribute", true)
+    .merge(attrHeaders)
+    .attr(
+      "transform",
+      (_, i) => `translate(${i * (params.attribute_width + 25)}, 0)`
+    );
+  addAttrHeaders(attrHeaders);
+}
+
+function addAttrHeaders(el: d3Selection) {
+  el.each(function(d: Attribute) {
+    let t = d3.select(this).html("");
+
+    t.append("text").text(d.name);
+
+    let scale = d3
+      .scaleLinear()
+      .domain([d.min, d.max])
+      .range([0, params.attribute_width]);
+
+    let ax = d3.axisTop(scale).ticks(2);
+
+    d3.select(this)
+      .append("g")
+      .attr("transform", `translate(0, 30)`)
+      .call(ax);
+  });
 }
 
 /** ************* */
@@ -1142,7 +1175,7 @@ function addAttributes(rows: d3Selection, data: Data) {
   });
 
   attrs.attr("transform", (_, i) => {
-    return `translate(${i * (params.attribute_width + 20)}, 0)`;
+    return `translate(${i * (params.attribute_width + 25)}, 0)`;
   });
 
   attributeGroups.each(function(d: RenderRow) {
@@ -1150,55 +1183,92 @@ function addAttributes(rows: d3Selection, data: Data) {
     let attrs = d3.select(this).selectAll(".attribute");
 
     attrs.each(function(d) {
-      let attrName = d3.select(this).attr(attributeName);
-      let currentAttribute = data.selectedAttributes.filter(
+      let el = d3.select(this);
+      let attrName = el.attr(attributeName);
+      let relevantAttr = data.selectedAttributes.filter(
         _ => _.name === attrName
       )[0];
 
-      let attrs = currentAttribute.values.filter(
-        (_, i) => itemIndices.indexOf(i) > 0
+      let overAllMin = d3.min(relevantAttr.values);
+      let overAllMax = d3.max(relevantAttr.values);
+
+      let memberValues = relevantAttr.values.filter(
+        (_, i) => itemIndices.indexOf(i) > -1
       );
+      let localStats = getBoxPlotStats(memberValues);
 
-      let spec = {
-        width: params.attribute_width,
-        height: params.attribute_bar_height,
-        padding: 0,
-        data: {
-          values: attrs.map(_ => {
-            return {
-              d: _
-            };
-          })
-        },
-        mark: {
-          type: "boxplot",
-          extent: "min-max"
-        },
-        config: {
-          style: {
-            cell: {
-              stroke: "transparent"
-            }
-          }
-        },
-        encoding: {
-          x: {
-            field: "d",
-            type: "quantitative",
-            axis: {
-              labels: false,
-              ticks: false,
-              title: null as any,
-              domain: false
-            },
-            scale: {
-              domain: [currentAttribute.min, currentAttribute.max]
-            }
-          }
-        }
-      };
+      let boxPlotMaxWidth = params.attribute_width;
 
-      CreateVegaVis(spec, d3.select(this));
+      let bpScale = d3
+        .scaleLinear()
+        .domain([overAllMin, overAllMax])
+        .range([0, boxPlotMaxWidth]);
+
+      addBoxPlot(el, localStats, bpScale);
     });
   });
+}
+
+type BoxPlotStats = {
+  min: number;
+  max: number;
+  quantile25: number;
+  quantile50: number;
+  quantile75: number;
+};
+
+function getBoxPlotStats(values: number[]): BoxPlotStats {
+  values.sort((a, b) => a - b);
+  return {
+    min: d3.min(values),
+    max: d3.max(values),
+    quantile25: d3.quantile(values, 0.25),
+    quantile50: d3.quantile(values, 0.5),
+    quantile75: d3.quantile(values, 0.75)
+  };
+}
+
+function addBoxPlot(el: d3Selection, data: BoxPlotStats, scale: d3Scale) {
+  let bpGroup = el.append("g");
+  bpGroup.attr("transform", `translate(0, ${params.attribute_bar_height / 4})`);
+  addWhiskers(bpGroup, data, scale);
+  addBoxes(bpGroup, data, scale);
+}
+
+function addWhiskers(el: d3Selection, data: BoxPlotStats, scale: d3Scale) {
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.min))
+    .attr("x2", scale(data.min))
+    .attr("y1", 0)
+    .attr("y2", params.attribute_bar_height / 2);
+
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.max))
+    .attr("x2", scale(data.max))
+    .attr("y1", 0)
+    .attr("y2", params.attribute_bar_height / 2);
+
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.min))
+    .attr("x2", scale(data.max))
+    .attr("y1", params.attribute_bar_height / 4)
+    .attr("y2", params.attribute_bar_height / 4);
+}
+
+function addBoxes(el: d3Selection, data: BoxPlotStats, scale: d3Scale) {
+  el.append("rect")
+    .classed("boxplot-box", true)
+    .attr("height", params.attribute_bar_height / 2)
+    .attr("width", scale(data.quantile75) - scale(data.quantile25))
+    .attr("x", scale(data.quantile25));
+
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.quantile50))
+    .attr("x2", scale(data.quantile50))
+    .attr("y1", 0 - params.attribute_bar_height / 4)
+    .attr("y2", (params.attribute_bar_height * 3) / 4);
 }

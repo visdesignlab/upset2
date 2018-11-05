@@ -183,3 +183,18 @@
   color: black;
   writing-mode: vertical-lr;
 }
+
+.whisker {
+  stroke: black;
+  stroke-width: 0.5px;
+}
+
+.boxplot-box {
+  stroke: black;
+  stroke-width: 0.5px;
+  fill: #ccc;
+}
+
+.tick text {
+  stroke-width: 0.1px;
+}
