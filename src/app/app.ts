@@ -24,7 +24,6 @@ import { d3Selection } from "./../type_declarations/types";
 import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 import "./styles.scss";
-import { ViewFactory } from "./ViewFactory";
 
 export const serverUrl: string = "http://18.224.213.250";
 
@@ -38,30 +37,23 @@ function run() {
     application.registry = JSON.parse(sessionStorage["provenance-registry"]);
   }
 
-  let vf = new ViewFactory();
-
-  vf.views["FilterBox"] = new FilterBoxViewModel(
+  new FilterBoxViewModel(
     new FilterBoxView(d3.select("#filter-box").node() as HTMLElement),
     application
   );
 
-  vf.views["DataSetInfo"] = new DataSetInfoViewModel(
+  new DataSetInfoViewModel(
     new DataSetInfoView(d3.select("#dataset-info-box").node() as HTMLElement),
     application
   );
 
-  vf.views["NavBar"] = new NavBarViewModel(
+  new NavBarViewModel(
     new NavBarView(d3.select("#navigation-bar").node() as HTMLElement),
     application,
     "data/datasets.json"
   );
 
-  vf.views["Upset"] = new UnusedSetViewModel(
-    new UnusedSetView(d3.select("#mid-bar").node() as HTMLElement),
-    application
-  );
-
-  vf.views["Provenance"] = new ProvenanceViewModel(
+  new ProvenanceViewModel(
     new ProvenanceView(d3.select(".provenance-view").node() as HTMLElement),
     application
   );
@@ -75,8 +67,13 @@ function run() {
     ec = renderIFrame();
   }
 
-  vf.views["Upset"] = new UpsetViewModel(
+  new UpsetViewModel(
     new UpsetView(d3.select("#mid-bar").node() as HTMLElement, ec),
+    application
+  );
+
+  new UnusedSetViewModel(
+    new UnusedSetView(d3.select("#vis").node() as HTMLElement),
     application
   );
 }

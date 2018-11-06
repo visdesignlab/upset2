@@ -15,7 +15,8 @@ import {
   addRenderRows,
   addCardinalityHeader,
   addDeviationHeaders,
-  addAttributeHeaders
+  addAttributeHeaders,
+  addDropDownHeaders
 } from "./uiBuilderFunctions";
 import params from "./ui_params";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
@@ -30,6 +31,7 @@ export class UpsetView extends ViewBase {
   attributeHeaders: d3Selection;
   setsComboGroup: d3Selection;
   cardinalityBarGroup: d3Selection;
+  dropdownGroup: d3Selection;
   deviationBars: d3Selection;
   attributeBars: d3Selection;
   config: EmbedConfig;
@@ -49,6 +51,9 @@ export class UpsetView extends ViewBase {
       .append("svg");
 
     this.headerGroup = this.svg.append("g").attr("class", "header");
+    this.dropdownGroup = this.headerGroup
+      .append("g")
+      .classed("dropdown-header", true);
     this.selectedSetHeaderGroup = this.headerGroup
       .append("g")
       .attr("class", "selected-sets-header");
@@ -75,7 +80,7 @@ export class UpsetView extends ViewBase {
     let excludeSets = ["Name", "Set Count", "Sets"];
 
     data.selectedAttributes = data.attributes.filter(
-      d => excludeSets.indexOf(d.name) < 0
+      d => excludeSets.indexOf(d.name) < 0 && d.type !== "string"
     );
 
     usedSetsHeader(
@@ -104,6 +109,8 @@ export class UpsetView extends ViewBase {
       );
     }
 
+    addDropDownHeaders(data, this.dropdownGroup, (this as any).app);
+
     if (!this.config || this.config.DeviationBars) {
       addDeviationHeaders(
         this.deviationGroup,
@@ -117,5 +124,7 @@ export class UpsetView extends ViewBase {
     }
 
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);
+
+    (this as any).app.emit("used-set-changed");
   }
 }

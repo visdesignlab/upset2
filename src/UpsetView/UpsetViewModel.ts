@@ -12,6 +12,7 @@ import { Data } from "./../DataStructure/Data";
 export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
+    (view as any).app = app;
     this.App.on("render-rows-changed", this.update, this);
 
     this.comm.on("sort-by-set", (id: number) => {

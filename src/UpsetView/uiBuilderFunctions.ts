@@ -1,3 +1,4 @@
+import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { Attribute } from "./../DataStructure/Attribute";
 import { Data } from "./../DataStructure/Data";
 import { Group } from "./../DataStructure/Group";
@@ -6,13 +7,28 @@ import { d3Selection, RenderRow, d3Scale } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
 import params, { deg2rad } from "./ui_params";
 import * as d3 from "d3";
-import { Mitt } from "provenance_mvvm_framework";
+import { Mitt, Application } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
+import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
 
 const excludeSets = ["Name", "Set Count", "Sets"];
 const attributeName = "data-attribute-name";
+
+// ################################################################################################
+export function addDropDownHeaders(
+  data: Data,
+  el: d3Selection,
+  app: Application
+) {
+  el.attr(
+    "transform",
+    `translate(${params.skew_offset +
+      params.combinations_width +
+      params.column_width}, 0)`
+  ).html("");
+}
 
 // ################################################################################################
 export function usedSetsHeader(
@@ -603,7 +619,7 @@ export function addRenderRows(
   }
 
   comm.on("update-attributes", () => {
-    asyncAddAttributes(rows, groups, subsets, data);
+    updateBackgroundAndAddAttributes(rows, groups, subsets, data);
   });
 
   comm.on("add-attribute", attr => {
@@ -1143,7 +1159,7 @@ function addAttrHeaders(el: d3Selection) {
 /** ************* */
 // ! Undefined function???
 
-function asyncAddAttributes(
+function updateBackgroundAndAddAttributes(
   rows: d3Selection,
   groups: d3Selection,
   subset: d3Selection,
@@ -1152,9 +1168,7 @@ function asyncAddAttributes(
   params.no_attributes_shown = data.selectedAttributes.length;
   updateGroupBackgroundRects(groups);
   updateSubsetBackgroundRects(subset);
-  setTimeout(() => {
-    addAttributes(rows, data);
-  }, 60);
+  addAttributes(rows, data);
 }
 
 function addAttributes(rows: d3Selection, data: Data) {

@@ -18,6 +18,10 @@ export class UnusedSetViewModel extends ViewModelBase {
     super(view, app);
     this.App.on("render-rows-changed", this.update, this);
 
+    this.App.on("used-set-changed", () => {
+      this.comm.emit("update-position");
+    });
+
     this.registerFunctions(
       "add-set",
       (d: any) => {

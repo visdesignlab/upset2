@@ -10,6 +10,7 @@ import { Data } from "./../DataStructure/Data";
 import { d3Selection } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
 import html from "./unusedset.view.html";
+import params from "../UpsetView/ui_params";
 export class UnusedSetView extends ViewBase {
   headerVis: d3Selection;
   constructor(root: HTMLElement) {
@@ -20,6 +21,12 @@ export class UnusedSetView extends ViewBase {
     this.headerVis = d3.select(this.Root);
 
     let view = this.headerVis.append("div").attr("class", "unused-set-view");
+
+    view.classed("position", true);
+
+    this.comm.on("update-position", () => {
+      view.style("left", `${params.combinations_width}px`);
+    });
 
     view.html(view.html() + html);
   }
