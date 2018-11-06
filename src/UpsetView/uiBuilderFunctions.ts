@@ -13,7 +13,7 @@ import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
 import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
 
-const excludeSets = ["Name", "Set Count", "Sets"];
+export const excludeSets = ["Name", "Set Count", "Sets"];
 const attributeName = "data-attribute-name";
 
 // ################################################################################################

@@ -79,9 +79,10 @@ export class UpsetView extends ViewBase {
   update(data: Data) {
     let excludeSets = ["Name", "Set Count", "Sets"];
 
-    data.selectedAttributes = data.attributes.filter(
-      d => excludeSets.indexOf(d.name) < 0 && d.type !== "string"
-    );
+    data.selectedAttributes = data.attributes
+      .filter(_ => _.type !== "string")
+      .filter(_ => excludeSets.indexOf(_.name) < 0)
+      .filter((_, i) => i === 0);
 
     usedSetsHeader(
       data.usedSets,

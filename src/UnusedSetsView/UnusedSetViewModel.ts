@@ -11,6 +11,7 @@ import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
 import { Application } from "provenance_mvvm_framework";
 import { Data } from "./../DataStructure/Data";
 import "./style.scss";
+import { Attribute } from "../DataStructure/Attribute";
 
 export class UnusedSetViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
@@ -39,6 +40,23 @@ export class UnusedSetViewModel extends ViewModelBase {
       false
     );
 
+    this.registerFunctions(
+      "add-attribute",
+      (d: any) => {
+        this.App.emit("add-attribute", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "add-attribute",
+      (d: any) => {
+        this.App.emit("remove-attribute", d);
+      },
+      this,
+      false
+    );
+
     this.comm.on("add-set-trigger", (d: Set) => {
       let _do = {
         func: (d: any) => {
@@ -52,7 +70,23 @@ export class UnusedSetViewModel extends ViewModelBase {
         },
         args: [d]
       };
-      this.apply.call(this, ["add_set", _do, _undo]);
+      this.apply.call(this, ["add-set", _do, _undo]);
+    });
+
+    this.comm.on("add-attribute-trigger", (d: Attribute) => {
+      let _do = {
+        func: (d: any) => {
+          this.App.emit("add-attribute", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: any) => {
+          this.App.emit("remove-attribute");
+        },
+        args: [d]
+      };
+      this.apply.call(this, ["add-attribute", _do, _undo]);
     });
   }
 
