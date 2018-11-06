@@ -12,23 +12,10 @@ import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
 import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
+import html from "./closeicon.view.html";
 
 export const excludeSets = ["Name", "Set Count", "Sets"];
 const attributeName = "data-attribute-name";
-
-// ################################################################################################
-export function addDropDownHeaders(
-  data: Data,
-  el: d3Selection,
-  app: Application
-) {
-  el.attr(
-    "transform",
-    `translate(${params.skew_offset +
-      params.combinations_width +
-      params.column_width}, 0)`
-  ).html("");
-}
 
 // ################################################################################################
 export function usedSetsHeader(
@@ -1133,14 +1120,26 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
       "transform",
       (_, i) => `translate(${i * (params.attribute_width + 25)}, 0)`
     );
-  addAttrHeaders(attrHeaders);
+  addAttrHeaders(attrHeaders, comm);
 }
 
-function addAttrHeaders(el: d3Selection) {
+function addAttrHeaders(el: d3Selection, comm: Mitt) {
   el.each(function(d: Attribute) {
-    let t = d3.select(this).html("");
+    let t = d3
+      .select(this)
+      .html("")
+      .append("g");
+
+    // let close = t.append("g").html(html);
+    // close.attr("transform", `translate(${params.attribute_width}, -10)`);
+    t.on("click", () => comm.emit("remove-attribute-trigger", d));
 
     t.append("text").text(d.name);
+    // t.append("rect")
+    //   .attr("width", params.attribute_width)
+    //   .attr("height", 20)
+    //   .classed("label", true)
+    //   .attr("transform", `translate(0, -18)`);
 
     let scale = d3
       .scaleLinear()

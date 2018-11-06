@@ -15,8 +15,7 @@ import {
   addRenderRows,
   addCardinalityHeader,
   addDeviationHeaders,
-  addAttributeHeaders,
-  addDropDownHeaders
+  addAttributeHeaders
 } from "./uiBuilderFunctions";
 import params from "./ui_params";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
@@ -79,11 +78,6 @@ export class UpsetView extends ViewBase {
   update(data: Data) {
     let excludeSets = ["Name", "Set Count", "Sets"];
 
-    data.selectedAttributes = data.attributes
-      .filter(_ => _.type !== "string")
-      .filter(_ => excludeSets.indexOf(_.name) < 0)
-      .filter((_, i) => i === 0);
-
     usedSetsHeader(
       data.usedSets,
       this.selectedSetHeaderGroup,
@@ -109,8 +103,6 @@ export class UpsetView extends ViewBase {
         this.comm
       );
     }
-
-    addDropDownHeaders(data, this.dropdownGroup, (this as any).app);
 
     if (!this.config || this.config.DeviationBars) {
       addDeviationHeaders(
