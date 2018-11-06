@@ -2,7 +2,7 @@
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 14:36:32 
  * @Last Modified by: Kiran Gadhave
- * @Last Modified time: 2018-07-20 14:00:11
+ * @Last Modified time: 2018-10-10 07:23:53
  */
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -14,7 +14,8 @@ import {
   usedSetsHeader,
   addRenderRows,
   addCardinalityHeader,
-  addDeviationHeaders
+  addDeviationHeaders,
+  addAttributeHeaders
 } from "./uiBuilderFunctions";
 import params from "./ui_params";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
@@ -29,6 +30,7 @@ export class UpsetView extends ViewBase {
   attributeHeaders: d3Selection;
   setsComboGroup: d3Selection;
   cardinalityBarGroup: d3Selection;
+  dropdownGroup: d3Selection;
   deviationBars: d3Selection;
   attributeBars: d3Selection;
   config: EmbedConfig;
@@ -48,6 +50,9 @@ export class UpsetView extends ViewBase {
       .append("svg");
 
     this.headerGroup = this.svg.append("g").attr("class", "header");
+    this.dropdownGroup = this.headerGroup
+      .append("g")
+      .classed("dropdown-header", true);
     this.selectedSetHeaderGroup = this.headerGroup
       .append("g")
       .attr("class", "selected-sets-header");
@@ -71,6 +76,8 @@ export class UpsetView extends ViewBase {
   }
 
   update(data: Data) {
+    let excludeSets = ["Name", "Set Count", "Sets"];
+
     usedSetsHeader(
       data.usedSets,
       this.selectedSetHeaderGroup,
@@ -80,7 +87,13 @@ export class UpsetView extends ViewBase {
       this.comm
     );
 
-    addRenderRows(data, this.setsComboGroup, data.usedSets.length, this.config);
+    addRenderRows(
+      data,
+      this.setsComboGroup,
+      data.usedSets.length,
+      this.config,
+      this.comm
+    );
 
     if (!this.config || this.config.CardinalityBars) {
       addCardinalityHeader(
@@ -99,6 +112,12 @@ export class UpsetView extends ViewBase {
       );
     }
 
+    if (true) {
+      addAttributeHeaders(this.attributeHeaders, data, this.comm);
+    }
+
     this.svg.attr("height", params.svg_height).attr("width", params.svg_width);
+
+    (this as any).app.emit("used-set-changed");
   }
 }

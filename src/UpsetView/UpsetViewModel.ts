@@ -9,9 +9,11 @@ import { ViewModelBase } from "provenance_mvvm_framework";
 import { UpsetView } from "./UpsetView";
 import { Set } from "./../DataStructure/Set";
 import { Data } from "./../DataStructure/Data";
+import { Attribute } from "../DataStructure/Attribute";
 export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
+    (view as any).app = app;
     this.App.on("render-rows-changed", this.update, this);
 
     this.comm.on("sort-by-set", (id: number) => {
@@ -27,7 +29,7 @@ export class UpsetViewModel extends ViewModelBase {
     });
 
     this.registerFunctions(
-      "remove_set",
+      "remove-set",
       (d: any) => {
         this.App.emit("remove-set", d);
       },
@@ -35,9 +37,26 @@ export class UpsetViewModel extends ViewModelBase {
     );
 
     this.registerFunctions(
-      "remove_set",
+      "remove-set",
       (d: any) => {
         this.App.emit("add-set", d);
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "remove-attribute",
+      (d: any) => {
+        this.App.emit("remove-attribute", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "remove-attribute",
+      (d: any) => {
+        this.App.emit("add-attribute", d);
       },
       this,
       false
@@ -56,8 +75,25 @@ export class UpsetViewModel extends ViewModelBase {
         },
         args: [d]
       };
-      this.apply.call(this, ["remove_set", _do, _undo]);
+      this.apply.call(this, ["remove-set", _do, _undo]);
     });
+
+    this.comm.on("remove-attribute-trigger", (d: Attribute) => {
+      let _do = {
+        func: (d: any) => {
+          this.App.emit("remove-attribute", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: any) => {
+          this.App.emit("add-attribute", d);
+        },
+        args: [d]
+      };
+      this.apply.call(this, ["remove-attribute", _do, _undo]);
+    });
+
     this.comm.on("set-filter", idx => {
       this.App.emit("filter-changed", null, idx);
       this.App.emit("set-agg-none");

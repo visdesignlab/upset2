@@ -52,6 +52,7 @@ function addInsertIFrameEvent(base: d3Selection) {
     (base.select(".code").node() as any).select();
     document.execCommand("copy");
     _i.html("");
+    _i.remove();
   });
 }
 

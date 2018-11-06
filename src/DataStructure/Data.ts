@@ -50,6 +50,8 @@ export class Data {
     });
     this.app.on("add-set", this.addSet, this);
     this.app.on("remove-set", this.removeSet, this);
+    this.app.on("add-attribute", this.addAttribute, this);
+    this.app.on("remove-attribute", this.removeAttribute, this);
   }
 
   async load(
@@ -372,6 +374,16 @@ export class Data {
     this.app.emit("render-config", this.renderConfig);
   }
 
+  addAttribute(attr: Attribute) {
+    let s = this.attributes.filter(_ => _.name === attr.name);
+    if (s.length === 1) {
+      this.selectedAttributes.push(s[0]);
+      this.setUpSubSets();
+      this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+      this.app.emit("render-config", this.renderConfig);
+    }
+  }
+
   public removeSet(set: Set) {
     set.isSelected = false;
     let toRemove = this.usedSets.findIndex((s, i) => s.id === set.id);
@@ -380,6 +392,19 @@ export class Data {
     this.setUpSubSets();
     this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
     this.app.emit("render-config", this.renderConfig);
+  }
+
+  public removeAttribute(attr: Attribute) {
+    let s = this.selectedAttributes.filter(_ => _.name === attr.name);
+    if (s.length === 1) {
+      let idx = this.selectedAttributes.findIndex(_ => _.name === attr.name);
+      if (idx !== -1) {
+        this.selectedAttributes.splice(idx, 1);
+        this.setUpSubSets();
+        this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+        this.app.emit("render-config", this.renderConfig);
+      }
+    }
   }
 
   /**

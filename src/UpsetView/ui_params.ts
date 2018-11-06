@@ -56,6 +56,10 @@ let params = {
   get attribute_group_width() {
     return params.no_attributes_shown * (params.attribute_width + 20);
   },
+  get attribute_bar_height() {
+    return params.row_height - 4;
+  },
+  attribute_group_height: 100,
 
   get header_height() {
     return params.used_set_group_height;

@@ -10,6 +10,10 @@ import { Data } from "./../DataStructure/Data";
 import { d3Selection } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
 import html from "./unusedset.view.html";
+import { Attribute } from "./../DataStructure/Attribute";
+import params from "../UpsetView/ui_params";
+import { excludeSets } from "../UpsetView/uiBuilderFunctions";
+
 export class UnusedSetView extends ViewBase {
   headerVis: d3Selection;
   constructor(root: HTMLElement) {
@@ -20,6 +24,12 @@ export class UnusedSetView extends ViewBase {
     this.headerVis = d3.select(this.Root);
 
     let view = this.headerVis.append("div").attr("class", "unused-set-view");
+
+    view.classed("position", true);
+
+    this.comm.on("update-position", () => {
+      view.style("left", `${params.combinations_width}px`);
+    });
 
     view.html(view.html() + html);
   }
@@ -33,12 +43,32 @@ export class UnusedSetView extends ViewBase {
       .select(".unused-set-view")
       .select("#unused-set-options");
 
-    this.updateDropdownOptions(options, data.unusedSets);
-
     if (data.unusedSets.length < 1) {
       dropDown.style("display", "none");
     } else {
       dropDown.style("display", "block");
+      this.updateDropdownOptions(options, data.unusedSets);
+    }
+
+    let attrDropdown = this.headerVis
+      .select(".unused-set-view")
+      .select("#unused-attribute-dropdown");
+
+    let attrOptions = this.headerVis
+      .select(".unused-set-view")
+      .select("#unused-attribute-options");
+
+    let unselectedAttributes = data.attributes
+      .filter(d => excludeSets.indexOf(d.name) < 0)
+      .filter(
+        d => data.selectedAttributes.map(_ => _.name).indexOf(d.name) < 0
+      );
+    console.log(unselectedAttributes);
+    if (unselectedAttributes.length < 1) {
+      attrDropdown.style("display", "none");
+    } else {
+      attrDropdown.style("display", "block");
+      this.updateAttributeDropdownOptions(attrOptions, unselectedAttributes);
     }
   }
 
@@ -56,6 +86,20 @@ export class UnusedSetView extends ViewBase {
       })
       .on("click", (d, i) => {
         this.comm.emit("add-set-trigger", d);
+      });
+  }
+
+  updateAttributeDropdownOptions(opt: d3Selection, data: Attribute[]) {
+    let options = opt.selectAll(".dropdown-item").data(data);
+    options.exit().remove();
+    options
+      .enter()
+      .append("div")
+      .merge(options)
+      .classed("dropdown-item", true)
+      .text(d => d.name)
+      .on("click", d => {
+        this.comm.emit("add-attribute-trigger", d);
       });
   }
 }

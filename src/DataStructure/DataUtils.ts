@@ -12,6 +12,7 @@ import { Application } from "provenance_mvvm_framework";
 import { IMetaData } from "./IMetaData";
 import { ISetInfo } from "./ISetInfo";
 import { RenderConfig } from "./AggregateAndFilters";
+import { serverUrl } from "../app/app";
 
 export class DataUtils {
   static app: Application;
@@ -77,9 +78,8 @@ export class DataUtils {
   }
 
   static processDataSet(datasetinfo: IDataSetInfo): any {
-    let filePath: string = datasetinfo._data.file;
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
-    d3.dsv(dataSetDesc.separator, filePath).then(data => {
+    d3.dsv(dataSetDesc.separator, datasetinfo._data.file).then(data => {
       let d = new Data(DataUtils.app).load(data, dataSetDesc);
       d.then((d2: Data) => {
         DataUtils.app.emit("render-config", d2.renderConfig);

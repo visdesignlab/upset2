@@ -1,3 +1,5 @@
+import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
+import { Attribute } from "./../DataStructure/Attribute";
 import { Data } from "./../DataStructure/Data";
 import { Group } from "./../DataStructure/Group";
 import { SubSet } from "./../DataStructure/SubSet";
@@ -5,12 +7,15 @@ import { d3Selection, RenderRow, d3Scale } from "./../type_declarations/types";
 import { Set } from "./../DataStructure/Set";
 import params, { deg2rad } from "./ui_params";
 import * as d3 from "d3";
-import { Mitt } from "provenance_mvvm_framework";
+import { Mitt, Application } from "provenance_mvvm_framework";
 import { RowType } from "../DataStructure/RowType";
 import { BaseType } from "d3";
 import { EmbedConfig } from "../DataStructure/EmbedConfig";
+import { UnusedSetView } from "../UnusedSetsView/UnusedSetView";
+import html from "./closeicon.view.html";
 
-let excludeSets = ["Name", "Set Count", "Sets"];
+export const excludeSets = ["Name", "Set Count", "Sets"];
+const attributeName = "data-attribute-name";
 
 // ################################################################################################
 export function usedSetsHeader(
@@ -571,7 +576,8 @@ export function addRenderRows(
   data: Data,
   el: d3Selection,
   usedSetCount: number,
-  config: EmbedConfig
+  config: EmbedConfig,
+  comm: Mitt
 ) {
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
   params.row_group_height = params.row_height * data.renderRows.length;
@@ -599,7 +605,38 @@ export function addRenderRows(
     addDeviationBars(rows, data.renderRows);
   }
 
-  addAttributes(rows, data);
+  comm.on("update-attributes", () => {
+    updateBackgroundAndAddAttributes(rows, groups, subsets, data);
+  });
+
+  comm.on("add-attribute", attr => {
+    data.selectedAttributes = addAttributeToSelected(
+      data.selectedAttributes,
+      attr
+    );
+    comm.emit("update-attributes");
+  });
+
+  comm.on("remove-attribute", attr => {
+    data.selectedAttributes = removeAttributeFromSelected(
+      data.selectedAttributes,
+      attr
+    );
+    comm.emit("update-attributes");
+  });
+
+  comm.emit("update-attributes");
+}
+
+function addAttributeToSelected(selected: Attribute[], attr: Attribute) {
+  if (attr && selected.indexOf(attr) < 0) selected.push(attr);
+  return selected;
+}
+
+function removeAttributeFromSelected(selected: Attribute[], attr: Attribute) {
+  if (attr && selected.indexOf(attr) >= 0)
+    selected.splice(selected.indexOf(attr), 1);
+  return selected;
 }
 
 /** ************* */
@@ -760,6 +797,13 @@ function addSubsetBackgroundRects(subsets: d3Selection) {
     .attr("width", params.subset_row_width);
 }
 
+function updateSubsetBackgroundRects(subsets: d3Selection) {
+  subsets
+    .selectAll(".background-rect-g")
+    .selectAll("rect")
+    .attr("width", params.subset_row_width);
+}
+
 function addCombinations(subset: d3Selection) {
   let combinationsGroup = subset.append("g").attr("class", "combination");
 
@@ -875,6 +919,16 @@ function addGroupBackgroundRects(groups: d3Selection) {
     })
     .attr("rx", 5)
     .attr("ry", 10);
+}
+
+function updateGroupBackgroundRects(groups: d3Selection) {
+  groups
+    .selectAll(".background-rect-g")
+    .selectAll("rect")
+    .attr("width", (d: RenderRow) => {
+      if ((d.data as Group).level === 2) return params.group_row_width - 20;
+      return params.group_row_width;
+    });
 }
 
 function addGroupLabels(groups: d3Selection) {
@@ -1042,7 +1096,192 @@ function renderDeviationBars(el: d3Selection, scale: d3Scale) {
     });
 }
 /** ************* */
+export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
+  el.html("");
+  el.attr(
+    "transform",
+    `translate(${params.skew_offset +
+      params.combinations_width +
+      params.cardinality_width +
+      params.deviation_width +
+      params.column_width * 4}, ${params.header_height -
+      params.header_body_padding -
+      29})`
+  );
+
+  let attrHeaders = el.selectAll(".attribute").data(data.selectedAttributes);
+  attrHeaders.exit().remove();
+  attrHeaders = attrHeaders
+    .enter()
+    .append("g")
+    .classed("attribute", true)
+    .merge(attrHeaders)
+    .attr(
+      "transform",
+      (_, i) => `translate(${i * (params.attribute_width + 25)}, 0)`
+    );
+  addAttrHeaders(attrHeaders, comm);
+}
+
+function addAttrHeaders(el: d3Selection, comm: Mitt) {
+  el.each(function(d: Attribute) {
+    let t = d3
+      .select(this)
+      .html("")
+      .append("g");
+
+    // let close = t.append("g").html(html);
+    // close.attr("transform", `translate(${params.attribute_width}, -10)`);
+    t.on("click", () => comm.emit("remove-attribute-trigger", d));
+
+    t.append("text").text(d.name);
+    // t.append("rect")
+    //   .attr("width", params.attribute_width)
+    //   .attr("height", 20)
+    //   .classed("label", true)
+    //   .attr("transform", `translate(0, -18)`);
+
+    let scale = d3
+      .scaleLinear()
+      .domain([d.min, d.max])
+      .range([0, params.attribute_width]);
+
+    let ax = d3.axisTop(scale).ticks(2);
+
+    d3.select(this)
+      .append("g")
+      .attr("transform", `translate(0, 30)`)
+      .call(ax);
+  });
+}
 
 /** ************* */
 // ! Undefined function???
-function addAttributes(rows: d3Selection, data: Data) {}
+
+function updateBackgroundAndAddAttributes(
+  rows: d3Selection,
+  groups: d3Selection,
+  subset: d3Selection,
+  data: Data
+) {
+  params.no_attributes_shown = data.selectedAttributes.length;
+  updateGroupBackgroundRects(groups);
+  updateSubsetBackgroundRects(subset);
+  addAttributes(rows, data);
+}
+
+function addAttributes(rows: d3Selection, data: Data) {
+  let attributeGroups = rows.selectAll(".attribute-group").html("");
+
+  let attrs = attributeGroups
+    .selectAll(".attribute")
+    .data(data.selectedAttributes);
+  attrs.exit().remove();
+  attrs = attrs
+    .enter()
+    .append("g")
+    .classed("attribute", true)
+    .merge(attrs);
+
+  attrs.attr(attributeName, d => {
+    return d.name;
+  });
+
+  attrs.attr("transform", (_, i) => {
+    return `translate(${i * (params.attribute_width + 25)}, 0)`;
+  });
+
+  attributeGroups.each(function(d: RenderRow) {
+    let itemIndices = d.data.items;
+    let attrs = d3.select(this).selectAll(".attribute");
+
+    attrs.each(function(d) {
+      let el = d3.select(this);
+      let attrName = el.attr(attributeName);
+      let relevantAttr = data.selectedAttributes.filter(
+        _ => _.name === attrName
+      )[0];
+
+      let overAllMin = d3.min(relevantAttr.values);
+      let overAllMax = d3.max(relevantAttr.values);
+
+      let memberValues = relevantAttr.values.filter(
+        (_, i) => itemIndices.indexOf(i) > -1
+      );
+      let localStats = getBoxPlotStats(memberValues);
+
+      let boxPlotMaxWidth = params.attribute_width;
+
+      let bpScale = d3
+        .scaleLinear()
+        .domain([overAllMin, overAllMax])
+        .range([0, boxPlotMaxWidth]);
+
+      addBoxPlot(el, localStats, bpScale);
+    });
+  });
+}
+
+type BoxPlotStats = {
+  min: number;
+  max: number;
+  quantile25: number;
+  quantile50: number;
+  quantile75: number;
+};
+
+function getBoxPlotStats(values: number[]): BoxPlotStats {
+  values.sort((a, b) => a - b);
+  return {
+    min: d3.min(values),
+    max: d3.max(values),
+    quantile25: d3.quantile(values, 0.25),
+    quantile50: d3.quantile(values, 0.5),
+    quantile75: d3.quantile(values, 0.75)
+  };
+}
+
+function addBoxPlot(el: d3Selection, data: BoxPlotStats, scale: d3Scale) {
+  let bpGroup = el.append("g");
+  bpGroup.attr("transform", `translate(0, ${params.attribute_bar_height / 4})`);
+  addWhiskers(bpGroup, data, scale);
+  addBoxes(bpGroup, data, scale);
+}
+
+function addWhiskers(el: d3Selection, data: BoxPlotStats, scale: d3Scale) {
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.min))
+    .attr("x2", scale(data.min))
+    .attr("y1", 0)
+    .attr("y2", params.attribute_bar_height / 2);
+
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.max))
+    .attr("x2", scale(data.max))
+    .attr("y1", 0)
+    .attr("y2", params.attribute_bar_height / 2);
+
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.min))
+    .attr("x2", scale(data.max))
+    .attr("y1", params.attribute_bar_height / 4)
+    .attr("y2", params.attribute_bar_height / 4);
+}
+
+function addBoxes(el: d3Selection, data: BoxPlotStats, scale: d3Scale) {
+  el.append("rect")
+    .classed("boxplot-box", true)
+    .attr("height", params.attribute_bar_height / 2)
+    .attr("width", scale(data.quantile75) - scale(data.quantile25))
+    .attr("x", scale(data.quantile25));
+
+  el.append("line")
+    .classed("whisker", true)
+    .attr("x1", scale(data.quantile50))
+    .attr("x2", scale(data.quantile50))
+    .attr("y1", 0 - params.attribute_bar_height / 4)
+    .attr("y2", (params.attribute_bar_height * 3) / 4);
+}

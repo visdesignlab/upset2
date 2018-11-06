@@ -1,3 +1,4 @@
+import { serverUrl } from "./../app/app";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
@@ -15,9 +16,33 @@ export class NavBarViewModel extends ViewModelBase {
   constructor(view: NavBarView, app: Application, dsLocation: string) {
     super(view, app);
     this.populateDatasetSelector(dsLocation);
+
+    // this.populateDatasetSelectorFromServer();
+
     this.comm.on("change-dataset", dataset => {
       this.App.emit("change-dataset", dataset);
     });
+  }
+
+  populateDatasetSelectorFromServer() {
+    let results: Promise<any>[] = [];
+    let p = fetch(`${serverUrl}/download/list`)
+      .then(results => results.json())
+      .then(jsondata => {
+        jsondata.forEach((d: any) => {
+          results.push(d.info);
+        });
+      })
+      .then(() => {
+        results.forEach(j => {
+          let a: IDataSetJSON = DataUtils.getDataSetJSON(j);
+          a.file = `${serverUrl}/download/single/${a.file}`;
+          this.datasets.push(DataUtils.getDataSetInfo(a));
+        });
+      })
+      .then(() => {
+        this.comm.emit("update", this.datasets);
+      });
   }
 
   populateDatasetSelector(dsLocation: string) {
