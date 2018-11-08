@@ -1,6 +1,5 @@
-import { SubSet } from "./../DataStructure/SubSet";
 import { Attribute } from "./../DataStructure/Attribute";
-import { RenderRow, d3Selection } from "./../type_declarations/types";
+import { d3Selection } from "./../type_declarations/types";
 import { ViewBase } from "provenance_mvvm_framework";
 import * as d3 from "d3";
 import { ElementRenderRows } from "./ElementViewModel";
@@ -11,12 +10,19 @@ export class ElementView extends ViewBase {
   ElementQueryFiltersDiv: d3Selection;
   ElementQueryResultsDiv: d3Selection;
 
+  data: ElementRenderRows;
+  attributes: Attribute[];
+
   currentSelection: number;
 
   constructor(root: HTMLElement) {
     super(root);
+    this.currentSelection = -1;
     this.comm.on("remove-selection-trigger", (idx: number) => {
       if (this.currentSelection === idx) this.currentSelection = -1;
+      if (this.currentSelection < idx) return;
+      this.currentSelection--;
+      this.renderQueries(this.data);
     });
   }
 
@@ -51,7 +57,10 @@ export class ElementView extends ViewBase {
   }
 
   update(data: ElementRenderRows, attributes: Attribute[]) {
+    this.data = data;
+    this.attributes = attributes;
     this.renderQueries(data);
+    this.updateVisualizationAndResults(data, attributes);
   }
 
   renderQueries(data: ElementRenderRows) {
@@ -64,10 +73,10 @@ export class ElementView extends ViewBase {
       .append("div")
       .merge(tabs)
       .classed("column", true)
-
       .html("");
 
     let tabContents = tabs.append("a").classed("button", true);
+
     tabContents
       .append("i")
       .classed("fa fa-square color-swatch", true)
@@ -79,6 +88,19 @@ export class ElementView extends ViewBase {
 
     closeIcons.on("click", (_, i) => {
       this.comm.emit("remove-selection-trigger", i);
+      d3.event.stopPropagation();
     });
+
+    tabContents.on("click", (d, i) => {
+      this.currentSelection = i;
+      this.renderQueries(this.data);
+    });
+
+    tabContents.classed("is-primary", (_, i) => i === this.currentSelection);
   }
+
+  updateVisualizationAndResults(
+    data: ElementRenderRows,
+    attributes: Attribute[]
+  ) {}
 }
