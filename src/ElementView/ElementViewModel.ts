@@ -1,15 +1,28 @@
+import { Attribute } from "./../DataStructure/Attribute";
+import { Data } from "./../DataStructure/Data";
 import { RenderRow } from "./../type_declarations/types";
-import { ElementView } from "./ElementView";
+import {
+  ElementView,
+  ElementRenderRows,
+  ElementRenderRow
+} from "./ElementView";
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import "./styles.scss";
 
 export class ElementViewModel extends ViewModelBase {
-  private selectedSets: RenderRow[];
+  private selectedSets: ElementRenderRows;
+  private dataset: Data;
 
   constructor(view: ElementView, app: Application) {
     super(view, app);
     this.selectedSets = [];
+
+    this.App.on("render-rows-changed", (data: Data) => {
+      this.dataset = data;
+      this.selectedSets = [];
+      this.update();
+    });
 
     this.App.on("add-selection", this.addSelection, this);
     this.App.on("remove-selection", this.removeSelection, this);
@@ -97,7 +110,11 @@ export class ElementViewModel extends ViewModelBase {
   }
 
   addSelection(sel: RenderRow) {
-    this.selectedSets.push(sel);
+    let validAttributes = this.dataset.attributes.filter(
+      _ => _.name !== "Sets"
+    );
+    let n_row = createObjectsFromSubsets(sel, validAttributes);
+    this.selectedSets.push(n_row);
     this.update();
   }
 
@@ -107,6 +124,30 @@ export class ElementViewModel extends ViewModelBase {
   }
 
   update() {
-    this.comm.emit("update", this.selectedSets);
+    if (this.selectedSets.length < 1) return;
+    let validAttributes = this.dataset.attributes.filter(
+      _ => _.name !== "Sets"
+    );
+    this.comm.emit("update", this.selectedSets, validAttributes);
   }
+}
+
+function createObjectsFromSubsets(
+  row: RenderRow,
+  attributes: Attribute[]
+): ElementRenderRow {
+  let items = row.data.items;
+  let arr = items.map(i => {
+    let obj: any = {};
+    attributes.forEach((attr: Attribute) => {
+      obj[attr.name] = attr.values[i];
+    });
+
+    return obj;
+  });
+  return {
+    id: row.id,
+    data: row.data,
+    arr: arr
+  };
 }
