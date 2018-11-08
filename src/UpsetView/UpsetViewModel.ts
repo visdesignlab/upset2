@@ -14,6 +14,10 @@ export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
     (view as any).app = app;
+    this.comm.on("add-selection-trigger", (d: any) => {
+      this.App.emit("add-selection-trigger", d);
+    });
+
     this.App.on("render-rows-changed", this.update, this);
 
     this.comm.on("sort-by-set", (id: number) => {

@@ -594,7 +594,7 @@ export function addRenderRows(
 
   [rows, groups, subsets] = addRows(data.renderRows, el);
 
-  setupSubsets(subsets);
+  setupSubsets(subsets, comm);
   setupGroups(groups);
 
   if (!config || config.CardinalityBars) {
@@ -771,7 +771,7 @@ function setupElementGroups(rows: d3Selection) {
 /** ************* */
 
 /** ************* */
-function setupSubsets(subsets: d3Selection) {
+function setupSubsets(subsets: d3Selection, comm: Mitt) {
   subsets
     .on("mouseover", function() {
       d3.select(this)
@@ -785,7 +785,7 @@ function setupSubsets(subsets: d3Selection) {
     });
 
   addSubsetBackgroundRects(subsets);
-  addCombinations(subsets);
+  addCombinations(subsets, comm);
 }
 
 function addSubsetBackgroundRects(subsets: d3Selection) {
@@ -804,7 +804,7 @@ function updateSubsetBackgroundRects(subsets: d3Selection) {
     .attr("width", params.subset_row_width);
 }
 
-function addCombinations(subset: d3Selection) {
+function addCombinations(subset: d3Selection, comm: Mitt) {
   let combinationsGroup = subset.append("g").attr("class", "combination");
 
   combinationsGroup.each(function(d: RenderRow) {
@@ -825,6 +825,10 @@ function addCombinations(subset: d3Selection) {
       let last = membershipDetails.lastIndexOf(1);
       addCombinationLine(this, first, last);
     }
+  });
+
+  combinationsGroup.on("click", d => {
+    comm.emit("add-selection-trigger", d);
   });
 }
 

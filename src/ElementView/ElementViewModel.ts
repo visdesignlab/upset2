@@ -5,11 +5,11 @@ import { ViewModelBase } from "provenance_mvvm_framework";
 import "./styles.scss";
 
 export class ElementViewModel extends ViewModelBase {
-  private selectedSet: RenderRow[];
+  private selectedSets: RenderRow[];
 
   constructor(view: ElementView, app: Application) {
     super(view, app);
-    this.selectedSet = [];
+    this.selectedSets = [];
 
     this.App.on("add-selection", this.addSelection, this);
     this.App.on("remove-selection", this.removeSelection, this);
@@ -74,7 +74,7 @@ export class ElementViewModel extends ViewModelBase {
         func: (idx: number) => {
           this.App.emit("remove-selection", idx);
         },
-        args: [this.selectedSet.length]
+        args: [this.selectedSets.length]
       };
       this.apply.call(this, ["add-selection", _do, _undo]);
     });
@@ -90,23 +90,23 @@ export class ElementViewModel extends ViewModelBase {
         func: (d: RenderRow) => {
           this.App.emit("add-selection", d);
         },
-        args: [this.selectedSet[idx]]
+        args: [this.selectedSets[idx]]
       };
       this.apply.call(this, ["remove-selection", _do, _undo]);
     });
   }
 
   addSelection(sel: RenderRow) {
-    this.selectedSet.push(sel);
+    this.selectedSets.push(sel);
     this.update();
   }
 
   removeSelection(idx: number) {
-    this.selectedSet.splice(idx, 1);
+    this.selectedSets.splice(idx, 1);
     this.update();
   }
 
   update() {
-    this.comm.emit("update", this.selectedSet);
+    this.comm.emit("update", this.selectedSets);
   }
 }
