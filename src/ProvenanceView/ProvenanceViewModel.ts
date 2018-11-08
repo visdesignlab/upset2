@@ -39,7 +39,8 @@ export class ProvenanceViewModel extends ViewModelBase {
 
   redo() {
     if (this.App.graph.current.children.length === 0) return;
-    this.traverser.toStateNode(this.App.graph.current.children[0].id);
+    let length = this.graph.current.children.length - 1;
+    this.traverser.toStateNode(this.App.graph.current.children[length].id);
     this.update();
   }
 

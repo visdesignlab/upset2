@@ -1,5 +1,12 @@
 @import "~bulma/bulma";
+
 html,
 body {
-  height: 100%;
+  height: 100vh;
+  overflow: auto;
+}
+
+#right-side-bar {
+  height: 95vh;
+  overflow: auto;
 }

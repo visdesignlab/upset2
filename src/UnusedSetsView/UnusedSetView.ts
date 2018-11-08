@@ -63,7 +63,6 @@ export class UnusedSetView extends ViewBase {
       .filter(
         d => data.selectedAttributes.map(_ => _.name).indexOf(d.name) < 0
       );
-    console.log(unselectedAttributes);
     if (unselectedAttributes.length < 1) {
       attrDropdown.style("display", "none");
     } else {
