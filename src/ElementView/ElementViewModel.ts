@@ -1,14 +1,17 @@
 import { Attribute } from "./../DataStructure/Attribute";
 import { Data } from "./../DataStructure/Data";
 import { RenderRow } from "./../type_declarations/types";
-import {
-  ElementView,
-  ElementRenderRows,
-  ElementRenderRow
-} from "./ElementView";
+import { ElementView } from "./ElementView";
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import "./styles.scss";
+
+export type ElementRenderRow = RenderRow & {
+  arr: any[];
+  color: string;
+};
+
+export type ElementRenderRows = ElementRenderRow[];
 
 export class ElementViewModel extends ViewModelBase {
   private selectedSets: ElementRenderRows;
@@ -119,12 +122,12 @@ export class ElementViewModel extends ViewModelBase {
   }
 
   removeSelection(idx: number) {
-    this.selectedSets.splice(idx, 1);
+    let el = this.selectedSets.splice(idx, 1);
+    removeColor(el[0].color);
     this.update();
   }
 
   update() {
-    if (this.selectedSets.length < 1) return;
     let validAttributes = this.dataset.attributes.filter(
       _ => _.name !== "Sets"
     );
@@ -148,6 +151,43 @@ function createObjectsFromSubsets(
   return {
     id: row.id,
     data: row.data,
-    arr: arr
+    arr: arr,
+    color: selectColor()
   };
 }
+
+let chosenColor: string[] = [];
+
+function selectColor(): string {
+  let availableColors = colorList.filter(c => chosenColor.indexOf(c) < 0);
+  console.log(availableColors);
+  if (availableColors.length === 0) return "#000";
+  chosenColor.push(availableColors[0]);
+  return availableColors[0];
+}
+
+function removeColor(color: string) {
+  if (chosenColor.indexOf(color) < 0) return;
+  let idx = chosenColor.indexOf(color);
+  chosenColor.splice(idx, 1);
+}
+
+export const colorList = [
+  "#e6194b",
+  "#3cb44b",
+  "#ffe119",
+  "#4363d8",
+  "#f58231",
+  "#911eb4",
+  "#46f0f0",
+  "#f032e6",
+  "#bcf60c",
+  "#fabebe",
+  "#008080",
+  "#9a6324",
+  "#800000",
+  "#aaffc3",
+  "#808000",
+  "#000075",
+  "#000000"
+];

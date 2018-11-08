@@ -3,12 +3,7 @@ import { Attribute } from "./../DataStructure/Attribute";
 import { RenderRow, d3Selection } from "./../type_declarations/types";
 import { ViewBase } from "provenance_mvvm_framework";
 import * as d3 from "d3";
-
-export type ElementRenderRow = RenderRow & {
-  arr: any[];
-};
-
-export type ElementRenderRows = ElementRenderRow[];
+import { ElementRenderRows } from "./ElementViewModel";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
@@ -57,10 +52,14 @@ export class ElementView extends ViewBase {
       .append("div")
       .merge(tabs)
       .classed("column", true)
+
       .html("");
 
     let tabContents = tabs.append("a").classed("button", true);
-    tabContents.append("i").classed("fa fa-square color-swatch", true);
+    tabContents
+      .append("i")
+      .classed("fa fa-square color-swatch", true)
+      .style("color", d => d.color);
     tabContents.append("span").text(d => d.data.setSize);
     let closeIcons = tabContents
       .append("i")
