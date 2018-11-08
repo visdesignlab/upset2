@@ -6,16 +6,15 @@
   margin-right: 2px
 }
 
-.tabs {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap
-}
-
 .columns {
-  margin: 0
+  margin: 0 !important
 }
 
 .column {
   padding: 0;
+}
+
+.divider {
+  width: 100%;
+  border-bottom: 1px solid black;
 }

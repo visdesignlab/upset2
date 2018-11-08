@@ -22,9 +22,11 @@ export class ElementViewModel extends ViewModelBase {
     this.selectedSets = [];
 
     this.App.on("render-rows-changed", (data: Data) => {
-      this.dataset = data;
-      this.selectedSets = [];
-      this.update();
+      if (!this.dataset || this.dataset.name != data.name) {
+        this.dataset = data;
+        this.selectedSets = [];
+        this.update();
+      }
     });
 
     this.App.on("add-selection", this.addSelection, this);
@@ -160,7 +162,6 @@ let chosenColor: string[] = [];
 
 function selectColor(): string {
   let availableColors = colorList.filter(c => chosenColor.indexOf(c) < 0);
-  console.log(availableColors);
   if (availableColors.length === 0) return "#000";
   chosenColor.push(availableColors[0]);
   return availableColors[0];

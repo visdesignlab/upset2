@@ -18,6 +18,7 @@ import { RowType } from "./RowType";
 import * as d3 from "d3";
 export class Data {
   app: Application;
+  name: string;
   sets: Array<Set> = [];
   usedSets: Array<Set> = [];
   renderRows: Array<RenderRow> = [];
@@ -58,6 +59,7 @@ export class Data {
     data: DSVParsedArray<DSVRowString>,
     dataSetDesc: IDataSetJSON
   ): Promise<any> {
+    this.name = dataSetDesc.name;
     await this.getRawData(data, dataSetDesc).then(rawData => {
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);

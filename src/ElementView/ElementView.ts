@@ -23,19 +23,31 @@ export class ElementView extends ViewBase {
   create() {
     let base = d3.select(this.Root);
     this.ElementQueryDiv = base.append("div").attr("id", "element-query");
+    this.ElementQueryDiv.append("div")
+      .classed("tag is-large is-white divider", true)
+      .text("Element Queries");
+    this.ElementQueryDiv.append("br");
     this.ElementQueryDiv.append("div").classed("columns is-multiline", true);
 
     this.ElementVisualizationDiv = base
       .append("div")
       .attr("id", "element-visualization");
+    this.ElementVisualizationDiv.append("div")
+      .classed("tag is-large is-white divider", true)
+      .text("Element Visualization");
 
     this.ElementQueryFiltersDiv = base
       .append("div")
       .attr("id", "element-query-filters");
-
+    this.ElementQueryFiltersDiv.append("div")
+      .classed("tag is-large is-white divider", true)
+      .text("Query Filters");
     this.ElementQueryResultsDiv = base
       .append("div")
       .attr("id", "element-query-results");
+    this.ElementQueryResultsDiv.append("div")
+      .classed("tag is-large is-white divider", true)
+      .text("Query Results");
   }
 
   update(data: ElementRenderRows, attributes: Attribute[]) {
