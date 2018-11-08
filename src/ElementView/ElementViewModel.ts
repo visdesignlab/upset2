@@ -80,7 +80,6 @@ export class ElementViewModel extends ViewModelBase {
     });
 
     this.comm.on("apply", ([name, _do, _undo]) => {
-      console.log(this.registry);
       this.apply.call(this, [name, _do, _undo]);
     });
 

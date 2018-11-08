@@ -120,11 +120,13 @@ export class ElementView extends ViewBase {
 
   highlightSelection(idx: number) {
     this.currentSelection = idx;
-    this.renderQueries(this.data);
+    this.update(this.data, this.attributes);
   }
 
   updateVisualizationAndResults(
     data: ElementRenderRows,
     attributes: Attribute[]
-  ) {}
+  ) {
+    console.log("updating");
+  }
 }
