@@ -65,7 +65,7 @@ export class ElementView extends ViewBase {
 
     this.ElementVisualizationDiv = elementVis
       .append("div")
-      .classed("is-centered columns", true);
+      .classed("is-centered columns element-vis", true);
 
     this.ElementQueryFiltersDiv = base
       .append("div")
