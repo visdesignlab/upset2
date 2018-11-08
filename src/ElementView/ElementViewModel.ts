@@ -2,7 +2,7 @@ import { RenderRow } from "./../type_declarations/types";
 import { ElementView } from "./ElementView";
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
-import "./style.scss";
+import "./styles.scss";
 
 export class ElementViewModel extends ViewModelBase {
   private selectedSet: RenderRow[];
@@ -13,6 +13,21 @@ export class ElementViewModel extends ViewModelBase {
 
     this.App.on("add-selection", this.addSelection, this);
     this.App.on("remove-selection", this.removeSelection, this);
+    this.App.on(
+      "add-selection-trigger",
+      (d: RenderRow) => {
+        this.comm.emit("add-selection-trigger", d);
+      },
+      this
+    );
+
+    this.App.on(
+      "remove-selection-trigger",
+      (idx: number) => {
+        this.comm.emit("remove-selection-trigger", idx);
+      },
+      this
+    );
 
     this.registerFunctions(
       "add-selection",

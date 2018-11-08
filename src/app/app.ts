@@ -24,6 +24,8 @@ import { d3Selection } from "./../type_declarations/types";
 import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 import "./styles.scss";
+import { ElementViewModel } from "../ElementView/ElementViewModel";
+import { ElementView } from "../ElementView/ElementView";
 
 export const serverUrl: string = "http://18.224.213.250";
 
@@ -74,6 +76,11 @@ function run() {
 
   new UnusedSetViewModel(
     new UnusedSetView(d3.select("#vis").node() as HTMLElement),
+    application
+  );
+
+  new ElementViewModel(
+    new ElementView(d3.select("#right-side-bar").node() as HTMLElement),
     application
   );
 }
