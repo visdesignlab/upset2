@@ -47,40 +47,6 @@ export class ElementViewModel extends ViewModelBase {
       this
     );
 
-    this.registerFunctions(
-      "add-selection",
-      (d: RenderRow) => {
-        this.App.emit("add-selection", d);
-      },
-      this
-    );
-
-    this.registerFunctions(
-      "add-selection",
-      (idx: number) => {
-        this.App.emit("remove-selection", idx);
-      },
-      this,
-      false
-    );
-
-    this.registerFunctions(
-      "remove-selection",
-      (idx: number) => {
-        this.App.emit("remove-selection", idx);
-      },
-      this
-    );
-
-    this.registerFunctions(
-      "remove-selection",
-      (d: RenderRow) => {
-        this.App.emit("add-selection", d);
-      },
-      this,
-      false
-    );
-
     this.comm.on("add-selection-trigger", (d: RenderRow) => {
       let _do = {
         func: (d: RenderRow) => {
@@ -112,6 +78,66 @@ export class ElementViewModel extends ViewModelBase {
       };
       this.apply.call(this, ["remove-selection", _do, _undo]);
     });
+
+    this.comm.on("apply", ([name, _do, _undo]) => {
+      console.log(this.registry);
+      this.apply.call(this, [name, _do, _undo]);
+    });
+
+    this.register();
+  }
+
+  register() {
+    this.registerFunctions(
+      "highlight-selection",
+      (idx: number) => {
+        this.comm.emit("highlight-selection", idx);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "highlight-selection",
+      (idx: number) => {
+        this.comm.emit("highlight-selection", idx);
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "add-selection",
+      (d: RenderRow) => {
+        this.App.emit("add-selection", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "add-selection",
+      (idx: number) => {
+        this.App.emit("remove-selection", idx);
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "remove-selection",
+      (idx: number) => {
+        this.App.emit("remove-selection", idx);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "remove-selection",
+      (d: RenderRow) => {
+        this.App.emit("add-selection", d);
+      },
+      this,
+      false
+    );
   }
 
   addSelection(sel: RenderRow) {

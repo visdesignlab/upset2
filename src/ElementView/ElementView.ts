@@ -24,6 +24,26 @@ export class ElementView extends ViewBase {
       this.currentSelection--;
       this.renderQueries(this.data);
     });
+
+    this.comm.on("highlight-selection-trigger", (idx: number) => {
+      let _do = {
+        func: (d: any) => {
+          this.comm.emit("highlight-selection", d);
+        },
+        args: [idx]
+      };
+      let _undo = {
+        func: (d: any) => {
+          this.comm.emit("highlight-selection", d);
+        },
+        args: [this.currentSelection]
+      };
+      this.comm.emit("apply", ["highlight-selection", _do, _undo]);
+    });
+
+    this.comm.on("highlight-selection", (idx: number) => {
+      this.highlightSelection(idx);
+    });
   }
 
   create() {
@@ -92,11 +112,15 @@ export class ElementView extends ViewBase {
     });
 
     tabContents.on("click", (d, i) => {
-      this.currentSelection = i;
-      this.renderQueries(this.data);
+      this.comm.emit("highlight-selection-trigger", i);
     });
 
     tabContents.classed("is-primary", (_, i) => i === this.currentSelection);
+  }
+
+  highlightSelection(idx: number) {
+    this.currentSelection = idx;
+    this.renderQueries(this.data);
   }
 
   updateVisualizationAndResults(
