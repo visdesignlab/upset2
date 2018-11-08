@@ -2,7 +2,8 @@ import { Attribute } from "./../DataStructure/Attribute";
 import { d3Selection } from "./../type_declarations/types";
 import { ViewBase } from "provenance_mvvm_framework";
 import * as d3 from "d3";
-import { ElementRenderRows } from "./ElementViewModel";
+import { ElementRenderRows, ElementRenderRow } from "./ElementViewModel";
+import { CreateVegaVis } from "../VegaFactory/VegaFactory";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
@@ -13,6 +14,7 @@ export class ElementView extends ViewBase {
   data: ElementRenderRows;
   attributes: Attribute[];
 
+  sortAscending: boolean = true;
   currentSelection: number;
 
   constructor(root: HTMLElement) {
@@ -55,12 +57,15 @@ export class ElementView extends ViewBase {
     this.ElementQueryDiv.append("br");
     this.ElementQueryDiv.append("div").classed("columns is-multiline", true);
 
-    this.ElementVisualizationDiv = base
+    let elementVis = base.append("div").attr("id", "element-visualization");
+    elementVis
       .append("div")
-      .attr("id", "element-visualization");
-    this.ElementVisualizationDiv.append("div")
       .classed("tag is-large is-white divider", true)
       .text("Element Visualization");
+
+    this.ElementVisualizationDiv = elementVis
+      .append("div")
+      .classed("is-centered columns", true);
 
     this.ElementQueryFiltersDiv = base
       .append("div")
@@ -68,19 +73,28 @@ export class ElementView extends ViewBase {
     this.ElementQueryFiltersDiv.append("div")
       .classed("tag is-large is-white divider", true)
       .text("Query Filters");
-    this.ElementQueryResultsDiv = base
+
+    let tableVis = base.append("div").attr("id", "element-query-results");
+    tableVis
       .append("div")
-      .attr("id", "element-query-results");
-    this.ElementQueryResultsDiv.append("div")
       .classed("tag is-large is-white divider", true)
       .text("Query Results");
+
+    this.ElementQueryResultsDiv = tableVis
+      .append("div")
+      .classed("is-centered columns", true);
   }
 
   update(data: ElementRenderRows, attributes: Attribute[]) {
     this.data = data;
     this.attributes = attributes;
+    this.clearAll();
     this.renderQueries(data);
-    this.updateVisualizationAndResults(data, attributes);
+    if (this.currentSelection > -1 && this.currentSelection < data.length)
+      this.updateVisualizationAndResults(
+        data[this.currentSelection],
+        attributes
+      );
   }
 
   renderQueries(data: ElementRenderRows) {
@@ -124,9 +138,113 @@ export class ElementView extends ViewBase {
   }
 
   updateVisualizationAndResults(
-    data: ElementRenderRows,
+    data: ElementRenderRow,
     attributes: Attribute[]
   ) {
-    console.log("updating");
+    this.createVisualization(data, attributes);
+    this.createTable(data, attributes);
+  }
+
+  clearAll() {
+    this.ElementVisualizationDiv.html("");
+    this.ElementQueryResultsDiv.html("");
+  }
+
+  createVisualization(data: ElementRenderRow, attributes: Attribute[]) {
+    let a1 = "Release Date";
+    let a2 = "Average Rating";
+
+    let a1_attr = attributes.filter(_ => _.name === a1)[0];
+    let a2_attr = attributes.filter(_ => _.name === a2)[0];
+
+    let spec = {
+      $schema: "https://vega.github.io/schema/vega-lite/v3.json",
+      data: { values: data.arr },
+      mark: {
+        type: "circle",
+        tooltip: {
+          content: "data"
+        }
+      },
+      encoding: {
+        x: {
+          field: a1,
+          type: "quantitative",
+          scale: { domain: [a1_attr.min, a1_attr.max] }
+        },
+        y: {
+          field: a2,
+          type: "quantitative",
+          scale: { domain: [a2_attr.min, a2_attr.max] }
+        }
+      }
+    };
+
+    CreateVegaVis(spec, this.ElementVisualizationDiv);
+  }
+
+  createTable(data: ElementRenderRow, attributes: Attribute[]) {
+    let table = this.ElementQueryResultsDiv.append("table");
+
+    let headers = table
+      .append("thead")
+      .append("tr")
+      .selectAll("th")
+      .data(attributes.map(_ => _.name));
+    headers.exit().remove();
+    headers = headers
+      .enter()
+      .append("th")
+      .merge(headers)
+      .classed("has-text-white", true);
+
+    headers.text(d => d);
+
+    let rows = table
+      .append("tbody")
+      .selectAll("tr")
+      .data(data.arr);
+    rows.exit().remove();
+    rows = rows
+      .enter()
+      .append("tr")
+      .merge(rows);
+
+    let cells = rows.selectAll("td").data(d => {
+      return attributes.map(_ => _.name).map(k => {
+        return {
+          value: d[k],
+          name: k
+        };
+      });
+    });
+
+    cells.exit().remove();
+    cells = cells
+      .enter()
+      .append("td")
+      .merge(cells);
+
+    cells.attr("data-th", d => d.name);
+    cells.text(d => d.value);
+
+    let that = this;
+    headers.on("click", function(d) {
+      headers.attr("class", "header has-text-white");
+
+      if (that.sortAscending) {
+        rows.sort((a, b) => {
+          return b[d] - a[d];
+        });
+        that.sortAscending = !that.sortAscending;
+        (this as any).className = "aes has-text-white";
+      } else {
+        rows.sort((a, b) => {
+          return a[d] - b[d];
+        });
+        that.sortAscending = !that.sortAscending;
+        (this as any).className = "des has-text-white";
+      }
+    });
   }
 }
