@@ -1,6 +1,6 @@
 <div class="container is-fluid override  is-size-7">
   <div>
-    <div class="make-bold">
+    <div class="make-bold  is-size-6">
       First, aggregate by:
     </div>
     <div class="dropdown is-hoverable">
@@ -27,7 +27,7 @@
 
   <div id="secondAgg">
     <div>
-      <div class="make-bold ">
+      <div class="make-bold  is-size-6">
         Then, aggregate by:
       </div>
       <div class="dropdown is-hoverable">
@@ -55,7 +55,7 @@
 
   </div>
 
-  <div class="make-bold">
+  <div class="make-bold  is-size-6">
     Sort By:
   </div>
 
@@ -67,34 +67,43 @@
     </div> -->
   </div>
 
-  <div id="collaseOptions">
+  <!-- <div id="collaseOptions">
     <div>
       <button class="button is-small">Collapse All</button>
     </div>
     <div>
       <button class="button is-small">Expand All</button>
     </div>
-  </div>
+  </div> -->
+
 
   <div id="Data">
-    <div class="make-bold">Data:</div>
+    <div class="make-bold is-size-6">Data:</div>
 
     <div class="field">
-      <label for="" class="label">Min Degree:</label>
+      <label for="" class="label is-size-7">Min Degree:</label>
       <div class="control">
         <input id="minDegree" type="number" class="input is-small">
       </div>
     </div>
     <div class="field">
-      <label for="" class="label">Max Degree</label>
+      <label for="" class="label is-size-7">Max Degree</label>
       <div class="control">
         <input id="maxDegree" type="number" class="input is-small">
       </div>
     </div>
+
     <div class="field">
       <div class="control">
         <input id="hideEmpty" type="checkbox">
-        <label class="checkbox">Hide Empty</label>
+        <label class="checkbox is-size-7">Hide Empty</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <input id="collapseAll" type="checkbox">
+        <label class="checkbox is-size-7">Collapse All</label>
       </div>
     </div>
 
