@@ -592,7 +592,7 @@ export function addRenderRows(
 
   setupColumnBackgrounds(el, usedSetCount);
 
-  [rows, groups, subsets] = addRows(data.renderRows, el);
+  [rows, groups, subsets] = addRows(data.renderRows, el, comm);
 
   setupSubsets(subsets, comm);
   setupGroups(groups);
@@ -668,7 +668,11 @@ function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
     });
 }
 
-function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
+function addRows(
+  data: RenderRow[],
+  el: d3Selection,
+  comm: Mitt
+): d3Selection[] {
   let _rows = el.selectAll(".row").data(data);
   _rows
     .exit()
@@ -693,7 +697,7 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
       return `translate(${params.skew_offset}, ${params.row_height * i})`;
     });
 
-  setupElementGroups(rows);
+  setupElementGroups(rows, comm);
 
   let groups = rows.filter((d: RenderRow, i) => {
     return d.data.type === RowType.GROUP;
@@ -707,7 +711,11 @@ function addRows(data: RenderRow[], el: d3Selection): d3Selection[] {
   return [rows, groups, subsets];
 }
 
-function setupElementGroups(rows: d3Selection) {
+function setupElementGroups(rows: d3Selection, comm: Mitt) {
+  rows.on("click", d => {
+    comm.emit("add-selection-trigger", d);
+  });
+
   rows.append("g").attr("class", "background-rect-g");
 
   rows
@@ -825,10 +833,6 @@ function addCombinations(subset: d3Selection, comm: Mitt) {
       let last = membershipDetails.lastIndexOf(1);
       addCombinationLine(this, first, last);
     }
-  });
-
-  combinationsGroup.on("click", d => {
-    comm.emit("add-selection-trigger", d);
   });
 }
 
