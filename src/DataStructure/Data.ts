@@ -58,6 +58,16 @@ export class Data {
     this.app.on("remove-set", this.removeSet, this);
     this.app.on("add-attribute", this.addAttribute, this);
     this.app.on("remove-attribute", this.removeAttribute, this);
+    this.app.on("collapse-group", this.collapseGroup, this);
+  }
+
+  collapseGroup(d: RenderRow) {
+    this.setUpSubSets();
+    this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+    this.renderRows.filter(_ => _.id === d.id).forEach(row => {
+      (row.data as Group).isCollapsed = !(row.data as Group).isCollapsed;
+    });
+    this.app.emit("render-config", this.renderConfig);
   }
 
   async load(

@@ -93,7 +93,6 @@ export class ElementView extends ViewBase {
     this.attributes = attributes;
     this.clearAll();
     if (this.currentSelection < 0 || this.currentSelection >= data.length) {
-      console.log("Called");
       this.currentSelection = data.length - 1;
       this.comm.emit("highlight-selection", this.currentSelection, false);
     }

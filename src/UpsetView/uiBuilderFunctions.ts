@@ -595,7 +595,8 @@ export function addRenderRows(
   [rows, groups, subsets] = addRows(data.renderRows, el, comm);
 
   setupSubsets(subsets, comm);
-  setupGroups(groups);
+  setupGroups(groups, comm);
+  collapseGroups(groups, subsets, comm);
 
   if (!config || config.CardinalityBars) {
     addCardinalityBars(rows, data.renderRows);
@@ -626,6 +627,19 @@ export function addRenderRows(
   });
 
   comm.emit("update-attributes");
+}
+
+function collapseGroups(groups: d3Selection, subsets: d3Selection, comm: Mitt) {
+  let collapsibleGroups = groups.filter(_ => {
+    console.log((_.data as Group).isCollapsed);
+    console.log(_.data as Group);
+    return (_.data as Group).isCollapsed;
+  });
+  console.log(collapsibleGroups);
+  let subsetsToHide: d3Selection[] = [];
+  // collapsibleGroups.each(c => {
+  //   console.log(c);
+  // });
 }
 
 function addAttributeToSelected(selected: Attribute[], attr: Attribute) {
@@ -673,11 +687,13 @@ function addRows(
   el: d3Selection,
   comm: Mitt
 ): d3Selection[] {
-  let _rows = el.selectAll(".row").data(data);
+  let _rows = el.selectAll(".row").data(data, function(d: RenderRow) {
+    return d.id;
+  });
   _rows
     .exit()
     .transition()
-    .duration(100)
+    .duration(300)
     .remove();
 
   let rows = _rows
@@ -690,7 +706,7 @@ function addRows(
     });
   rows
     .transition()
-    .duration(100)
+    .duration(300)
     .attr("transform", (d: RenderRow, i) => {
       if (d.data.type === RowType.GROUP)
         return `translate(0, ${params.row_height * i})`;
@@ -702,6 +718,7 @@ function addRows(
   let groups = rows.filter((d: RenderRow, i) => {
     return d.data.type === RowType.GROUP;
   });
+  groups.append("g").attr("class", "group-collapse-g");
   groups.append("g").attr("class", "group-label-g");
 
   let subsets = rows.filter((d: RenderRow, i) => {
@@ -902,9 +919,33 @@ function addRowHighlight(el: BaseType) {
 /** ************* */
 
 /** ************* */
-function setupGroups(groups: d3Selection) {
+function setupGroups(groups: d3Selection, comm: Mitt) {
+  addGroupCollapseIcons(groups, comm);
   addGroupBackgroundRects(groups);
   addGroupLabels(groups);
+}
+
+function addGroupCollapseIcons(groups: d3Selection, comm: Mitt) {
+  let collapse = groups
+    .selectAll(".group-collapse-g")
+    .append("text")
+    .attr("class", "group-collapse-g")
+    .html((d: any) => {
+      if ((d.data as Group).isCollapsed) return "&#9656;";
+      return "&#9662;";
+    })
+    .attr("transform", (d: RenderRow, i) => {
+      if ((d.data as Group).level == 2)
+        return `translate(23, ${params.row_height - 4})`;
+      return `translate(3, ${params.row_height - 4})`;
+    });
+
+  collapse.style("cursor", "pointer");
+
+  collapse.on("click", (d: RenderRow) => {
+    comm.emit("collapse-group", d);
+    d3.event.stopPropagation();
+  });
 }
 
 function addGroupBackgroundRects(groups: d3Selection) {
@@ -949,8 +990,8 @@ function addGroupLabels(groups: d3Selection) {
     })
     .attr("transform", (d: RenderRow, i) => {
       if ((d.data as Group).level === 2)
-        return `translate(30, ${params.row_height - 4})`;
-      return `translate(10, ${params.row_height - 4})`;
+        return `translate(35, ${params.row_height - 4})`;
+      return `translate(15, ${params.row_height - 4})`;
     });
 }
 /** ************* */
