@@ -417,8 +417,6 @@ export class FilterBoxView extends ViewBase {
 
   applySortByCardinality() {
     let rc = this.config;
-    rc.firstLevelAggregateBy = AggregateBy.NONE;
-    rc.secondLevelAggregateBy = AggregateBy.NONE;
     rc.sortBy = SortBy.CARDINALITY;
     this.saveConfig(rc);
     this.update();
@@ -431,8 +429,6 @@ export class FilterBoxView extends ViewBase {
 
   applySortByDeviation() {
     let rc = this.config;
-    rc.firstLevelAggregateBy = AggregateBy.NONE;
-    rc.secondLevelAggregateBy = AggregateBy.NONE;
     rc.sortBy = SortBy.DEVIATION;
     this.saveConfig(rc);
     this.update();
