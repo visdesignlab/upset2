@@ -5,12 +5,19 @@ import { ViewBase } from "provenance_mvvm_framework";
 import * as d3 from "d3";
 import { ElementRenderRows, ElementRenderRow } from "./ElementViewModel";
 import { CreateVegaVis } from "../VegaFactory/VegaFactory";
+import html from "./dropdown.view.html";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
   ElementQueryDiv: d3Selection;
   ElementQueryFiltersDiv: d3Selection;
   ElementQueryResultsDiv: d3Selection;
+  AttributeDropdownDiv: d3Selection;
+  axis1: d3Selection;
+  axis2: d3Selection;
+
+  axis1Selection: string;
+  axis2Selection: string;
 
   data: ElementRenderRows;
   attributes: Attribute[];
@@ -62,10 +69,29 @@ export class ElementView extends ViewBase {
     this.ElementQueryDiv.append("div").classed("columns is-multiline", true);
 
     let elementVis = base.append("div").attr("id", "element-visualization");
+
     elementVis
       .append("div")
       .classed("tag is-large is-white divider", true)
       .text("Element Visualization");
+
+    this.AttributeDropdownDiv = elementVis
+      .append("div")
+      .classed("is-centered columns dropdowns", true);
+
+    this.axis1 = this.AttributeDropdownDiv.append("div").classed(
+      "column axis1",
+      true
+    );
+    this.axis2 = this.AttributeDropdownDiv.append("div").classed(
+      "column axis2",
+      true
+    );
+
+    this.axis1.html(html);
+    this.axis1.select(".axis-label").text("Axis 1");
+    this.axis2.html(html);
+    this.axis2.select(".axis-label").text("Axis 2");
 
     this.ElementVisualizationDiv = elementVis
       .append("div")
@@ -160,11 +186,55 @@ export class ElementView extends ViewBase {
   }
 
   createVisualization(data: ElementRenderRow, attributes: Attribute[]) {
-    let a1 = "Release Date";
-    let a2 = "Average Rating";
+    let plottableAttributes = attributes.filter(
+      _ => _.type === "integer" || _.type === "float"
+    );
 
-    let a1_attr = attributes.filter(_ => _.name === a1)[0];
-    let a2_attr = attributes.filter(_ => _.name === a2)[0];
+    let op1 = this.axis1
+      .select(".options")
+      .selectAll("option")
+      .data(plottableAttributes);
+    op1.exit().remove();
+    op1 = op1
+      .enter()
+      .append("option")
+      .merge(op1);
+    op1.text(d => d.name);
+
+    let op2 = this.axis2
+      .select(".options")
+      .selectAll("option")
+      .data(plottableAttributes);
+    op2.exit().remove();
+    op2 = op2
+      .enter()
+      .append("option")
+      .merge(op2);
+    op2.text(d => d.name);
+    let that = this;
+
+    this.axis1.select(".options").on("input", function(d) {
+      that.axis1Selection = (this as any).value;
+      that.createVisualization(data, attributes);
+    });
+
+    this.axis2.select(".options").on("input", function(d) {
+      that.axis2Selection = (this as any).value;
+      that.createVisualization(data, attributes);
+    });
+
+    if (!this.axis1Selection)
+      this.axis1Selection = this.axis1.select(".options").property("value");
+
+    if (!this.axis2Selection)
+      this.axis2Selection = this.axis2.select(".options").property("value");
+
+    let a1_attr = attributes.filter(_ => _.name === this.axis1Selection)[0];
+    let a2_attr = attributes.filter(_ => _.name === this.axis2Selection)[0];
+
+    console.log(this.axis1Selection);
+
+    if (!a1_attr || !a2_attr) return;
 
     let spec = {
       $schema: "https://vega.github.io/schema/vega-lite/v3.json",
@@ -177,12 +247,12 @@ export class ElementView extends ViewBase {
       },
       encoding: {
         x: {
-          field: a1,
+          field: this.axis1Selection,
           type: "quantitative",
           scale: { domain: [a1_attr.min, a1_attr.max] }
         },
         y: {
-          field: a2,
+          field: this.axis2Selection,
           type: "quantitative",
           scale: { domain: [a2_attr.min, a2_attr.max] }
         }
