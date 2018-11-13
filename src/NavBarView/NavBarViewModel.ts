@@ -22,6 +22,39 @@ export class NavBarViewModel extends ViewModelBase {
     this.comm.on("change-dataset", dataset => {
       this.App.emit("change-dataset", dataset);
     });
+
+    this.comm.on("change-dataset-trigger", (d: any) => {
+      let _do = {
+        func: (d: any) => {
+          this.comm.emit("change-dataset", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: any) => {
+          this.comm.emit("change-dataset", d);
+        },
+        args: [view.oldDataset]
+      };
+      this.apply.call(this, ["change-dataset", _do, _undo]);
+    });
+
+    this.registerFunctions(
+      "change-dataset",
+      (d: any) => {
+        this.comm.emit("change-dataset", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "change-dataset",
+      (d: any) => {
+        this.comm.emit("change-dataset", d);
+      },
+      this,
+      false
+    );
   }
 
   populateDatasetSelectorFromServer() {
