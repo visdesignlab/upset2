@@ -90,11 +90,9 @@ export class ElementView extends ViewBase {
     this.attributes = attributes;
     this.clearAll();
     this.renderQueries(data);
-    if (this.currentSelection > -1 && this.currentSelection < data.length)
-      this.updateVisualizationAndResults(
-        data[this.currentSelection],
-        attributes
-      );
+    if (this.currentSelection < 0 || this.currentSelection >= data.length)
+      this.currentSelection = data.length - 1;
+    this.updateVisualizationAndResults(data[this.currentSelection], attributes);
   }
 
   renderQueries(data: ElementRenderRows) {
