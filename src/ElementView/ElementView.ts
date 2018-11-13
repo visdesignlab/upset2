@@ -28,6 +28,55 @@ export class ElementView extends ViewBase {
   constructor(root: HTMLElement) {
     super(root);
     this.currentSelection = -1;
+
+    this.comm.on("set-axis1", (d: string) => {
+      this.axis1Selection = d;
+      this.createVisualization(
+        this.data[this.currentSelection],
+        this.attributes
+      );
+    });
+
+    this.comm.on("set-axis2", (d: string) => {
+      this.axis2Selection = d;
+      this.createVisualization(
+        this.data[this.currentSelection],
+        this.attributes
+      );
+    });
+
+    this.comm.on("set-axis1-trigger", (d: string) => {
+      let _do = {
+        func: (d: string) => {
+          this.comm.emit("set-axis1", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: string) => {
+          this.comm.emit("set-axis1", d);
+        },
+        args: [this.axis1Selection]
+      };
+      this.comm.emit("apply", ["set-axis1", _do, _undo]);
+    });
+
+    this.comm.on("set-axis2-trigger", (d: string) => {
+      let _do = {
+        func: (d: string) => {
+          this.comm.emit("set-axis2", d);
+        },
+        args: [d]
+      };
+      let _undo = {
+        func: (d: string) => {
+          this.comm.emit("set-axis2", d);
+        },
+        args: [this.axis2Selection]
+      };
+      this.comm.emit("apply", ["set-axis2", _do, _undo]);
+    });
+
     this.comm.on("remove-selection-trigger", (idx: number) => {
       if (this.currentSelection === idx) this.currentSelection = -1;
       if (this.currentSelection < idx) return;
@@ -214,25 +263,37 @@ export class ElementView extends ViewBase {
     let that = this;
 
     this.axis1.select(".options").on("input", function(d) {
-      that.axis1Selection = (this as any).value;
-      that.createVisualization(data, attributes);
+      that.comm.emit("set-axis1-trigger", (this as any).value);
     });
 
     this.axis2.select(".options").on("input", function(d) {
-      that.axis2Selection = (this as any).value;
-      that.createVisualization(data, attributes);
+      that.comm.emit("set-axis2-trigger", (this as any).value);
     });
 
     if (!this.axis1Selection)
       this.axis1Selection = this.axis1.select(".options").property("value");
+    else {
+      this.axis1
+        .select(".options")
+        .selectAll("option")
+        .property("selected", (d: any) => {
+          return d.name === this.axis1Selection;
+        });
+    }
 
     if (!this.axis2Selection)
       this.axis2Selection = this.axis2.select(".options").property("value");
+    else {
+      this.axis2
+        .select(".options")
+        .selectAll("option")
+        .property("selected", (d: any) => {
+          return d.name === this.axis2Selection;
+        });
+    }
 
     let a1_attr = attributes.filter(_ => _.name === this.axis1Selection)[0];
     let a2_attr = attributes.filter(_ => _.name === this.axis2Selection)[0];
-
-    console.log(this.axis1Selection);
 
     if (!a1_attr || !a2_attr) return;
 

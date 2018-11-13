@@ -137,6 +137,40 @@ export class ElementViewModel extends ViewModelBase {
       this,
       false
     );
+
+    this.registerFunctions(
+      "set-axis1",
+      (d: string) => {
+        this.comm.emit("set-axis1", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "set-axis1",
+      (d: string) => {
+        this.comm.emit("set-axis1", d);
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "set-axis2",
+      (d: string) => {
+        this.comm.emit("set-axis2", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "set-axis2",
+      (d: string) => {
+        this.comm.emit("set-axis2", d);
+      },
+      this,
+      false
+    );
   }
 
   addSelection(sel: RenderRow) {
