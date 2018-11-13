@@ -16,6 +16,10 @@ import SortStrategy from "./SortingStrategy";
 import { SubSet } from "./SubSet";
 import { RowType } from "./RowType";
 import * as d3 from "d3";
+import { Group } from "./Group";
+
+export type Membership = { [key: number]: string[] };
+
 export class Data {
   app: Application;
   name: string;
@@ -31,6 +35,7 @@ export class Data {
   noDefaultSets: number = 6;
   renderConfig: RenderConfig;
   unusedSets: Array<Set> = [];
+  memberships: Membership = {};
 
   get maxCardinality(): number {
     return Math.max(...this.renderRows.map(d => d.data.setSize));
@@ -61,6 +66,7 @@ export class Data {
   ): Promise<any> {
     this.name = dataSetDesc.name;
     await this.getRawData(data, dataSetDesc).then(rawData => {
+      this.memberships = {};
       this.getSets(rawData);
       this.getAttributes(data, rawData, dataSetDesc);
       this.setUpSubSets();
@@ -204,10 +210,17 @@ export class Data {
           this.depth
         );
         this.subSets.push(subset);
+        this.UpdateDictionary(subset.itemList, subset.id);
       }
     }
-
     aggregateIntersection = {};
+  }
+
+  private UpdateDictionary(items: number[], belongsTo: string | number) {
+    items.forEach(item => {
+      if (!this.memberships[item]) this.memberships[item] = [];
+      this.memberships[item].push(belongsTo.toString());
+    });
   }
 
   private getAttributes(
@@ -560,6 +573,9 @@ export class Data {
 
     if (sortBy) agg = applySort(agg, sortBy, sortBySetId);
 
+    agg.filter(_ => _.data instanceof Group).forEach(group => {
+      this.UpdateDictionary(group.data.items, group.id);
+    });
     return agg;
   }
 }
@@ -596,7 +612,6 @@ function applySecondAggregation(
     );
     rr = rr.concat(rendered);
   }
-
   return rr;
 }
 
