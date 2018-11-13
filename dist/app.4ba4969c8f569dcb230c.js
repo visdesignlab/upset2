@@ -731,6 +731,7 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _SubSet__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ./SubSet */ "./src/DataStructure/SubSet.ts");
 /* harmony import */ var _RowType__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./RowType */ "./src/DataStructure/RowType.ts");
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _Group__WEBPACK_IMPORTED_MODULE_7__ = __webpack_require__(/*! ./Group */ "./src/DataStructure/Group.ts");
 var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _arguments, P, generator) {
     return new (P || (P = Promise))(function (resolve, reject) {
         function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
@@ -739,6 +740,7 @@ var __awaiter = (undefined && undefined.__awaiter) || function (thisArg, _argume
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+
 
 
 
@@ -759,6 +761,9 @@ class Data {
         this.depth = 0;
         this.noDefaultSets = 6;
         this.unusedSets = [];
+        this.memberships = {};
+        this.collapsedList = [];
+        this.subSetsToRemove = [];
         this.app = app;
         this.renderConfig = new _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["RenderConfig"]();
         this.app.on("filter-changed", (rc) => {
@@ -768,6 +773,7 @@ class Data {
         this.app.on("remove-set", this.removeSet, this);
         this.app.on("add-attribute", this.addAttribute, this);
         this.app.on("remove-attribute", this.removeAttribute, this);
+        this.app.on("collapse-group", this.collapseGroup, this);
     }
     get maxCardinality() {
         return Math.max(...this.renderRows.map(d => d.data.setSize));
@@ -778,10 +784,45 @@ class Data {
             return map;
         }, {});
     }
+    collapseGroup(d) {
+        console.log(JSON.parse(JSON.stringify(this.subSetsToRemove)));
+        this.setUpSubSets();
+        this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+        this.renderRows
+            .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
+            .forEach(_ => {
+            _.data.isCollapsed = true;
+        });
+        this.subSetsToRemove = [];
+        this.renderRows.filter(_ => _.id === d.id).forEach(row => {
+            row.data.isCollapsed = !row.data.isCollapsed;
+            if (row.data.isCollapsed) {
+                this.collapsedList.push(row.id);
+            }
+            else {
+                let idx = this.collapsedList.indexOf(row.id);
+                this.collapsedList.splice(idx, 1);
+            }
+        });
+        this.renderRows.forEach((row, i) => {
+            if (row.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP) {
+                if (row.data.isCollapsed) {
+                    let noToHide = row.data.visibleSets.length;
+                    while (noToHide > 0) {
+                        this.subSetsToRemove.push((i + noToHide).toString());
+                        noToHide--;
+                    }
+                }
+            }
+        });
+        this.renderRows = this.renderRows.filter((_, i) => this.subSetsToRemove.indexOf(i.toString()) < 0);
+        this.app.emit("render-rows-changed", this);
+    }
     load(data, dataSetDesc) {
         return __awaiter(this, void 0, void 0, function* () {
             this.name = dataSetDesc.name;
             yield this.getRawData(data, dataSetDesc).then(rawData => {
+                this.memberships = {};
                 this.getSets(rawData);
                 this.getAttributes(data, rawData, dataSetDesc);
                 this.setUpSubSets();
@@ -873,9 +914,17 @@ class Data {
                 }
                 let subset = new _SubSet__WEBPACK_IMPORTED_MODULE_4__["SubSet"](bitMask, name, combinedSets, list, expectedValue, this.depth);
                 this.subSets.push(subset);
+                this.UpdateDictionary(subset.itemList, subset.id);
             }
         }
         aggregateIntersection = {};
+    }
+    UpdateDictionary(items, belongsTo) {
+        items.forEach(item => {
+            if (!this.memberships[item])
+                this.memberships[item] = [];
+            this.memberships[item].push(belongsTo.toString());
+        });
     }
     getAttributes(data, rawData, dataSetDesc) {
         this.attributes.length = 0;
@@ -1106,7 +1155,11 @@ class Data {
             res(rawData);
         });
     }
-    setupRenderRows(renderConfig = null, sortBySetId) {
+    setupRenderRows(renderConfig = null, sortBySetId, resetCollapseLists = false) {
+        if (resetCollapseLists) {
+            this.collapsedList = [];
+            this.subSetsToRemove = [];
+        }
         if (renderConfig) {
             this.renderConfig = renderConfig;
             this.renderRows = this.render(this.renderConfig.firstLevelAggregateBy, this.renderConfig.secondLevelAggregateBy, this.renderConfig.sortBy, this.renderConfig.minDegree, this.renderConfig.maxDegree, this.renderConfig.firstOverlap, this.renderConfig.secondOverlap, this.renderConfig.sortBySetid);
@@ -1137,6 +1190,9 @@ class Data {
             agg = agg.filter(set => set.data.setSize > 0);
         if (sortBy)
             agg = applySort(agg, sortBy, sortBySetId);
+        agg.filter(_ => _.data instanceof _Group__WEBPACK_IMPORTED_MODULE_7__["Group"]).forEach(group => {
+            this.UpdateDictionary(group.data.items, group.id);
+        });
         return agg;
     }
 }
@@ -1568,6 +1624,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 /* harmony import */ var _VegaFactory_VegaFactory__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../VegaFactory/VegaFactory */ "./src/VegaFactory/VegaFactory.ts");
+/* harmony import */ var _dropdown_view_html__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ./dropdown.view.html */ "./src/ElementView/dropdown.view.html");
+
 
 
 
@@ -1576,6 +1634,44 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
         super(root);
         this.sortAscending = true;
         this.currentSelection = -1;
+        this.comm.on("set-axis1", (d) => {
+            this.axis1Selection = d;
+            this.createVisualization(this.data[this.currentSelection], this.attributes);
+        });
+        this.comm.on("set-axis2", (d) => {
+            this.axis2Selection = d;
+            this.createVisualization(this.data[this.currentSelection], this.attributes);
+        });
+        this.comm.on("set-axis1-trigger", (d) => {
+            let _do = {
+                func: (d) => {
+                    this.comm.emit("set-axis1", d);
+                },
+                args: [d]
+            };
+            let _undo = {
+                func: (d) => {
+                    this.comm.emit("set-axis1", d);
+                },
+                args: [this.axis1Selection]
+            };
+            this.comm.emit("apply", ["set-axis1", _do, _undo]);
+        });
+        this.comm.on("set-axis2-trigger", (d) => {
+            let _do = {
+                func: (d) => {
+                    this.comm.emit("set-axis2", d);
+                },
+                args: [d]
+            };
+            let _undo = {
+                func: (d) => {
+                    this.comm.emit("set-axis2", d);
+                },
+                args: [this.axis2Selection]
+            };
+            this.comm.emit("apply", ["set-axis2", _do, _undo]);
+        });
         this.comm.on("remove-selection-trigger", (idx) => {
             if (this.currentSelection === idx)
                 this.currentSelection = -1;
@@ -1599,8 +1695,8 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
             };
             this.comm.emit("apply", ["highlight-selection", _do, _undo]);
         });
-        this.comm.on("highlight-selection", (idx) => {
-            this.highlightSelection(idx);
+        this.comm.on("highlight-selection", (idx, update = true) => {
+            this.highlightSelection(idx, update);
         });
     }
     create() {
@@ -1616,6 +1712,15 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
             .append("div")
             .classed("tag is-large is-white divider", true)
             .text("Element Visualization");
+        this.AttributeDropdownDiv = elementVis
+            .append("div")
+            .classed("is-centered columns dropdowns", true);
+        this.axis1 = this.AttributeDropdownDiv.append("div").classed("column axis1", true);
+        this.axis2 = this.AttributeDropdownDiv.append("div").classed("column axis2", true);
+        this.axis1.html(_dropdown_view_html__WEBPACK_IMPORTED_MODULE_3__["default"]);
+        this.axis1.select(".axis-label").text("Axis 1");
+        this.axis2.html(_dropdown_view_html__WEBPACK_IMPORTED_MODULE_3__["default"]);
+        this.axis2.select(".axis-label").text("Axis 2");
         this.ElementVisualizationDiv = elementVis
             .append("div")
             .classed("is-centered columns element-vis", true);
@@ -1638,8 +1743,12 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
         this.data = data;
         this.attributes = attributes;
         this.clearAll();
+        if (this.currentSelection < 0 || this.currentSelection >= data.length) {
+            this.currentSelection = data.length - 1;
+            this.comm.emit("highlight-selection", this.currentSelection, false);
+        }
         this.renderQueries(data);
-        if (this.currentSelection > -1 && this.currentSelection < data.length)
+        if (this.data.length > 0)
             this.updateVisualizationAndResults(data[this.currentSelection], attributes);
     }
     renderQueries(data) {
@@ -1670,9 +1779,10 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
         });
         tabContents.classed("is-primary", (_, i) => i === this.currentSelection);
     }
-    highlightSelection(idx) {
+    highlightSelection(idx, update = true) {
         this.currentSelection = idx;
-        this.update(this.data, this.attributes);
+        if (update)
+            this.update(this.data, this.attributes);
     }
     updateVisualizationAndResults(data, attributes) {
         this.createVisualization(data, attributes);
@@ -1683,12 +1793,60 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
         this.ElementQueryResultsDiv.html("");
     }
     createVisualization(data, attributes) {
-        let a1 = "Release Date";
-        let a2 = "Average Rating";
-        let a1_attr = attributes.filter(_ => _.name === a1)[0];
-        let a2_attr = attributes.filter(_ => _.name === a2)[0];
+        let plottableAttributes = attributes.filter(_ => _.type === "integer" || _.type === "float");
+        let op1 = this.axis1
+            .select(".options")
+            .selectAll("option")
+            .data(plottableAttributes);
+        op1.exit().remove();
+        op1 = op1
+            .enter()
+            .append("option")
+            .merge(op1);
+        op1.text(d => d.name);
+        let op2 = this.axis2
+            .select(".options")
+            .selectAll("option")
+            .data(plottableAttributes);
+        op2.exit().remove();
+        op2 = op2
+            .enter()
+            .append("option")
+            .merge(op2);
+        op2.text(d => d.name);
+        let that = this;
+        this.axis1.select(".options").on("input", function (d) {
+            that.comm.emit("set-axis1-trigger", this.value);
+        });
+        this.axis2.select(".options").on("input", function (d) {
+            that.comm.emit("set-axis2-trigger", this.value);
+        });
+        if (!this.axis1Selection)
+            this.axis1Selection = this.axis1.select(".options").property("value");
+        else {
+            this.axis1
+                .select(".options")
+                .selectAll("option")
+                .property("selected", (d) => {
+                return d.name === this.axis1Selection;
+            });
+        }
+        if (!this.axis2Selection)
+            this.axis2Selection = this.axis2.select(".options").property("value");
+        else {
+            this.axis2
+                .select(".options")
+                .selectAll("option")
+                .property("selected", (d) => {
+                return d.name === this.axis2Selection;
+            });
+        }
+        let a1_attr = attributes.filter(_ => _.name === this.axis1Selection)[0];
+        let a2_attr = attributes.filter(_ => _.name === this.axis2Selection)[0];
+        if (!a1_attr || !a2_attr)
+            return;
         let spec = {
-            $schema: "https://vega.github.io/schema/vega-lite/v3.json",
+            $schema: "https://vega.github.io/schema/vega-lite/v3.0.0-rc8.json",
             data: { values: data.arr },
             mark: {
                 type: "circle",
@@ -1698,12 +1856,12 @@ class ElementView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_0__
             },
             encoding: {
                 x: {
-                    field: a1,
+                    field: this.axis1Selection,
                     type: "quantitative",
                     scale: { domain: [a1_attr.min, a1_attr.max] }
                 },
                 y: {
-                    field: a2,
+                    field: this.axis2Selection,
                     type: "quantitative",
                     scale: { domain: [a2_attr.min, a2_attr.max] }
                 }
@@ -1798,7 +1956,7 @@ class ElementViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODUL
             if (!this.dataset || this.dataset.name != data.name) {
                 this.dataset = data;
                 this.selectedSets = [];
-                this.update();
+                this.getDefault();
             }
         });
         this.App.on("add-selection", this.addSelection, this);
@@ -1863,8 +2021,21 @@ class ElementViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODUL
         this.registerFunctions("remove-selection", (d) => {
             this.App.emit("add-selection", d);
         }, this, false);
+        this.registerFunctions("set-axis1", (d) => {
+            this.comm.emit("set-axis1", d);
+        }, this);
+        this.registerFunctions("set-axis1", (d) => {
+            this.comm.emit("set-axis1", d);
+        }, this, false);
+        this.registerFunctions("set-axis2", (d) => {
+            this.comm.emit("set-axis2", d);
+        }, this);
+        this.registerFunctions("set-axis2", (d) => {
+            this.comm.emit("set-axis2", d);
+        }, this, false);
     }
     addSelection(sel) {
+        this.selectedSets = this.selectedSets.filter(_ => _.id !== "DEFAULT");
         let validAttributes = this.dataset.attributes.filter(_ => _.name !== "Sets");
         let n_row = createObjectsFromSubsets(sel, validAttributes);
         this.selectedSets.push(n_row);
@@ -1873,7 +2044,15 @@ class ElementViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODUL
     removeSelection(idx) {
         let el = this.selectedSets.splice(idx, 1);
         removeColor(el[0].color);
-        this.update();
+        if (this.selectedSets.length === 0) {
+            this.getDefault();
+        }
+        else
+            this.update();
+    }
+    getDefault() {
+        let validAttributes = this.dataset.attributes.filter(_ => _.name !== "Sets");
+        this.comm.emit("update", [createObjectFromItems(this.dataset.allItems, validAttributes)], validAttributes);
     }
     update() {
         let validAttributes = this.dataset.attributes.filter(_ => _.name !== "Sets");
@@ -1892,6 +2071,23 @@ function createObjectsFromSubsets(row, attributes) {
     return {
         id: row.id,
         data: row.data,
+        arr: arr,
+        color: selectColor()
+    };
+}
+function createObjectFromItems(items, attributes) {
+    let arr = items.map(i => {
+        let obj = {};
+        attributes.forEach((attr) => {
+            obj[attr.name] = attr.values[i];
+        });
+        return obj;
+    });
+    return {
+        id: "DEFAULT",
+        data: {
+            setSize: items.length
+        },
         arr: arr,
         color: selectColor()
     };
@@ -1930,6 +2126,25 @@ const colorList = [
     "#000000"
 ];
 
+
+/***/ }),
+
+/***/ "./src/ElementView/dropdown.view.html":
+/*!********************************************!*\
+  !*** ./src/ElementView/dropdown.view.html ***!
+  \********************************************/
+/*! exports provided: default */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+// HTML
+/* harmony default export */ __webpack_exports__["default"] = (`<span class="axis-label">Axis 1</span>
+<div class="select is-small">
+  <select class="options">
+    <!-- <option>With options</option> -->
+  </select>
+</div>`);
 
 /***/ }),
 
@@ -2497,8 +2712,6 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
     }
     applySortByCardinality() {
         let rc = this.config;
-        rc.firstLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE;
-        rc.secondLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE;
         rc.sortBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["SortBy"].CARDINALITY;
         this.saveConfig(rc);
         this.update();
@@ -2509,8 +2722,6 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
     }
     applySortByDeviation() {
         let rc = this.config;
-        rc.firstLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE;
-        rc.secondLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE;
         rc.sortBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["SortBy"].DEVIATION;
         this.saveConfig(rc);
         this.update();
@@ -2616,14 +2827,13 @@ class FilterBoxViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MOD
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 // HTML
-/* harmony default export */ __webpack_exports__["default"] = (`<div class="container is-fluid override">
+/* harmony default export */ __webpack_exports__["default"] = (`<div class="container is-fluid override  is-size-7">
   <div>
-    <div class="make-bold">
+    <div class="make-bold  is-size-6">
       First, aggregate by:
     </div>
     <div class="dropdown is-hoverable">
       <div id="firstAggByDropdown" class="dropdown-trigger navbar-link">
-        temp
       </div>
       <div class="dropdown-menu">
         <div id="firstAggByOptions" class="dropdown-content">
@@ -2632,20 +2842,25 @@ __webpack_require__.r(__webpack_exports__);
       </div>
     </div>
   </div>
-  <div id="overlap-one">
+  <!-- <div id='overlap-one'>
     Overlap Degree:
-    <input id="first-overlap-input" type="text">
-  </div>
+    <input style="display:block" id='first-overlap-input' type="text">
+  </div> -->
 
+  <div class="field">
+    <label for="" class="label  is-size-7">Overlap Degree:</label>
+    <div class="control" id="overlap-one">
+      <input id="first-overlap-input" type="number" class="input is-small">
+    </div>
+  </div>
 
   <div id="secondAgg">
     <div>
-      <div class="make-bold">
+      <div class="make-bold  is-size-6">
         Then, aggregate by:
       </div>
       <div class="dropdown is-hoverable">
         <div id="secondAggByDropdown" class="dropdown-trigger navbar-link">
-          temp
         </div>
         <div class="dropdown-menu">
           <div id="secondAggByOptions" class="dropdown-content">
@@ -2655,18 +2870,25 @@ __webpack_require__.r(__webpack_exports__);
       </div>
     </div>
 
-    <div id="overlap-two">
+    <!-- <div id='overlap-two'>
       Overlap Degree:
-      <input id="second-overlap-input" type="text">
+      <input id='second-overlap-input' type="text">
+    </div> -->
+
+    <div class="field">
+      <label for="" class="label  is-size-7">Overlap Degree:</label>
+      <div class="control" id="overlap-two">
+        <input id="second-overlap-input" type="number" class="input is-small">
+      </div>
     </div>
 
   </div>
 
-  <div class="make-bold">
+  <div class="make-bold  is-size-6">
     Sort By:
   </div>
 
-  <div id="sortByOptions" class="control">
+  <div id="sortByOptions" class="control  is-size-7">
     <!-- <div>
       <label for="" class="radio">
         <input type="radio" name="answer"> Test
@@ -2674,34 +2896,43 @@ __webpack_require__.r(__webpack_exports__);
     </div> -->
   </div>
 
-  <div id="collaseOptions">
+  <!-- <div id="collaseOptions">
     <div>
-      <button class="button">Collapse All</button>
+      <button class="button is-small">Collapse All</button>
     </div>
     <div>
-      <button class="button">Expand All</button>
+      <button class="button is-small">Expand All</button>
     </div>
-  </div>
+  </div> -->
+
 
   <div id="Data">
-    <div class="make-bold">Data:</div>
+    <div class="make-bold is-size-6">Data:</div>
 
     <div class="field">
-      <label for="" class="label">Min Degree:</label>
+      <label for="" class="label is-size-7">Min Degree:</label>
       <div class="control">
-        <input id="minDegree" type="text" class="input">
+        <input id="minDegree" type="number" class="input is-small">
       </div>
     </div>
     <div class="field">
-      <label for="" class="label">Max Degree</label>
+      <label for="" class="label is-size-7">Max Degree</label>
       <div class="control">
-        <input id="maxDegree" type="text" class="input">
+        <input id="maxDegree" type="number" class="input is-small">
       </div>
     </div>
+
     <div class="field">
       <div class="control">
         <input id="hideEmpty" type="checkbox">
-        <label class="checkbox">Hide Empty Intersections</label>
+        <label class="checkbox is-size-7">Hide Empty</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="control">
+        <input id="collapseAll" type="checkbox">
+        <label class="checkbox is-size-7">Collapse All</label>
       </div>
     </div>
 
@@ -2784,7 +3015,7 @@ class NavBarView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_1__[
         })
             .attr("class", "dropdown-item")
             .on("click", (d) => {
-            this.comm.emit("change-dataset", d);
+            this.comm.emit("change-dataset-trigger", d);
         });
         let rc = null;
         let d = null;
@@ -2802,6 +3033,7 @@ class NavBarView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_1__[
                 .data()[0];
         }
         if (d) {
+            this.oldDataset = d;
             this.comm.emit("change-dataset", d);
         }
     }
@@ -2848,6 +3080,27 @@ class NavBarViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE
         this.comm.on("change-dataset", dataset => {
             this.App.emit("change-dataset", dataset);
         });
+        this.comm.on("change-dataset-trigger", (d) => {
+            let _do = {
+                func: (d) => {
+                    this.comm.emit("change-dataset", d);
+                },
+                args: [d]
+            };
+            let _undo = {
+                func: (d) => {
+                    this.comm.emit("change-dataset", d);
+                },
+                args: [view.oldDataset]
+            };
+            this.apply.call(this, ["change-dataset", _do, _undo]);
+        });
+        this.registerFunctions("change-dataset", (d) => {
+            this.comm.emit("change-dataset", d);
+        }, this);
+        this.registerFunctions("change-dataset", (d) => {
+            this.comm.emit("change-dataset", d);
+        }, this, false);
     }
     populateDatasetSelectorFromServer() {
         let results = [];
@@ -3008,7 +3261,7 @@ class ProvenanceView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_
         super(root);
     }
     create() {
-        let size = 30;
+        let size = 20;
         d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root).html(_provenance_view_html__WEBPACK_IMPORTED_MODULE_2__["default"]);
         // d3.select(this.Root)
         //   .select("#save-btn")
@@ -3662,6 +3915,9 @@ class UpsetViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_
         this.comm.on("sort-by-deviation", () => {
             this.App.emit("sort-by-deviation");
         });
+        this.comm.on("collapse-group", (d) => {
+            this.App.emit("collapse-group", d);
+        });
         this.registerFunctions("remove-set", (d) => {
             this.App.emit("remove-set", d);
         }, this);
@@ -4195,9 +4451,10 @@ function addRenderRows(data, el, usedSetCount, config, comm) {
     if (config && !config.DeviationBars)
         _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width = 0;
     setupColumnBackgrounds(el, usedSetCount);
-    [rows, groups, subsets] = addRows(data.renderRows, el);
+    [rows, groups, subsets] = addRows(data.renderRows, el, comm);
     setupSubsets(subsets, comm);
-    setupGroups(groups);
+    setupGroups(groups, comm);
+    collapseGroups(groups, subsets, comm);
     if (!config || config.CardinalityBars) {
         addCardinalityBars(rows, data.renderRows);
     }
@@ -4217,6 +4474,7 @@ function addRenderRows(data, el, usedSetCount, config, comm) {
     });
     comm.emit("update-attributes");
 }
+function collapseGroups(groups, subsets, comm) { }
 function addAttributeToSelected(selected, attr) {
     if (attr && selected.indexOf(attr) < 0)
         selected.push(attr);
@@ -4254,16 +4512,22 @@ function setupColumnBackgrounds(el, usedSets) {
         return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * i}, 0)`;
     });
 }
-function addRows(data, el) {
-    let _rows = el.selectAll(".row").data(data);
+function addRows(data, el, comm) {
+    let _rows = el.selectAll(".row").data(data, function (d) {
+        return d.id;
+    });
     _rows
         .exit()
+        .transition()
+        .duration(100)
+        .style("opacity", 0)
         .transition()
         .duration(100)
         .remove();
     let rows = _rows
         .enter()
         .append("g")
+        .style("opacity", 0)
         .merge(_rows)
         .html("")
         .attr("class", (d, i) => {
@@ -4271,23 +4535,30 @@ function addRows(data, el) {
     });
     rows
         .transition()
-        .duration(100)
+        .duration(300)
         .attr("transform", (d, i) => {
         if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP)
             return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * i})`;
         return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * i})`;
-    });
-    setupElementGroups(rows);
+    })
+        .transition()
+        .duration(100)
+        .style("opacity", 1);
+    setupElementGroups(rows, comm);
     let groups = rows.filter((d, i) => {
         return d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP;
     });
+    groups.append("g").attr("class", "group-collapse-g");
     groups.append("g").attr("class", "group-label-g");
     let subsets = rows.filter((d, i) => {
         return d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].SUBSET;
     });
     return [rows, groups, subsets];
 }
-function setupElementGroups(rows) {
+function setupElementGroups(rows, comm) {
+    rows.on("click", d => {
+        comm.emit("add-selection-trigger", d);
+    });
     rows.append("g").attr("class", "background-rect-g");
     rows
         .append("g")
@@ -4392,9 +4663,6 @@ function addCombinations(subset, comm) {
             addCombinationLine(this, first, last);
         }
     });
-    combinationsGroup.on("click", d => {
-        comm.emit("add-selection-trigger", d);
-    });
 }
 function addCombinationCircles(comboGroup) {
     comboGroup
@@ -4458,9 +4726,31 @@ function addRowHighlight(el) {
 }
 /** ************* */
 /** ************* */
-function setupGroups(groups) {
+function setupGroups(groups, comm) {
+    addGroupCollapseIcons(groups, comm);
     addGroupBackgroundRects(groups);
     addGroupLabels(groups);
+}
+function addGroupCollapseIcons(groups, comm) {
+    let collapse = groups
+        .selectAll(".group-collapse-g")
+        .append("text")
+        .attr("class", "group-collapse-g")
+        .html((d) => {
+        if (d.data.isCollapsed)
+            return "&#9656;";
+        return "&#9662;";
+    })
+        .attr("transform", (d, i) => {
+        if (d.data.level == 2)
+            return `translate(23, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
+        return `translate(3, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
+    });
+    collapse.style("cursor", "pointer");
+    collapse.on("click", (d) => {
+        comm.emit("collapse-group", d);
+        d3__WEBPACK_IMPORTED_MODULE_1__["event"].stopPropagation();
+    });
 }
 function addGroupBackgroundRects(groups) {
     groups
@@ -4506,8 +4796,8 @@ function addGroupLabels(groups) {
     })
         .attr("transform", (d, i) => {
         if (d.data.level === 2)
-            return `translate(30, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
-        return `translate(10, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
+            return `translate(35, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
+        return `translate(15, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
     });
 }
 /** ************* */
@@ -5069,4 +5359,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.78c92eb3bd4d70ecef62.js.map
+//# sourceMappingURL=app.4ba4969c8f569dcb230c.js.map

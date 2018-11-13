@@ -15,6 +15,14 @@
 .hidden {
   display: none; }
 
+input.input {
+  max-width: 50%; }
+
+input[type=number] {
+  border: none !important;
+  box-shadow: none;
+  border-bottom: 1px solid #dbdbdb !important; }
+
 
 .img {
   display: block;
@@ -7167,4 +7175,4 @@ th.aes:after {
   content: "\21E7"; }
 
 
-/*# sourceMappingURL=style.7e2276ee65e36dda209f.css.map*/
+/*# sourceMappingURL=style.16cd1ada90fd3a8f0f06.css.map*/
