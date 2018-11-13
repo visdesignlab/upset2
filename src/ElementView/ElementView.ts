@@ -298,7 +298,7 @@ export class ElementView extends ViewBase {
     if (!a1_attr || !a2_attr) return;
 
     let spec = {
-      $schema: "https://vega.github.io/schema/vega-lite/v3.json",
+      $schema: "https://vega.github.io/schema/vega-lite/v3.0.0-rc8.json",
       data: { values: data.arr },
       mark: {
         type: "circle",
