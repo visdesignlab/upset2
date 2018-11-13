@@ -36,6 +36,8 @@ export class Data {
   renderConfig: RenderConfig;
   unusedSets: Array<Set> = [];
   memberships: Membership = {};
+  collapsedList: string[] = [];
+  subSetsToRemove: string[] = [];
 
   get maxCardinality(): number {
     return Math.max(...this.renderRows.map(d => d.data.setSize));
@@ -62,12 +64,45 @@ export class Data {
   }
 
   collapseGroup(d: RenderRow) {
+    console.log(JSON.parse(JSON.stringify(this.subSetsToRemove)));
     this.setUpSubSets();
     this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+
+    this.renderRows
+      .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
+      .forEach(_ => {
+        (_.data as Group).isCollapsed = true;
+      });
+
+    this.subSetsToRemove = [];
+
     this.renderRows.filter(_ => _.id === d.id).forEach(row => {
       (row.data as Group).isCollapsed = !(row.data as Group).isCollapsed;
+      if ((row.data as Group).isCollapsed) {
+        this.collapsedList.push(row.id);
+      } else {
+        let idx = this.collapsedList.indexOf(row.id);
+        this.collapsedList.splice(idx, 1);
+      }
     });
-    this.app.emit("render-config", this.renderConfig);
+
+    this.renderRows.forEach((row, i) => {
+      if (row.data.type === RowType.GROUP) {
+        if ((row.data as Group).isCollapsed) {
+          let noToHide = (row.data as Group).visibleSets.length;
+          while (noToHide > 0) {
+            this.subSetsToRemove.push((i + noToHide).toString());
+            noToHide--;
+          }
+        }
+      }
+    });
+
+    this.renderRows = this.renderRows.filter(
+      (_, i) => this.subSetsToRemove.indexOf(i.toString()) < 0
+    );
+
+    this.app.emit("render-rows-changed", this);
   }
 
   async load(
@@ -506,8 +541,14 @@ export class Data {
 
   private setupRenderRows(
     renderConfig: RenderConfig = null,
-    sortBySetId?: number
+    sortBySetId?: number,
+    resetCollapseLists: boolean = false
   ) {
+    if (resetCollapseLists) {
+      this.collapsedList = [];
+      this.subSetsToRemove = [];
+    }
+
     if (renderConfig) {
       this.renderConfig = renderConfig;
       this.renderRows = this.render(

@@ -629,18 +629,11 @@ export function addRenderRows(
   comm.emit("update-attributes");
 }
 
-function collapseGroups(groups: d3Selection, subsets: d3Selection, comm: Mitt) {
-  let collapsibleGroups = groups.filter(_ => {
-    console.log((_.data as Group).isCollapsed);
-    console.log(_.data as Group);
-    return (_.data as Group).isCollapsed;
-  });
-  console.log(collapsibleGroups);
-  let subsetsToHide: d3Selection[] = [];
-  // collapsibleGroups.each(c => {
-  //   console.log(c);
-  // });
-}
+function collapseGroups(
+  groups: d3Selection,
+  subsets: d3Selection,
+  comm: Mitt
+) {}
 
 function addAttributeToSelected(selected: Attribute[], attr: Attribute) {
   if (attr && selected.indexOf(attr) < 0) selected.push(attr);
@@ -693,17 +686,22 @@ function addRows(
   _rows
     .exit()
     .transition()
-    .duration(300)
+    .duration(100)
+    .style("opacity", 0)
+    .transition()
+    .duration(100)
     .remove();
 
   let rows = _rows
     .enter()
     .append("g")
+    .style("opacity", 0)
     .merge(_rows)
     .html("")
     .attr("class", (d, i) => {
       return `row ${d.data.type}`;
     });
+
   rows
     .transition()
     .duration(300)
@@ -711,7 +709,10 @@ function addRows(
       if (d.data.type === RowType.GROUP)
         return `translate(0, ${params.row_height * i})`;
       return `translate(${params.skew_offset}, ${params.row_height * i})`;
-    });
+    })
+    .transition()
+    .duration(100)
+    .style("opacity", 1);
 
   setupElementGroups(rows, comm);
 
