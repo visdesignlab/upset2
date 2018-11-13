@@ -1,11 +1,10 @@
-<div class="container is-fluid override">
+<div class="container is-fluid override  is-size-7">
   <div>
     <div class="make-bold">
       First, aggregate by:
     </div>
     <div class="dropdown is-hoverable">
       <div id="firstAggByDropdown" class="dropdown-trigger navbar-link">
-        temp
       </div>
       <div class="dropdown-menu">
         <div id="firstAggByOptions" class="dropdown-content">
@@ -14,20 +13,25 @@
       </div>
     </div>
   </div>
-  <div id='overlap-one'>
+  <!-- <div id='overlap-one'>
     Overlap Degree:
-    <input id='first-overlap-input' type="text">
-  </div>
+    <input style="display:block" id='first-overlap-input' type="text">
+  </div> -->
 
+  <div class="field">
+    <label for="" class="label  is-size-7">Overlap Degree:</label>
+    <div class="control" id='overlap-one'>
+      <input id="first-overlap-input" type="number" class="input is-small">
+    </div>
+  </div>
 
   <div id="secondAgg">
     <div>
-      <div class="make-bold">
+      <div class="make-bold ">
         Then, aggregate by:
       </div>
       <div class="dropdown is-hoverable">
         <div id="secondAggByDropdown" class="dropdown-trigger navbar-link">
-          temp
         </div>
         <div class="dropdown-menu">
           <div id="secondAggByOptions" class="dropdown-content">
@@ -37,9 +41,16 @@
       </div>
     </div>
 
-    <div id='overlap-two'>
+    <!-- <div id='overlap-two'>
       Overlap Degree:
       <input id='second-overlap-input' type="text">
+    </div> -->
+
+    <div class="field">
+      <label for="" class="label  is-size-7">Overlap Degree:</label>
+      <div class="control" id='overlap-two'>
+        <input id="second-overlap-input" type="number" class="input is-small">
+      </div>
     </div>
 
   </div>
@@ -48,7 +59,7 @@
     Sort By:
   </div>
 
-  <div id="sortByOptions" class="control">
+  <div id="sortByOptions" class="control  is-size-7">
     <!-- <div>
       <label for="" class="radio">
         <input type="radio" name="answer"> Test
@@ -58,10 +69,10 @@
 
   <div id="collaseOptions">
     <div>
-      <button class="button">Collapse All</button>
+      <button class="button is-small">Collapse All</button>
     </div>
     <div>
-      <button class="button">Expand All</button>
+      <button class="button is-small">Expand All</button>
     </div>
   </div>
 
@@ -71,19 +82,19 @@
     <div class="field">
       <label for="" class="label">Min Degree:</label>
       <div class="control">
-        <input id="minDegree" type="text" class="input">
+        <input id="minDegree" type="number" class="input is-small">
       </div>
     </div>
     <div class="field">
       <label for="" class="label">Max Degree</label>
       <div class="control">
-        <input id="maxDegree" type="text" class="input">
+        <input id="maxDegree" type="number" class="input is-small">
       </div>
     </div>
     <div class="field">
       <div class="control">
         <input id="hideEmpty" type="checkbox">
-        <label class="checkbox">Hide Empty Intersections</label>
+        <label class="checkbox">Hide Empty</label>
       </div>
     </div>
 
