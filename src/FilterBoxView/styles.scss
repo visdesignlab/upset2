@@ -10,3 +10,13 @@
 .hidden {
   display: none;
 }
+
+input.input {
+  max-width: 50%;
+}
+
+input[type=number] {
+  border: none !important;
+  box-shadow: none;
+  border-bottom: 1px solid #dbdbdb !important;
+}

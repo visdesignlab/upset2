@@ -36,6 +36,10 @@ export class UpsetViewModel extends ViewModelBase {
       this.App.emit("sort-by-deviation");
     });
 
+    this.comm.on("collapse-group", (d: any) => {
+      this.App.emit("collapse-group", d);
+    });
+
     this.registerFunctions(
       "remove-set",
       (d: any) => {

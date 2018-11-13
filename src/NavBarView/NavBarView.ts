@@ -11,6 +11,7 @@ import template from "./navbar.view.html";
 import { RenderConfig } from "../DataStructure/AggregateAndFilters";
 
 export class NavBarView extends ViewBase {
+  oldDataset: any;
   constructor(root: HTMLElement) {
     super(root);
   }
@@ -33,7 +34,7 @@ export class NavBarView extends ViewBase {
       })
       .attr("class", "dropdown-item")
       .on("click", (d: any) => {
-        this.comm.emit("change-dataset", d);
+        this.comm.emit("change-dataset-trigger", d);
       });
 
     let rc: RenderConfig = null;
@@ -53,6 +54,7 @@ export class NavBarView extends ViewBase {
         .data()[0];
     }
     if (d) {
+      this.oldDataset = d;
       this.comm.emit("change-dataset", d);
     }
   }

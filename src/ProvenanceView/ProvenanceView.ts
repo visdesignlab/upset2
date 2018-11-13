@@ -15,7 +15,7 @@ export class ProvenanceView extends ViewBase {
   }
 
   create() {
-    let size = 30;
+    let size = 20;
     d3.select(this.Root).html(template);
 
     // d3.select(this.Root)

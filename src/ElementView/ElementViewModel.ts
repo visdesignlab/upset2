@@ -25,7 +25,7 @@ export class ElementViewModel extends ViewModelBase {
       if (!this.dataset || this.dataset.name != data.name) {
         this.dataset = data;
         this.selectedSets = [];
-        this.update();
+        this.getDefault();
       }
     });
 
@@ -137,9 +137,44 @@ export class ElementViewModel extends ViewModelBase {
       this,
       false
     );
+
+    this.registerFunctions(
+      "set-axis1",
+      (d: string) => {
+        this.comm.emit("set-axis1", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "set-axis1",
+      (d: string) => {
+        this.comm.emit("set-axis1", d);
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "set-axis2",
+      (d: string) => {
+        this.comm.emit("set-axis2", d);
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "set-axis2",
+      (d: string) => {
+        this.comm.emit("set-axis2", d);
+      },
+      this,
+      false
+    );
   }
 
   addSelection(sel: RenderRow) {
+    this.selectedSets = this.selectedSets.filter(_ => _.id !== "DEFAULT");
     let validAttributes = this.dataset.attributes.filter(
       _ => _.name !== "Sets"
     );
@@ -151,7 +186,20 @@ export class ElementViewModel extends ViewModelBase {
   removeSelection(idx: number) {
     let el = this.selectedSets.splice(idx, 1);
     removeColor(el[0].color);
-    this.update();
+    if (this.selectedSets.length === 0) {
+      this.getDefault();
+    } else this.update();
+  }
+
+  getDefault() {
+    let validAttributes = this.dataset.attributes.filter(
+      _ => _.name !== "Sets"
+    );
+    this.comm.emit(
+      "update",
+      [createObjectFromItems(this.dataset.allItems, validAttributes)],
+      validAttributes
+    );
   }
 
   update() {
@@ -178,6 +226,28 @@ function createObjectsFromSubsets(
   return {
     id: row.id,
     data: row.data,
+    arr: arr,
+    color: selectColor()
+  };
+}
+
+function createObjectFromItems(
+  items: number[],
+  attributes: Attribute[]
+): ElementRenderRow {
+  let arr = items.map(i => {
+    let obj: any = {};
+    attributes.forEach((attr: Attribute) => {
+      obj[attr.name] = attr.values[i];
+    });
+
+    return obj;
+  });
+  return {
+    id: "DEFAULT",
+    data: {
+      setSize: items.length
+    } as any,
     arr: arr,
     color: selectColor()
   };
