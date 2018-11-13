@@ -1,3 +1,4 @@
+import { Data } from "./../DataStructure/Data";
 import { Attribute } from "./../DataStructure/Attribute";
 import { d3Selection } from "./../type_declarations/types";
 import { ViewBase } from "provenance_mvvm_framework";
