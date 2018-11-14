@@ -161,7 +161,7 @@ export class ElementView extends ViewBase {
 
     this.ElementQueryResultsDiv = tableVis
       .append("div")
-      .classed("is-centered columns", true);
+      .classed("columns", true);
   }
 
   update(data: ElementRenderRows, attributes: Attribute[]) {
@@ -227,6 +227,26 @@ export class ElementView extends ViewBase {
   ) {
     this.createVisualization(data, attributes);
     this.createTable(data, attributes);
+    this.updateHeights();
+  }
+
+  updateHeights() {
+    let queryHeight = parsePxToInt(d3.select("#element-query").style("height"));
+    let elementVisHeight = parsePxToInt(
+      d3.select("#element-visualization").style("height")
+    );
+    let queryFiltersHeight = parsePxToInt(
+      d3.select("#element-query-filters").style("height")
+    );
+    let navBarHeight = parsePxToInt(
+      d3.select("#navigation-bar").style("height")
+    );
+    let bodyHeight = parsePxToInt(d3.select("body").style("height"));
+    d3.select("#element-query-results").style(
+      "height",
+      `${bodyHeight -
+        (navBarHeight + queryHeight + elementVisHeight + queryFiltersHeight)}px`
+    );
   }
 
   clearAll() {
@@ -387,4 +407,8 @@ export class ElementView extends ViewBase {
       }
     });
   }
+}
+
+function parsePxToInt(pixel: string): number {
+  return parseInt(pixel, 10);
 }
