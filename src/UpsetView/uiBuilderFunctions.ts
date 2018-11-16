@@ -686,7 +686,7 @@ function addRows(
   _rows
     .exit()
     .transition()
-    .duration(100)
+    .duration(200)
     .style("opacity", 0)
     .transition()
     .duration(100)
@@ -698,20 +698,20 @@ function addRows(
     .style("opacity", 0)
     .merge(_rows)
     .html("")
-    .attr("class", (d, i) => {
+    .attr("class", (d: any, i) => {
       return `row ${d.data.type}`;
     });
 
   rows
     .transition()
-    .duration(300)
+    .duration(100)
     .attr("transform", (d: RenderRow, i) => {
       if (d.data.type === RowType.GROUP)
         return `translate(0, ${params.row_height * i})`;
       return `translate(${params.skew_offset}, ${params.row_height * i})`;
     })
     .transition()
-    .duration(100)
+    .duration(90)
     .style("opacity", 1);
 
   setupElementGroups(rows, comm);
