@@ -37,7 +37,7 @@ export class Data {
   unusedSets: Array<Set> = [];
   memberships: Membership = {};
   collapsedList: string[] = [];
-  subSetsToRemove: string[] = [];
+  subSetsToRemove: number[] = [];
 
   get maxCardinality(): number {
     return Math.max(...this.renderRows.map(d => d.data.setSize));
@@ -91,16 +91,16 @@ export class Data {
         if ((row.data as Group).isCollapsed) {
           let noToHide = (row.data as Group).visibleSets.length;
           while (noToHide > 0) {
-            this.subSetsToRemove.push((i + noToHide).toString());
+            this.subSetsToRemove.push((i + noToHide));
             noToHide--;
           }
         }
       }
     });
 
-    this.renderRows = this.renderRows.filter(
-      (_, i) => this.subSetsToRemove.indexOf(i.toString()) < 0
-    );
+    // this.renderRows = this.renderRows.filter(
+    //   (_, i) => this.subSetsToRemove.indexOf(i.toString()) < 0
+    // );
 
     this.app.emit("render-rows-changed", this);
   }

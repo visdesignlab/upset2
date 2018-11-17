@@ -592,7 +592,9 @@ export function addRenderRows(
 
   setupColumnBackgrounds(el, usedSetCount);
 
-  [rows, groups, subsets] = addRows(data.renderRows, el, comm);
+  let rowsToShow = data.renderRows.filter((_,i)=> data.subSetsToRemove.indexOf(i) < 0);
+
+  [rows, groups, subsets] = addRows(rowsToShow, el, comm);
 
   setupSubsets(subsets, comm);
   setupGroups(groups, comm);
