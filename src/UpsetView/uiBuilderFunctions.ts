@@ -682,22 +682,22 @@ function addRows(
   el: d3Selection,
   comm: Mitt
 ): d3Selection[] {
-  let _rows = el.selectAll(".row").data(data, function(d: RenderRow) {
+  let _rows = el.selectAll(".row").data(data, function(d: RenderRow, i:number) {
     return d.id;
   });
   _rows
     .exit()
-    .transition()
-    .duration(200)
-    .style("opacity", 0)
-    .transition()
-    .duration(100)
     .remove();
 
   let rows = _rows
     .enter()
     .append("g")
     .style("opacity", 0)
+    .attr("transform", (d: RenderRow, i) => {
+      if (d.data.type === RowType.GROUP)
+        return `translate(0, ${params.row_height * i})`;
+      return `translate(${params.skew_offset}, ${params.row_height * i})`;
+    })
     .merge(_rows)
     .html("")
     .attr("class", (d: any, i) => {
@@ -706,14 +706,12 @@ function addRows(
 
   rows
     .transition()
-    .duration(100)
+    .duration(300)
     .attr("transform", (d: RenderRow, i) => {
       if (d.data.type === RowType.GROUP)
         return `translate(0, ${params.row_height * i})`;
       return `translate(${params.skew_offset}, ${params.row_height * i})`;
     })
-    .transition()
-    .duration(90)
     .style("opacity", 1);
 
   setupElementGroups(rows, comm);

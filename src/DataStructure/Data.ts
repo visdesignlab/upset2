@@ -64,9 +64,11 @@ export class Data {
   }
 
   collapseGroup(d: RenderRow) {
-    console.log(JSON.parse(JSON.stringify(this.subSetsToRemove)));
-    this.setUpSubSets();
-    this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+    this.renderRows
+    .filter(_ => _.data.type === RowType.GROUP)
+    .forEach(_ => {
+      (_.data as Group).isCollapsed = false;
+    });
 
     this.renderRows
       .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
@@ -97,10 +99,6 @@ export class Data {
         }
       }
     });
-
-    // this.renderRows = this.renderRows.filter(
-    //   (_, i) => this.subSetsToRemove.indexOf(i.toString()) < 0
-    // );
 
     this.app.emit("render-rows-changed", this);
   }
@@ -504,12 +502,9 @@ export class Data {
   private setupRenderRows(
     renderConfig: RenderConfig = null,
     sortBySetId?: number,
-    resetCollapseLists: boolean = false
   ) {
-    if (resetCollapseLists) {
-      this.collapsedList = [];
-      this.subSetsToRemove = [];
-    }
+    this.collapsedList = [];
+    this.subSetsToRemove = [];
 
     if (renderConfig) {
       this.renderConfig = renderConfig;
