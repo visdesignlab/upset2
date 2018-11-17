@@ -171,92 +171,58 @@ export class Data {
     let actualBit = -1;
     let names: string[] = [];
 
-    if (false) {
-      Object.keys(aggregateIntersection).forEach(key => {
-        let list = aggregateIntersection[key];
+    for (let bitMask = 0; bitMask <= this.combinations; ++bitMask) {
+      tempBitMask = bitMask;
 
-        let combinedSets = key.split("");
-        names = [];
-        let expectedValue = 1;
-        let notExpectedValue = 1;
+      let card = 0;
+      let combinedSets: number[] = Array.apply(null, new Array(usedSetLength))
+        .map(() => {
+          actualBit = tempBitMask % 2;
+          tempBitMask = (tempBitMask - actualBit) / 2;
+          card == actualBit;
+          return +actualBit;
+        })
+        .reverse();
 
-        combinedSets.forEach((d, i) => {
-          if (d === "1") {
-            names.push(this.usedSets[i].elementName);
-            expectedValue = expectedValue * this.usedSets[i].dataRatio;
-          } else {
-            notExpectedValue =
-              notExpectedValue * (1 - this.usedSets[i].dataRatio);
-          }
-        });
+      combinedSetsFlat = combinedSets.join("");
 
-        expectedValue += notExpectedValue;
+      names = [];
+      let expectedValue = 1;
+      let notExpectedValue = 1;
 
-        let name = "";
-        if (names.length > 0) {
-          name = names.reverse().join("") + " "; // Test
+      combinedSets.forEach((d, i) => {
+        if (d === 1) {
+          names.push(this.usedSets[i].elementName);
+          expectedValue = expectedValue * this.usedSets[i].dataRatio;
+        } else {
+          notExpectedValue =
+            notExpectedValue * (1 - this.usedSets[i].dataRatio);
         }
-
-        // To define
       });
-    } else {
-      for (let bitMask = 0; bitMask <= this.combinations; ++bitMask) {
-        tempBitMask = bitMask;
 
-        let card = 0;
-        let combinedSets: number[] = Array.apply(null, new Array(usedSetLength))
-          .map(() => {
-            actualBit = tempBitMask % 2;
-            tempBitMask = (tempBitMask - actualBit) / 2;
-            card == actualBit;
-            return +actualBit;
-          })
-          .reverse();
+      expectedValue *= notExpectedValue;
 
-        combinedSetsFlat = combinedSets.join("");
-
-        // Test if needed
-        // if (card > this.maxCardinality) continue;
-        // if (card < this.maxCardinality) continue;
-
-        names = [];
-        let expectedValue = 1;
-        let notExpectedValue = 1;
-
-        combinedSets.forEach((d, i) => {
-          if (d === 1) {
-            names.push(this.usedSets[i].elementName);
-            expectedValue = expectedValue * this.usedSets[i].dataRatio;
-          } else {
-            notExpectedValue =
-              notExpectedValue * (1 - this.usedSets[i].dataRatio);
-          }
-        });
-
-        expectedValue *= notExpectedValue;
-
-        let list = aggregateIntersection[combinedSetsFlat];
-        if (list == null) {
-          list = [];
-        }
-
-        let name = "";
-        names = names.map(n => n.replace(" ", "_"));
-        if (names.length > 0) name = names.reverse().join(" ") + "";
-        if (name === "") {
-          name = "UNINCLUDED";
-        }
-        let subset = new SubSet(
-          bitMask,
-          name,
-          combinedSets,
-          list,
-          expectedValue,
-          this.depth
-        );
-        this.subSets.push(subset);
-        this.UpdateDictionary(subset.itemList, subset.id);
+      let list = aggregateIntersection[combinedSetsFlat];
+      if (list == null) {
+        list = [];
       }
+
+      let name = "";
+      names = names.map(n => n.replace(" ", "_"));
+      if (names.length > 0) name = names.reverse().join(" ") + "";
+      if (name === "") {
+        name = "UNINCLUDED";
+      }
+      let subset = new SubSet(
+        bitMask,
+        name,
+        combinedSets,
+        list,
+        expectedValue,
+        this.depth
+      );
+      this.subSets.push(subset);
+      this.UpdateDictionary(subset.itemList, subset.id);
     }
     aggregateIntersection = {};
   }
@@ -438,9 +404,7 @@ export class Data {
     let s = this.attributes.filter(_ => _.name === attr.name);
     if (s.length === 1) {
       this.selectedAttributes.push(s[0]);
-      this.setUpSubSets();
-      this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
-      this.app.emit("render-config", this.renderConfig);
+      this.app.emit("render-rows-changed", this);
     }
   }
 
@@ -460,9 +424,7 @@ export class Data {
       let idx = this.selectedAttributes.findIndex(_ => _.name === attr.name);
       if (idx !== -1) {
         this.selectedAttributes.splice(idx, 1);
-        this.setUpSubSets();
-        this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
-        this.app.emit("render-config", this.renderConfig);
+        this.app.emit("render-rows-changed", this);
       }
     }
   }
