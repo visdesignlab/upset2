@@ -63,7 +63,7 @@ export class Data {
     this.app.on("collapse-group", this.collapseGroup, this);
   }
 
-  collapseGroup(d: RenderRow) {
+  collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {
     this.renderRows
     .filter(_ => _.data.type === RowType.GROUP)
     .forEach(_ => {
@@ -100,7 +100,8 @@ export class Data {
       }
     });
 
-    this.app.emit("render-rows-changed", this);
+    if (!collapseAllFlag)
+      this.app.emit("render-rows-changed", this);
   }
 
   async load(
@@ -516,7 +517,8 @@ export class Data {
         this.renderConfig.maxDegree,
         this.renderConfig.firstOverlap,
         this.renderConfig.secondOverlap,
-        this.renderConfig.sortBySetid
+        this.renderConfig.sortBySetid,
+        this.renderConfig.collapseAll
       );
     } else {
       if (!sortBySetId) sortBySetId = 0;
@@ -528,9 +530,17 @@ export class Data {
         this.renderConfig.maxDegree,
         this.renderConfig.firstOverlap,
         this.renderConfig.secondOverlap,
-        this.renderConfig.sortBySetid
+        this.renderConfig.sortBySetid,
+        this.renderConfig.collapseAll
       );
     }
+
+    if (this.renderConfig.collapseAll){
+      this.renderRows.filter(_ => _.data.type === RowType.GROUP).forEach(_ => {
+        this.collapseGroup(_, true);
+      })
+    }
+
     this.app.emit("render-rows-changed", this);
   }
 
@@ -542,7 +552,8 @@ export class Data {
     maxDegree: number,
     overlap1: number,
     overlap2: number,
-    sortBySetId?: number
+    sortBySetId?: number,
+    collapseAll: boolean = false
   ): Array<RenderRow> {
     let agg: RenderRow[] = [];
 
@@ -584,6 +595,7 @@ export class Data {
     agg.filter(_ => _.data instanceof Group).forEach(group => {
       this.UpdateDictionary(group.data.items, group.id);
     });
+
     return agg;
   }
 }
