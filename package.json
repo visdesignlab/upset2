@@ -5,9 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build-client": "webpack --config webpack.client.config.js",
-    "build-server": "webpack --config webpack.server.config.js",
     "serve": "lite-server -c bs-config.json",
-    "node-server": "nodemon server.js"
+    "update-submodules": "git submodule update --init --recursive"
   },
   "author": "",
   "license": "ISC",
