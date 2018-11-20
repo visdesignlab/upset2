@@ -26,7 +26,7 @@ import { UpsetViewModel } from "./../UpsetView/UpsetViewModel";
 import "./styles.scss";
 import { ElementViewModel } from "../ElementView/ElementViewModel";
 import { ElementView } from "../ElementView/ElementView";
-
+import { CreateFileUploadView } from "../lib/dsv_importer/src/app/app"
 export const serverUrl: string = "http://18.224.213.250";
 
 function run() {
