@@ -79,9 +79,29 @@ export class FilterBoxView extends ViewBase {
 
   update() {
     this.updateAggregationDropdowns();
+    this.updateCollapseAll();
     this.updateSortByOptions();
     this.updateOverlaps();
     this.updateDataFields();
+  }
+
+  private updateCollapseAll() {
+    let checkbox = d3.select('#collapseAll');
+    checkbox.property('checked', this.config.collapseAll);
+    let that = this;
+    checkbox.on('change', function(){
+      let el = d3.select(this)
+      let val = el.property('checked');
+      let _do = {
+        func: that.applyCollapseAll.bind(that),
+        args: [val]
+      };
+      let _undo = {
+        func: that.applyCollapseAll.bind(that),
+        args: [!val]
+      };
+      that.comm.emit('apply', ['apply-collapse-all', _do, _undo]);
+    });
   }
 
   private updateDataFields() {
@@ -411,6 +431,14 @@ export class FilterBoxView extends ViewBase {
   }
 
   unApplySortBySet(rc: RenderConfig) {
+    this.saveConfig(rc);
+    this.update();
+  }
+
+  applyCollapseAll(val: boolean) {
+    console.log(val);
+    let rc = this.config;
+    rc.collapseAll = val;
     this.saveConfig(rc);
     this.update();
   }

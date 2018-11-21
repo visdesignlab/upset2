@@ -18,9 +18,16 @@ export class NavBarViewModel extends ViewModelBase {
     this.populateDatasetSelector(dsLocation);
 
     // this.populateDatasetSelectorFromServer();
-
+    this.comm.on("load-data", () => {
+      this.App.emit("open-dataset-selection");
+    });
     this.comm.on("change-dataset", dataset => {
+      view.oldDataset = dataset
       this.App.emit("change-dataset", dataset);
+    });
+
+    this.App.on("change-dataset-trigger", d => {
+      this.comm.emit("change-dataset-trigger", d);
     });
 
     this.comm.on("change-dataset-trigger", (d: any) => {

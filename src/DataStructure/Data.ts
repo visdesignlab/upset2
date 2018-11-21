@@ -37,7 +37,7 @@ export class Data {
   unusedSets: Array<Set> = [];
   memberships: Membership = {};
   collapsedList: string[] = [];
-  subSetsToRemove: string[] = [];
+  subSetsToRemove: number[] = [];
 
   get maxCardinality(): number {
     return Math.max(...this.renderRows.map(d => d.data.setSize));
@@ -63,10 +63,12 @@ export class Data {
     this.app.on("collapse-group", this.collapseGroup, this);
   }
 
-  collapseGroup(d: RenderRow) {
-    console.log(JSON.parse(JSON.stringify(this.subSetsToRemove)));
-    this.setUpSubSets();
-    this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
+  collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {
+    this.renderRows
+    .filter(_ => _.data.type === RowType.GROUP)
+    .forEach(_ => {
+      (_.data as Group).isCollapsed = false;
+    });
 
     this.renderRows
       .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
@@ -91,18 +93,15 @@ export class Data {
         if ((row.data as Group).isCollapsed) {
           let noToHide = (row.data as Group).visibleSets.length;
           while (noToHide > 0) {
-            this.subSetsToRemove.push((i + noToHide).toString());
+            this.subSetsToRemove.push((i + noToHide));
             noToHide--;
           }
         }
       }
     });
 
-    this.renderRows = this.renderRows.filter(
-      (_, i) => this.subSetsToRemove.indexOf(i.toString()) < 0
-    );
-
-    this.app.emit("render-rows-changed", this);
+    if (!collapseAllFlag)
+      this.app.emit("render-rows-changed", this);
   }
 
   async load(
@@ -171,92 +170,58 @@ export class Data {
     let actualBit = -1;
     let names: string[] = [];
 
-    if (false) {
-      Object.keys(aggregateIntersection).forEach(key => {
-        let list = aggregateIntersection[key];
+    for (let bitMask = 0; bitMask <= this.combinations; ++bitMask) {
+      tempBitMask = bitMask;
 
-        let combinedSets = key.split("");
-        names = [];
-        let expectedValue = 1;
-        let notExpectedValue = 1;
+      let card = 0;
+      let combinedSets: number[] = Array.apply(null, new Array(usedSetLength))
+        .map(() => {
+          actualBit = tempBitMask % 2;
+          tempBitMask = (tempBitMask - actualBit) / 2;
+          card == actualBit;
+          return +actualBit;
+        })
+        .reverse();
 
-        combinedSets.forEach((d, i) => {
-          if (d === "1") {
-            names.push(this.usedSets[i].elementName);
-            expectedValue = expectedValue * this.usedSets[i].dataRatio;
-          } else {
-            notExpectedValue =
-              notExpectedValue * (1 - this.usedSets[i].dataRatio);
-          }
-        });
+      combinedSetsFlat = combinedSets.join("");
 
-        expectedValue += notExpectedValue;
+      names = [];
+      let expectedValue = 1;
+      let notExpectedValue = 1;
 
-        let name = "";
-        if (names.length > 0) {
-          name = names.reverse().join("") + " "; // Test
+      combinedSets.forEach((d, i) => {
+        if (d === 1) {
+          names.push(this.usedSets[i].elementName);
+          expectedValue = expectedValue * this.usedSets[i].dataRatio;
+        } else {
+          notExpectedValue =
+            notExpectedValue * (1 - this.usedSets[i].dataRatio);
         }
-
-        // To define
       });
-    } else {
-      for (let bitMask = 0; bitMask <= this.combinations; ++bitMask) {
-        tempBitMask = bitMask;
 
-        let card = 0;
-        let combinedSets: number[] = Array.apply(null, new Array(usedSetLength))
-          .map(() => {
-            actualBit = tempBitMask % 2;
-            tempBitMask = (tempBitMask - actualBit) / 2;
-            card == actualBit;
-            return +actualBit;
-          })
-          .reverse();
+      expectedValue *= notExpectedValue;
 
-        combinedSetsFlat = combinedSets.join("");
-
-        // Test if needed
-        // if (card > this.maxCardinality) continue;
-        // if (card < this.maxCardinality) continue;
-
-        names = [];
-        let expectedValue = 1;
-        let notExpectedValue = 1;
-
-        combinedSets.forEach((d, i) => {
-          if (d === 1) {
-            names.push(this.usedSets[i].elementName);
-            expectedValue = expectedValue * this.usedSets[i].dataRatio;
-          } else {
-            notExpectedValue =
-              notExpectedValue * (1 - this.usedSets[i].dataRatio);
-          }
-        });
-
-        expectedValue *= notExpectedValue;
-
-        let list = aggregateIntersection[combinedSetsFlat];
-        if (list == null) {
-          list = [];
-        }
-
-        let name = "";
-        names = names.map(n => n.replace(" ", "_"));
-        if (names.length > 0) name = names.reverse().join(" ") + "";
-        if (name === "") {
-          name = "UNINCLUDED";
-        }
-        let subset = new SubSet(
-          bitMask,
-          name,
-          combinedSets,
-          list,
-          expectedValue,
-          this.depth
-        );
-        this.subSets.push(subset);
-        this.UpdateDictionary(subset.itemList, subset.id);
+      let list = aggregateIntersection[combinedSetsFlat];
+      if (list == null) {
+        list = [];
       }
+
+      let name = "";
+      names = names.map(n => n.replace(" ", "_"));
+      if (names.length > 0) name = names.reverse().join(" ") + "";
+      if (name === "") {
+        name = "UNINCLUDED";
+      }
+      let subset = new SubSet(
+        bitMask,
+        name,
+        combinedSets,
+        list,
+        expectedValue,
+        this.depth
+      );
+      this.subSets.push(subset);
+      this.UpdateDictionary(subset.itemList, subset.id);
     }
     aggregateIntersection = {};
   }
@@ -438,9 +403,7 @@ export class Data {
     let s = this.attributes.filter(_ => _.name === attr.name);
     if (s.length === 1) {
       this.selectedAttributes.push(s[0]);
-      this.setUpSubSets();
-      this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
-      this.app.emit("render-config", this.renderConfig);
+      this.app.emit("render-rows-changed", this);
     }
   }
 
@@ -460,9 +423,7 @@ export class Data {
       let idx = this.selectedAttributes.findIndex(_ => _.name === attr.name);
       if (idx !== -1) {
         this.selectedAttributes.splice(idx, 1);
-        this.setUpSubSets();
-        this.setupRenderRows(JSON.parse(sessionStorage["render_config"]));
-        this.app.emit("render-config", this.renderConfig);
+        this.app.emit("render-rows-changed", this);
       }
     }
   }
@@ -542,12 +503,9 @@ export class Data {
   private setupRenderRows(
     renderConfig: RenderConfig = null,
     sortBySetId?: number,
-    resetCollapseLists: boolean = false
   ) {
-    if (resetCollapseLists) {
-      this.collapsedList = [];
-      this.subSetsToRemove = [];
-    }
+    this.collapsedList = [];
+    this.subSetsToRemove = [];
 
     if (renderConfig) {
       this.renderConfig = renderConfig;
@@ -559,7 +517,8 @@ export class Data {
         this.renderConfig.maxDegree,
         this.renderConfig.firstOverlap,
         this.renderConfig.secondOverlap,
-        this.renderConfig.sortBySetid
+        this.renderConfig.sortBySetid,
+        this.renderConfig.collapseAll
       );
     } else {
       if (!sortBySetId) sortBySetId = 0;
@@ -571,9 +530,17 @@ export class Data {
         this.renderConfig.maxDegree,
         this.renderConfig.firstOverlap,
         this.renderConfig.secondOverlap,
-        this.renderConfig.sortBySetid
+        this.renderConfig.sortBySetid,
+        this.renderConfig.collapseAll
       );
     }
+
+    if (this.renderConfig.collapseAll){
+      this.renderRows.filter(_ => _.data.type === RowType.GROUP).forEach(_ => {
+        this.collapseGroup(_, true);
+      })
+    }
+
     this.app.emit("render-rows-changed", this);
   }
 
@@ -585,7 +552,8 @@ export class Data {
     maxDegree: number,
     overlap1: number,
     overlap2: number,
-    sortBySetId?: number
+    sortBySetId?: number,
+    collapseAll: boolean = false
   ): Array<RenderRow> {
     let agg: RenderRow[] = [];
 
@@ -627,6 +595,7 @@ export class Data {
     agg.filter(_ => _.data instanceof Group).forEach(group => {
       this.UpdateDictionary(group.data.items, group.id);
     });
+
     return agg;
   }
 }

@@ -54,11 +54,15 @@ export class DataUtils {
     return d;
   }
 
-  static getDataSetInfo(data: IDataSetJSON): IDataSetInfo {
+  static getDataSetInfo(
+    data: IDataSetJSON,
+    fromServer: boolean = false
+  ): IDataSetInfo {
     let info: IDataSetInfo = {
       Name: "",
       SetCount: 0,
       AttributeCount: 0,
+      FromServer: fromServer,
       _data: null
     };
     info.Name = data.name;
@@ -79,11 +83,23 @@ export class DataUtils {
 
   static processDataSet(datasetinfo: IDataSetInfo): any {
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
-    d3.dsv(dataSetDesc.separator, datasetinfo._data.file).then(data => {
-      let d = new Data(DataUtils.app).load(data, dataSetDesc);
-      d.then((d2: Data) => {
-        DataUtils.app.emit("render-config", d2.renderConfig);
+    if (datasetinfo.FromServer) {
+      d3.dsv(
+        dataSetDesc.separator,
+        `${serverUrl}/download/single/${datasetinfo._data.file}`
+      ).then(data => {
+        let d = new Data(DataUtils.app).load(data, dataSetDesc);
+        d.then((d2: Data) => {
+          DataUtils.app.emit("render-config", d2.renderConfig);
+        });
       });
-    });
+    } else {
+      d3.dsv(dataSetDesc.separator, datasetinfo._data.file).then(data => {
+        let d = new Data(DataUtils.app).load(data, dataSetDesc);
+        d.then((d2: Data) => {
+          DataUtils.app.emit("render-config", d2.renderConfig);
+        });
+      });
+    }
   }
 }

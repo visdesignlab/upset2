@@ -72,6 +72,7 @@ export class FilterBoxViewModel extends ViewModelBase {
       view
     );
     this.registerFunctions("sortByDeviation", view.applySortByDeviation, view);
+    this.registerFunctions('apply-collapse-all', view.applyCollapseAll, view);
 
     /** Undo Registration */
     this.registerFunctions(
@@ -125,10 +126,10 @@ export class FilterBoxViewModel extends ViewModelBase {
       view,
       false
     );
+    this.registerFunctions('apply-collapse-all', view.applyCollapseAll, view, false);
 
     this.comm.on("apply", args => {
       console.log(args);
-      console.log(this.App.graph);
       this.apply(args);
     });
   }
