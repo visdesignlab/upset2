@@ -54,11 +54,15 @@ export class DataUtils {
     return d;
   }
 
-  static getDataSetInfo(data: IDataSetJSON): IDataSetInfo {
+  static getDataSetInfo(
+    data: IDataSetJSON,
+    fromServer: boolean = false
+  ): IDataSetInfo {
     let info: IDataSetInfo = {
       Name: "",
       SetCount: 0,
       AttributeCount: 0,
+      FromServer: fromServer,
       _data: null
     };
     info.Name = data.name;

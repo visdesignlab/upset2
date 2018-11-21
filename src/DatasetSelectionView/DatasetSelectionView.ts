@@ -6,6 +6,7 @@ import { CreateFileUploadView } from "../lib/dsv_importer/src/app/app";
 import listHtml from "./dataset.list.view.html";
 import datasetCardHtml from "./dataset.info.view.html";
 import { serverUrl } from "../app/app";
+import { DataUtils } from "../DataStructure/DataUtils";
 
 export class DatasetSelectionView extends ViewBase {
   modal: d3Selection;
@@ -56,13 +57,10 @@ export class DatasetSelectionView extends ViewBase {
         );
 
         el.on("click", () => {
-          that.comm.emit("change-dataset-trigger", {
-            Name: d.info.name,
-            AttributeCount: d.info.meta.length,
-            SetCount: -1,
-            FromServer: true,
-            _data: d.info
-          });
+          that.comm.emit(
+            "change-dataset-trigger",
+            DataUtils.getDataSetInfo(d.info, true)
+          );
         });
       });
     });
