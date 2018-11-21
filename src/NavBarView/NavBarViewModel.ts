@@ -22,6 +22,7 @@ export class NavBarViewModel extends ViewModelBase {
       this.App.emit("open-dataset-selection");
     });
     this.comm.on("change-dataset", dataset => {
+      view.oldDataset = dataset
       this.App.emit("change-dataset", dataset);
     });
 

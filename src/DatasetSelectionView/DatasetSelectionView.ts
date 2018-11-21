@@ -23,17 +23,24 @@ export class DatasetSelectionView extends ViewBase {
   }
 
   setup() {
-    this.modalContent.html(listHtml);
     this.comm.on("open-dataset-selection", this.update, this);
     this.modal.select(".modal-close").on("click", () => {
       this.modal.classed("is-active", false);
     });
   }
 
-  create() {}
+  createUploadView() {
+    this.modalContent.html("");
+    CreateFileUploadView(this.modalContent);
+  }
 
   update() {
     this.modal.classed("is-active", true);
+    this.modalContent.html("");
+    this.modalContent.html(listHtml);
+    this.modal
+      .select("#upload-new-dataset")
+      .on("click", this.createUploadView.bind(this));
     let list = this.modalContent.select("#list");
     d3.json(`${serverUrl}/download/list`).then((res: any[]) => {
       let that = this;
