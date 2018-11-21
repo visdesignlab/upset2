@@ -1,6 +1,6 @@
 import {Application, ViewModelBase} from 'provenance_mvvm_framework';
 import {DatasetSelectionView} from './DatasetSelectionView';
-
+import './styles.scss';
 export class DatasetSelectionViewModel extends ViewModelBase {
   constructor(view: DatasetSelectionView, app: Application) {
     super(view, app);

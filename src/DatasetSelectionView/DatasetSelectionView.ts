@@ -13,15 +13,20 @@ export class DatasetSelectionView extends ViewBase {
       .append('div')
       .html(html);
     this.modal = modalDiv.select('#dataset-modal');
-
-    this.comm.on('open-dataset-selection', this.update, this);
+    this.setup();
   }
 
-  setup() {}
+  setup() {
+    this.comm.on('open-dataset-selection', this.update, this);
+    this.modal.select('.modal-close').on('click', () => {
+      this.modal.classed('is-active', false);
+    });
+  }
 
   create() {}
 
   update() {
+    this.modal.select('.modal-content').html('');
     this.modal.classed('is-active', true);
     CreateFileUploadView(this.modal.select('.modal-content'));
   }
