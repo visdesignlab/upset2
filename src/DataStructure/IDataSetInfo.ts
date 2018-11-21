@@ -9,5 +9,6 @@ export type IDataSetInfo = {
   Name: string;
   SetCount: number;
   AttributeCount: number;
+  FromServer?: boolean;
   _data: IDataSetJSON;
 };

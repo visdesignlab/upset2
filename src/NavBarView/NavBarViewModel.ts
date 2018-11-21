@@ -1,16 +1,16 @@
-import {serverUrl} from './../app/app';
+import { serverUrl } from "./../app/app";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-16 11:15:54
  */
-import {ViewModelBase, Application} from 'provenance_mvvm_framework';
-import {DataUtils} from './../DataStructure/DataUtils';
-import {IDataSetInfo} from './../DataStructure/IDataSetInfo';
-import {IDataSetJSON} from './../DataStructure/IDataSetJSON';
-import {NavBarView} from './NavBarView';
-import './styles.scss';
+import { ViewModelBase, Application } from "provenance_mvvm_framework";
+import { DataUtils } from "./../DataStructure/DataUtils";
+import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
+import { IDataSetJSON } from "./../DataStructure/IDataSetJSON";
+import { NavBarView } from "./NavBarView";
+import "./styles.scss";
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application, dsLocation: string) {
@@ -18,44 +18,48 @@ export class NavBarViewModel extends ViewModelBase {
     this.populateDatasetSelector(dsLocation);
 
     // this.populateDatasetSelectorFromServer();
-    this.comm.on('load-data', () => {
-      this.App.emit('open-dataset-selection');
+    this.comm.on("load-data", () => {
+      this.App.emit("open-dataset-selection");
     });
-    this.comm.on('change-dataset', dataset => {
-      this.App.emit('change-dataset', dataset);
+    this.comm.on("change-dataset", dataset => {
+      this.App.emit("change-dataset", dataset);
     });
 
-    this.comm.on('change-dataset-trigger', (d: any) => {
+    this.App.on("change-dataset-trigger", d => {
+      this.comm.emit("change-dataset-trigger", d);
+    });
+
+    this.comm.on("change-dataset-trigger", (d: any) => {
       let _do = {
         func: (d: any) => {
-          this.comm.emit('change-dataset', d);
+          this.comm.emit("change-dataset", d);
         },
-        args: [d],
+        args: [d]
       };
       let _undo = {
         func: (d: any) => {
-          this.comm.emit('change-dataset', d);
+          this.comm.emit("change-dataset", d);
         },
-        args: [view.oldDataset],
+        args: [view.oldDataset]
       };
-      this.apply.call(this, ['change-dataset', _do, _undo]);
+      this.apply.call(this, ["change-dataset", _do, _undo]);
     });
 
     this.registerFunctions(
-      'change-dataset',
+      "change-dataset",
       (d: any) => {
-        this.comm.emit('change-dataset', d);
+        this.comm.emit("change-dataset", d);
       },
-      this,
+      this
     );
 
     this.registerFunctions(
-      'change-dataset',
+      "change-dataset",
       (d: any) => {
-        this.comm.emit('change-dataset', d);
+        this.comm.emit("change-dataset", d);
       },
       this,
-      false,
+      false
     );
   }
 
@@ -76,7 +80,7 @@ export class NavBarViewModel extends ViewModelBase {
         });
       })
       .then(() => {
-        this.comm.emit('update', this.datasets);
+        this.comm.emit("update", this.datasets);
       });
   }
 
@@ -99,7 +103,7 @@ export class NavBarViewModel extends ViewModelBase {
             });
           })
           .then(() => {
-            this.comm.emit('update', this.datasets);
+            this.comm.emit("update", this.datasets);
           });
       });
   }
