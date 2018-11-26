@@ -16,7 +16,7 @@
 }
 
 .header {
-  cursor: pointer;
+  cursor: url(/assets/trash-can.png) 1 1, pointer;
 }
 
 .connector {
@@ -128,7 +128,7 @@
 }
 
 .inner-text-group {
-  cursor: s-resize
+  cursor: s-resize;
 }
 
 .cardinality-label-rect {
@@ -141,13 +141,13 @@
 
 .hide {
   opacity: 0;
-  transition: opacity 1s
+  transition: opacity 1s;
 }
 
 .slider-brush-path {
   fill: #ccc;
   opacity: 0.5;
-  transition: opacity 1s
+  transition: opacity 1s;
 }
 
 .cardinality-text {
@@ -155,11 +155,11 @@
 }
 
 .disproportionality.positive {
-  fill: #74add1
+  fill: #74add1;
 }
 
 .disproportionality.negative {
-  fill: #f46d43
+  fill: #f46d43;
 }
 
 .deviation-label {
@@ -171,15 +171,15 @@
 }
 
 .deviation-label:hover {
-  fill: #a3a3a3
+  fill: #a3a3a3;
 }
 
-.unselectedAttribute>rect {
+.unselectedAttribute > rect {
   stroke: black;
   stroke-width: 1px;
 }
 
-.unselectedAttribute>text {
+.unselectedAttribute > text {
   color: black;
   writing-mode: vertical-lr;
 }
@@ -206,5 +206,5 @@
 .label {
   stroke: black;
   stroke-width: 1px;
-  fill: rgba(120, 120, 120, 0.3)
+  fill: rgba(120, 120, 120, 0.3);
 }
