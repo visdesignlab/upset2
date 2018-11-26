@@ -1,10 +1,25 @@
 <nav class="navbar is-dark" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <div class="navbar-item">
+    <div class="navbar-item has-text-weight-bold is-size-5">
       UpSet - Visualizing Intersecting Sets
     </div>
   </div>
   <div class="navbar-menu">
+    <div class="navbar-start">
+      <div class="navbar-item">
+        <div id="undo-redo-group" class=""></div>
+      </div>
+
+      <div class="navbar-item">
+        <div class="field">
+          <div class="control">
+            <input id="collapseAll" type="checkbox">
+            <label class="checkbox">Collapse All</label>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div class="navbar-end">
       <div class="navbar-item">
         <div style="font-weight: bold">Choose Dataset</div>
@@ -22,17 +37,19 @@
       </div>
 
       <div class="navbar-item">
-        <a href="http://caleydo.org/tools/upset/ ">About UpSet</a>
-      </div>
-
-      <div class="navbar-item">
-        <a href="https://github.com/hms-dbmi/UpSetR/ ">UpSet for R</a>
-      </div>
-      <div class="navbar-item">
         <div id="embed-modal">
           <a class="button is-small is-primary show">Embed</a>
         </div>
       </div>
+
+      <div class="navbar-item">
+        <a class=" has-text-white-ter" href="http://caleydo.org/tools/upset/ ">About UpSet</a>
+      </div>
+      <!-- 
+      <div class="navbar-item">
+        <a href="https://github.com/hms-dbmi/UpSetR/ ">UpSet for R</a>
+      </div> -->
+
     </div>
   </div>
 </nav>

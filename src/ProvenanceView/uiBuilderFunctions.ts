@@ -3,14 +3,14 @@ import { d3Selection } from "./../type_declarations/types";
 import * as d3 from "d3";
 
 export function createButtons(el: d3Selection, graph: IProvenanceGraph) {
-  el.select(".redo").classed("disable", false);
-  el.select(".undo").classed("disable", false);
+  el.select(".redo").classed("has-text-grey", false);
+  el.select(".undo").classed("has-text-grey", false);
 
   if (graph.current.children.length === 0) {
-    el.select(".redo").classed("disable", true);
+    el.select(".redo").classed("has-text-grey", true);
   }
   if (graph.current.label === "Root") {
-    el.select(".undo").classed("disable", true);
+    el.select(".undo").classed("has-text-grey", true);
   }
 }
 
