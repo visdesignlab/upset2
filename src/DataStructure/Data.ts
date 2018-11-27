@@ -548,8 +548,21 @@ export class Data {
         this.setNameDictionary
       );
 
-    if (this.renderConfig.hideEmptyIntersection)
-      agg = agg.filter(set => set.data.setSize > 0);
+    if (!this.renderConfig.hideEmptyIntersection) {
+      if (agg.filter(_ => _.data.type === RowType.GROUP).length > 0)
+        agg.forEach(_ => {
+          let group = _.data as Group;
+          group.visibleSets.push(...group.hiddenSets);
+        });
+    } else {
+      agg = agg.filter(_ => _.data.setSize > 0);
+      if (agg.filter(_ => _.data.type === RowType.GROUP).length > 0) {
+        agg.forEach(row => {
+          let group = row.data as Group;
+          group.nestedGroups = group.nestedGroups.filter(_ => _.setSize > 0);
+        });
+      }
+    }
 
     if (sortBy) agg = applySort(agg, sortBy, sortBySetId);
 
@@ -567,40 +580,62 @@ function applySecondAggregation(
   overlap: number,
   setNameDictionary: { [key: number]: string }
 ): RenderRow[] {
-  let groupIndices = agg
-    .map((v: RenderRow, i) => [i, v.data.type === RowType.GROUP])
-    .filter(v => v[1])
-    .map(v => v[0]);
   let rr: RenderRow[] = [];
 
-  for (let i = 0; i < groupIndices.length; ++i) {
-    rr.push(agg[groupIndices[i] as number]);
-
-    let subsets: RenderRow[] = [];
-    if (i === groupIndices.length - 1) {
-      subsets = agg.slice((groupIndices[i] as number) + 1);
-    } else {
-      subsets = agg.slice((groupIndices[i] as number) + 1, groupIndices[
-        i + 1
-      ] as number);
-    }
-
+  agg.forEach(row => {
+    rr.push(row);
+    let group = row.data as Group;
+    let subsetRows = group.subSets.map(_ => {
+      return {
+        id: _.id.toString(),
+        data: _
+      };
+    });
     let rendered = AggregationStrategy[aggBy](
-      subsets,
+      subsetRows,
       overlap,
       2,
       setNameDictionary
     );
-
-    rendered.filter(_ => _.data.type === RowType.GROUP).forEach(g => {
-      (agg[groupIndices[i] as number].data as Group).addNestedGroup(
-        g.data as Group
-      );
-    });
-
-    rr = rr.concat(rendered);
-  }
+    console.log(row, rendered);
+    rendered.map(_ => (row.data as Group).addNestedGroup(_.data as Group));
+  });
   return rr;
+
+  // let groupIndices = agg
+  //   .map((v: RenderRow, i) => [i, v.data.type === RowType.GROUP])
+  //   .filter(v => v[1])
+  //   .map(v => v[0]);
+  // let rr: RenderRow[] = [];
+
+  // for (let i = 0; i < groupIndices.length; ++i) {
+  //   rr.push(agg[groupIndices[i] as number]);
+
+  //   let subsets: RenderRow[] = [];
+  //   if (i === groupIndices.length - 1) {
+  //     subsets = agg.slice((groupIndices[i] as number) + 1);
+  //   } else {
+  //     subsets = agg.slice((groupIndices[i] as number) + 1, groupIndices[
+  //       i + 1
+  //     ] as number);
+  //   }
+
+  //   let rendered = AggregationStrategy[aggBy](
+  //     subsets,
+  //     overlap,
+  //     2,
+  //     setNameDictionary
+  //   );
+
+  //   rendered.filter(_ => _.data.type === RowType.GROUP).forEach(g => {
+  //     (agg[groupIndices[i] as number].data as Group).addNestedGroup(
+  //       g.data as Group
+  //     );
+  //   });
+
+  //   rr = rr.concat(rendered);
+  // }
+  // return rr;
 }
 
 function applySort(

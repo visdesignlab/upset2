@@ -41,7 +41,7 @@ function aggregateByDegree(
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
       g.addSubSet(subset.data as SubSet);
-      rr.push({ id: subset.id.toString(), data: subset.data });
+      // rr.push({ id: subset.id.toString(), data: subset.data });
     });
   }
 
@@ -78,7 +78,7 @@ function aggregateByDeviation(
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
       g.addSubSet(subset.data as SubSet);
-      rr.push({ id: subset.id.toString(), data: subset.data });
+      // rr.push({ id: subset.id.toString(), data: subset.data });
     });
   }
 
@@ -93,9 +93,7 @@ function aggregateByOverlap(
 ): RenderRow[] {
   let combinations = data
     .filter(d => {
-      return (
-        (d.data as SubSet).noCombinedSets.toString() === overlap.toString()
-      );
+      return (d.data as SubSet).noCombinedSets.toString() >= overlap.toString();
     })
     .map(d => {
       return {
@@ -135,7 +133,7 @@ function aggregateByOverlap(
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
       g.addSubSet(subset.data as SubSet);
-      rr.push({ id: subset.id.toString(), data: subset.data });
+      // rr.push({ id: subset.id.toString(), data: subset.data });
     });
   }
   return rr;
@@ -178,7 +176,7 @@ function aggregateBySets(
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
       g.addSubSet(subset.data as SubSet);
-      rr.push({ id: subset.id.toString(), data: subset.data });
+      // rr.push({ id: subset.id.toString(), data: subset.data });
     });
   }
   return rr;
