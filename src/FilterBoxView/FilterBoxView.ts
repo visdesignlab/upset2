@@ -86,12 +86,12 @@ export class FilterBoxView extends ViewBase {
   }
 
   private updateCollapseAll() {
-    let checkbox = d3.select('#collapseAll');
-    checkbox.property('checked', this.config.collapseAll);
+    let checkbox = d3.select("#collapseAll");
+    checkbox.property("checked", this.config.collapseAll);
     let that = this;
-    checkbox.on('change', function(){
-      let el = d3.select(this)
-      let val = el.property('checked');
+    checkbox.on("change", function() {
+      let el = d3.select(this);
+      let val = el.property("checked");
       let _do = {
         func: that.applyCollapseAll.bind(that),
         args: [val]
@@ -100,7 +100,7 @@ export class FilterBoxView extends ViewBase {
         func: that.applyCollapseAll.bind(that),
         args: [!val]
       };
-      that.comm.emit('apply', ['apply-collapse-all', _do, _undo]);
+      that.comm.emit("apply", ["apply-collapse-all", _do, _undo]);
     });
   }
 
@@ -436,7 +436,6 @@ export class FilterBoxView extends ViewBase {
   }
 
   applyCollapseAll(val: boolean) {
-    console.log(val);
     let rc = this.config;
     rc.collapseAll = val;
     this.saveConfig(rc);

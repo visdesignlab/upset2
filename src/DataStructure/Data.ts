@@ -63,46 +63,7 @@ export class Data {
     this.app.on("collapse-group", this.collapseGroup, this);
   }
 
-  collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {
-    this.renderRows
-    .filter(_ => _.data.type === RowType.GROUP)
-    .forEach(_ => {
-      (_.data as Group).isCollapsed = false;
-    });
-
-    this.renderRows
-      .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
-      .forEach(_ => {
-        (_.data as Group).isCollapsed = true;
-      });
-
-    this.subSetsToRemove = [];
-
-    this.renderRows.filter(_ => _.id === d.id).forEach(row => {
-      (row.data as Group).isCollapsed = !(row.data as Group).isCollapsed;
-      if ((row.data as Group).isCollapsed) {
-        this.collapsedList.push(row.id);
-      } else {
-        let idx = this.collapsedList.indexOf(row.id);
-        this.collapsedList.splice(idx, 1);
-      }
-    });
-
-    this.renderRows.forEach((row, i) => {
-      if (row.data.type === RowType.GROUP) {
-        if ((row.data as Group).isCollapsed) {
-          let noToHide = (row.data as Group).visibleSets.length;
-          while (noToHide > 0) {
-            this.subSetsToRemove.push((i + noToHide));
-            noToHide--;
-          }
-        }
-      }
-    });
-
-    if (!collapseAllFlag)
-      this.app.emit("render-rows-changed", this);
-  }
+  collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {}
 
   async load(
     data: DSVParsedArray<DSVRowString>,
@@ -502,7 +463,7 @@ export class Data {
 
   private setupRenderRows(
     renderConfig: RenderConfig = null,
-    sortBySetId?: number,
+    sortBySetId?: number
   ) {
     this.collapsedList = [];
     this.subSetsToRemove = [];
@@ -535,10 +496,10 @@ export class Data {
       );
     }
 
-    if (this.renderConfig.collapseAll){
+    if (this.renderConfig.collapseAll) {
       this.renderRows.filter(_ => _.data.type === RowType.GROUP).forEach(_ => {
         this.collapseGroup(_, true);
-      })
+      });
     }
 
     this.app.emit("render-rows-changed", this);
@@ -630,6 +591,13 @@ function applySecondAggregation(
       2,
       setNameDictionary
     );
+
+    rendered.filter(_ => _.data.type === RowType.GROUP).forEach(g => {
+      (agg[groupIndices[i] as number].data as Group).addNestedGroup(
+        g.data as Group
+      );
+    });
+
     rr = rr.concat(rendered);
   }
   return rr;

@@ -592,7 +592,9 @@ export function addRenderRows(
 
   setupColumnBackgrounds(el, usedSetCount);
 
-  let rowsToShow = data.renderRows.filter((_,i)=> data.subSetsToRemove.indexOf(i) < 0);
+  let rowsToShow = data.renderRows.filter(
+    (_, i) => data.subSetsToRemove.indexOf(i) < 0
+  );
 
   [rows, groups, subsets] = addRows(rowsToShow, el, comm);
 
@@ -682,12 +684,12 @@ function addRows(
   el: d3Selection,
   comm: Mitt
 ): d3Selection[] {
-  let _rows = el.selectAll(".row").data(data, function(d: RenderRow, i:number) {
-    return d.id;
-  });
-  _rows
-    .exit()
-    .remove();
+  let _rows = el
+    .selectAll(".row")
+    .data(data, function(d: RenderRow, i: number) {
+      return d.id;
+    });
+  _rows.exit().remove();
 
   let rows = _rows
     .enter()
