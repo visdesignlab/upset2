@@ -63,7 +63,12 @@ export class Data {
     this.app.on("collapse-group", this.collapseGroup, this);
   }
 
-  collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {}
+  collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {
+    let group = d.data as Group;
+    group.isCollapsed = !group.isCollapsed;
+    group.nestedGroups.map(_ => (_.isCollapsed = group.isCollapsed));
+    if (!collapseAllFlag) this.app.emit("render-rows-changed", this);
+  }
 
   async load(
     data: DSVParsedArray<DSVRowString>,
@@ -497,7 +502,7 @@ export class Data {
     }
 
     if (this.renderConfig.collapseAll) {
-      this.renderRows.filter(_ => _.data.type === RowType.GROUP).forEach(_ => {
+      this.renderRows.forEach(_ => {
         this.collapseGroup(_, true);
       });
     }
@@ -597,45 +602,9 @@ function applySecondAggregation(
       2,
       setNameDictionary
     );
-    console.log(row, rendered);
     rendered.map(_ => (row.data as Group).addNestedGroup(_.data as Group));
   });
   return rr;
-
-  // let groupIndices = agg
-  //   .map((v: RenderRow, i) => [i, v.data.type === RowType.GROUP])
-  //   .filter(v => v[1])
-  //   .map(v => v[0]);
-  // let rr: RenderRow[] = [];
-
-  // for (let i = 0; i < groupIndices.length; ++i) {
-  //   rr.push(agg[groupIndices[i] as number]);
-
-  //   let subsets: RenderRow[] = [];
-  //   if (i === groupIndices.length - 1) {
-  //     subsets = agg.slice((groupIndices[i] as number) + 1);
-  //   } else {
-  //     subsets = agg.slice((groupIndices[i] as number) + 1, groupIndices[
-  //       i + 1
-  //     ] as number);
-  //   }
-
-  //   let rendered = AggregationStrategy[aggBy](
-  //     subsets,
-  //     overlap,
-  //     2,
-  //     setNameDictionary
-  //   );
-
-  //   rendered.filter(_ => _.data.type === RowType.GROUP).forEach(g => {
-  //     (agg[groupIndices[i] as number].data as Group).addNestedGroup(
-  //       g.data as Group
-  //     );
-  //   });
-
-  //   rr = rr.concat(rendered);
-  // }
-  // return rr;
 }
 
 function applySort(

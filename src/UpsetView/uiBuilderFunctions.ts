@@ -583,13 +583,15 @@ function addChildrenToShowList(rowsToShow: RenderRow[], row: RenderRow) {
     });
   } else {
     rowsToShow.push(row);
-    let children = (row.data as Group).visibleSets.map(_ => {
-      return {
-        id: _.id.toString(),
-        data: _
-      };
-    });
-    rowsToShow.push(...children);
+    if (!(row.data as Group).isCollapsed) {
+      let children = (row.data as Group).visibleSets.map(_ => {
+        return {
+          id: _.id.toString(),
+          data: _
+        };
+      });
+      rowsToShow.push(...children);
+    }
   }
 }
 
