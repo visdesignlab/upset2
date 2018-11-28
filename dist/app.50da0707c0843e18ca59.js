@@ -546,7 +546,7 @@ function aggregateByDegree(data, overlap, level, setNameDictionary) {
     }, {});
     let rr = [];
     for (let group in groups) {
-        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](`Group_Deg_${group}`, `Degree ${group}`, level);
+        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](`Group_Deg_${group}`, `Degree ${group}`, level, _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_1__["AggregateBy"].DEGREE);
         rr.push({ id: g.id.toString(), data: g });
         let subsets = groups[group];
         subsets.forEach(subset => {
@@ -571,7 +571,7 @@ function aggregateByDeviation(data, overlap, level, setNameDictionary) {
     }, {});
     let rr = [];
     for (let group in groups) {
-        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](`${group}_Expected_Value`, `${group} Expected Value`, level);
+        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](`${group}_Expected_Value`, `${group} Expected Value`, level, _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_1__["AggregateBy"].DEVIATION);
         rr.push({ id: g.id.toString(), data: g });
         let subsets = groups[group];
         subsets.forEach(subset => {
@@ -616,7 +616,12 @@ function aggregateByOverlap(data, overlap, level, setNameDictionary) {
     }, {});
     let rr = [];
     for (let group in groups) {
-        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](group, group, level);
+        let names = group.split(" ");
+        names.forEach(_ => (_ = _.replace(/ /g, "_")));
+        let membership = Object
+            .entries(setNameDictionary)
+            .map((_) => (names.indexOf(_[1].replace(/ /g, "_")) > -1 ? 1 : 0));
+        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](group, group, level, _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_1__["AggregateBy"].OVERLAPS, membership);
         rr.push({ id: g.id.toString(), data: g });
         let subsets = groups[group];
         subsets.forEach(subset => {
@@ -644,7 +649,10 @@ function aggregateBySets(data, overlap, level, setNameDictionary) {
     }, {});
     let rr = [];
     for (let group in groups) {
-        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](`Group_Set_${group.replace(" ", "_")}`, `Set: ${group}`, level);
+        let membership = Object
+            .entries(setNameDictionary)
+            .map((_) => (_[1] === group ? 1 : 0));
+        let g = new _Group__WEBPACK_IMPORTED_MODULE_0__["Group"](`Group_Set_${group.replace(" ", "_")}`, `${group}`, level, _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_1__["AggregateBy"].SETS, membership);
         rr.push({ id: g.id.toString(), data: g });
         let subsets = groups[group];
         subsets.forEach(subset => {
@@ -1407,8 +1415,18 @@ __webpack_require__.r(__webpack_exports__);
 
 
 class Group extends _BaseElement__WEBPACK_IMPORTED_MODULE_1__["BaseElement"] {
-    constructor(groupId, groupName, level) {
+    constructor(groupId, groupName, level, aggBy, setMemberships) {
         super(groupId, groupName);
+        if (level === 1) {
+            if (groupName.length >= 9) {
+                this.elementName = `${groupName.substring(0, 7)}...`;
+            }
+        }
+        else {
+            if (groupName.length >= 10) {
+                this.elementName = `${groupName.substring(0, 5)}...`;
+            }
+        }
         this.type = _RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP;
         this.isCollapsed = false;
         this.nestedGroups = [];
@@ -1418,6 +1436,8 @@ class Group extends _BaseElement__WEBPACK_IMPORTED_MODULE_1__["BaseElement"] {
         this.subSets = [];
         this.visibleSets = [];
         this.aggregate = new _Aggregate__WEBPACK_IMPORTED_MODULE_0__["Aggregate"](`empty${groupId}`, "Subsets", level + 1);
+        this.setMemberships = setMemberships;
+        this.aggBy = aggBy;
         this.hiddenSets = [];
         this.expectedProb = 0;
         this.disproportionality = 0;
@@ -4361,9 +4381,11 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addDeviationHeaders", function() { return addDeviationHeaders; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addRenderRows", function() { return addRenderRows; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "addAttributeHeaders", function() { return addAttributeHeaders; });
-/* harmony import */ var _ui_params__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./ui_params */ "./src/UpsetView/ui_params.ts");
-/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
-/* harmony import */ var _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../DataStructure/RowType */ "./src/DataStructure/RowType.ts");
+/* harmony import */ var _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ./../DataStructure/AggregateAndFilters */ "./src/DataStructure/AggregateAndFilters.ts");
+/* harmony import */ var _ui_params__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./ui_params */ "./src/UpsetView/ui_params.ts");
+/* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
+/* harmony import */ var _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../DataStructure/RowType */ "./src/DataStructure/RowType.ts");
+
 
 
 
@@ -4399,17 +4421,17 @@ function addHeaderBars(data, el, maxSetSize, comm) {
         .transition()
         .duration(100)
         .attr("transform", (d, i) => {
-        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * i}, 0)`;
+        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * i}, 0)`;
     });
     headers
         .on("click", (d, i) => {
         comm.emit("remove-set-trigger", d);
     })
         .on("mouseover", (d, i) => {
-        d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", true);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", true);
     })
         .on("mouseout", (d, i) => {
-        d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", false);
     });
     addBackgroundBars(headers);
     addForegroundBars(headers, maxSetSize);
@@ -4417,26 +4439,26 @@ function addHeaderBars(data, el, maxSetSize, comm) {
 function addBackgroundBars(headers) {
     headers
         .append("rect")
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_header_height)
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_header_height)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width)
         .attr("class", (d, i) => {
         return `used-set-background S_${i}`;
     });
 }
 function addForegroundBars(headers, maxSetSize) {
-    let scale = d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"]()
+    let scale = d3__WEBPACK_IMPORTED_MODULE_2__["scaleLinear"]()
         .domain([0, maxSetSize])
         .nice()
-        .range([0, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_header_height]);
+        .range([0, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_header_height]);
     headers
         .append("rect")
         .attr("height", (d, i) => {
         return scale(d.setSize);
     })
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width)
         .attr("class", "used-set-foreground")
         .attr("transform", (d, i) => {
-        return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_header_height -
+        return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_header_height -
             scale(d.setSize)})`;
     });
 }
@@ -4448,7 +4470,7 @@ function addConnectors(data, el, comm) {
         .append("g")
         .merge(connectorGroup)
         .attr("class", "connector-group")
-        .attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_header_height})`)
+        .attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_header_height})`)
         .selectAll(".connector")
         .data(data);
     _connectors
@@ -4463,16 +4485,16 @@ function addConnectors(data, el, comm) {
         .html("")
         .attr("class", "connector")
         .on("mouseover", (d, i) => {
-        d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", true);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", true);
     })
         .on("mouseout", (d, i) => {
-        d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", false);
     });
     connectors
         .transition()
         .duration(100)
         .attr("transform", (d, i) => {
-        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * i}, 0)`;
+        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * i}, 0)`;
     });
     connectors.on("click", (d, i) => {
         comm.emit("sort-by-set", i);
@@ -4486,9 +4508,9 @@ function addConnectorBars(connectors) {
         .attr("class", (d, i) => {
         return `connector-rect S_${i}`;
     })
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width)
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_connector_height)
-        .attr("transform", `skewX(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_connector_skew})`);
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_connector_height)
+        .attr("transform", `skewX(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_connector_skew})`);
 }
 function addConnectorLabels(connectors) {
     connectors
@@ -4498,18 +4520,18 @@ function addConnectorLabels(connectors) {
     })
         .attr("class", "set-label")
         .attr("text-anchor", "end")
-        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-        (_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width *
-            Math.sin(Object(_ui_params__WEBPACK_IMPORTED_MODULE_0__["deg2rad"])(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_connector_skew))) /
-            2},${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_connector_height})rotate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_connector_skew})`);
+        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+        (_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width *
+            Math.sin(Object(_ui_params__WEBPACK_IMPORTED_MODULE_1__["deg2rad"])(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_connector_skew))) /
+            2},${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_connector_height})rotate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_connector_skew})`);
 }
 // ################################################################################################
 function addCardinalityHeader(totalSize, maxSetSize, el, comm) {
-    el.attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_height -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_body_padding -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_scale_group_height})`);
+    el.attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_height -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_body_padding -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_scale_group_height})`);
     el.html("");
     let overviewAxis = el.append("g").attr("class", "overview-axis");
     let detailsAxis = el.append("g").attr("class", "details-axis");
@@ -4521,12 +4543,12 @@ function addCardinalityHeader(totalSize, maxSetSize, el, comm) {
         .on("click", () => {
         comm.emit("sort-by-cardinality");
     });
-    let scaleOverview = getCardinalityScale(totalSize, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width);
+    let scaleOverview = getCardinalityScale(totalSize, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width);
     addOverviewAxis(overviewAxis, scaleOverview, totalSize);
     addCardinalitySlider(cardinalitySlider, maxSetSize, scaleOverview, comm);
     addBrush(sliderBrush, scaleOverview(maxSetSize));
     addCardinalityLabel(cardinalityLabel);
-    let scaleDetails = getCardinalityScale(maxSetSize, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width);
+    let scaleDetails = getCardinalityScale(maxSetSize, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width);
     addDetailAxis(detailsAxis, scaleDetails, maxSetSize);
 }
 function addOverviewAxis(el, scale, totalSize) {
@@ -4543,50 +4565,50 @@ function addOverviewAxis(el, scale, totalSize) {
     bottom
         .append("path")
         .attr("class", "axis")
-        .attr("d", `M0,${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset} H200`);
-    addTicks(bottom, ticksArr, scale, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset - 6);
+        .attr("d", `M0,${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset} H200`);
+    addTicks(bottom, ticksArr, scale, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset - 6);
 }
 function addCardinalitySlider(el, maxSetSize, scale, comm) {
-    el.attr("transform", `translate(${scale(maxSetSize)},${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset / 2 - 7})`);
+    el.attr("transform", `translate(${scale(maxSetSize)},${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset / 2 - 7})`);
     addDragEvents(el, scale, comm);
     let slider = el
         .append("rect")
         .attr("class", "cardinality-slider-rect")
         .attr("transform", "rotate(45)")
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_slider_dims)
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_slider_dims);
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_slider_dims)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_slider_dims);
 }
 function addBrush(el, pos) {
     el.append("rect")
         .attr("class", "slider-brush")
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset)
         .attr("width", pos);
 }
 function addCardinalityLabel(el) {
     let textGroup = el
         .append("g")
         .attr("class", "inner-text-group")
-        .attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_scale_group_height / 2 -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_label_height / 2})`);
+        .attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_scale_group_height / 2 -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_label_height / 2})`);
     let sliderInfluence = el.append("g").attr("class", "slider-influence hide");
     textGroup
         .append("rect")
         .attr("class", "cardinality-label-rect")
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width)
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_label_height);
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_label_height);
     textGroup
         .append("text")
         .text("Cardinality")
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width / 2},${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height})`);
+        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width / 2},${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height})`);
     sliderInfluence.append("path").attr("class", "slider-brush-path");
 }
 function updateBrushAndSlider(pos) {
-    d3__WEBPACK_IMPORTED_MODULE_1__["select"](".slider-brush").attr("width", pos);
-    d3__WEBPACK_IMPORTED_MODULE_1__["select"](".slider-influence")
+    d3__WEBPACK_IMPORTED_MODULE_2__["select"](".slider-brush").attr("width", pos);
+    d3__WEBPACK_IMPORTED_MODULE_2__["select"](".slider-influence")
         .select(".slider-brush-path")
-        .attr("d", `M ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width} ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_scale_group_height -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset} H0 V ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset} H${pos}`);
+        .attr("d", `M ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width} ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_scale_group_height -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset} H0 V ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset} H${pos}`);
 }
 function addDragEvents(el, scale, comm) {
     comm.on("slider-moved", (d) => {
@@ -4594,41 +4616,41 @@ function addDragEvents(el, scale, comm) {
         updateDetailsScale(d);
         updateBrushAndSlider(scale(d));
     });
-    el.call(d3__WEBPACK_IMPORTED_MODULE_1__["drag"]()
+    el.call(d3__WEBPACK_IMPORTED_MODULE_2__["drag"]()
         .on("start", dragStart)
         .on("drag", dragged)
         .on("end", dragEnd));
     function dragStart() {
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](this)
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
             .raise()
             .classed("active", true);
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](".inner-text-group").classed("hide", true);
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](".slider-influence").classed("hide", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](".inner-text-group").classed("hide", true);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](".slider-influence").classed("hide", false);
     }
     function dragged() {
-        let x = d3__WEBPACK_IMPORTED_MODULE_1__["event"].x;
-        if (x > scale(6) && x <= _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width) {
+        let x = d3__WEBPACK_IMPORTED_MODULE_2__["event"].x;
+        if (x > scale(6) && x <= _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width) {
             if (Math.abs(x - 0) <= 0.9)
                 x = 1;
-            if (Math.abs(x - _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width) <= 0.9)
-                x = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width;
-            d3__WEBPACK_IMPORTED_MODULE_1__["select"](this).attr("transform", `translate(${x}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset / 2 - 7})`);
+            if (Math.abs(x - _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width) <= 0.9)
+                x = _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width;
+            d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).attr("transform", `translate(${x}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset / 2 - 7})`);
             comm.emit("slider-moved", scale.invert(x));
         }
     }
     function dragEnd() {
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](this).classed("active", false);
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](".slider-influence").classed("hide", true);
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](".inner-text-group").classed("hide", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).classed("active", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](".slider-influence").classed("hide", true);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](".inner-text-group").classed("hide", false);
     }
 }
 function updateDetailsScale(setSize) {
-    let el = d3__WEBPACK_IMPORTED_MODULE_1__["select"](".details-axis");
-    let scale = getCardinalityScale(setSize, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width);
+    let el = d3__WEBPACK_IMPORTED_MODULE_2__["select"](".details-axis");
+    let scale = getCardinalityScale(setSize, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width);
     addDetailAxis(el, scale, Math.floor(setSize));
 }
 function addDetailAxis(el, scale, size) {
-    el.attr("transform", `translate(0,${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_scale_group_height - _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset})`);
+    el.attr("transform", `translate(0,${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_scale_group_height - _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset})`);
     el.html("");
     let top = el.append("g").attr("class", "top-axis");
     top
@@ -4642,8 +4664,8 @@ function addDetailAxis(el, scale, size) {
     bottom
         .append("path")
         .attr("class", "axis")
-        .attr("d", `M0,${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset} H200 `);
-    addTicks(bottom, ticksArr, scale, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset - 6);
+        .attr("d", `M0,${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset} H200 `);
+    addTicks(bottom, ticksArr, scale, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset - 6);
 }
 function addTicks(el, ticksArr, scale, y_offset, x_offset = 0) {
     let g = el.selectAll(".tick-group").data([1]);
@@ -4737,20 +4759,20 @@ function calculateTicksToShow(setSize) {
 // ################################################################################################
 function addDeviationHeaders(el, maxDisprop, comm) {
     el.html("");
-    el.attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * 3}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_height -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_body_padding -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_scale_group_height +
+    el.attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * 3}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_height -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_body_padding -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_scale_group_height +
         3})`);
     addDeviationLabel(el, comm);
     addDeviationScale(el, Math.ceil((maxDisprop * 100) / 5) * 5);
 }
 function addDeviationLabel(el, comm) {
     el.append("rect")
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_label_height)
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_label_height)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width)
         .attr("class", "deviation-label")
         .on("click", () => {
         comm.emit("sort-by-deviation");
@@ -4758,12 +4780,12 @@ function addDeviationLabel(el, comm) {
     el.append("text")
         .text("Deviation")
         .attr("text-anchor", "middle")
-        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height})`);
+        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height})`);
 }
 function addDeviationScale(el, maxSize) {
-    let scale = d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"]()
+    let scale = d3__WEBPACK_IMPORTED_MODULE_2__["scaleLinear"]()
         .domain([-maxSize, maxSize])
-        .range([-_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2]);
+        .range([-_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2]);
     let domain = [];
     let start = -maxSize;
     while (start <= maxSize) {
@@ -4771,13 +4793,13 @@ function addDeviationScale(el, maxSize) {
         start += 5;
     }
     let g = el.append("g").attr("class", "scale-group");
-    g.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_scale_group_height - _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset})`);
+    g.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_scale_group_height - _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset})`);
     g.append("path")
         .attr("class", "axis")
-        .attr("d", `M0,${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_scale_group_height -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_body_padding} H${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width}`);
-    let ticks = addTicks(g, domain, scale, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].axis_offset - _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_body_padding - 6, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2);
+        .attr("d", `M0,${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_scale_group_height -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_body_padding} H${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width}`);
+    let ticks = addTicks(g, domain, scale, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].axis_offset - _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_body_padding - 6, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2);
     addTickLabels(ticks, 1, -2);
 }
 // ################################################################################################
@@ -4806,7 +4828,7 @@ function addChildrenToShowList(rowsToShow, row) {
 }
 function addRenderRows(data, el, usedSetCount, config, comm) {
     let rowsToShow = [];
-    if (data.renderRows.filter(_ => _.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP).length > 0) {
+    if (data.renderRows.filter(_ => _.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP).length > 0) {
         data.renderRows.forEach(row => {
             addChildrenToShowList(rowsToShow, row);
         });
@@ -4814,22 +4836,21 @@ function addRenderRows(data, el, usedSetCount, config, comm) {
     else {
         rowsToShow = data.renderRows;
     }
-    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_group_height = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * rowsToShow.length;
+    _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_group_height = _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height * rowsToShow.length;
     setupColumnBackgrounds(el, usedSetCount);
-    el.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_group_height})`);
-    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * usedSetCount;
-    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_sets = usedSetCount;
+    el.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_set_group_height})`);
+    _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width = _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * usedSetCount;
+    _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].used_sets = usedSetCount;
     let rows;
     let groups;
     let subsets;
     if (config && !config.CardinalityBars)
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width = 0;
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width = 0;
     if (config && !config.DeviationBars)
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width = 0;
-    // data.renderRows.filter((_, i) => data.subSetsToRemove.indexOf(i) < 0);
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width = 0;
     [rows, groups, subsets] = addRows(rowsToShow, el, comm);
     setupSubsets(subsets, comm);
-    setupGroups(groups, comm);
+    setupGroups(data, groups, comm);
     collapseGroups(groups, subsets, comm);
     if (!config || config.CardinalityBars) {
         addCardinalityBars(rows, data.renderRows);
@@ -4871,7 +4892,7 @@ function setupColumnBackgrounds(el, usedSets) {
         .merge(_bg)
         .html("")
         .attr("class", "column-background-group")
-        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset}, 0)`);
+        .attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset}, 0)`);
     let arr = [...Array(usedSets).keys()];
     let rects = backgroundGroup.selectAll(".vert-set-rect").data(arr);
     rects.exit().remove();
@@ -4882,10 +4903,10 @@ function setupColumnBackgrounds(el, usedSets) {
         .attr("class", (d, i) => {
         return `vert-set-rect S_${i}`;
     })
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width)
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_group_height)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_group_height)
         .attr("transform", (d, i) => {
-        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * i}, 0)`;
+        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * i}, 0)`;
     });
 }
 function addRows(data, el, comm) {
@@ -4900,9 +4921,9 @@ function addRows(data, el, comm) {
         .append("g")
         .style("opacity", 0)
         .attr("transform", (d, i) => {
-        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP)
-            return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * i})`;
-        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * i})`;
+        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP)
+            return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height * i})`;
+        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height * i})`;
     })
         .merge(_rows)
         .html("")
@@ -4913,19 +4934,19 @@ function addRows(data, el, comm) {
         .transition()
         .duration(300)
         .attr("transform", (d, i) => {
-        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP)
-            return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * i})`;
-        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * i})`;
+        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP)
+            return `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height * i})`;
+        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height * i})`;
     })
         .style("opacity", 1);
     setupElementGroups(rows, comm);
     let groups = rows.filter((d, i) => {
-        return d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP;
+        return d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP;
     });
     groups.append("g").attr("class", "group-collapse-g");
     groups.append("g").attr("class", "group-label-g");
     let subsets = rows.filter((d, i) => {
-        return d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].SUBSET;
+        return d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].SUBSET;
     });
     return [rows, groups, subsets];
 }
@@ -4938,55 +4959,55 @@ function setupElementGroups(rows, comm) {
         .append("g")
         .attr("class", "cardinality-bar-group")
         .attr("transform", (d, i) => {
-        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP)
-            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width}, ${(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height -
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height) /
+        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP)
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width}, ${(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height -
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height) /
                 2})`;
-        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-            _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width}, ${(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height -
-            _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height) /
+        return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+            _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width}, ${(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height -
+            _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height) /
             2})`;
     });
     rows
         .append("g")
         .attr("class", "deviation-bar-group")
         .attr("transform", (d, i) => {
-        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP)
-            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * 3},${(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height -
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height) /
+        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP)
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * 3},${(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height -
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height) /
                 2})`;
         else
-            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * 2},${(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height -
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height) /
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * 2},${(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height -
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height) /
                 2})`;
     });
     rows
         .append("g")
         .attr("class", "attribute-group")
         .attr("transform", d => {
-        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP)
-            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * 4},${(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height -
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height) /
+        if (d.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_3__["RowType"].GROUP)
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * 4},${(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height -
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height) /
                 2})`;
         else
-            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width +
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * 3},${(_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height -
-                _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height) /
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width +
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * 3},${(_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height -
+                _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height) /
                 2})`;
     });
 }
@@ -4995,12 +5016,12 @@ function setupElementGroups(rows, comm) {
 function setupSubsets(subsets, comm) {
     subsets
         .on("mouseover", function () {
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](this)
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
             .select("rect")
             .classed("highlight highlight2", true);
     })
         .on("mouseout", function () {
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](this)
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
             .select("rect")
             .classed("highlight highlight2", false);
     });
@@ -5012,21 +5033,21 @@ function addSubsetBackgroundRects(subsets) {
         .selectAll(".background-rect-g")
         .append("rect")
         .attr("class", `subset-background-rect`)
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height)
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].subset_row_width);
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].subset_row_width);
 }
 function updateSubsetBackgroundRects(subsets) {
     subsets
         .selectAll(".background-rect-g")
         .selectAll("rect")
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].subset_row_width);
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].subset_row_width);
 }
 function addCombinations(subset, comm) {
     let combinationsGroup = subset.append("g").attr("class", "combination");
     combinationsGroup.each(function (d) {
         let membershipDetails = d.data.combinedSets;
         let degree = membershipDetails.reduce((i, j) => i + j, 0);
-        let comboGroup = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this)
+        let comboGroup = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
             .selectAll(".set-membership")
             .data(membershipDetails);
         addCombinationCircles(comboGroup);
@@ -5048,10 +5069,10 @@ function addCombinationCircles(comboGroup) {
         .enter()
         .append("circle")
         .merge(comboGroup)
-        .attr("r", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combo_circle_radius)
-        .attr("cy", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height / 2)
+        .attr("r", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combo_circle_radius)
+        .attr("cy", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height / 2)
         .attr("cx", (d, i) => {
-        return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * i;
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * i;
     })
         .attr("class", (d, i) => {
         if (d === 0)
@@ -5059,51 +5080,52 @@ function addCombinationCircles(comboGroup) {
         return `set-membership member`;
     })
         .on("mouseover", function (d, i) {
-        let parentG = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this).node().parentNode;
-        let rect = d3__WEBPACK_IMPORTED_MODULE_1__["select"](parentG).node().parentNode;
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](rect)
+        let parentG = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).node().parentNode;
+        let rect = d3__WEBPACK_IMPORTED_MODULE_2__["select"](parentG).node().parentNode;
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](rect)
             .select("rect")
             .classed("highlight highlight2", true);
-        d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", true);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", true);
     })
         .on("mouseout", function (d, i) {
-        let parentG = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this).node().parentNode;
-        let rect = d3__WEBPACK_IMPORTED_MODULE_1__["select"](parentG).node().parentNode;
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](rect)
+        let parentG = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).node().parentNode;
+        let rect = d3__WEBPACK_IMPORTED_MODULE_2__["select"](parentG).node().parentNode;
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](rect)
             .select("rect")
             .classed("highlight highlight2", false);
-        d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", false);
     });
 }
 function addCombinationLine(el, first, last) {
-    d3__WEBPACK_IMPORTED_MODULE_1__["select"](el)
+    d3__WEBPACK_IMPORTED_MODULE_2__["select"](el)
         .append("line")
         .attr("class", "combination-line")
-        .attr("x1", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * first)
-        .attr("x2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * last)
-        .attr("y1", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height / 2)
-        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height / 2);
+        .attr("x1", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * first)
+        .attr("x2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * last)
+        .attr("y1", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height / 2)
+        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height / 2);
 }
 function addRowHighlight(el) {
-    d3__WEBPACK_IMPORTED_MODULE_1__["select"](el)
+    d3__WEBPACK_IMPORTED_MODULE_2__["select"](el)
         .on("mouseover", function (d) {
         d.data.combinedSets.forEach((idx, i) => {
             if (idx === 1)
-                d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", true);
+                d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", true);
         });
     })
         .on("mouseout", function (d, i) {
         d.data.combinedSets.forEach((idx, i) => {
-            d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](`.S_${i}`).classed("highlight", false);
+            d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", false);
         });
     });
 }
 /** ************* */
 /** ************* */
-function setupGroups(groups, comm) {
+function setupGroups(data, groups, comm) {
     addGroupCollapseIcons(groups, comm);
     addGroupBackgroundRects(groups);
     addGroupLabels(groups);
+    addGroupCombination(data, groups);
 }
 function addGroupCollapseIcons(groups, comm) {
     let collapse = groups
@@ -5117,13 +5139,13 @@ function addGroupCollapseIcons(groups, comm) {
     })
         .attr("transform", (d, i) => {
         if (d.data.level == 2)
-            return `translate(23, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
-        return `translate(3, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
+            return `translate(23, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height - 4})`;
+        return `translate(3, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height - 4})`;
     });
     collapse.style("cursor", "pointer");
     collapse.on("click", (d) => {
         comm.emit("collapse-group", d);
-        d3__WEBPACK_IMPORTED_MODULE_1__["event"].stopPropagation();
+        d3__WEBPACK_IMPORTED_MODULE_2__["event"].stopPropagation();
     });
 }
 function addGroupBackgroundRects(groups) {
@@ -5136,11 +5158,11 @@ function addGroupBackgroundRects(groups) {
             return true;
         return false;
     })
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height)
         .attr("width", (d) => {
         if (d.data.level === 2)
-            return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].group_row_width - 20;
-        return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].group_row_width;
+            return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].group_row_width - 20;
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].group_row_width;
     })
         .attr("transform", (d) => {
         if (d.data.level === 2)
@@ -5156,8 +5178,8 @@ function updateGroupBackgroundRects(groups) {
         .selectAll("rect")
         .attr("width", (d) => {
         if (d.data.level === 2)
-            return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].group_row_width - 20;
-        return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].group_row_width;
+            return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].group_row_width - 20;
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].group_row_width;
     });
 }
 function addGroupLabels(groups) {
@@ -5170,37 +5192,105 @@ function addGroupLabels(groups) {
     })
         .attr("transform", (d, i) => {
         if (d.data.level === 2)
-            return `translate(35, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
-        return `translate(15, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height - 4})`;
+            return `translate(35, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height - 4})`;
+        return `translate(15, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height - 4})`;
     });
+}
+function addGroupCombination(data, groups) {
+    let combinationG = groups.append("g").classed("combination", true);
+    combinationG.attr("transform", (d, i) => {
+        if (d.data.level === 1) {
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset}, 0)`;
+        }
+        else {
+            return `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset},0)`;
+        }
+    });
+    combinationG.each(function (d) {
+        let aggBy = d.data.aggBy;
+        if (aggBy === _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].OVERLAPS || aggBy === _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].SETS) {
+            let comboGroup = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
+                .selectAll(".set-membership")
+                .data(d.data.setMemberships);
+            addGroupCombinationCircles(comboGroup);
+        }
+    });
+}
+function addGroupCombinationCircles(comboGroup) {
+    comboGroup
+        .exit()
+        .transition()
+        .duration(100)
+        .remove();
+    let cgs = comboGroup
+        .enter()
+        .append("circle")
+        .merge(comboGroup)
+        .attr("r", d => {
+        if (d === 0)
+            return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combo_circle_radius - 5;
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combo_circle_radius - 1;
+    })
+        .attr("cy", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height / 2)
+        .attr("cx", (d, i) => {
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * i;
+    })
+        .attr("class", (d, i) => {
+        // if (d === 0) return `set-membership not-member`;
+        return `set-membership member`;
+    })
+        .on("mouseover", function (d, i) {
+        let parentG = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).node().parentNode;
+        let rect = d3__WEBPACK_IMPORTED_MODULE_2__["select"](parentG).node().parentNode;
+        // d3.select(rect)
+        //   .select("rect")
+        //   .classed("highlight highlight2", true);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", true);
+    })
+        .on("mouseout", function (d, i) {
+        let parentG = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).node().parentNode;
+        let rect = d3__WEBPACK_IMPORTED_MODULE_2__["select"](parentG).node().parentNode;
+        // d3.select(rect)
+        //   .select("rect")
+        //   .classed("highlight highlight2", false);
+        d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](`.S_${i}`).classed("highlight", false);
+    });
+    cgs
+        .append("circle")
+        .attr("r", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combo_circle_radius - 1)
+        .attr("cy", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].row_height / 2)
+        .attr("cx", (d, i) => {
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width / 2 + _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * i;
+    })
+        .classed("set-membership member", true);
 }
 /** ************* */
 /** ************* */
 function addCardinalityBars(rows, data) {
-    let maxSubsetSize = d3__WEBPACK_IMPORTED_MODULE_1__["max"](data.map(d => d.data.setSize));
-    let scale = getCardinalityScale(maxSubsetSize, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width);
+    let maxSubsetSize = d3__WEBPACK_IMPORTED_MODULE_2__["max"](data.map(d => d.data.setSize));
+    let scale = getCardinalityScale(maxSubsetSize, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width);
     let cardinalityGroups = rows.selectAll(".cardinality-bar-group");
     renderCardinalityBars(cardinalityGroups, scale);
 }
 function adjustCardinalityBars(maxDomain) {
-    let scale = getCardinalityScale(maxDomain, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width);
-    let el = d3__WEBPACK_IMPORTED_MODULE_1__["selectAll"](".row").selectAll(".cardinality-bar-group");
+    let scale = getCardinalityScale(maxDomain, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width);
+    let el = d3__WEBPACK_IMPORTED_MODULE_2__["selectAll"](".row").selectAll(".cardinality-bar-group");
     renderCardinalityBars(el, scale);
 }
 function renderCardinalityBars(el, scale) {
     el.html("");
     el.each(function (d, i) {
-        let g = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this);
+        let g = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this);
         let width = scale(d.data.setSize);
-        let loop = Math.floor(width / _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width) + 1;
-        let rem = width % _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width;
+        let loop = Math.floor(width / _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width) + 1;
+        let rem = width % _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width;
         let brk = false;
         if (loop > 3) {
             brk = true;
             loop = 4;
             rem = 0;
         }
-        let offset = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].horizon_offset;
+        let offset = _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].horizon_offset;
         let hb = g.selectAll(".cardinality-bar").data([...Array(loop).keys()]);
         hb.exit().remove();
         hb.enter()
@@ -5212,80 +5302,80 @@ function renderCardinalityBars(el, scale) {
             .attr("width", (d, i) => {
             if (i + 1 === loop)
                 return rem;
-            return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width;
+            return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width;
         })
             .attr("height", (d, i) => {
-            let height = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height - offset * i;
+            let height = _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height - offset * i;
             if (height < 0)
                 return 2;
             return height;
         })
             .attr("transform", (d, i) => {
-            return `translate(0, ${((_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height - offset) * i) /
+            return `translate(0, ${((_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height - offset) * i) /
                 4})`;
         });
         if (brk) {
             g.append("line")
                 .attr("class", "break-bar")
                 .attr("y1", 0)
-                .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height)
-                .attr("x1", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width - 20)
-                .attr("x2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width - 10);
+                .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height)
+                .attr("x1", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width - 20)
+                .attr("x2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width - 10);
             g.append("line")
                 .attr("class", "break-bar")
                 .attr("y1", 0)
-                .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height)
-                .attr("x1", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width - 25)
-                .attr("x2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width - 15);
+                .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height)
+                .attr("x1", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width - 25)
+                .attr("x2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width - 15);
         }
         g.append("text")
             .attr("class", "cardinality-text")
             .text(d.data.setSize)
             .attr("transform", (d, i) => {
             return loop > 1
-                ? `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-                    5}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height / 2})`
-                : `translate(${rem + 5}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_bar_height / 2})`;
+                ? `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+                    5}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height / 2})`
+                : `translate(${rem + 5}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_bar_height / 2})`;
         })
             .attr("dy", "0.4em");
     });
 }
 function getCardinalityScale(maxSize, maxWidth) {
     if (maxSize > 8000) {
-        return d3__WEBPACK_IMPORTED_MODULE_1__["scalePow"]()
+        return d3__WEBPACK_IMPORTED_MODULE_2__["scalePow"]()
             .exponent(0.75)
             .domain([0.01, maxSize])
             .range([0.01, maxWidth]);
     }
     if (maxSize > 2000) {
-        return d3__WEBPACK_IMPORTED_MODULE_1__["scalePow"]()
+        return d3__WEBPACK_IMPORTED_MODULE_2__["scalePow"]()
             .exponent(0.8)
             .domain([0.01, maxSize])
             .range([0.01, maxWidth]);
     }
-    return d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"]()
+    return d3__WEBPACK_IMPORTED_MODULE_2__["scaleLinear"]()
         .domain([0, maxSize])
         .range([0, maxWidth]);
 }
 /** ************* */
 /** ************* */
 function addDeviationBars(rows, data) {
-    let maxDeviation = d3__WEBPACK_IMPORTED_MODULE_1__["max"](data.map(r => Math.abs(r.data.disproportionality * 100)));
+    let maxDeviation = d3__WEBPACK_IMPORTED_MODULE_2__["max"](data.map(r => Math.abs(r.data.disproportionality * 100)));
     maxDeviation = Math.ceil(maxDeviation / 5) * 5;
-    let scale = getDeviationScale(maxDeviation, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2);
+    let scale = getDeviationScale(maxDeviation, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2);
     let deviationGroup = rows.selectAll(".deviation-bar-group");
     renderDeviationBars(deviationGroup, scale);
 }
 function getDeviationScale(maxSize, maxWidth) {
-    return d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"]()
+    return d3__WEBPACK_IMPORTED_MODULE_2__["scaleLinear"]()
         .domain([0, maxSize])
         .range([0, maxWidth]);
 }
 function renderDeviationBars(el, scale) {
     el.html("")
         .append("rect")
-        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width)
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height)
+        .attr("width", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height)
         .style("fill", "none");
     el.append("rect")
         .attr("class", (d, i) => {
@@ -5294,27 +5384,27 @@ function renderDeviationBars(el, scale) {
             : `disproportionality negative`;
     })
         .attr("height", (d, i) => {
-        return _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_bar_height;
+        return _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_bar_height;
     })
         .attr("width", (d, i) => {
         return scale(Math.abs(d.data.disproportionality) * 100);
     })
         .attr("transform", (d, i) => {
         return d.data.disproportionality >= 0
-            ? `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2}, 0)`
-            : `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width / 2 +
+            ? `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2}, 0)`
+            : `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width / 2 +
                 scale(d.data.disproportionality * 100)}, 0)`;
     });
 }
 /** ************* */
 function addAttributeHeaders(el, data, comm) {
     el.html("");
-    el.attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].skew_offset +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width +
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * 4}, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_height -
-        _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].header_body_padding -
+    el.attr("transform", `translate(${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].skew_offset +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].combinations_width +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].cardinality_width +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].deviation_width +
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].column_width * 4}, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_height -
+        _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].header_body_padding -
         29})`);
     let attrHeaders = el.selectAll(".attribute").data(data.selectedAttributes);
     attrHeaders.exit().remove();
@@ -5323,12 +5413,12 @@ function addAttributeHeaders(el, data, comm) {
         .append("g")
         .classed("attribute", true)
         .merge(attrHeaders)
-        .attr("transform", (_, i) => `translate(${i * (_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_width + 25)}, 0)`);
+        .attr("transform", (_, i) => `translate(${i * (_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_width + 25)}, 0)`);
     addAttrHeaders(attrHeaders, comm);
 }
 function addAttrHeaders(el, comm) {
     el.each(function (d) {
-        let t = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this)
+        let t = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
             .html("")
             .append("g");
         // let close = t.append("g").html(html);
@@ -5340,11 +5430,11 @@ function addAttrHeaders(el, comm) {
         //   .attr("height", 20)
         //   .classed("label", true)
         //   .attr("transform", `translate(0, -18)`);
-        let scale = d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"]()
+        let scale = d3__WEBPACK_IMPORTED_MODULE_2__["scaleLinear"]()
             .domain([d.min, d.max])
-            .range([0, _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_width]);
-        let ax = d3__WEBPACK_IMPORTED_MODULE_1__["axisTop"](scale).ticks(2);
-        d3__WEBPACK_IMPORTED_MODULE_1__["select"](this)
+            .range([0, _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_width]);
+        let ax = d3__WEBPACK_IMPORTED_MODULE_2__["axisTop"](scale).ticks(2);
+        d3__WEBPACK_IMPORTED_MODULE_2__["select"](this)
             .append("g")
             .attr("transform", `translate(0, 30)`)
             .call(ax);
@@ -5353,7 +5443,7 @@ function addAttrHeaders(el, comm) {
 /** ************* */
 // ! Undefined function???
 function updateBackgroundAndAddAttributes(rows, groups, subset, data) {
-    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].no_attributes_shown = data.selectedAttributes.length;
+    _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].no_attributes_shown = data.selectedAttributes.length;
     updateGroupBackgroundRects(groups);
     updateSubsetBackgroundRects(subset);
     addAttributes(rows, data);
@@ -5373,21 +5463,21 @@ function addAttributes(rows, data) {
         return d.name;
     });
     attrs.attr("transform", (_, i) => {
-        return `translate(${i * (_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_width + 25)}, 0)`;
+        return `translate(${i * (_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_width + 25)}, 0)`;
     });
     attributeGroups.each(function (d) {
         let itemIndices = d.data.items;
-        let attrs = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this).selectAll(".attribute");
+        let attrs = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this).selectAll(".attribute");
         attrs.each(function (d) {
-            let el = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this);
+            let el = d3__WEBPACK_IMPORTED_MODULE_2__["select"](this);
             let attrName = el.attr(attributeName);
             let relevantAttr = data.selectedAttributes.filter(_ => _.name === attrName)[0];
-            let overAllMin = d3__WEBPACK_IMPORTED_MODULE_1__["min"](relevantAttr.values);
-            let overAllMax = d3__WEBPACK_IMPORTED_MODULE_1__["max"](relevantAttr.values);
+            let overAllMin = d3__WEBPACK_IMPORTED_MODULE_2__["min"](relevantAttr.values);
+            let overAllMax = d3__WEBPACK_IMPORTED_MODULE_2__["max"](relevantAttr.values);
             let memberValues = relevantAttr.values.filter((_, i) => itemIndices.indexOf(i) > -1);
             let localStats = getBoxPlotStats(memberValues);
-            let boxPlotMaxWidth = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_width;
-            let bpScale = d3__WEBPACK_IMPORTED_MODULE_1__["scaleLinear"]()
+            let boxPlotMaxWidth = _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_width;
+            let bpScale = d3__WEBPACK_IMPORTED_MODULE_2__["scaleLinear"]()
                 .domain([overAllMin, overAllMax])
                 .range([0, boxPlotMaxWidth]);
             addBoxPlot(el, localStats, bpScale);
@@ -5397,16 +5487,16 @@ function addAttributes(rows, data) {
 function getBoxPlotStats(values) {
     values.sort((a, b) => a - b);
     return {
-        min: d3__WEBPACK_IMPORTED_MODULE_1__["min"](values),
-        max: d3__WEBPACK_IMPORTED_MODULE_1__["max"](values),
-        quantile25: d3__WEBPACK_IMPORTED_MODULE_1__["quantile"](values, 0.25),
-        quantile50: d3__WEBPACK_IMPORTED_MODULE_1__["quantile"](values, 0.5),
-        quantile75: d3__WEBPACK_IMPORTED_MODULE_1__["quantile"](values, 0.75)
+        min: d3__WEBPACK_IMPORTED_MODULE_2__["min"](values),
+        max: d3__WEBPACK_IMPORTED_MODULE_2__["max"](values),
+        quantile25: d3__WEBPACK_IMPORTED_MODULE_2__["quantile"](values, 0.25),
+        quantile50: d3__WEBPACK_IMPORTED_MODULE_2__["quantile"](values, 0.5),
+        quantile75: d3__WEBPACK_IMPORTED_MODULE_2__["quantile"](values, 0.75)
     };
 }
 function addBoxPlot(el, data, scale) {
     let bpGroup = el.append("g");
-    bpGroup.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 4})`);
+    bpGroup.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 4})`);
     addWhiskers(bpGroup, data, scale);
     addBoxes(bpGroup, data, scale);
 }
@@ -5416,32 +5506,32 @@ function addWhiskers(el, data, scale) {
         .attr("x1", scale(data.min))
         .attr("x2", scale(data.min))
         .attr("y1", 0)
-        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 2);
+        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 2);
     el.append("line")
         .classed("whisker", true)
         .attr("x1", scale(data.max))
         .attr("x2", scale(data.max))
         .attr("y1", 0)
-        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 2);
+        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 2);
     el.append("line")
         .classed("whisker", true)
         .attr("x1", scale(data.min))
         .attr("x2", scale(data.max))
-        .attr("y1", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 4)
-        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 4);
+        .attr("y1", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 4)
+        .attr("y2", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 4);
 }
 function addBoxes(el, data, scale) {
     el.append("rect")
         .classed("boxplot-box", true)
-        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 2)
+        .attr("height", _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 2)
         .attr("width", scale(data.quantile75) - scale(data.quantile25))
         .attr("x", scale(data.quantile25));
     el.append("line")
         .classed("whisker", true)
         .attr("x1", scale(data.quantile50))
         .attr("x2", scale(data.quantile50))
-        .attr("y1", 0 - _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height / 4)
-        .attr("y2", (_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].attribute_bar_height * 3) / 4);
+        .attr("y1", 0 - _ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height / 4)
+        .attr("y2", (_ui_params__WEBPACK_IMPORTED_MODULE_1__["default"].attribute_bar_height * 3) / 4);
 }
 
 
@@ -6676,4 +6766,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.fcf553a405cef6a46d3b.js.map
+//# sourceMappingURL=app.50da0707c0843e18ca59.js.map
