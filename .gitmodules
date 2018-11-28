@@ -1,3 +1,3 @@
 [submodule "src/lib/dsv_importer"]
 	path = src/lib/dsv_importer
-	url = git@github.com:visdesignlab/dsv_importer.git
+	url = https://github.com/visdesignlab/dsv_importer.git
