@@ -610,9 +610,9 @@ export function addRenderRows(
   } else {
     rowsToShow = data.renderRows;
   }
+  params.row_group_height = params.row_height * rowsToShow.length;
   setupColumnBackgrounds(el, usedSetCount);
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
-  params.row_group_height = params.row_height * rowsToShow.length;
   params.combinations_width = params.column_width * usedSetCount;
   params.used_sets = usedSetCount;
   let rows: d3Selection;
