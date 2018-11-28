@@ -572,6 +572,29 @@ function addDeviationScale(el: d3Selection, maxSize: number) {
 }
 
 // ################################################################################################
+function addChildrenToShowList(rowsToShow: RenderRow[], row: RenderRow) {
+  if ((row.data as Group).nestedGroups.length > 0) {
+    rowsToShow.push(row);
+    (row.data as Group).nestedGroups.forEach(ng => {
+      addChildrenToShowList(rowsToShow, {
+        id: ng.id.toString(),
+        data: ng
+      });
+    });
+  } else {
+    rowsToShow.push(row);
+    if (!(row.data as Group).isCollapsed) {
+      let children = (row.data as Group).visibleSets.map(_ => {
+        return {
+          id: _.id.toString(),
+          data: _
+        };
+      });
+      rowsToShow.push(...children);
+    }
+  }
+}
+
 export function addRenderRows(
   data: Data,
   el: d3Selection,
@@ -579,8 +602,17 @@ export function addRenderRows(
   config: EmbedConfig,
   comm: Mitt
 ) {
+  let rowsToShow: RenderRow[] = [];
+  if (data.renderRows.filter(_ => _.data.type === RowType.GROUP).length > 0) {
+    data.renderRows.forEach(row => {
+      addChildrenToShowList(rowsToShow, row);
+    });
+  } else {
+    rowsToShow = data.renderRows;
+  }
+  setupColumnBackgrounds(el, usedSetCount);
   el.attr("transform", `translate(0, ${params.used_set_group_height})`);
-  params.row_group_height = params.row_height * data.renderRows.length;
+  params.row_group_height = params.row_height * rowsToShow.length;
   params.combinations_width = params.column_width * usedSetCount;
   params.used_sets = usedSetCount;
   let rows: d3Selection;
@@ -590,9 +622,7 @@ export function addRenderRows(
   if (config && !config.CardinalityBars) params.cardinality_width = 0;
   if (config && !config.DeviationBars) params.deviation_width = 0;
 
-  setupColumnBackgrounds(el, usedSetCount);
-
-  let rowsToShow = data.renderRows.filter((_,i)=> data.subSetsToRemove.indexOf(i) < 0);
+  // data.renderRows.filter((_, i) => data.subSetsToRemove.indexOf(i) < 0);
 
   [rows, groups, subsets] = addRows(rowsToShow, el, comm);
 
@@ -682,12 +712,12 @@ function addRows(
   el: d3Selection,
   comm: Mitt
 ): d3Selection[] {
-  let _rows = el.selectAll(".row").data(data, function(d: RenderRow, i:number) {
-    return d.id;
-  });
-  _rows
-    .exit()
-    .remove();
+  let _rows = el
+    .selectAll(".row")
+    .data(data, function(d: RenderRow, i: number) {
+      return d.id;
+    });
+  _rows.exit().remove();
 
   let rows = _rows
     .enter()

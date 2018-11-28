@@ -16,7 +16,8 @@ export class ProvenanceView extends ViewBase {
 
   create() {
     let size = 20;
-    d3.select(this.Root).html(template);
+    let root = d3.select("#undo-redo-group");
+    root.html(template);
 
     // d3.select(this.Root)
     //   .select("#save-btn")
@@ -30,21 +31,22 @@ export class ProvenanceView extends ViewBase {
     //     this.comm.emit("load-graph");
     //   });
 
-    let undo = d3.select(this.Root).select(".undo");
-    let redo = d3.select(this.Root).select(".redo");
-    undo
-      .append("img")
-      .attr("src", "assets/arrow.svg")
-      .attr("class", "img")
-      .attr("height", size)
-      .attr("width", size);
+    let undo = root.select(".undo");
+    let redo = root.select(".redo");
 
-    redo
-      .append("img")
-      .attr("src", "assets/arrow.svg")
-      .attr("class", "img")
-      .attr("height", size)
-      .attr("width", size);
+    // undo
+    //   .append("img")
+    //   .attr("src", "assets/arrow.svg")
+    //   .attr("class", "img")
+    //   .attr("height", size)
+    //   .attr("width", size);
+
+    // redo
+    //   .append("img")
+    //   .attr("src", "assets/arrow.svg")
+    //   .attr("class", "img")
+    //   .attr("height", size)
+    //   .attr("width", size);
 
     undo.on("click", () => {
       this.comm.emit("undo");
@@ -61,7 +63,7 @@ export class ProvenanceView extends ViewBase {
   }
 
   update(graph: IProvenanceGraph) {
-    createButtons(d3.select(this.Root), graph);
+    createButtons(d3.select("#undo-redo-group"), graph);
     // createGraph(d3.select(this.Root).select(".graph-view"), graph, this.comm);
   }
 }

@@ -64,44 +64,10 @@ export class Data {
   }
 
   collapseGroup(d: RenderRow, collapseAllFlag: boolean = false) {
-    this.renderRows
-    .filter(_ => _.data.type === RowType.GROUP)
-    .forEach(_ => {
-      (_.data as Group).isCollapsed = false;
-    });
-
-    this.renderRows
-      .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
-      .forEach(_ => {
-        (_.data as Group).isCollapsed = true;
-      });
-
-    this.subSetsToRemove = [];
-
-    this.renderRows.filter(_ => _.id === d.id).forEach(row => {
-      (row.data as Group).isCollapsed = !(row.data as Group).isCollapsed;
-      if ((row.data as Group).isCollapsed) {
-        this.collapsedList.push(row.id);
-      } else {
-        let idx = this.collapsedList.indexOf(row.id);
-        this.collapsedList.splice(idx, 1);
-      }
-    });
-
-    this.renderRows.forEach((row, i) => {
-      if (row.data.type === RowType.GROUP) {
-        if ((row.data as Group).isCollapsed) {
-          let noToHide = (row.data as Group).visibleSets.length;
-          while (noToHide > 0) {
-            this.subSetsToRemove.push((i + noToHide));
-            noToHide--;
-          }
-        }
-      }
-    });
-
-    if (!collapseAllFlag)
-      this.app.emit("render-rows-changed", this);
+    let group = d.data as Group;
+    group.isCollapsed = !group.isCollapsed;
+    group.nestedGroups.map(_ => (_.isCollapsed = group.isCollapsed));
+    if (!collapseAllFlag) this.app.emit("render-rows-changed", this);
   }
 
   async load(
@@ -502,7 +468,7 @@ export class Data {
 
   private setupRenderRows(
     renderConfig: RenderConfig = null,
-    sortBySetId?: number,
+    sortBySetId?: number
   ) {
     this.collapsedList = [];
     this.subSetsToRemove = [];
@@ -535,10 +501,10 @@ export class Data {
       );
     }
 
-    if (this.renderConfig.collapseAll){
-      this.renderRows.filter(_ => _.data.type === RowType.GROUP).forEach(_ => {
+    if (this.renderConfig.collapseAll) {
+      this.renderRows.forEach(_ => {
         this.collapseGroup(_, true);
-      })
+      });
     }
 
     this.app.emit("render-rows-changed", this);
@@ -587,8 +553,21 @@ export class Data {
         this.setNameDictionary
       );
 
-    if (this.renderConfig.hideEmptyIntersection)
-      agg = agg.filter(set => set.data.setSize > 0);
+    if (!this.renderConfig.hideEmptyIntersection) {
+      if (agg.filter(_ => _.data.type === RowType.GROUP).length > 0)
+        agg.forEach(_ => {
+          let group = _.data as Group;
+          group.visibleSets.push(...group.hiddenSets);
+        });
+    } else {
+      agg = agg.filter(_ => _.data.setSize > 0);
+      if (agg.filter(_ => _.data.type === RowType.GROUP).length > 0) {
+        agg.forEach(row => {
+          let group = row.data as Group;
+          group.nestedGroups = group.nestedGroups.filter(_ => _.setSize > 0);
+        });
+      }
+    }
 
     if (sortBy) agg = applySort(agg, sortBy, sortBySetId);
 
@@ -606,32 +585,25 @@ function applySecondAggregation(
   overlap: number,
   setNameDictionary: { [key: number]: string }
 ): RenderRow[] {
-  let groupIndices = agg
-    .map((v: RenderRow, i) => [i, v.data.type === RowType.GROUP])
-    .filter(v => v[1])
-    .map(v => v[0]);
   let rr: RenderRow[] = [];
 
-  for (let i = 0; i < groupIndices.length; ++i) {
-    rr.push(agg[groupIndices[i] as number]);
-
-    let subsets: RenderRow[] = [];
-    if (i === groupIndices.length - 1) {
-      subsets = agg.slice((groupIndices[i] as number) + 1);
-    } else {
-      subsets = agg.slice((groupIndices[i] as number) + 1, groupIndices[
-        i + 1
-      ] as number);
-    }
-
+  agg.forEach(row => {
+    rr.push(row);
+    let group = row.data as Group;
+    let subsetRows = group.subSets.map(_ => {
+      return {
+        id: _.id.toString(),
+        data: _
+      };
+    });
     let rendered = AggregationStrategy[aggBy](
-      subsets,
+      subsetRows,
       overlap,
       2,
       setNameDictionary
     );
-    rr = rr.concat(rendered);
-  }
+    rendered.map(_ => (row.data as Group).addNestedGroup(_.data as Group));
+  });
   return rr;
 }
 

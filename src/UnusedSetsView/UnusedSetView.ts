@@ -13,6 +13,7 @@ import html from "./unusedset.view.html";
 import { Attribute } from "./../DataStructure/Attribute";
 import params from "../UpsetView/ui_params";
 import { excludeSets } from "../UpsetView/uiBuilderFunctions";
+import expandcollapsehtml from "./collapseall.view.html";
 
 export class UnusedSetView extends ViewBase {
   headerVis: d3Selection;
@@ -23,15 +24,42 @@ export class UnusedSetView extends ViewBase {
   create() {
     this.headerVis = d3.select(this.Root);
 
-    let view = this.headerVis.append("div").attr("class", "unused-set-view");
-
-    view.classed("position", true);
-
+    let dropDownControls = this.headerVis
+      .append("div")
+      .attr("class", "unused-set-view");
+    dropDownControls.classed("dropdown-position", true);
     this.comm.on("update-position", () => {
-      view.style("left", `${params.combinations_width}px`);
+      dropDownControls.style("left", `${params.combinations_width}px`);
     });
+    dropDownControls.html(dropDownControls.html() + html);
 
-    view.html(view.html() + html);
+    // let expandCollapseControls = this.headerVis
+    //   .append("div")
+    //   .classed("expand-collapse", true);
+
+    // expandCollapseControls.classed("expand-collapse-position", true);
+    // expandCollapseControls.html(
+    //   expandCollapseControls.html() + expandcollapsehtml
+    // );
+    // expandCollapseControls.style("top", `${params.header_height - 20}px`);
+
+    // let icons = expandCollapseControls.selectAll(".collapse-icon");
+
+    // let exp = expandCollapseControls.select(".expand-all");
+    // let col = expandCollapseControls.select(".collapse-all");
+
+    // let that = this;
+    // icons.on("click", function() {
+    //   let icon = d3.select(this);
+    //   that.comm.emit("collapse-all-ext-trigger");
+    //   if (icon.classed("collapse-all")) {
+    //     col.classed("is-invisible", true);
+    //     exp.classed("is-invisible", false);
+    //   } else {
+    //     col.classed("is-invisible", false);
+    //     exp.classed("is-invisible", true);
+    //   }
+    // });
   }
 
   update(data: Data) {

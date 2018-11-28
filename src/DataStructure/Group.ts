@@ -64,10 +64,10 @@ export class Group extends BaseElement {
       this.aggregate.addSubSet(set);
     });
 
-    this.items = this.items.concat(group.items);
-    this.setSize += group.setSize;
-    this.expectedProb += group.expectedProb;
-    this.disproportionality += group.disproportionality;
+    // this.items = this.items.concat(group.items);
+    // this.setSize += group.setSize;
+    // this.expectedProb += group.expectedProb;
+    // this.disproportionality += group.disproportionality;
   }
 
   contains(element: SubSet): boolean {

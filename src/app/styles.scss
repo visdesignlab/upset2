@@ -7,6 +7,13 @@ body {
 }
 
 #right-side-bar {
-  height: 95vh;
   overflow: auto;
+}
+
+#navigation-bar {
+  height: 3.5rem;
+}
+
+#body {
+  height: calc(100vh - 4rem);
 }
