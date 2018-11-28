@@ -23,6 +23,8 @@ input[type=number] {
   box-shadow: none;
   border-bottom: 1px solid #dbdbdb !important; }
 
+.checkbox:hover {
+  color: whitesmoke !important; }
 
 .img {
   display: block;
@@ -62,7 +64,6 @@ input[type=number] {
   fill: #145082 !important; }
 
 #mid-bar {
-  height: 80vh;
   overflow-y: auto;
   overflow-x: auto; }
 
@@ -76,7 +77,7 @@ input[type=number] {
   stroke-width: 1px; }
 
 .header {
-  cursor: pointer; }
+  cursor: url(/assets/trash-can.png) 1 1, pointer; }
 
 .connector {
   cursor: s-resize; }
@@ -232,15 +233,16 @@ input[type=number] {
   stroke-width: 1px;
   fill: rgba(120, 120, 120, 0.3); }
 
-.unused-set-view {
-  position: relative; }
-
 .dropdown-item {
   cursor: pointer; }
 
-.position {
+.dropdown-position {
   position: absolute;
   top: 0; }
+
+.expand-collapse-position {
+  position: absolute;
+  left: 5px; }
 
 /*! bulma.io v0.7.1 | MIT License | github.com/jgthms/bulma */
 @keyframes spinAround {
@@ -7127,8 +7129,13 @@ body {
   overflow: auto; }
 
 #right-side-bar {
-  height: 95vh;
   overflow: auto; }
+
+#navigation-bar {
+  height: 3.5rem; }
+
+#body {
+  height: calc(100vh - 4rem); }
 
 .close-icon {
   margin-left: 2px; }
@@ -14446,4 +14453,4 @@ th {
   min-width: 128px; }
 
 
-/*# sourceMappingURL=style.4b53e0b29bb1374a8da4.css.map*/
+/*# sourceMappingURL=style.8515e1e73a08077b3fa4.css.map*/

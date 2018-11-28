@@ -551,7 +551,7 @@ function aggregateByDegree(data, overlap, level, setNameDictionary) {
         let subsets = groups[group];
         subsets.forEach(subset => {
             g.addSubSet(subset.data);
-            rr.push({ id: subset.id.toString(), data: subset.data });
+            // rr.push({ id: subset.id.toString(), data: subset.data });
         });
     }
     return rr;
@@ -576,7 +576,7 @@ function aggregateByDeviation(data, overlap, level, setNameDictionary) {
         let subsets = groups[group];
         subsets.forEach(subset => {
             g.addSubSet(subset.data);
-            rr.push({ id: subset.id.toString(), data: subset.data });
+            // rr.push({ id: subset.id.toString(), data: subset.data });
         });
     }
     return rr;
@@ -584,7 +584,7 @@ function aggregateByDeviation(data, overlap, level, setNameDictionary) {
 function aggregateByOverlap(data, overlap, level, setNameDictionary) {
     let combinations = data
         .filter(d => {
-        return (d.data.noCombinedSets.toString() === overlap.toString());
+        return d.data.noCombinedSets.toString() >= overlap.toString();
     })
         .map(d => {
         return {
@@ -621,7 +621,7 @@ function aggregateByOverlap(data, overlap, level, setNameDictionary) {
         let subsets = groups[group];
         subsets.forEach(subset => {
             g.addSubSet(subset.data);
-            rr.push({ id: subset.id.toString(), data: subset.data });
+            // rr.push({ id: subset.id.toString(), data: subset.data });
         });
     }
     return rr;
@@ -649,7 +649,7 @@ function aggregateBySets(data, overlap, level, setNameDictionary) {
         let subsets = groups[group];
         subsets.forEach(subset => {
             g.addSubSet(subset.data);
-            rr.push({ id: subset.id.toString(), data: subset.data });
+            // rr.push({ id: subset.id.toString(), data: subset.data });
         });
     }
     return rr;
@@ -829,38 +829,9 @@ class Data {
         }, {});
     }
     collapseGroup(d, collapseAllFlag = false) {
-        this.renderRows
-            .filter(_ => _.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP)
-            .forEach(_ => {
-            _.data.isCollapsed = false;
-        });
-        this.renderRows
-            .filter(_ => this.collapsedList.indexOf(_.id) >= 0)
-            .forEach(_ => {
-            _.data.isCollapsed = true;
-        });
-        this.subSetsToRemove = [];
-        this.renderRows.filter(_ => _.id === d.id).forEach(row => {
-            row.data.isCollapsed = !row.data.isCollapsed;
-            if (row.data.isCollapsed) {
-                this.collapsedList.push(row.id);
-            }
-            else {
-                let idx = this.collapsedList.indexOf(row.id);
-                this.collapsedList.splice(idx, 1);
-            }
-        });
-        this.renderRows.forEach((row, i) => {
-            if (row.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP) {
-                if (row.data.isCollapsed) {
-                    let noToHide = row.data.visibleSets.length;
-                    while (noToHide > 0) {
-                        this.subSetsToRemove.push((i + noToHide));
-                        noToHide--;
-                    }
-                }
-            }
-        });
+        let group = d.data;
+        group.isCollapsed = !group.isCollapsed;
+        group.nestedGroups.map(_ => (_.isCollapsed = group.isCollapsed));
         if (!collapseAllFlag)
             this.app.emit("render-rows-changed", this);
     }
@@ -1204,7 +1175,7 @@ class Data {
             this.renderRows = this.render(null, null, _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["SortBy"].SET, this.renderConfig.minDegree, this.renderConfig.maxDegree, this.renderConfig.firstOverlap, this.renderConfig.secondOverlap, this.renderConfig.sortBySetid, this.renderConfig.collapseAll);
         }
         if (this.renderConfig.collapseAll) {
-            this.renderRows.filter(_ => _.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP).forEach(_ => {
+            this.renderRows.forEach(_ => {
                 this.collapseGroup(_, true);
             });
         }
@@ -1225,8 +1196,22 @@ class Data {
             agg = _AggregationStrategy__WEBPACK_IMPORTED_MODULE_1__["default"][firstAggBy](agg, overlap1, 1, this.setNameDictionary);
         if (secondAggBy && secondAggBy !== _AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE)
             agg = applySecondAggregation(agg, secondAggBy, overlap2, this.setNameDictionary);
-        if (this.renderConfig.hideEmptyIntersection)
-            agg = agg.filter(set => set.data.setSize > 0);
+        if (!this.renderConfig.hideEmptyIntersection) {
+            if (agg.filter(_ => _.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP).length > 0)
+                agg.forEach(_ => {
+                    let group = _.data;
+                    group.visibleSets.push(...group.hiddenSets);
+                });
+        }
+        else {
+            agg = agg.filter(_ => _.data.setSize > 0);
+            if (agg.filter(_ => _.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP).length > 0) {
+                agg.forEach(row => {
+                    let group = row.data;
+                    group.nestedGroups = group.nestedGroups.filter(_ => _.setSize > 0);
+                });
+            }
+        }
         if (sortBy)
             agg = applySort(agg, sortBy, sortBySetId);
         agg.filter(_ => _.data instanceof _Group__WEBPACK_IMPORTED_MODULE_7__["Group"]).forEach(group => {
@@ -1236,23 +1221,19 @@ class Data {
     }
 }
 function applySecondAggregation(agg, aggBy, overlap, setNameDictionary) {
-    let groupIndices = agg
-        .map((v, i) => [i, v.data.type === _RowType__WEBPACK_IMPORTED_MODULE_5__["RowType"].GROUP])
-        .filter(v => v[1])
-        .map(v => v[0]);
     let rr = [];
-    for (let i = 0; i < groupIndices.length; ++i) {
-        rr.push(agg[groupIndices[i]]);
-        let subsets = [];
-        if (i === groupIndices.length - 1) {
-            subsets = agg.slice(groupIndices[i] + 1);
-        }
-        else {
-            subsets = agg.slice(groupIndices[i] + 1, groupIndices[i + 1]);
-        }
-        let rendered = _AggregationStrategy__WEBPACK_IMPORTED_MODULE_1__["default"][aggBy](subsets, overlap, 2, setNameDictionary);
-        rr = rr.concat(rendered);
-    }
+    agg.forEach(row => {
+        rr.push(row);
+        let group = row.data;
+        let subsetRows = group.subSets.map(_ => {
+            return {
+                id: _.id.toString(),
+                data: _
+            };
+        });
+        let rendered = _AggregationStrategy__WEBPACK_IMPORTED_MODULE_1__["default"][aggBy](subsetRows, overlap, 2, setNameDictionary);
+        rendered.map(_ => row.data.addNestedGroup(_.data));
+    });
     return rr;
 }
 function applySort(agg, sortBy, sortBySetId) {
@@ -1463,10 +1444,10 @@ class Group extends _BaseElement__WEBPACK_IMPORTED_MODULE_1__["BaseElement"] {
         group.subSets.forEach(set => {
             this.aggregate.addSubSet(set);
         });
-        this.items = this.items.concat(group.items);
-        this.setSize += group.setSize;
-        this.expectedProb += group.expectedProb;
-        this.disproportionality += group.disproportionality;
+        // this.items = this.items.concat(group.items);
+        // this.setSize += group.setSize;
+        // this.expectedProb += group.expectedProb;
+        // this.disproportionality += group.disproportionality;
     }
     contains(element) {
         return this.subSets.indexOf(element) >= 0;
@@ -1564,28 +1545,6 @@ SortStrategy[_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_1__["SortBy"].DEVIATI
 SortStrategy[_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_1__["SortBy"].SET] = sortBySet;
 /* harmony default export */ __webpack_exports__["default"] = (SortStrategy);
 //  Sorting function definitions
-function sortByCardinality(data) {
-    let groups = data.reduce((p, c, i) => {
-        if (c.data.type === _RowType__WEBPACK_IMPORTED_MODULE_0__["RowType"].GROUP)
-            p.push(i);
-        return p;
-    }, []);
-    let rr = [];
-    if (groups.length === 0) {
-        return data.sort((d1, d2) => {
-            return d2.data.setSize - d1.data.setSize;
-        });
-    }
-    groups.forEach((g, idx) => {
-        rr.push(data[g]);
-        let els = data.slice(g + 1, groups[idx + 1]);
-        els = els.sort((d1, d2) => {
-            return d2.data.setSize - d1.data.setSize;
-        });
-        rr = rr.concat(els);
-    });
-    return rr;
-}
 function sortBySet(data, setId) {
     let a = data.sort((d1, d2) => {
         return (d2.data.combinedSets[setId] -
@@ -1597,28 +1556,36 @@ function sortByDegree(data, setId) {
     return data;
 }
 function sortByDeviation(data, setId) {
-    let groups = data.reduce((p, c, i) => {
-        if (c.data.type === _RowType__WEBPACK_IMPORTED_MODULE_0__["RowType"].GROUP)
-            p.push(i);
-        return p;
-    }, []);
-    let rr = [];
-    if (groups.length === 0) {
-        return data.sort((d1, d2) => {
-            return (Math.abs(d2.data.disproportionality) -
-                Math.abs(d1.data.disproportionality));
+    data.sort((a, b) => b.data.disproportionality - a.data.disproportionality);
+    if (data.filter(_ => _.data.type === _RowType__WEBPACK_IMPORTED_MODULE_0__["RowType"].GROUP).length > 0) {
+        data.forEach(row => {
+            let group = row.data;
+            group.visibleSets.sort((a, b) => b.disproportionality - a.disproportionality);
+            if (group.nestedGroups.length > 0) {
+                group.nestedGroups.sort((a, b) => b.disproportionality - a.disproportionality);
+                group.nestedGroups.forEach(ng => {
+                    ng.visibleSets.sort((a, b) => b.disproportionality - a.disproportionality);
+                });
+            }
         });
     }
-    groups.forEach((g, idx) => {
-        rr.push(data[g]);
-        let els = data.slice(g + 1, groups[idx + 1]);
-        els = els.sort((d1, d2) => {
-            return (Math.abs(d2.data.disproportionality) -
-                Math.abs(d1.data.disproportionality));
+    return data;
+}
+function sortByCardinality(data) {
+    data.sort((a, b) => b.data.setSize - a.data.setSize);
+    if (data.filter(_ => _.data.type === _RowType__WEBPACK_IMPORTED_MODULE_0__["RowType"].GROUP).length > 0) {
+        data.forEach(row => {
+            let group = row.data;
+            group.visibleSets.sort((a, b) => b.setSize - a.setSize);
+            if (group.nestedGroups.length > 0) {
+                group.nestedGroups.sort((a, b) => b.setSize - a.setSize);
+                group.nestedGroups.forEach(ng => {
+                    ng.visibleSets.sort((a, b) => b.setSize - a.setSize);
+                });
+            }
         });
-        rr = rr.concat(els);
-    });
-    return rr;
+    }
+    return data;
 }
 
 
@@ -2736,12 +2703,12 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
         this.updateDataFields();
     }
     updateCollapseAll() {
-        let checkbox = d3__WEBPACK_IMPORTED_MODULE_1__["select"]('#collapseAll');
-        checkbox.property('checked', this.config.collapseAll);
+        let checkbox = d3__WEBPACK_IMPORTED_MODULE_1__["select"]("#collapseAll");
+        checkbox.property("checked", this.config.collapseAll);
         let that = this;
-        checkbox.on('change', function () {
+        checkbox.on("change", function () {
             let el = d3__WEBPACK_IMPORTED_MODULE_1__["select"](this);
-            let val = el.property('checked');
+            let val = el.property("checked");
             let _do = {
                 func: that.applyCollapseAll.bind(that),
                 args: [val]
@@ -2750,7 +2717,7 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
                 func: that.applyCollapseAll.bind(that),
                 args: [!val]
             };
-            that.comm.emit('apply', ['apply-collapse-all', _do, _undo]);
+            that.comm.emit("apply", ["apply-collapse-all", _do, _undo]);
         });
     }
     updateDataFields() {
@@ -3020,7 +2987,6 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
         this.update();
     }
     applyCollapseAll(val) {
-        console.log(val);
         let rc = this.config;
         rc.collapseAll = val;
         this.saveConfig(rc);
@@ -3105,7 +3071,7 @@ class FilterBoxViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MOD
         this.registerFunctions("sortBySet", view.applySortBySet, view);
         this.registerFunctions("sortByCardinality", view.applySortByCardinality, view);
         this.registerFunctions("sortByDeviation", view.applySortByDeviation, view);
-        this.registerFunctions('apply-collapse-all', view.applyCollapseAll, view);
+        this.registerFunctions("apply-collapse-all", view.applyCollapseAll, view);
         /** Undo Registration */
         this.registerFunctions("applyFirstAggregation", view.applyFirstAggregation, view, false);
         this.registerFunctions("applySecondAggregation", view.applySecondAggregation, view, false);
@@ -3118,9 +3084,8 @@ class FilterBoxViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MOD
         this.registerFunctions("sortBySet", view.unApplySortBySet, view, false);
         this.registerFunctions("sortByCardinality", view.unApplySortByCardinality, view, false);
         this.registerFunctions("sortByDeviation", view.unApplySortByDeviation, view, false);
-        this.registerFunctions('apply-collapse-all', view.applyCollapseAll, view, false);
+        this.registerFunctions("apply-collapse-all", view.applyCollapseAll, view, false);
         this.comm.on("apply", args => {
-            console.log(args);
             this.apply(args);
         });
     }
@@ -3246,12 +3211,12 @@ __webpack_require__.r(__webpack_exports__);
       </div>
     </div>
 
-    <div class="field">
+    <!-- <div class="field">
       <div class="control">
         <input id="collapseAll" type="checkbox">
         <label class="checkbox is-size-7">Collapse All</label>
       </div>
-    </div>
+    </div> -->
 
   </div>
 
@@ -3491,11 +3456,28 @@ __webpack_require__.r(__webpack_exports__);
 // HTML
 /* harmony default export */ __webpack_exports__["default"] = (`<nav class="navbar is-dark" role="navigation" aria-label="main navigation">
   <div class="navbar-brand">
-    <div class="navbar-item">
+    <div class="navbar-item has-text-weight-bold is-size-5">
       UpSet - Visualizing Intersecting Sets
     </div>
   </div>
   <div class="navbar-menu">
+    <div class="navbar-start">
+
+      <div class="navbar-item is-paddingless">
+        <div id="undo-redo-group" class=""></div>
+      </div>
+
+      <div class="navbar-item is-paddingless">
+        <div class="field">
+          <div class="control">
+            <input id="collapseAll" type="checkbox">
+            <label class="checkbox">Collapse All</label>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
     <div class="navbar-end">
       <div class="navbar-item">
         <div style="font-weight: bold">Choose Dataset</div>
@@ -3513,21 +3495,22 @@ __webpack_require__.r(__webpack_exports__);
       </div>
 
       <div class="navbar-item">
-        <a href="http://caleydo.org/tools/upset/ ">About UpSet</a>
-      </div>
-
-      <div class="navbar-item">
-        <a href="https://github.com/hms-dbmi/UpSetR/ ">UpSet for R</a>
-      </div>
-      <div class="navbar-item">
         <div id="embed-modal">
           <a class="button is-small is-primary show">Embed</a>
         </div>
       </div>
+
+      <div class="navbar-item">
+        <a class=" has-text-white-ter" href="http://caleydo.org/tools/upset/ ">About UpSet</a>
+      </div>
+      <!-- 
+      <div class="navbar-item">
+        <a href="https://github.com/hms-dbmi/UpSetR/ ">UpSet for R</a>
+      </div> -->
+
     </div>
   </div>
-</nav>
-`);
+</nav>`);
 
 /***/ }),
 
@@ -3592,7 +3575,8 @@ class ProvenanceView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_
     }
     create() {
         let size = 20;
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root).html(_provenance_view_html__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        let root = d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#undo-redo-group");
+        root.html(_provenance_view_html__WEBPACK_IMPORTED_MODULE_2__["default"]);
         // d3.select(this.Root)
         //   .select("#save-btn")
         //   .on("click", () => {
@@ -3603,20 +3587,20 @@ class ProvenanceView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_
         //   .on("click", () => {
         //     this.comm.emit("load-graph");
         //   });
-        let undo = d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root).select(".undo");
-        let redo = d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root).select(".redo");
-        undo
-            .append("img")
-            .attr("src", "assets/arrow.svg")
-            .attr("class", "img")
-            .attr("height", size)
-            .attr("width", size);
-        redo
-            .append("img")
-            .attr("src", "assets/arrow.svg")
-            .attr("class", "img")
-            .attr("height", size)
-            .attr("width", size);
+        let undo = root.select(".undo");
+        let redo = root.select(".redo");
+        // undo
+        //   .append("img")
+        //   .attr("src", "assets/arrow.svg")
+        //   .attr("class", "img")
+        //   .attr("height", size)
+        //   .attr("width", size);
+        // redo
+        //   .append("img")
+        //   .attr("src", "assets/arrow.svg")
+        //   .attr("class", "img")
+        //   .attr("height", size)
+        //   .attr("width", size);
         undo.on("click", () => {
             this.comm.emit("undo");
         });
@@ -3631,7 +3615,7 @@ class ProvenanceView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_
         });
     }
     update(graph) {
-        Object(_uiBuilderFunctions__WEBPACK_IMPORTED_MODULE_3__["createButtons"])(d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root), graph);
+        Object(_uiBuilderFunctions__WEBPACK_IMPORTED_MODULE_3__["createButtons"])(d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#undo-redo-group"), graph);
         // createGraph(d3.select(this.Root).select(".graph-view"), graph, this.comm);
     }
 }
@@ -3723,9 +3707,13 @@ __webpack_require__.r(__webpack_exports__);
 </div> -->
 
 <div class="columns">
-  <div class="column  undo"></div>
+  <div title="Undo" class="column undo">
+    <i class="fas fa-undo"></i>
+  </div>
   <!-- <div class="column is-10 graph-view"></div> -->
-  <div class="column redo"></div>
+  <div title="Redo" class="column redo">
+    <i class="fas fa-redo"></i>
+  </div>
 </div>`);
 
 /***/ }),
@@ -3774,13 +3762,13 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var d3__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! d3 */ "./node_modules/d3/index.js");
 
 function createButtons(el, graph) {
-    el.select(".redo").classed("disable", false);
-    el.select(".undo").classed("disable", false);
+    el.select(".redo").classed("has-text-grey", false);
+    el.select(".undo").classed("has-text-grey", false);
     if (graph.current.children.length === 0) {
-        el.select(".redo").classed("disable", true);
+        el.select(".redo").classed("has-text-grey", true);
     }
     if (graph.current.label === "Root") {
-        el.select(".undo").classed("disable", true);
+        el.select(".undo").classed("has-text-grey", true);
     }
 }
 function createGraph(el, graph, comm) {
@@ -3908,12 +3896,37 @@ class UnusedSetView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_1
     }
     create() {
         this.headerVis = d3__WEBPACK_IMPORTED_MODULE_0__["select"](this.Root);
-        let view = this.headerVis.append("div").attr("class", "unused-set-view");
-        view.classed("position", true);
+        let dropDownControls = this.headerVis
+            .append("div")
+            .attr("class", "unused-set-view");
+        dropDownControls.classed("dropdown-position", true);
         this.comm.on("update-position", () => {
-            view.style("left", `${_UpsetView_ui_params__WEBPACK_IMPORTED_MODULE_3__["default"].combinations_width}px`);
+            dropDownControls.style("left", `${_UpsetView_ui_params__WEBPACK_IMPORTED_MODULE_3__["default"].combinations_width}px`);
         });
-        view.html(view.html() + _unusedset_view_html__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        dropDownControls.html(dropDownControls.html() + _unusedset_view_html__WEBPACK_IMPORTED_MODULE_2__["default"]);
+        // let expandCollapseControls = this.headerVis
+        //   .append("div")
+        //   .classed("expand-collapse", true);
+        // expandCollapseControls.classed("expand-collapse-position", true);
+        // expandCollapseControls.html(
+        //   expandCollapseControls.html() + expandcollapsehtml
+        // );
+        // expandCollapseControls.style("top", `${params.header_height - 20}px`);
+        // let icons = expandCollapseControls.selectAll(".collapse-icon");
+        // let exp = expandCollapseControls.select(".expand-all");
+        // let col = expandCollapseControls.select(".collapse-all");
+        // let that = this;
+        // icons.on("click", function() {
+        //   let icon = d3.select(this);
+        //   that.comm.emit("collapse-all-ext-trigger");
+        //   if (icon.classed("collapse-all")) {
+        //     col.classed("is-invisible", true);
+        //     exp.classed("is-invisible", false);
+        //   } else {
+        //     col.classed("is-invisible", false);
+        //     exp.classed("is-invisible", true);
+        //   }
+        // });
     }
     update(data) {
         let dropDown = this.headerVis
@@ -4768,9 +4781,42 @@ function addDeviationScale(el, maxSize) {
     addTickLabels(ticks, 1, -2);
 }
 // ################################################################################################
+function addChildrenToShowList(rowsToShow, row) {
+    if (row.data.nestedGroups.length > 0) {
+        rowsToShow.push(row);
+        row.data.nestedGroups.forEach(ng => {
+            addChildrenToShowList(rowsToShow, {
+                id: ng.id.toString(),
+                data: ng
+            });
+        });
+    }
+    else {
+        rowsToShow.push(row);
+        if (!row.data.isCollapsed) {
+            let children = row.data.visibleSets.map(_ => {
+                return {
+                    id: _.id.toString(),
+                    data: _
+                };
+            });
+            rowsToShow.push(...children);
+        }
+    }
+}
 function addRenderRows(data, el, usedSetCount, config, comm) {
+    let rowsToShow = [];
+    if (data.renderRows.filter(_ => _.data.type === _DataStructure_RowType__WEBPACK_IMPORTED_MODULE_2__["RowType"].GROUP).length > 0) {
+        data.renderRows.forEach(row => {
+            addChildrenToShowList(rowsToShow, row);
+        });
+    }
+    else {
+        rowsToShow = data.renderRows;
+    }
+    setupColumnBackgrounds(el, usedSetCount);
     el.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_group_height})`);
-    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_group_height = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * data.renderRows.length;
+    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_group_height = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * rowsToShow.length;
     _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * usedSetCount;
     _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_sets = usedSetCount;
     let rows;
@@ -4780,8 +4826,7 @@ function addRenderRows(data, el, usedSetCount, config, comm) {
         _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].cardinality_width = 0;
     if (config && !config.DeviationBars)
         _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].deviation_width = 0;
-    setupColumnBackgrounds(el, usedSetCount);
-    let rowsToShow = data.renderRows.filter((_, i) => data.subSetsToRemove.indexOf(i) < 0);
+    // data.renderRows.filter((_, i) => data.subSetsToRemove.indexOf(i) < 0);
     [rows, groups, subsets] = addRows(rowsToShow, el, comm);
     setupSubsets(subsets, comm);
     setupGroups(groups, comm);
@@ -4844,12 +4889,12 @@ function setupColumnBackgrounds(el, usedSets) {
     });
 }
 function addRows(data, el, comm) {
-    let _rows = el.selectAll(".row").data(data, function (d, i) {
+    let _rows = el
+        .selectAll(".row")
+        .data(data, function (d, i) {
         return d.id;
     });
-    _rows
-        .exit()
-        .remove();
+    _rows.exit().remove();
     let rows = _rows
         .enter()
         .append("g")
@@ -5590,51 +5635,51 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const serverUrl = 'http://18.224.213.250';
+const serverUrl = "http://18.224.213.250";
 function run() {
-    let application = new provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2__["Application"]('Upset2.0', '1.0.0');
+    let application = new provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2__["Application"]("Upset2.0", "1.0.0");
     _DataStructure_DataUtils__WEBPACK_IMPORTED_MODULE_5__["DataUtils"].app = application;
-    _DataStructure_DataUtils__WEBPACK_IMPORTED_MODULE_5__["DataUtils"].app.on('change-dataset', _DataStructure_DataUtils__WEBPACK_IMPORTED_MODULE_5__["DataUtils"].processDataSet);
-    if (sessionStorage['provenance-graph']) {
-        application.graph = JSON.parse(sessionStorage['provenance-graph']);
-        application.registry = JSON.parse(sessionStorage['provenance-registry']);
+    _DataStructure_DataUtils__WEBPACK_IMPORTED_MODULE_5__["DataUtils"].app.on("change-dataset", _DataStructure_DataUtils__WEBPACK_IMPORTED_MODULE_5__["DataUtils"].processDataSet);
+    if (sessionStorage["provenance-graph"]) {
+        application.graph = JSON.parse(sessionStorage["provenance-graph"]);
+        application.registry = JSON.parse(sessionStorage["provenance-registry"]);
     }
-    new _DatasetSelectionView_DatasetSelectionViewModel__WEBPACK_IMPORTED_MODULE_20__["DatasetSelectionViewModel"](new _DatasetSelectionView_DatasetSelectionView__WEBPACK_IMPORTED_MODULE_21__["DatasetSelectionView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('body').node()), application);
-    new _FilterBoxView_FilterBoxViewModel__WEBPACK_IMPORTED_MODULE_8__["FilterBoxViewModel"](new _FilterBoxView_FilterBoxView__WEBPACK_IMPORTED_MODULE_7__["FilterBoxView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#filter-box').node()), application);
-    new _DataSetInfoView_DataSetInfoViewModel__WEBPACK_IMPORTED_MODULE_4__["DataSetInfoViewModel"](new _DataSetInfoView_DataSetInfoView__WEBPACK_IMPORTED_MODULE_3__["DataSetInfoView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#dataset-info-box').node()), application);
-    new _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_10__["NavBarViewModel"](new _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_9__["NavBarView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#navigation-bar').node()), application, 'data/datasets.json');
-    new _ProvenanceView_ProvenanceViewModel__WEBPACK_IMPORTED_MODULE_12__["ProvenanceViewModel"](new _ProvenanceView_ProvenanceView__WEBPACK_IMPORTED_MODULE_11__["ProvenanceView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('.provenance-view').node()), application);
+    new _DatasetSelectionView_DatasetSelectionViewModel__WEBPACK_IMPORTED_MODULE_20__["DatasetSelectionViewModel"](new _DatasetSelectionView_DatasetSelectionView__WEBPACK_IMPORTED_MODULE_21__["DatasetSelectionView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("body").node()), application);
+    new _DataSetInfoView_DataSetInfoViewModel__WEBPACK_IMPORTED_MODULE_4__["DataSetInfoViewModel"](new _DataSetInfoView_DataSetInfoView__WEBPACK_IMPORTED_MODULE_3__["DataSetInfoView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#dataset-info-box").node()), application);
+    new _NavBarView_NavBarViewModel__WEBPACK_IMPORTED_MODULE_10__["NavBarViewModel"](new _NavBarView_NavBarView__WEBPACK_IMPORTED_MODULE_9__["NavBarView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#navigation-bar").node()), application, "data/datasets.json");
+    new _FilterBoxView_FilterBoxViewModel__WEBPACK_IMPORTED_MODULE_8__["FilterBoxViewModel"](new _FilterBoxView_FilterBoxView__WEBPACK_IMPORTED_MODULE_7__["FilterBoxView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#filter-box").node()), application);
+    new _ProvenanceView_ProvenanceViewModel__WEBPACK_IMPORTED_MODULE_12__["ProvenanceViewModel"](new _ProvenanceView_ProvenanceView__WEBPACK_IMPORTED_MODULE_11__["ProvenanceView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"](".provenance-view").node()), application);
     let isIFrame = window.self !== window.top;
     let ec = null;
     if (!isIFrame) {
-        Object(_EmbedGenView_EmbedGenView__WEBPACK_IMPORTED_MODULE_6__["EmbedGenView"])(d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#embed-modal'));
+        Object(_EmbedGenView_EmbedGenView__WEBPACK_IMPORTED_MODULE_6__["EmbedGenView"])(d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#embed-modal"));
     }
     else {
         ec = renderIFrame();
     }
-    new _UpsetView_UpsetViewModel__WEBPACK_IMPORTED_MODULE_16__["UpsetViewModel"](new _UpsetView_UpsetView__WEBPACK_IMPORTED_MODULE_14__["UpsetView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#mid-bar').node(), ec), application);
-    new _UnusedSetsView_UnusedSetViewModel__WEBPACK_IMPORTED_MODULE_15__["UnusedSetViewModel"](new _UnusedSetsView_UnusedSetView__WEBPACK_IMPORTED_MODULE_13__["UnusedSetView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#vis').node()), application);
-    new _ElementView_ElementViewModel__WEBPACK_IMPORTED_MODULE_18__["ElementViewModel"](new _ElementView_ElementView__WEBPACK_IMPORTED_MODULE_19__["ElementView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#right-side-bar').node()), application);
+    new _UpsetView_UpsetViewModel__WEBPACK_IMPORTED_MODULE_16__["UpsetViewModel"](new _UpsetView_UpsetView__WEBPACK_IMPORTED_MODULE_14__["UpsetView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#mid-bar").node(), ec), application);
+    new _UnusedSetsView_UnusedSetViewModel__WEBPACK_IMPORTED_MODULE_15__["UnusedSetViewModel"](new _UnusedSetsView_UnusedSetView__WEBPACK_IMPORTED_MODULE_13__["UnusedSetView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#vis").node()), application);
+    new _ElementView_ElementViewModel__WEBPACK_IMPORTED_MODULE_18__["ElementViewModel"](new _ElementView_ElementView__WEBPACK_IMPORTED_MODULE_19__["ElementView"](d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#right-side-bar").node()), application);
 }
 run();
 function renderIFrame() {
-    let ec = JSON.parse(unescape(window.location.hash.replace('#', '')));
+    let ec = JSON.parse(unescape(window.location.hash.replace("#", "")));
     if (!ec.NavBar)
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#navigation-bar').style('display', 'none');
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#navigation-bar").style("display", "none");
     if (!ec.FilterBox)
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#filter-box').style('display', 'none');
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#filter-box").style("display", "none");
     if (!ec.DataSetInfo)
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#dataset-info-box').style('display', 'none');
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#dataset-info-box").style("display", "none");
     if (!ec.LeftSideBar)
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#left-side-bar').style('display', 'none');
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#left-side-bar").style("display", "none");
     if (!ec.RightSideBar)
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"]('#right-side-bar').style('display', 'none');
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"]("#right-side-bar").style("display", "none");
     if (!ec.ProvenanceView)
-        d3__WEBPACK_IMPORTED_MODULE_0__["select"]('.provenance-view').style('display', 'none');
+        d3__WEBPACK_IMPORTED_MODULE_0__["select"](".provenance-view").style("display", "none");
     return ec;
 }
 function getEmbedConfig(iframe) {
-    return JSON.parse(iframe.attr('data'));
+    return JSON.parse(iframe.attr("data"));
 }
 
 
@@ -6631,4 +6676,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.ba7a2d15bca7d2cac40c.js.map
+//# sourceMappingURL=app.73430efd84733cdf2c59.js.map
