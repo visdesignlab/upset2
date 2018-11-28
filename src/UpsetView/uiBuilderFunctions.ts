@@ -1,3 +1,4 @@
+import { AggregateBy } from "./../DataStructure/AggregateAndFilters";
 import { UnusedSetViewModel } from "./../UnusedSetsView/UnusedSetViewModel";
 import { Attribute } from "./../DataStructure/Attribute";
 import { Data } from "./../DataStructure/Data";
@@ -622,12 +623,10 @@ export function addRenderRows(
   if (config && !config.CardinalityBars) params.cardinality_width = 0;
   if (config && !config.DeviationBars) params.deviation_width = 0;
 
-  // data.renderRows.filter((_, i) => data.subSetsToRemove.indexOf(i) < 0);
-
   [rows, groups, subsets] = addRows(rowsToShow, el, comm);
 
   setupSubsets(subsets, comm);
-  setupGroups(groups, comm);
+  setupGroups(data, groups, comm);
   collapseGroups(groups, subsets, comm);
 
   if (!config || config.CardinalityBars) {
@@ -950,10 +949,11 @@ function addRowHighlight(el: BaseType) {
 /** ************* */
 
 /** ************* */
-function setupGroups(groups: d3Selection, comm: Mitt) {
+function setupGroups(data: Data, groups: d3Selection, comm: Mitt) {
   addGroupCollapseIcons(groups, comm);
   addGroupBackgroundRects(groups);
   addGroupLabels(groups);
+  addGroupCombination(data, groups);
 }
 
 function addGroupCollapseIcons(groups: d3Selection, comm: Mitt) {
@@ -1024,6 +1024,79 @@ function addGroupLabels(groups: d3Selection) {
         return `translate(35, ${params.row_height - 4})`;
       return `translate(15, ${params.row_height - 4})`;
     });
+}
+
+function addGroupCombination(data: Data, groups: d3Selection) {
+  let combinationG = groups.append("g").classed("combination", true);
+  combinationG.attr("transform", (d: RenderRow, i) => {
+    if ((d.data as Group).level === 1) {
+      return `translate(${params.skew_offset}, 0)`;
+    } else {
+      return `translate(${params.skew_offset},0)`;
+    }
+  });
+  combinationG.each(function(d: RenderRow) {
+    let aggBy = (d.data as Group).aggBy as AggregateBy;
+    if (aggBy === AggregateBy.OVERLAPS || aggBy === AggregateBy.SETS) {
+      let comboGroup = d3
+        .select(this)
+        .selectAll(".set-membership")
+        .data((d.data as Group).setMemberships);
+      addGroupCombinationCircles(comboGroup);
+    }
+  });
+}
+
+function addGroupCombinationCircles(comboGroup: d3Selection) {
+  comboGroup
+    .exit()
+    .transition()
+    .duration(100)
+    .remove();
+
+  let cgs = comboGroup
+    .enter()
+    .append("circle")
+    .merge(comboGroup)
+    .attr("r", d => {
+      if (d === 0) return params.combo_circle_radius - 5;
+      return params.combo_circle_radius - 1;
+    })
+    .attr("cy", params.row_height / 2)
+    .attr("cx", (d, i) => {
+      return params.column_width / 2 + params.column_width * i;
+    })
+    .attr("class", (d, i) => {
+      // if (d === 0) return `set-membership not-member`;
+      return `set-membership member`;
+    })
+    .on("mouseover", function(d, i) {
+      let parentG = (d3.select(this).node() as any).parentNode;
+      let rect = (d3.select(parentG).node() as any).parentNode;
+      // d3.select(rect)
+      //   .select("rect")
+      //   .classed("highlight highlight2", true);
+
+      d3.selectAll(`.S_${i}`).classed("highlight", true);
+    })
+    .on("mouseout", function(d, i) {
+      let parentG = (d3.select(this).node() as any).parentNode;
+      let rect = (d3.select(parentG).node() as any).parentNode;
+      // d3.select(rect)
+      //   .select("rect")
+      //   .classed("highlight highlight2", false);
+
+      d3.selectAll(`.S_${i}`).classed("highlight", false);
+    });
+
+  cgs
+    .append("circle")
+    .attr("r", params.combo_circle_radius - 1)
+    .attr("cy", params.row_height / 2)
+    .attr("cx", (d, i) => {
+      return params.column_width / 2 + params.column_width * i;
+    })
+    .classed("set-membership member", true);
 }
 /** ************* */
 
