@@ -4814,9 +4814,9 @@ function addRenderRows(data, el, usedSetCount, config, comm) {
     else {
         rowsToShow = data.renderRows;
     }
+    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_group_height = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * rowsToShow.length;
     setupColumnBackgrounds(el, usedSetCount);
     el.attr("transform", `translate(0, ${_ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_set_group_height})`);
-    _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_group_height = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].row_height * rowsToShow.length;
     _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].combinations_width = _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].column_width * usedSetCount;
     _ui_params__WEBPACK_IMPORTED_MODULE_0__["default"].used_sets = usedSetCount;
     let rows;
@@ -6676,4 +6676,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.73430efd84733cdf2c59.js.map
+//# sourceMappingURL=app.fcf553a405cef6a46d3b.js.map
