@@ -1,3 +1,4 @@
+import { AggregateBy } from "./AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave 
  * @Date: 2018-06-03 16:57:29 
@@ -20,8 +21,27 @@ export class Group extends BaseElement {
   level: number;
   nestedGroups: Array<Group>;
   isCollapsed: boolean;
-  constructor(groupId: number | string, groupName: string, level: number) {
+  aggBy: AggregateBy;
+  setMemberships: number[];
+  constructor(
+    groupId: number | string,
+    groupName: string,
+    level: number,
+    aggBy: AggregateBy,
+    setMemberships?: number[]
+  ) {
     super(groupId, groupName);
+
+    if (level === 1) {
+      if (groupName.length >= 9) {
+        this.elementName = `${groupName.substring(0, 7)}...`;
+      }
+    } else {
+      if (groupName.length >= 10) {
+        this.elementName = `${groupName.substring(0, 5)}...`;
+      }
+    }
+
     this.type = RowType.GROUP;
     this.isCollapsed = false;
     this.nestedGroups = [];
@@ -31,6 +51,10 @@ export class Group extends BaseElement {
     this.subSets = [];
     this.visibleSets = [];
     this.aggregate = new Aggregate(`empty${groupId}`, "Subsets", level + 1);
+
+    this.setMemberships = setMemberships;
+
+    this.aggBy = aggBy;
 
     this.hiddenSets = [];
 

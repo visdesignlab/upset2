@@ -1,3 +1,4 @@
+import { Membership } from "./Data";
 import { SubSet } from "./SubSet";
 import { Group } from "./Group";
 import { AggregateBy } from "./AggregateAndFilters";
@@ -36,7 +37,12 @@ function aggregateByDegree(
   let rr: RenderRow[] = [];
 
   for (let group in groups) {
-    let g = new Group(`Group_Deg_${group}`, `Degree ${group}`, level);
+    let g = new Group(
+      `Group_Deg_${group}`,
+      `Degree ${group}`,
+      level,
+      AggregateBy.DEGREE
+    );
     rr.push({ id: g.id.toString(), data: g });
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
@@ -72,7 +78,8 @@ function aggregateByDeviation(
     let g = new Group(
       `${group}_Expected_Value`,
       `${group} Expected Value`,
-      level
+      level,
+      AggregateBy.DEVIATION
     );
     rr.push({ id: g.id.toString(), data: g });
     let subsets = groups[group] as RenderRow[];
@@ -128,7 +135,14 @@ function aggregateByOverlap(
   let rr: RenderRow[] = [];
 
   for (let group in groups) {
-    let g = new Group(group, group, level);
+    let names = group.split(" ");
+    names.forEach(_ => (_ = _.replace(/ /g, "_")));
+
+    let membership = (Object as any)
+      .entries(setNameDictionary)
+      .map((_: any) => (names.indexOf(_[1].replace(/ /g, "_")) > -1 ? 1 : 0));
+
+    let g = new Group(group, group, level, AggregateBy.OVERLAPS, membership);
     rr.push({ id: g.id.toString(), data: g });
     let subsets = groups[group] as RenderRow[];
     subsets.forEach(subset => {
@@ -160,17 +174,21 @@ function aggregateBySets(
       groups[subSetNames[val]] = groups[subSetNames[val]] || [];
       groups[subSetNames[val]].push(item);
     });
-
     return groups;
   }, {});
 
   let rr: RenderRow[] = [];
 
   for (let group in groups) {
+    let membership = (Object as any)
+      .entries(setNameDictionary)
+      .map((_: any) => (_[1] === group ? 1 : 0));
     let g = new Group(
       `Group_Set_${group.replace(" ", "_")}`,
-      `Set: ${group}`,
-      level
+      `${group}`,
+      level,
+      AggregateBy.SETS,
+      membership
     );
     rr.push({ id: g.id.toString(), data: g });
     let subsets = groups[group] as RenderRow[];
