@@ -83,6 +83,7 @@ export class FilterBoxViewModel extends ViewModelBase {
     );
     this.registerFunctions("sortByDeviation", view.applySortByDeviation, view);
     this.registerFunctions("apply-collapse-all", view.applyCollapseAll, view);
+    this.registerFunctions('apply-set-overlap', view.applySetOverlap, view);
 
     /** Undo Registration */
     this.registerFunctions(
@@ -124,8 +125,9 @@ export class FilterBoxViewModel extends ViewModelBase {
     );
     this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view, false);
     this.registerFunctions("sortBySet", view.unApplySortBySet, view, false);
+    
     this.registerFunctions(
-      "sortByCardinality",
+      "sortByCardinality", 
       view.unApplySortByCardinality,
       view,
       false
@@ -142,6 +144,8 @@ export class FilterBoxViewModel extends ViewModelBase {
       view,
       false
     );
+    this.registerFunctions('apply-set-overlap', view.unApplySetOverlap, view, false);
+
 
     this.comm.on("apply", args => {
       this.apply(args);
