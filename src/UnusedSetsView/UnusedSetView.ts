@@ -14,6 +14,7 @@ import { Attribute } from "./../DataStructure/Attribute";
 import params from "../UpsetView/ui_params";
 import { excludeSets } from "../UpsetView/uiBuilderFunctions";
 import expandcollapsehtml from "./collapseall.view.html";
+import { RenderConfig } from "../DataStructure/AggregateAndFilters";
 
 export class UnusedSetView extends ViewBase {
   headerVis: d3Selection;
@@ -33,36 +34,53 @@ export class UnusedSetView extends ViewBase {
     });
     dropDownControls.html(dropDownControls.html() + html);
 
-    // let expandCollapseControls = this.headerVis
-    //   .append("div")
-    //   .classed("expand-collapse", true);
+    let expandCollapseControls = this.headerVis
+      .append("div")
+      .classed("expand-collapse", true);
 
-    // expandCollapseControls.classed("expand-collapse-position", true);
-    // expandCollapseControls.html(
-    //   expandCollapseControls.html() + expandcollapsehtml
-    // );
-    // expandCollapseControls.style("top", `${params.header_height - 20}px`);
+    expandCollapseControls.classed("expand-collapse-position", true);
+    expandCollapseControls.html(
+      expandCollapseControls.html() + expandcollapsehtml
+    );
+    expandCollapseControls.style("top", `${params.header_height - 20}px`);
 
-    // let icons = expandCollapseControls.selectAll(".collapse-icon");
+    let icons = expandCollapseControls.selectAll(".collapse-icon");
 
-    // let exp = expandCollapseControls.select(".expand-all");
-    // let col = expandCollapseControls.select(".collapse-all");
+    let exp = expandCollapseControls.select(".expand-all");
+    let col = expandCollapseControls.select(".collapse-all");
 
-    // let that = this;
-    // icons.on("click", function() {
-    //   let icon = d3.select(this);
-    //   that.comm.emit("collapse-all-ext-trigger");
-    //   if (icon.classed("collapse-all")) {
-    //     col.classed("is-invisible", true);
-    //     exp.classed("is-invisible", false);
-    //   } else {
-    //     col.classed("is-invisible", false);
-    //     exp.classed("is-invisible", true);
-    //   }
-    // });
+    let that = this;
+    icons.on("click", function() {
+      let icon = d3.select(this);
+      that.comm.emit("do-collapse-all");
+      if (icon.classed("collapse-all")) {
+        col.classed("is-invisible", true);
+        exp.classed("is-invisible", false);
+      } else {
+        col.classed("is-invisible", false);
+        exp.classed("is-invisible", true);
+      }
+    });
   }
 
   update(data: Data) {
+    let collapseAll: boolean = false;
+    if (sessionStorage['render_config']) {
+      let config: RenderConfig = JSON.parse(sessionStorage['render_config']);
+      collapseAll = config.collapseAll;
+    }
+
+    let expand = d3.select(".expand-all");
+    let collapse = d3.select(".collapse-all");
+
+    if (collapseAll) {
+      collapse.classed("is-invisible", true);
+        expand.classed("is-invisible", false);
+    }else {
+      collapse.classed("is-invisible", false);
+      expand.classed("is-invisible", true);
+    }
+
     let dropDown = this.headerVis
       .select(".unused-set-view")
       .select("#unsed-set-dropdown");
@@ -108,10 +126,10 @@ export class UnusedSetView extends ViewBase {
       .append("div")
       .merge(options)
       .attr("class", "dropdown-item")
-      .text((d, i) => {
+      .text((d:any, i:number) => {
         return d.elementName;
       })
-      .on("click", (d, i) => {
+      .on("click", (d:any, i:number) => {
         this.comm.emit("add-set-trigger", d);
       });
   }
@@ -124,8 +142,8 @@ export class UnusedSetView extends ViewBase {
       .append("div")
       .merge(options)
       .classed("dropdown-item", true)
-      .text(d => d.name)
-      .on("click", d => {
+      .text((d:Attribute) => d.name)
+      .on("click", (d:Attribute) => {
         this.comm.emit("add-attribute-trigger", d);
       });
   }
