@@ -125,8 +125,9 @@ export class FilterBoxViewModel extends ViewModelBase {
     );
     this.registerFunctions("applyHideEmpty", view.applyHideEmpty, view, false);
     this.registerFunctions("sortBySet", view.unApplySortBySet, view, false);
+    
     this.registerFunctions(
-      "sortByCardinality",
+      "sortByCardinality", 
       view.unApplySortByCardinality,
       view,
       false
