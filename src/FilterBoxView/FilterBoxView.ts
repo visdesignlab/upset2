@@ -348,8 +348,10 @@ export class FilterBoxView extends ViewBase {
     if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
       rc.secondLevelAggregateBy = AggregateBy.NONE;
     }
-    if (rc.firstLevelAggregateBy === AggregateBy.NONE)
+    if (rc.firstLevelAggregateBy === AggregateBy.NONE){
       rc.secondLevelAggregateBy = AggregateBy.NONE;
+      rc.collapseAll = false;
+    }
     if (
       rc.firstLevelAggregateBy !== AggregateBy.NONE &&
       rc.sortBy === SortBy.SET
