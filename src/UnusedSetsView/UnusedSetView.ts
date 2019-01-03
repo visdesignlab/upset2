@@ -14,7 +14,8 @@ import { Attribute } from "./../DataStructure/Attribute";
 import params from "../UpsetView/ui_params";
 import { excludeSets } from "../UpsetView/uiBuilderFunctions";
 import expandcollapsehtml from "./collapseall.view.html";
-import { RenderConfig } from "../DataStructure/AggregateAndFilters";
+import { RenderConfig, AggregateBy } from "../DataStructure/AggregateAndFilters";
+import config from "../lib/dsv_importer/src/app/layout_config";
 
 export class UnusedSetView extends ViewBase {
   headerVis: d3Selection;
@@ -65,21 +66,27 @@ export class UnusedSetView extends ViewBase {
 
   update(data: Data) {
     let collapseAll: boolean = false;
+    let invisible = false;
     if (sessionStorage['render_config']) {
       let config: RenderConfig = JSON.parse(sessionStorage['render_config']);
       collapseAll = config.collapseAll;
+      invisible = config.firstLevelAggregateBy === AggregateBy.NONE;
     }
 
     let expand = d3.select(".expand-all");
     let collapse = d3.select(".collapse-all");
 
+    if (invisible) {
+      collapse.classed("is-invisible", true);
+        expand.classed("is-invisible", true);
+    } else{
     if (collapseAll) {
       collapse.classed("is-invisible", true);
         expand.classed("is-invisible", false);
     }else {
       collapse.classed("is-invisible", false);
       expand.classed("is-invisible", true);
-    }
+    }}
 
     let dropDown = this.headerVis
       .select(".unused-set-view")
