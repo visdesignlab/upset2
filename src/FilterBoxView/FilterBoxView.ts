@@ -84,8 +84,41 @@ export class FilterBoxView extends ViewBase {
     this.updateSortByOptions();
     this.updateOverlaps();
     this.updateDataFields();
+    this.updateSetOverlaps();
   }
 
+  private updateSetOverlaps() {
+    let btn = d3.select("#set-overlap-button");
+    let rc = Object.assign(
+      Object.create(Object.getPrototypeOf(this.config)),
+      this.config
+    );
+    btn.on('click', ()=>{
+      let _do = {
+        func: this.applySetOverlap.bind(this),
+        args: [] as any
+      };
+      let _undo = {
+        func: this.unApplySetOverlap.bind(this),
+        args: [rc]
+      };
+      this.comm.emit('apply', ['apply-set-overlap', _do, _undo]);
+    })
+  }
+
+  applySetOverlap() {
+    let rc = this.config;
+    rc.firstLevelAggregateBy = AggregateBy.SETS;
+    rc.secondLevelAggregateBy = AggregateBy.OVERLAPS;
+    rc.collapseAll = true;
+    this.saveConfig(rc);
+    this.update();
+  }
+  unApplySetOverlap(rc: RenderConfig) {
+    this.saveConfig(rc);
+    this.update();
+  }
+  
   private updateCollapseAll() {
       let curr = this.config.collapseAll;
       let _do = {
