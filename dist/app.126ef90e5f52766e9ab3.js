@@ -2722,6 +2722,34 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
         this.updateSortByOptions();
         this.updateOverlaps();
         this.updateDataFields();
+        this.updateSetOverlaps();
+    }
+    updateSetOverlaps() {
+        let btn = d3__WEBPACK_IMPORTED_MODULE_1__["select"]("#set-overlap-button");
+        let rc = Object.assign(Object.create(Object.getPrototypeOf(this.config)), this.config);
+        btn.on('click', () => {
+            let _do = {
+                func: this.applySetOverlap.bind(this),
+                args: []
+            };
+            let _undo = {
+                func: this.unApplySetOverlap.bind(this),
+                args: [rc]
+            };
+            this.comm.emit('apply', ['apply-set-overlap', _do, _undo]);
+        });
+    }
+    applySetOverlap() {
+        let rc = this.config;
+        rc.firstLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].SETS;
+        rc.secondLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].OVERLAPS;
+        rc.collapseAll = true;
+        this.saveConfig(rc);
+        this.update();
+    }
+    unApplySetOverlap(rc) {
+        this.saveConfig(rc);
+        this.update();
     }
     updateCollapseAll() {
         let curr = this.config.collapseAll;
@@ -2935,8 +2963,10 @@ class FilterBoxView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2
         if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
             rc.secondLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE;
         }
-        if (rc.firstLevelAggregateBy === _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE)
+        if (rc.firstLevelAggregateBy === _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE) {
             rc.secondLevelAggregateBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE;
+            rc.collapseAll = false;
+        }
         if (rc.firstLevelAggregateBy !== _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["AggregateBy"].NONE &&
             rc.sortBy === _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["SortBy"].SET)
             rc.sortBy = _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_0__["SortBy"].DEGREE;
@@ -3093,6 +3123,7 @@ class FilterBoxViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MOD
         this.registerFunctions("sortByCardinality", view.applySortByCardinality, view);
         this.registerFunctions("sortByDeviation", view.applySortByDeviation, view);
         this.registerFunctions("apply-collapse-all", view.applyCollapseAll, view);
+        this.registerFunctions('apply-set-overlap', view.applySetOverlap, view);
         /** Undo Registration */
         this.registerFunctions("applyFirstAggregation", view.applyFirstAggregation, view, false);
         this.registerFunctions("applySecondAggregation", view.applySecondAggregation, view, false);
@@ -3106,6 +3137,7 @@ class FilterBoxViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MOD
         this.registerFunctions("sortByCardinality", view.unApplySortByCardinality, view, false);
         this.registerFunctions("sortByDeviation", view.unApplySortByDeviation, view, false);
         this.registerFunctions("apply-collapse-all", view.applyCollapseAll, view, false);
+        this.registerFunctions('apply-set-overlap', view.unApplySetOverlap, view, false);
         this.comm.on("apply", args => {
             this.apply(args);
         });
@@ -3467,14 +3499,13 @@ __webpack_require__.r(__webpack_exports__);
         <div id="undo-redo-group" class=""></div>
       </div>
 
-      <!-- <div class="navbar-item is-paddingless">
+      <div class="navbar-item is-paddingless">
         <div class="field">
           <div class="control">
-            <input id="collapseAll" type="checkbox">
-            <label class="checkbox">Collapse All</label>
+            <button id="set-overlap-button" class="button is-small">Set Overlaps</button>
           </div>
         </div>
-      </div> -->
+      </div>
 
     </div>
 
@@ -6792,4 +6823,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.7297f1b4b0168e361daa.js.map
+//# sourceMappingURL=app.126ef90e5f52766e9ab3.js.map
