@@ -3880,12 +3880,14 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _UpsetView_ui_params__WEBPACK_IMPORTED_MODULE_3__ = __webpack_require__(/*! ../UpsetView/ui_params */ "./src/UpsetView/ui_params.ts");
 /* harmony import */ var _UpsetView_uiBuilderFunctions__WEBPACK_IMPORTED_MODULE_4__ = __webpack_require__(/*! ../UpsetView/uiBuilderFunctions */ "./src/UpsetView/uiBuilderFunctions.ts");
 /* harmony import */ var _collapseall_view_html__WEBPACK_IMPORTED_MODULE_5__ = __webpack_require__(/*! ./collapseall.view.html */ "./src/UnusedSetsView/collapseall.view.html");
+/* harmony import */ var _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_6__ = __webpack_require__(/*! ../DataStructure/AggregateAndFilters */ "./src/DataStructure/AggregateAndFilters.ts");
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:24
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-06-05 18:26:24
  */
+
 
 
 
@@ -3931,19 +3933,27 @@ class UnusedSetView extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_1
     }
     update(data) {
         let collapseAll = false;
+        let invisible = false;
         if (sessionStorage['render_config']) {
             let config = JSON.parse(sessionStorage['render_config']);
             collapseAll = config.collapseAll;
+            invisible = config.firstLevelAggregateBy === _DataStructure_AggregateAndFilters__WEBPACK_IMPORTED_MODULE_6__["AggregateBy"].NONE;
         }
         let expand = d3__WEBPACK_IMPORTED_MODULE_0__["select"](".expand-all");
         let collapse = d3__WEBPACK_IMPORTED_MODULE_0__["select"](".collapse-all");
-        if (collapseAll) {
+        if (invisible) {
             collapse.classed("is-invisible", true);
-            expand.classed("is-invisible", false);
+            expand.classed("is-invisible", true);
         }
         else {
-            collapse.classed("is-invisible", false);
-            expand.classed("is-invisible", true);
+            if (collapseAll) {
+                collapse.classed("is-invisible", true);
+                expand.classed("is-invisible", false);
+            }
+            else {
+                collapse.classed("is-invisible", false);
+                expand.classed("is-invisible", true);
+            }
         }
         let dropDown = this.headerVis
             .select(".unused-set-view")
@@ -6782,4 +6792,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.392842fbf8b68509d366.js.map
+//# sourceMappingURL=app.7297f1b4b0168e361daa.js.map
