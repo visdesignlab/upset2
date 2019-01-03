@@ -9,6 +9,7 @@ import { ViewModelBase } from "provenance_mvvm_framework";
 import { FilterBoxView } from "./FilterBoxView";
 import "./styles.scss";
 import { RenderConfig } from "../DataStructure/AggregateAndFilters";
+import { d3Selection } from "../type_declarations/types";
 
 export class FilterBoxViewModel extends ViewModelBase {
   get config(): RenderConfig {
@@ -19,6 +20,15 @@ export class FilterBoxViewModel extends ViewModelBase {
 
   constructor(view: FilterBoxView, app: Application) {
     super(view, app);
+
+    this.App.on('do-collapse-all', ()=>{
+      this.comm.emit('do-collapse-all');
+    })
+
+    this.App.on('build-collapse', ([expand, collapse])=>{
+      this.comm.emit('build-collapse', expand, collapse);
+    })
+
     this.comm.on("filter-changed", (config: RenderConfig) => {
       this.App.emit("filter-changed", config, null);
     });

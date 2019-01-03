@@ -75,33 +75,28 @@ export class FilterBoxView extends ViewBase {
   create() {
     d3.select(this.Root).html(html);
     this.update();
+    this.comm.on("do-collapse-all", this.updateCollapseAll.bind(this));
   }
 
   update() {
     this.updateAggregationDropdowns();
-    this.updateCollapseAll();
+    // this.updateCollapseAll();
     this.updateSortByOptions();
     this.updateOverlaps();
     this.updateDataFields();
   }
 
   private updateCollapseAll() {
-    let checkbox = d3.select("#collapseAll");
-    checkbox.property("checked", this.config.collapseAll);
-    let that = this;
-    checkbox.on("change", function() {
-      let el = d3.select(this);
-      let val = el.property("checked");
+      let curr = this.config.collapseAll;
       let _do = {
-        func: that.applyCollapseAll.bind(that),
-        args: [val]
+        func: this.applyCollapseAll.bind(this),
+        args: [!curr]
       };
       let _undo = {
-        func: that.applyCollapseAll.bind(that),
-        args: [!val]
+        func: this.applyCollapseAll.bind(this),
+        args: [curr]
       };
-      that.comm.emit("apply", ["apply-collapse-all", _do, _undo]);
-    });
+      this.comm.emit("apply", ["apply-collapse-all", _do, _undo]);
   }
 
   private updateDataFields() {

@@ -17,6 +17,11 @@ export class UnusedSetViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: UnusedSetView, app: Application) {
     super(view, app);
+
+    this.comm.on('do-collapse-all', ()=>{
+      this.App.emit('do-collapse-all')
+    })
+
     this.App.on("render-rows-changed", this.update, this);
 
     this.App.on("used-set-changed", () => {
