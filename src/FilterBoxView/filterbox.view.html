@@ -1,91 +1,88 @@
-<div class="container is-fluid override  is-size-7">
-  <div>
-    <div class="make-bold  is-size-6">
-      First, aggregate by:
-    </div>
-    <div class="dropdown is-hoverable">
-      <div id="firstAggByDropdown" class="dropdown-trigger navbar-link">
-      </div>
-      <div class="dropdown-menu">
-        <div id="firstAggByOptions" class="dropdown-content">
-          <!-- <div class="dropdown-item">Test</div> -->
-        </div>
-      </div>
-    </div>
-  </div>
-  <!-- <div id='overlap-one'>
-    Overlap Degree:
-    <input style="display:block" id='first-overlap-input' type="text">
-  </div> -->
+<div class="container is-fluid override is-size-7">
 
-  <div class="field">
-    <label for="" class="label  is-size-7">Overlap Degree:</label>
-    <div class="control" id='overlap-one'>
-      <input id="first-overlap-input" type="number" class="input is-small">
-    </div>
-  </div>
-
-  <div id="secondAgg">
-    <div>
-      <div class="make-bold  is-size-6">
-        Then, aggregate by:
+  <div class="accordions">
+    <div id="firstAggByDropdown" class="accordion is-active">
+      <div class="accordion-header toggle">
+        First Aggregate By:
       </div>
-      <div class="dropdown is-hoverable">
-        <div id="secondAggByDropdown" class="dropdown-trigger navbar-link">
-        </div>
-        <div class="dropdown-menu">
-          <div id="secondAggByOptions" class="dropdown-content">
-            <!-- <div class="dropdown-item">Test</div> -->
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <div id="firstAggByOptions" class="control">
+
+          </div>
+
+          <div id="firstoverlap-degree-input" class="field hidden">
+            <label for="" class="label is-size-7">Overlap Degree:</label>
+            <div class="control" id='overlap-one'>
+              <input id="first-overlap-input" type="number" class="input is-small">
+            </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- <div id='overlap-two'>
-      Overlap Degree:
-      <input id='second-overlap-input' type="text">
-    </div> -->
+    <div id="secondAgg">
+      <div id="secondAggByDropdown" class="accordion">
+        <div class="accordion-header toggle">
+          Then Aggregate By:
+        </div>
+        <div class="accordion-body">
+          <div class="accordion-content">
+            <div id="secondAggByOptions" class="control">
 
-    <div class="field">
-      <label for="" class="label  is-size-7">Overlap Degree:</label>
-      <div class="control" id='overlap-two'>
-        <input id="second-overlap-input" type="number" class="input is-small">
+            </div>
+
+            <div id="secondoverlap-degree-input" class="field hidden">
+              <label for="" class="label  is-size-7">Overlap Degree:</label>
+              <div class="control" id='overlap-two'>
+                <input id="second-overlap-input" type="number" class="input is-small">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion is-capitalized">
+      <div class="accordion-header toggle">
+        Sort By:
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <div id="sortByOptions" class="control">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="accordion is-capitalized">
+      <div class="accordion-header toggle">
+        Data
+      </div>
+      <div class="accordion-body">
+        <div class="accordion-content">
+          <div class="field">
+            <label for="" class="label is-size-7">Min Degree:</label>
+            <div class="control">
+              <input id="minDegree" type="number" class="input is-small">
+            </div>
+          </div>
+          <div class="field">
+            <label for="" class="label is-size-7">Max Degree</label>
+            <div class="control">
+              <input id="maxDegree" type="number" class="input is-small">
+            </div>
+          </div>
+
+          <div class="field">
+            <div class="control">
+              <input id="hideEmpty" type="checkbox">
+              <label class="checkbox is-size-7">Hide Empty</label>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
   </div>
-
-  <div class="make-bold  is-size-6">
-    Sort By:
-  </div>
-
-  <div id="sortByOptions" class="control  is-size-7">
-  </div>>
-
-
-  <div id="Data">
-    <div class="make-bold is-size-6">Data:</div>
-
-    <div class="field">
-      <label for="" class="label is-size-7">Min Degree:</label>
-      <div class="control">
-        <input id="minDegree" type="number" class="input is-small">
-      </div>
-    </div>
-    <div class="field">
-      <label for="" class="label is-size-7">Max Degree</label>
-      <div class="control">
-        <input id="maxDegree" type="number" class="input is-small">
-      </div>
-    </div>
-
-    <div class="field">
-      <div class="control">
-        <input id="hideEmpty" type="checkbox">
-        <label class="checkbox is-size-7">Hide Empty</label>
-      </div>
-    </div>
-
-  </div>
-
 </div>

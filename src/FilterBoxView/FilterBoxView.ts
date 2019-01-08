@@ -1,14 +1,17 @@
-import { AggregateBy, SortBy } from "./../DataStructure/AggregateAndFilters";
+import { AggregateBy } from "./../DataStructure/AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:32
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-07 15:43:50
  */
+import bulmaAccordion from "bulma-accordion";
 import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
-import html from "./filterbox.view.html";
 import { RenderConfig } from "../DataStructure/AggregateAndFilters";
+import { AggregateBy, SortBy } from "./../DataStructure/AggregateAndFilters";
+import html from "./filterbox.view.html";
+import radio from "./radio.view.html";
 
 export class FilterBoxView extends ViewBase {
   get config(): RenderConfig {
@@ -75,11 +78,17 @@ export class FilterBoxView extends ViewBase {
     d3.select(this.Root).html(html);
     this.update();
     this.comm.on("do-collapse-all", this.updateCollapseAll.bind(this));
+    let accs = bulmaAccordion.attach();
+    setTimeout(() => {
+      let c = accs[0];
+      c.destroy();
+      c.items = c.element.querySelectorAll(".accordion-header") || [];
+      c._bindEvents();
+    }, 150);
   }
 
   update() {
     this.updateAggregationDropdowns();
-    // this.updateCollapseAll();
     this.updateSortByOptions();
     this.updateOverlaps();
     this.updateDataFields();
@@ -215,6 +224,7 @@ export class FilterBoxView extends ViewBase {
       .enter()
       .append("div")
       .attr("class", "sortOption")
+      .merge(sortByOptions)
       .html("")
       .append("label")
       .attr("class", "radio");
@@ -253,50 +263,61 @@ export class FilterBoxView extends ViewBase {
     });
 
     sortLabels.append("span").text((d, i) => {
-      return ` ${d}`;
+      return ` ${d.toLowerCase()}`;
     });
   }
 
   private updateAggregationDropdowns() {
     if (this.config.firstLevelAggregateBy === AggregateBy.NONE) {
-      d3.select("#secondAgg").html("");
+      d3.select("#secondAgg").classed("hidden", true);
     } else {
-      d3.select(this.Root).html(html);
+      d3.select("#secondAgg").classed("hidden", false);
     }
 
-    let firstAggBy = d3.select(this.Root).select("#firstAggByDropdown");
+    let that = this;
     let secondAggBy = d3.select(this.Root).select("#secondAggByDropdown");
 
     let aggOptions = Object.keys(AggregateBy);
     let firstAggByOptions = d3
       .select(this.Root)
       .select("#firstAggByOptions")
-      .selectAll(".dropdown-item")
+      .selectAll(".option")
       .data(aggOptions);
-    firstAggBy.text(this.config.firstLevelAggregateBy);
 
     firstAggByOptions.exit().remove();
     firstAggByOptions
       .enter()
       .append("div")
-      .attr("class", "dropdown-item")
-      .text((d, i) => {
-        return d;
+      .attr("class", "option")
+      .merge(firstAggByOptions)
+      .html(radio)
+      .each(function(d: any) {
+        d3.select(this)
+          .select("#label")
+          .text(d.toLowerCase());
+        if (d === that.config.firstLevelAggregateBy) {
+          d3.select(this)
+            .select("input")
+            .property("checked", true);
+          if (d === AggregateBy.OVERLAPS)
+            d3.select("#firstoverlap-degree-input").classed("hidden", false);
+          else d3.select("#firstoverlap-degree-input").classed("hidden", true);
+        }
       })
-      .on("click", (d: any, i) => {
-        let current = firstAggBy.text();
+      .on("click", function(d: any, i: number) {
+        let current = that.config.firstLevelAggregateBy;
 
         let _do = {
-          func: this.applyFirstAggregation.bind(this),
+          func: that.applyFirstAggregation.bind(that),
           args: [d]
         };
 
         let _undo = {
-          func: this.applyFirstAggregation.bind(this),
+          func: that.applyFirstAggregation.bind(that),
           args: [current]
         };
 
-        this.comm.emit("apply", ["applyFirstAggregation", _do, _undo]);
+        that.comm.emit("apply", ["applyFirstAggregation", _do, _undo]);
       });
 
     aggOptions.splice(aggOptions.indexOf(this.config.firstLevelAggregateBy), 1);
@@ -304,23 +325,34 @@ export class FilterBoxView extends ViewBase {
     let secondAggByOptions = d3
       .select(this.Root)
       .select("#secondAggByOptions")
-      .selectAll(".dropdown-item")
+      .selectAll(".option")
       .data(aggOptions);
 
-    secondAggBy.text(this.config.secondLevelAggregateBy);
+    // secondAggBy.text(this.config.secondLevelAggregateBy);
 
     secondAggByOptions.exit().remove();
 
     secondAggByOptions
       .enter()
       .append("div")
-      .attr("class", "dropdown-item")
-      .text((d, i) => {
-        return d;
+      .attr("class", "option")
+      .merge(secondAggByOptions)
+      .html(radio)
+      .each(function(d: any) {
+        d3.select(this)
+          .select("#label")
+          .text(d.toLowerCase());
+        if (d === that.config.secondLevelAggregateBy) {
+          d3.select(this)
+            .select("input")
+            .property("checked", true);
+          if (d === AggregateBy.OVERLAPS)
+            d3.select("#secondoverlap-degree-input").classed("hidden", false);
+          else d3.select("#secondoverlap-degree-input").classed("hidden", true);
+        }
       })
       .on("click", (d: any, i) => {
-        let current = secondAggBy.text();
-        let overlap = this.config.secondOverlap;
+        let current = this.config.secondLevelAggregateBy;
         let _do = {
           func: this.applySecondAggregation.bind(this),
           args: [d]

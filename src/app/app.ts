@@ -1,6 +1,6 @@
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:36:08 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:36:08
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-10-09 16:10:33
  */
@@ -28,7 +28,6 @@ import { ElementViewModel } from "../ElementView/ElementViewModel";
 import { ElementView } from "../ElementView/ElementView";
 import { DatasetSelectionViewModel } from "../DatasetSelectionView/DatasetSelectionViewModel";
 import { DatasetSelectionView } from "../DatasetSelectionView/DatasetSelectionView";
-import bulmaAccordion from "bulma-accordion";
 
 export const serverUrl: string = "http://18.224.213.250";
 
@@ -93,7 +92,6 @@ function run() {
   );
 
   // Enable bulma extensions
-  bulmaAccordion.attach();
 }
 
 run();
