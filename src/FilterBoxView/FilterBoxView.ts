@@ -1,4 +1,3 @@
-import { AggregateBy } from "./../DataStructure/AggregateAndFilters";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:36:32
@@ -12,6 +11,7 @@ import { RenderConfig } from "../DataStructure/AggregateAndFilters";
 import { AggregateBy, SortBy } from "./../DataStructure/AggregateAndFilters";
 import html from "./filterbox.view.html";
 import radio from "./radio.view.html";
+import { d3Selection } from "../type_declarations/types";
 
 export class FilterBoxView extends ViewBase {
   get config(): RenderConfig {
@@ -212,7 +212,7 @@ export class FilterBoxView extends ViewBase {
   private updateSortByOptions() {
     let sortby = Object.keys(SortBy);
     sortby.splice(-1, 1);
-    let sortByOptions = d3
+    let sortByOptions: d3Selection = d3
       .select(this.Root)
       .select("#sortByOptions")
       .selectAll(".sortOption")
@@ -275,10 +275,9 @@ export class FilterBoxView extends ViewBase {
     }
 
     let that = this;
-    let secondAggBy = d3.select(this.Root).select("#secondAggByDropdown");
 
     let aggOptions = Object.keys(AggregateBy);
-    let firstAggByOptions = d3
+    let firstAggByOptions: d3Selection = d3
       .select(this.Root)
       .select("#firstAggByOptions")
       .selectAll(".option")
@@ -322,7 +321,7 @@ export class FilterBoxView extends ViewBase {
 
     aggOptions.splice(aggOptions.indexOf(this.config.firstLevelAggregateBy), 1);
 
-    let secondAggByOptions = d3
+    let secondAggByOptions: d3Selection = d3
       .select(this.Root)
       .select("#secondAggByOptions")
       .selectAll(".option")

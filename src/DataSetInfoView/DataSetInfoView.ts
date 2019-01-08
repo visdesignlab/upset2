@@ -97,6 +97,7 @@ export class DataSetInfoView extends ViewBase {
         return (<any>this).parentNode;
       })
       .append("a")
+      .classed("has-text-warning", true)
       .attr("href", data._data.source)
       .text(`${data._data.source}`);
   }
