@@ -28,6 +28,7 @@ import { ElementViewModel } from "../ElementView/ElementViewModel";
 import { ElementView } from "../ElementView/ElementView";
 import { DatasetSelectionViewModel } from "../DatasetSelectionView/DatasetSelectionViewModel";
 import { DatasetSelectionView } from "../DatasetSelectionView/DatasetSelectionView";
+import bulmaAccordion from "bulma-accordion";
 
 export const serverUrl: string = "http://18.224.213.250";
 
@@ -90,6 +91,9 @@ function run() {
     new ElementView(d3.select("#right-side-bar").node() as HTMLElement),
     application
   );
+
+  // Enable bulma extensions
+  bulmaAccordion.attach();
 }
 
 run();

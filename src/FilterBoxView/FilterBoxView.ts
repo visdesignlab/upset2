@@ -1,7 +1,7 @@
 import { AggregateBy, SortBy } from "./../DataStructure/AggregateAndFilters";
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:36:32 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:36:32
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-07 15:43:50
  */
@@ -9,7 +9,6 @@ import * as d3 from "d3";
 import { ViewBase } from "provenance_mvvm_framework";
 import html from "./filterbox.view.html";
 import { RenderConfig } from "../DataStructure/AggregateAndFilters";
-import { min } from "d3";
 
 export class FilterBoxView extends ViewBase {
   get config(): RenderConfig {
@@ -93,7 +92,7 @@ export class FilterBoxView extends ViewBase {
       Object.create(Object.getPrototypeOf(this.config)),
       this.config
     );
-    btn.on('click', ()=>{
+    btn.on("click", () => {
       let _do = {
         func: this.applySetOverlap.bind(this),
         args: [] as any
@@ -102,8 +101,8 @@ export class FilterBoxView extends ViewBase {
         func: this.unApplySetOverlap.bind(this),
         args: [rc]
       };
-      this.comm.emit('apply', ['apply-set-overlap', _do, _undo]);
-    })
+      this.comm.emit("apply", ["apply-set-overlap", _do, _undo]);
+    });
   }
 
   applySetOverlap() {
@@ -118,18 +117,18 @@ export class FilterBoxView extends ViewBase {
     this.saveConfig(rc);
     this.update();
   }
-  
+
   private updateCollapseAll() {
-      let curr = this.config.collapseAll;
-      let _do = {
-        func: this.applyCollapseAll.bind(this),
-        args: [!curr]
-      };
-      let _undo = {
-        func: this.applyCollapseAll.bind(this),
-        args: [curr]
-      };
-      this.comm.emit("apply", ["apply-collapse-all", _do, _undo]);
+    let curr = this.config.collapseAll;
+    let _do = {
+      func: this.applyCollapseAll.bind(this),
+      args: [!curr]
+    };
+    let _undo = {
+      func: this.applyCollapseAll.bind(this),
+      args: [curr]
+    };
+    this.comm.emit("apply", ["apply-collapse-all", _do, _undo]);
   }
 
   private updateDataFields() {
@@ -381,7 +380,7 @@ export class FilterBoxView extends ViewBase {
     if (rc.secondLevelAggregateBy === rc.firstLevelAggregateBy) {
       rc.secondLevelAggregateBy = AggregateBy.NONE;
     }
-    if (rc.firstLevelAggregateBy === AggregateBy.NONE){
+    if (rc.firstLevelAggregateBy === AggregateBy.NONE) {
       rc.secondLevelAggregateBy = AggregateBy.NONE;
       rc.collapseAll = false;
     }
