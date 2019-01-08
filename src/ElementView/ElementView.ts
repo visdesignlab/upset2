@@ -213,7 +213,7 @@ export class ElementView extends ViewBase {
       this.comm.emit("highlight-selection-trigger", i);
     });
 
-    tabContents.classed("is-primary", (_, i) => i === this.currentSelection);
+    tabContents.classed("is-dark", (_, i) => i === this.currentSelection);
   }
 
   highlightSelection(idx: number, update: boolean = true) {
@@ -371,12 +371,14 @@ export class ElementView extends ViewBase {
       .merge(rows);
 
     let cells = rows.selectAll("td").data(d => {
-      return attributes.map(_ => _.name).map(k => {
-        return {
-          value: d[k],
-          name: k
-        };
-      });
+      return attributes
+        .map(_ => _.name)
+        .map(k => {
+          return {
+            value: d[k],
+            name: k
+          };
+        });
     });
 
     cells.exit().remove();
