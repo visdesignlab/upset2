@@ -1,7 +1,7 @@
 import { SubSet } from "./../DataStructure/SubSet";
 import { BaseElement } from "./../DataStructure/BaseElement";
 export type d3Selection = d3.Selection<
-  d3.BaseType,
+  any,
   any,
   HTMLElement | d3.BaseType,
   any
