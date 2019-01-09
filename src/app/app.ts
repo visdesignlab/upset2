@@ -36,6 +36,14 @@ function run() {
   DataUtils.app = application;
   DataUtils.app.on("change-dataset", DataUtils.processDataSet);
 
+  DataUtils.app.on("download-data", (data: number[]) => {
+    let rawData: any[] = DataUtils.data;
+    let headers = DataUtils.data.columns;
+    console.log(headers);
+    let blob = new Blob(headers);
+    console.log(blob);
+  });
+
   if (sessionStorage["provenance-graph"]) {
     application.graph = JSON.parse(sessionStorage["provenance-graph"]);
     application.registry = JSON.parse(sessionStorage["provenance-registry"]);

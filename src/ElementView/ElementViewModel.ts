@@ -9,6 +9,7 @@ import "./styles.scss";
 export type ElementRenderRow = RenderRow & {
   arr: any[];
   color: string;
+  idx: number[];
 };
 
 export type ElementRenderRows = ElementRenderRow[];
@@ -27,6 +28,10 @@ export class ElementViewModel extends ViewModelBase {
         this.selectedSets = [];
         this.getDefault();
       }
+    });
+
+    this.comm.on("download-data", (data: number[]) => {
+      this.App.emit("download-data", data);
     });
 
     this.App.on("add-selection", this.addSelection, this);
@@ -137,7 +142,6 @@ export class ElementViewModel extends ViewModelBase {
       this,
       false
     );
-
     this.registerFunctions(
       "set-axis1",
       (d: string) => {
@@ -227,7 +231,8 @@ function createObjectsFromSubsets(
     id: row.id,
     data: row.data,
     arr: arr,
-    color: selectColor()
+    color: selectColor(),
+    idx: items
   };
 }
 
@@ -249,7 +254,8 @@ function createObjectFromItems(
       setSize: items.length
     } as any,
     arr: arr,
-    color: selectColor()
+    color: selectColor(),
+    idx: items
   };
 }
 

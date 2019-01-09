@@ -16,7 +16,7 @@ import { serverUrl } from "../app/app";
 
 export class DataUtils {
   static app: Application;
-  static data: Data;
+  static data: any;
 
   static getDataSetJSON(data: any): IDataSetJSON {
     let metas: IMetaData[] = [];
@@ -89,6 +89,7 @@ export class DataUtils {
         `${serverUrl}/download/single/${datasetinfo._data.file}`
       ).then(data => {
         let d = new Data(DataUtils.app).load(data, dataSetDesc);
+        DataUtils.data = data;
         d.then((d2: Data) => {
           DataUtils.app.emit("render-config", d2.renderConfig);
         });
@@ -96,6 +97,7 @@ export class DataUtils {
     } else {
       d3.dsv(dataSetDesc.separator, datasetinfo._data.file).then(data => {
         let d = new Data(DataUtils.app).load(data, dataSetDesc);
+        DataUtils.data = data;
         d.then((d2: Data) => {
           DataUtils.app.emit("render-config", d2.renderConfig);
         });
