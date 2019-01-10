@@ -57,7 +57,7 @@ function addHeaderBars(
     .append("g")
     .merge(_headers)
     .html("")
-    .attr("class", "header");
+    .attr("class", "header delete-cursor");
 
   headers
     .transition()
