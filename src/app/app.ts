@@ -28,6 +28,7 @@ import { ElementViewModel } from "../ElementView/ElementViewModel";
 import { ElementView } from "../ElementView/ElementView";
 import { DatasetSelectionViewModel } from "../DatasetSelectionView/DatasetSelectionViewModel";
 import { DatasetSelectionView } from "../DatasetSelectionView/DatasetSelectionView";
+import { saveAs } from "file-saver";
 
 export const serverUrl: string = "http://18.224.213.250";
 
@@ -39,9 +40,22 @@ function run() {
   DataUtils.app.on("download-data", (data: number[]) => {
     let rawData: any[] = DataUtils.data;
     let headers = DataUtils.data.columns;
-    console.log(headers);
-    let blob = new Blob(headers);
-    console.log(blob);
+    let saveText: string[] = [];
+    saveText.push(headers.join(DataUtils.datasetDesc.separator));
+
+    let filteredData = DataUtils.data.filter(
+      (_: any, i: number) => data.indexOf(i) > -1
+    );
+    filteredData.forEach((_: any) => {
+      let row: string[] = [];
+      headers.forEach((h: string) => {
+        row.push(_[h]);
+      });
+      saveText.push(row.join(DataUtils.datasetDesc.separator));
+    });
+
+    let blob = new Blob([saveText.join("\n")]);
+    saveAs(blob, `${DataUtils.datasetDesc.name}.csv`);
   });
 
   if (sessionStorage["provenance-graph"]) {

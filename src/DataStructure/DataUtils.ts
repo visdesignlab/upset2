@@ -17,6 +17,7 @@ import { serverUrl } from "../app/app";
 export class DataUtils {
   static app: Application;
   static data: any;
+  static datasetDesc: IDataSetJSON;
 
   static getDataSetJSON(data: any): IDataSetJSON {
     let metas: IMetaData[] = [];
@@ -103,5 +104,6 @@ export class DataUtils {
         });
       });
     }
+    DataUtils.datasetDesc = datasetinfo._data;
   }
 }
