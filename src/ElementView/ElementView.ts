@@ -6,6 +6,7 @@ import * as d3 from "d3";
 import { ElementRenderRows, ElementRenderRow } from "./ElementViewModel";
 import { CreateVegaVis } from "../VegaFactory/VegaFactory";
 import html from "./dropdown.view.html";
+import queryResults from "./queryresults.view.html";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
@@ -154,10 +155,7 @@ export class ElementView extends ViewBase {
       .text("Query Filters");
 
     let tableVis = base.append("div").attr("id", "element-query-results");
-    tableVis
-      .append("div")
-      .classed("tag is-large is-white divider", true)
-      .text("Query Results");
+    tableVis.html(queryResults);
 
     this.ElementQueryResultsDiv = tableVis
       .append("div")
@@ -184,7 +182,7 @@ export class ElementView extends ViewBase {
   renderQueries(data: ElementRenderRows) {
     let el = this.ElementQueryDiv.select(".columns");
 
-    let tabs = el.selectAll(".column").data(data);
+    let tabs: d3Selection = el.selectAll(".column").data(data);
     tabs.exit().remove();
     tabs = tabs
       .enter()
@@ -213,7 +211,7 @@ export class ElementView extends ViewBase {
       this.comm.emit("highlight-selection-trigger", i);
     });
 
-    tabContents.classed("is-primary", (_, i) => i === this.currentSelection);
+    tabContents.classed("is-dark", (_, i) => i === this.currentSelection);
   }
 
   highlightSelection(idx: number, update: boolean = true) {
@@ -259,7 +257,7 @@ export class ElementView extends ViewBase {
       _ => _.type === "integer" || _.type === "float"
     );
 
-    let op1 = this.axis1
+    let op1: d3Selection = this.axis1
       .select(".options")
       .selectAll("option")
       .data(plottableAttributes);
@@ -270,7 +268,7 @@ export class ElementView extends ViewBase {
       .merge(op1);
     op1.text(d => d.name);
 
-    let op2 = this.axis2
+    let op2: d3Selection = this.axis2
       .select(".options")
       .selectAll("option")
       .data(plottableAttributes);
@@ -344,9 +342,14 @@ export class ElementView extends ViewBase {
   }
 
   createTable(data: ElementRenderRow, attributes: Attribute[]) {
+    let downloadBtn = d3.select("#download-results");
+    downloadBtn.on("click", () => {
+      this.comm.emit("download-data", data.idx);
+    });
+
     let table = this.ElementQueryResultsDiv.append("table");
 
-    let headers = table
+    let headers: d3Selection = table
       .append("thead")
       .append("tr")
       .selectAll("th")
@@ -360,7 +363,7 @@ export class ElementView extends ViewBase {
 
     headers.text(d => d);
 
-    let rows = table
+    let rows: d3Selection = table
       .append("tbody")
       .selectAll("tr")
       .data(data.arr);
@@ -370,13 +373,15 @@ export class ElementView extends ViewBase {
       .append("tr")
       .merge(rows);
 
-    let cells = rows.selectAll("td").data(d => {
-      return attributes.map(_ => _.name).map(k => {
-        return {
-          value: d[k],
-          name: k
-        };
-      });
+    let cells: d3Selection = rows.selectAll("td").data(d => {
+      return attributes
+        .map(_ => _.name)
+        .map(k => {
+          return {
+            value: d[k],
+            name: k
+          };
+        });
     });
 
     cells.exit().remove();

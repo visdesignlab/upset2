@@ -1,6 +1,6 @@
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:36:08 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:36:08
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-10-09 16:10:33
  */
@@ -28,6 +28,7 @@ import { ElementViewModel } from "../ElementView/ElementViewModel";
 import { ElementView } from "../ElementView/ElementView";
 import { DatasetSelectionViewModel } from "../DatasetSelectionView/DatasetSelectionViewModel";
 import { DatasetSelectionView } from "../DatasetSelectionView/DatasetSelectionView";
+import { saveAs } from "file-saver";
 
 export const serverUrl: string = "http://18.224.213.250";
 
@@ -35,6 +36,27 @@ function run() {
   let application = new Application("Upset2.0", "1.0.0");
   DataUtils.app = application;
   DataUtils.app.on("change-dataset", DataUtils.processDataSet);
+
+  DataUtils.app.on("download-data", (data: number[]) => {
+    let rawData: any[] = DataUtils.data;
+    let headers = DataUtils.data.columns;
+    let saveText: string[] = [];
+    saveText.push(headers.join(DataUtils.datasetDesc.separator));
+
+    let filteredData = DataUtils.data.filter(
+      (_: any, i: number) => data.indexOf(i) > -1
+    );
+    filteredData.forEach((_: any) => {
+      let row: string[] = [];
+      headers.forEach((h: string) => {
+        row.push(_[h]);
+      });
+      saveText.push(row.join(DataUtils.datasetDesc.separator));
+    });
+
+    let blob = new Blob([saveText.join("\n")]);
+    saveAs(blob, `${DataUtils.datasetDesc.name}.csv`);
+  });
 
   if (sessionStorage["provenance-graph"]) {
     application.graph = JSON.parse(sessionStorage["provenance-graph"]);
@@ -90,6 +112,8 @@ function run() {
     new ElementView(d3.select("#right-side-bar").node() as HTMLElement),
     application
   );
+
+  // Enable bulma extensions
 }
 
 run();
