@@ -6,7 +6,7 @@
   "scripts": {
     "build-client": "webpack --config webpack.client.config.js",
     "serve": "lite-server -c bs-config.json",
-    "postinstall": "cd src/lib/dsv_importer && npm install",
+    "postinstall": "npm run update-submodules && cd src/lib/dsv_importer && npm install",
     "update-submodules": "git submodule update --init --recursive"
   },
   "author": "",
