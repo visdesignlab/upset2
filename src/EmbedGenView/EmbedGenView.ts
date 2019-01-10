@@ -34,6 +34,11 @@ function addInsertIFrameEvent(base: d3Selection) {
     i.enter()
       .append("iframe")
       .merge(i)
+      .attr("height", 500)
+      .attr("width", 1000)
+      .attr("data", () => {
+        return JSON.stringify(EmbedConfig.getConfig());
+      })
       .attr("class", "upset")
       .attr(
         "src",
@@ -44,6 +49,9 @@ function addInsertIFrameEvent(base: d3Selection) {
 
     let _i = d3.select(".embeded-view");
     base.select(".code").property("value", _i.html());
+    (base.select(".code").node() as any).select();
+    document.execCommand("copy");
+    _i.html("");
     _i.remove();
   });
 }
