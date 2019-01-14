@@ -1,4 +1,3 @@
-import { Data } from "./../DataStructure/Data";
 import { Attribute } from "./../DataStructure/Attribute";
 import { d3Selection } from "./../type_declarations/types";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -7,6 +6,8 @@ import { ElementRenderRows, ElementRenderRow } from "./ElementViewModel";
 import { CreateVegaVis } from "../VegaFactory/VegaFactory";
 import html from "./dropdown.view.html";
 import queryResults from "./queryresults.view.html";
+import querySelectionDropdown from "./queryselection.view.html";
+import selectionCard from "./selection.view.html";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
@@ -116,6 +117,7 @@ export class ElementView extends ViewBase {
       .classed("tag is-large is-white divider", true)
       .text("Element Queries");
     this.ElementQueryDiv.append("br");
+    this.ElementQueryDiv.append("div").html(querySelectionDropdown);
     this.ElementQueryDiv.append("div").classed("columns is-multiline", true);
 
     let elementVis = base.append("div").attr("id", "element-visualization");
@@ -181,6 +183,19 @@ export class ElementView extends ViewBase {
 
   renderQueries(data: ElementRenderRows) {
     let el = this.ElementQueryDiv.select(".columns");
+
+    let bookmarkGroup = this.ElementQueryDiv.select("#bookmarks");
+
+    let bookmarks: d3Selection = bookmarkGroup.selectAll("li").data(data);
+    bookmarks.exit().remove();
+    bookmarks = bookmarks
+      .enter()
+      .append("li")
+      .merge(bookmarks);
+
+    let aTags = bookmarks.append("a");
+
+    aTags.html(selectionCard);
 
     let tabs: d3Selection = el.selectAll(".column").data(data);
     tabs.exit().remove();

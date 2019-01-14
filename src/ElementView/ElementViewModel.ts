@@ -5,11 +5,13 @@ import { ElementView } from "./ElementView";
 import { Application } from "provenance_mvvm_framework";
 import { ViewModelBase } from "provenance_mvvm_framework";
 import "./styles.scss";
+import { HashCode } from "../lib/Utils";
 
 export type ElementRenderRow = RenderRow & {
   arr: any[];
   color: string;
   idx: number[];
+  hash: string;
 };
 
 export type ElementRenderRows = ElementRenderRow[];
@@ -227,12 +229,14 @@ function createObjectsFromSubsets(
 
     return obj;
   });
+  console.log(HashCode(row));
   return {
     id: row.id,
     data: row.data,
     arr: arr,
     color: selectColor(),
-    idx: items
+    idx: items,
+    hash: HashCode(row)
   };
 }
 
@@ -255,7 +259,8 @@ function createObjectFromItems(
     } as any,
     arr: arr,
     color: selectColor(),
-    idx: items
+    idx: items,
+    hash: HashCode(items)
   };
 }
 
