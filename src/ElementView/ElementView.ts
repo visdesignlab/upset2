@@ -8,6 +8,7 @@ import html from "./dropdown.view.html";
 import queryResults from "./queryresults.view.html";
 import querySelectionDropdown from "./queryselection.view.html";
 import selectionCard from "./selection.view.html";
+import newselection from "./newselection.view.html";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
@@ -25,11 +26,16 @@ export class ElementView extends ViewBase {
   attributes: Attribute[];
 
   sortAscending: boolean = true;
+  tempSelection: ElementRenderRow;
   currentSelection: number;
 
   constructor(root: HTMLElement) {
     super(root);
     this.currentSelection = -1;
+
+    this.comm.on("new-temp-selection", (d: ElementRenderRow) => {
+      this.tempSelection = d;
+    });
 
     this.comm.on("set-axis1", (d: string) => {
       this.axis1Selection = d;
@@ -78,36 +84,6 @@ export class ElementView extends ViewBase {
       };
       this.comm.emit("apply", ["set-axis2", _do, _undo]);
     });
-
-    this.comm.on("remove-selection-trigger", (idx: number) => {
-      if (this.currentSelection === idx) this.currentSelection = -1;
-      if (this.currentSelection < idx) return;
-      this.currentSelection--;
-      this.renderQueries(this.data);
-    });
-
-    this.comm.on("highlight-selection-trigger", (idx: number) => {
-      let _do = {
-        func: (d: any) => {
-          this.comm.emit("highlight-selection", d);
-        },
-        args: [idx]
-      };
-      let _undo = {
-        func: (d: any) => {
-          this.comm.emit("highlight-selection", d);
-        },
-        args: [this.currentSelection]
-      };
-      this.comm.emit("apply", ["highlight-selection", _do, _undo]);
-    });
-
-    this.comm.on(
-      "highlight-selection",
-      (idx: number, update: boolean = true) => {
-        this.highlightSelection(idx, update);
-      }
-    );
   }
 
   create() {
@@ -167,6 +143,7 @@ export class ElementView extends ViewBase {
   update(data: ElementRenderRows, attributes: Attribute[]) {
     this.data = data;
     this.attributes = attributes;
+
     this.clearAll();
     if (this.currentSelection < 0 || this.currentSelection >= data.length) {
       this.currentSelection = data.length - 1;
@@ -184,54 +161,51 @@ export class ElementView extends ViewBase {
   renderQueries(data: ElementRenderRows) {
     let el = this.ElementQueryDiv.select(".columns");
 
-    let bookmarkGroup = this.ElementQueryDiv.select("#bookmarks");
+    // Render new selection:
+    let ns = this.ElementQueryDiv.select("#new-selection").html("");
+    ns.html(newselection);
+    ns.select(".color-swatch").style("color", this.tempSelection.color);
+    ns.select(".selection-text").text(this.tempSelection.name);
 
+    ns.select(".add").on("click", () => {
+      console.log("Add");
+      this.comm.emit(
+        "add-selection-trigger",
+        Object.assign({}, this.tempSelection)
+      );
+    });
+    ns.select(".remove")
+      .classed("is-invisible", this.tempSelection.id === "All Rows")
+      .on("click", () => {
+        this.comm.emit(
+          "reset-temp-selection",
+          Object.assign({}, this.tempSelection)
+        );
+      });
+    // Render Bookmarks
+    let bookmarkGroup = this.ElementQueryDiv.select("#bookmarks");
     let bookmarks: d3Selection = bookmarkGroup.selectAll("li").data(data);
     bookmarks.exit().remove();
     bookmarks = bookmarks
       .enter()
       .append("li")
-      .merge(bookmarks);
-
-    let aTags = bookmarks.append("a");
-
-    aTags.html(selectionCard);
-
-    let tabs: d3Selection = el.selectAll(".column").data(data);
-    tabs.exit().remove();
-    tabs = tabs
-      .enter()
-      .append("div")
-      .merge(tabs)
-      .classed("column", true)
+      .merge(bookmarks)
       .html("");
 
-    let tabContents = tabs.append("a").classed("button", true);
+    let aTags = bookmarks.append("a");
+    aTags.html(selectionCard);
 
-    tabContents
-      .append("i")
-      .classed("fa fa-square color-swatch", true)
-      .style("color", d => d.color);
-    tabContents.append("span").text(d => d.data.setSize);
-    let closeIcons = tabContents
-      .append("i")
-      .classed("fa fa-times-circle close-icon", true);
+    let that = this;
 
-    closeIcons.on("click", (_, i) => {
-      this.comm.emit("remove-selection-trigger", i);
-      d3.event.stopPropagation();
+    aTags.each(function(d: ElementRenderRow) {
+      let el = d3.select(this);
+
+      el.select(".color-swatch").style("color", d.color);
+      el.select(".selection-text").text(d.name);
+      el.select(".remove").on("click", () => {
+        that.comm.emit("remove-selection-trigger", d);
+      });
     });
-
-    tabContents.on("click", (d, i) => {
-      this.comm.emit("highlight-selection-trigger", i);
-    });
-
-    tabContents.classed("is-dark", (_, i) => i === this.currentSelection);
-  }
-
-  highlightSelection(idx: number, update: boolean = true) {
-    this.currentSelection = idx;
-    if (update) this.update(this.data, this.attributes);
   }
 
   updateVisualizationAndResults(

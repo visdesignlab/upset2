@@ -762,7 +762,7 @@ function addRows(
 
 function setupElementGroups(rows: d3Selection, comm: Mitt) {
   rows.on("click", d => {
-    comm.emit("add-selection-trigger", d);
+    comm.emit("new-bookmark-trigger", d);
   });
 
   rows.append("g").attr("class", "background-rect-g");

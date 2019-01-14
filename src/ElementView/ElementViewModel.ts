@@ -12,85 +12,105 @@ export type ElementRenderRow = RenderRow & {
   color: string;
   idx: number[];
   hash: string;
+  name: string;
+  shown: boolean;
 };
 
 export type ElementRenderRows = ElementRenderRow[];
 
 export class ElementViewModel extends ViewModelBase {
-  private selectedSets: ElementRenderRows;
+  private bookmarks: ElementRenderRows;
   private dataset: Data;
+  private tempSelection: ElementRenderRow;
 
   constructor(view: ElementView, app: Application) {
     super(view, app);
-    this.selectedSets = [];
+    this.bookmarks = [];
 
     this.App.on("render-rows-changed", (data: Data) => {
       if (!this.dataset || this.dataset.name != data.name) {
         this.dataset = data;
-        this.selectedSets = [];
+        this.bookmarks = [];
         this.getDefault();
       }
+    });
+
+    this.App.on("new-bookmark-trigger", (d: RenderRow) => {
+      let previousSelection = Object.assign({}, this.tempSelection);
+      this.tempSelection = createObjectsFromSubsets(d, this.validAttributes());
+      let _do = {
+        func: (sel: ElementRenderRow) => {
+          this.comm.emit("new-temp-selection", sel);
+          this.update();
+        },
+        args: [this.tempSelection]
+      };
+      let _undo = {
+        func: (sel: ElementRenderRow) => {
+          this.comm.emit("new-temp-selection", sel);
+          this.update();
+        },
+        args: [previousSelection]
+      };
+
+      this.apply.call(this, ["add-new-selection", _do, _undo]);
+    });
+
+    this.comm.on("reset-temp-selection", (sel: ElementRenderRow) => {
+      let _do = {
+        func: this.getDefault.bind(this),
+        args: [] as any
+      };
+      let _undo = {
+        func: (sel: ElementRenderRow) => {
+          this.comm.emit("new-temp-selection", sel);
+          this.update();
+        },
+        args: [sel]
+      };
+      this.apply.call(this, ["reset-temp-selection", _do, _undo]);
+    });
+
+    this.comm.on("add-selection-trigger", (sel: ElementRenderRow) => {
+      if (this.bookmarks.map(_ => _.hash).indexOf(sel.hash) > -1) return;
+      let _do = {
+        func: this.addSelectionToBookmarks.bind(this),
+        args: [sel]
+      };
+      let _undo = {
+        func: this.removeSelectionFromBookmarks.bind(this),
+        args: [sel]
+      };
+      this.apply.call(this, ["add-selection-to-bookmark", _do, _undo]);
+    });
+
+    this.comm.on("remove-selection-trigger", (sel: ElementRenderRow) => {
+      let _do = {
+        func: this.removeSelectionFromBookmarks.bind(this),
+        args: [sel]
+      };
+      let _undo = {
+        func: this.addSelectionToBookmarks.bind(this),
+        args: [sel]
+      };
+      this.apply.call(this, ["remove-selection-to-bookmark", _do, _undo]);
     });
 
     this.comm.on("download-data", (data: number[]) => {
       this.App.emit("download-data", data);
     });
 
-    this.App.on("add-selection", this.addSelection, this);
-    this.App.on("remove-selection", this.removeSelection, this);
-    this.App.on(
-      "add-selection-trigger",
-      (d: RenderRow) => {
-        this.comm.emit("add-selection-trigger", d);
-      },
-      this
-    );
-
-    this.App.on(
-      "remove-selection-trigger",
-      (idx: number) => {
-        this.comm.emit("remove-selection-trigger", idx);
-      },
-      this
-    );
-
-    this.comm.on("add-selection-trigger", (d: RenderRow) => {
-      let _do = {
-        func: (d: RenderRow) => {
-          this.App.emit("add-selection", d);
-        },
-        args: [d]
-      };
-      let _undo = {
-        func: (idx: number) => {
-          this.App.emit("remove-selection", idx);
-        },
-        args: [this.selectedSets.length]
-      };
-      this.apply.call(this, ["add-selection", _do, _undo]);
-    });
-
-    this.comm.on("remove-selection-trigger", (idx: number) => {
-      let _do = {
-        func: (idx: number) => {
-          this.App.emit("remove-selection", idx);
-        },
-        args: [idx]
-      };
-      let _undo = {
-        func: (d: RenderRow) => {
-          this.App.emit("add-selection", d);
-        },
-        args: [this.selectedSets[idx]]
-      };
-      this.apply.call(this, ["remove-selection", _do, _undo]);
-    });
-
     this.comm.on("apply", ([name, _do, _undo]) => {
       this.apply.call(this, [name, _do, _undo]);
     });
 
+    this.App.on("new-bookmark-trigger", (d: RenderRow) => {});
+
     this.register();
+  }
+
+  validAttributes() {
+    return this.dataset.attributes.filter(_ => _.name != "Sets");
   }
 
   register() {
@@ -112,39 +132,6 @@ export class ElementViewModel extends ViewModelBase {
     );
 
     this.registerFunctions(
-      "add-selection",
-      (d: RenderRow) => {
-        this.App.emit("add-selection", d);
-      },
-      this
-    );
-
-    this.registerFunctions(
-      "add-selection",
-      (idx: number) => {
-        this.App.emit("remove-selection", idx);
-      },
-      this,
-      false
-    );
-
-    this.registerFunctions(
-      "remove-selection",
-      (idx: number) => {
-        this.App.emit("remove-selection", idx);
-      },
-      this
-    );
-
-    this.registerFunctions(
-      "remove-selection",
-      (d: RenderRow) => {
-        this.App.emit("add-selection", d);
-      },
-      this,
-      false
-    );
-    this.registerFunctions(
       "set-axis1",
       (d: string) => {
         this.comm.emit("set-axis1", d);
@@ -173,46 +160,92 @@ export class ElementViewModel extends ViewModelBase {
       "set-axis2",
       (d: string) => {
         this.comm.emit("set-axis2", d);
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "add-new-selection",
+      (d: ElementRenderRow) => {
+        this.comm.emit("new-temp-selection", d);
+        this.update();
+      },
+      this
+    );
+
+    this.registerFunctions(
+      "add-new-selection",
+      (d: ElementRenderRow) => {
+        this.comm.emit("new-temp-selection", d);
+        this.update();
+      },
+      this,
+      false
+    );
+
+    this.registerFunctions(
+      "add-selection-to-bookmark",
+      this.addSelectionToBookmarks,
+      this
+    );
+    this.registerFunctions(
+      "add-selection-to-bookmark",
+      this.removeSelectionFromBookmarks,
+      this,
+      false
+    );
+    this.registerFunctions(
+      "remove-selection-to-bookmark",
+      this.removeSelectionFromBookmarks,
+      this
+    );
+    this.registerFunctions(
+      "remove-selection-to-bookmark",
+      this.addSelectionToBookmarks,
+      this,
+      false
+    );
+
+    this.registerFunctions("reset-temp-selection", this.getDefault, this);
+    this.registerFunctions(
+      "reset-temp-selection",
+      (sel: ElementRenderRow) => {
+        this.comm.emit("new-temp-selection", sel);
+        this.update();
       },
       this,
       false
     );
   }
 
-  addSelection(sel: RenderRow) {
-    this.selectedSets = this.selectedSets.filter(_ => _.id !== "DEFAULT");
-    let validAttributes = this.dataset.attributes.filter(
-      _ => _.name !== "Sets"
-    );
-    let n_row = createObjectsFromSubsets(sel, validAttributes);
-    this.selectedSets.push(n_row);
+  addSelectionToBookmarks(sel: ElementRenderRow) {
+    this.bookmarks.push(sel);
     this.update();
   }
 
-  removeSelection(idx: number) {
-    let el = this.selectedSets.splice(idx, 1);
-    removeColor(el[0].color);
-    if (this.selectedSets.length === 0) {
-      this.getDefault();
-    } else this.update();
+  removeSelectionFromBookmarks(sel: ElementRenderRow) {
+    let idx = this.bookmarks.indexOf(sel);
+    console.log(idx);
+    let el = this.bookmarks.splice(idx, 1);
+    this.update();
   }
 
   getDefault() {
     let validAttributes = this.dataset.attributes.filter(
       _ => _.name !== "Sets"
     );
-    this.comm.emit(
-      "update",
-      [createObjectFromItems(this.dataset.allItems, validAttributes)],
-      validAttributes
-    );
+    let erw = createObjectFromItems(this.dataset.allItems, validAttributes);
+    this.tempSelection = erw;
+    this.comm.emit("new-temp-selection", this.tempSelection);
+    this.comm.emit("update", this.bookmarks, validAttributes);
   }
 
   update() {
     let validAttributes = this.dataset.attributes.filter(
       _ => _.name !== "Sets"
     );
-    this.comm.emit("update", this.selectedSets, validAttributes);
+    this.comm.emit("update", this.bookmarks, validAttributes);
   }
 }
 
@@ -229,14 +262,15 @@ function createObjectsFromSubsets(
 
     return obj;
   });
-  console.log(HashCode(row));
   return {
     id: row.id,
+    name: row.data.elementName,
     data: row.data,
     arr: arr,
     color: selectColor(),
     idx: items,
-    hash: HashCode(row)
+    hash: HashCode(row),
+    shown: false
   };
 }
 
@@ -253,14 +287,16 @@ function createObjectFromItems(
     return obj;
   });
   return {
-    id: "DEFAULT",
+    id: "All Rows",
+    name: "All Rows",
     data: {
       setSize: items.length
     } as any,
     arr: arr,
     color: selectColor(),
     idx: items,
-    hash: HashCode(items)
+    hash: HashCode(items),
+    shown: false
   };
 }
 
@@ -280,8 +316,8 @@ function removeColor(color: string) {
 }
 
 export const colorList = [
-  "#e6194b",
   "#3cb44b",
+  "#e6194b",
   "#ffe119",
   "#4363d8",
   "#f58231",
