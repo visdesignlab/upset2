@@ -146,8 +146,7 @@ export class ElementView extends ViewBase {
 
     this.renderQueries(data);
 
-    if (this.data.length > 0)
-      this.updateVisualizationAndResults(data, attributes);
+    this.updateVisualizationAndResults(data, attributes);
   }
 
   renderQueries(data: ElementRenderRows) {
@@ -251,6 +250,12 @@ export class ElementView extends ViewBase {
       data.forEach(_ => (_["_color_"] = ds.color));
       _data.push(...data);
     });
+
+    if (data.map(_ => _.hash).indexOf(this.tempSelection.hash) < 0) {
+      let ts = this.tempSelection.arr.slice();
+      ts.forEach(_ => (_["_color_"] = this.tempSelection.color));
+      _data.push(...ts);
+    }
 
     let op1: d3Selection = this.axis1
       .select(".options")
