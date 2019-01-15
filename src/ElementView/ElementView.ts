@@ -39,18 +39,12 @@ export class ElementView extends ViewBase {
 
     this.comm.on("set-axis1", (d: string) => {
       this.axis1Selection = d;
-      this.createVisualization(
-        this.data[this.currentSelection],
-        this.attributes
-      );
+      this.createVisualization(this.data, this.attributes);
     });
 
     this.comm.on("set-axis2", (d: string) => {
       this.axis2Selection = d;
-      this.createVisualization(
-        this.data[this.currentSelection],
-        this.attributes
-      );
+      this.createVisualization(this.data, this.attributes);
     });
 
     this.comm.on("set-axis1-trigger", (d: string) => {
@@ -149,13 +143,11 @@ export class ElementView extends ViewBase {
       this.currentSelection = data.length - 1;
       this.comm.emit("highlight-selection", this.currentSelection, false);
     }
+
     this.renderQueries(data);
 
     if (this.data.length > 0)
-      this.updateVisualizationAndResults(
-        data[this.currentSelection],
-        attributes
-      );
+      this.updateVisualizationAndResults(data, attributes);
   }
 
   renderQueries(data: ElementRenderRows) {
@@ -196,7 +188,10 @@ export class ElementView extends ViewBase {
     aTags.html(selectionCard);
 
     let that = this;
-
+    aTags.classed("has-background-grey-light", _ => {
+      console.log("Hello", _.shown);
+      return _.shown;
+    });
     aTags.each(function(d: ElementRenderRow) {
       let el = d3.select(this);
 
@@ -205,15 +200,18 @@ export class ElementView extends ViewBase {
       el.select(".remove").on("click", () => {
         that.comm.emit("remove-selection-trigger", d);
       });
+      el.on("click", function() {
+        that.comm.emit("show-selection", d.hash);
+      });
     });
   }
 
   updateVisualizationAndResults(
-    data: ElementRenderRow,
+    data: ElementRenderRows,
     attributes: Attribute[]
   ) {
     this.createVisualization(data, attributes);
-    this.createTable(data, attributes);
+    this.createTable(data.filter(_ => _.shown)[0], attributes);
     this.updateHeights();
   }
 
@@ -241,10 +239,18 @@ export class ElementView extends ViewBase {
     this.ElementQueryResultsDiv.html("");
   }
 
-  createVisualization(data: ElementRenderRow, attributes: Attribute[]) {
+  createVisualization(data: ElementRenderRows, attributes: Attribute[]) {
     let plottableAttributes = attributes.filter(
       _ => _.type === "integer" || _.type === "float"
     );
+
+    let _data: any[] = [];
+
+    data.forEach(ds => {
+      let data = ds.arr.slice();
+      data.forEach(_ => (_["_color_"] = ds.color));
+      _data.push(...data);
+    });
 
     let op1: d3Selection = this.axis1
       .select(".options")
@@ -288,6 +294,10 @@ export class ElementView extends ViewBase {
         });
     }
 
+    if (plottableAttributes.length >= 1) {
+      this.axis2Selection = plottableAttributes[1].name;
+    }
+
     if (!this.axis2Selection)
       this.axis2Selection = this.axis2.select(".options").property("value");
     else {
@@ -306,7 +316,7 @@ export class ElementView extends ViewBase {
 
     let spec = {
       $schema: "https://vega.github.io/schema/vega-lite/v3.0.0-rc8.json",
-      data: { values: data.arr },
+      data: { values: _data },
       mark: {
         type: "circle",
         tooltip: {
@@ -323,6 +333,10 @@ export class ElementView extends ViewBase {
           field: this.axis2Selection,
           type: "quantitative",
           scale: { domain: [a2_attr.min, a2_attr.max] }
+        },
+        color: {
+          field: "_color_",
+          scale: null as any
         }
       }
     };
@@ -331,6 +345,7 @@ export class ElementView extends ViewBase {
   }
 
   createTable(data: ElementRenderRow, attributes: Attribute[]) {
+    if (!data) return;
     let downloadBtn = d3.select("#download-results");
     downloadBtn.on("click", () => {
       this.comm.emit("download-data", data.idx);

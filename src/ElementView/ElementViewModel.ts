@@ -104,7 +104,28 @@ export class ElementViewModel extends ViewModelBase {
       this.apply.call(this, [name, _do, _undo]);
     });
 
-    this.App.on("new-bookmark-trigger", (d: RenderRow) => {});
+    this.comm.on("show-selection", (hash: string) => {
+      let previousShown: string = "";
+      if (this.bookmarks.filter(_ => _.shown).length > 0)
+        previousShown = this.bookmarks.filter(_ => _.shown)[0].hash;
+      let _do = {
+        func: (hash: string) => {
+          if (hash.length <= 0) this.bookmarks.forEach(_ => (_.shown = false));
+          this.bookmarks.forEach(_ => (_.shown = _.hash === hash));
+          this.update();
+        },
+        args: [hash]
+      };
+      let _undo = {
+        func: (hash: string) => {
+          if (hash.length <= 0) this.bookmarks.forEach(_ => (_.shown = false));
+          this.bookmarks.forEach(_ => (_.shown = _.hash === hash));
+          this.update();
+        },
+        args: [previousShown]
+      };
+      this.apply.call(this, ["show-selection", _do, _undo]);
+    });
 
     this.register();
   }
@@ -264,7 +285,7 @@ function createObjectsFromSubsets(
   });
   return {
     id: row.id,
-    name: row.data.elementName,
+    name: `${row.data.elementName} (${arr.length})`,
     data: row.data,
     arr: arr,
     color: selectColor(),
@@ -288,7 +309,7 @@ function createObjectFromItems(
   });
   return {
     id: "All Rows",
-    name: "All Rows",
+    name: `All Rows (${arr.length})`,
     data: {
       setSize: items.length
     } as any,
