@@ -299,7 +299,7 @@ export class ElementView extends ViewBase {
         });
     }
 
-    if (plottableAttributes.length > 1) {
+    if (plottableAttributes.length > 1 && !this.axis2Selection) {
       this.axis2Selection = plottableAttributes[1].name;
     }
 
