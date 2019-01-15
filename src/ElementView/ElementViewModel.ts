@@ -22,6 +22,7 @@ export class ElementViewModel extends ViewModelBase {
   private bookmarks: ElementRenderRows;
   private dataset: Data;
   private tempSelection: ElementRenderRow;
+  private chosenColor: string[] = [];
 
   constructor(view: ElementView, app: Application) {
     super(view, app);
@@ -37,7 +38,10 @@ export class ElementViewModel extends ViewModelBase {
 
     this.App.on("new-bookmark-trigger", (d: RenderRow) => {
       let previousSelection = Object.assign({}, this.tempSelection);
-      this.tempSelection = createObjectsFromSubsets(d, this.validAttributes());
+      this.tempSelection = this.createObjectsFromSubsets(
+        d,
+        this.validAttributes()
+      );
       let _do = {
         func: (sel: ElementRenderRow) => {
           this.comm.emit("new-temp-selection", sel);
@@ -256,7 +260,10 @@ export class ElementViewModel extends ViewModelBase {
     let validAttributes = this.dataset.attributes.filter(
       _ => _.name !== "Sets"
     );
-    let erw = createObjectFromItems(this.dataset.allItems, validAttributes);
+    let erw = this.createObjectFromItems(
+      this.dataset.allItems,
+      validAttributes
+    );
     this.tempSelection = erw;
     this.comm.emit("new-temp-selection", this.tempSelection);
     this.comm.emit("update", this.bookmarks, validAttributes);
@@ -268,72 +275,66 @@ export class ElementViewModel extends ViewModelBase {
     );
     this.comm.emit("update", this.bookmarks, validAttributes);
   }
-}
 
-function createObjectsFromSubsets(
-  row: RenderRow,
-  attributes: Attribute[]
-): ElementRenderRow {
-  let items = row.data.items;
-  let arr = items.map(i => {
-    let obj: any = {};
-    attributes.forEach((attr: Attribute) => {
-      obj[attr.name] = attr.values[i];
+  createObjectsFromSubsets(
+    row: RenderRow,
+    attributes: Attribute[]
+  ): ElementRenderRow {
+    let items = row.data.items;
+    let arr = items.map(i => {
+      let obj: any = {};
+      attributes.forEach((attr: Attribute) => {
+        obj[attr.name] = attr.values[i];
+      });
+
+      return obj;
     });
+    return {
+      id: row.id,
+      name: `${row.data.elementName} (${arr.length})`,
+      data: row.data,
+      arr: arr,
+      color: this.selectColor(),
+      idx: items,
+      hash: HashCode(row),
+      shown: false
+    };
+  }
 
-    return obj;
-  });
-  return {
-    id: row.id,
-    name: `${row.data.elementName} (${arr.length})`,
-    data: row.data,
-    arr: arr,
-    color: selectColor(),
-    idx: items,
-    hash: HashCode(row),
-    shown: false
-  };
-}
+  createObjectFromItems(
+    items: number[],
+    attributes: Attribute[]
+  ): ElementRenderRow {
+    let arr = items.map(i => {
+      let obj: any = {};
+      attributes.forEach((attr: Attribute) => {
+        obj[attr.name] = attr.values[i];
+      });
 
-function createObjectFromItems(
-  items: number[],
-  attributes: Attribute[]
-): ElementRenderRow {
-  let arr = items.map(i => {
-    let obj: any = {};
-    attributes.forEach((attr: Attribute) => {
-      obj[attr.name] = attr.values[i];
+      return obj;
     });
+    return {
+      id: "All Rows",
+      name: `All Rows (${arr.length})`,
+      data: {
+        setSize: items.length
+      } as any,
+      arr: arr,
+      color: this.selectColor(),
+      idx: items,
+      hash: HashCode(items),
+      shown: false
+    };
+  }
 
-    return obj;
-  });
-  return {
-    id: "All Rows",
-    name: `All Rows (${arr.length})`,
-    data: {
-      setSize: items.length
-    } as any,
-    arr: arr,
-    color: selectColor(),
-    idx: items,
-    hash: HashCode(items),
-    shown: false
-  };
-}
-
-let chosenColor: string[] = [];
-
-function selectColor(): string {
-  let availableColors = colorList.filter(c => chosenColor.indexOf(c) < 0);
-  if (availableColors.length === 0) return "#000";
-  chosenColor.push(availableColors[0]);
-  return availableColors[0];
-}
-
-function removeColor(color: string) {
-  if (chosenColor.indexOf(color) < 0) return;
-  let idx = chosenColor.indexOf(color);
-  chosenColor.splice(idx, 1);
+  selectColor() {
+    let availableColors = colorList.filter(
+      c => this.bookmarks.map(_ => _.color).indexOf(c) < 0
+    );
+    if (availableColors.length === 0) return "#000";
+    this.chosenColor.push(availableColors[0]);
+    return availableColors[0];
+  }
 }
 
 export const colorList = [
