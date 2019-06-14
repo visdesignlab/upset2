@@ -1,6 +1,6 @@
 /*
- * @Author: Kiran Gadhave 
- * @Date: 2018-06-03 14:38:25 
+ * @Author: Kiran Gadhave
+ * @Date: 2018-06-03 14:38:25
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-16 11:43:32
  */
@@ -14,8 +14,8 @@ export class UpsetViewModel extends ViewModelBase {
   constructor(view: UpsetView, app: Application) {
     super(view, app);
     (view as any).app = app;
-    this.comm.on("add-selection-trigger", (d: any) => {
-      this.App.emit("add-selection-trigger", d);
+    this.comm.on("new-bookmark-trigger", (d: any) => {
+      this.App.emit("new-bookmark-trigger", d);
     });
 
     this.App.on("highlight-selection", ([d, color]) => {

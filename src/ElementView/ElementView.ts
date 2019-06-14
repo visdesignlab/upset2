@@ -1,4 +1,3 @@
-import { Data } from "./../DataStructure/Data";
 import { Attribute } from "./../DataStructure/Attribute";
 import { d3Selection } from "./../type_declarations/types";
 import { ViewBase } from "provenance_mvvm_framework";
@@ -7,6 +6,9 @@ import { ElementRenderRows, ElementRenderRow } from "./ElementViewModel";
 import { CreateVegaVis } from "../VegaFactory/VegaFactory";
 import html from "./dropdown.view.html";
 import queryResults from "./queryresults.view.html";
+import querySelectionDropdown from "./queryselection.view.html";
+import selectionCard from "./selection.view.html";
+import newselection from "./newselection.view.html";
 
 export class ElementView extends ViewBase {
   ElementVisualizationDiv: d3Selection;
@@ -24,26 +26,25 @@ export class ElementView extends ViewBase {
   attributes: Attribute[];
 
   sortAscending: boolean = true;
+  tempSelection: ElementRenderRow;
   currentSelection: number;
 
   constructor(root: HTMLElement) {
     super(root);
     this.currentSelection = -1;
 
+    this.comm.on("new-temp-selection", (d: ElementRenderRow) => {
+      this.tempSelection = d;
+    });
+
     this.comm.on("set-axis1", (d: string) => {
       this.axis1Selection = d;
-      this.createVisualization(
-        this.data[this.currentSelection],
-        this.attributes
-      );
+      this.createVisualization(this.data, this.attributes);
     });
 
     this.comm.on("set-axis2", (d: string) => {
       this.axis2Selection = d;
-      this.createVisualization(
-        this.data[this.currentSelection],
-        this.attributes
-      );
+      this.createVisualization(this.data, this.attributes);
     });
 
     this.comm.on("set-axis1-trigger", (d: string) => {
@@ -77,36 +78,6 @@ export class ElementView extends ViewBase {
       };
       this.comm.emit("apply", ["set-axis2", _do, _undo]);
     });
-
-    this.comm.on("remove-selection-trigger", (idx: number) => {
-      if (this.currentSelection === idx) this.currentSelection = -1;
-      if (this.currentSelection < idx) return;
-      this.currentSelection--;
-      this.renderQueries(this.data);
-    });
-
-    this.comm.on("highlight-selection-trigger", (idx: number) => {
-      let _do = {
-        func: (d: any) => {
-          this.comm.emit("highlight-selection", d);
-        },
-        args: [idx]
-      };
-      let _undo = {
-        func: (d: any) => {
-          this.comm.emit("highlight-selection", d);
-        },
-        args: [this.currentSelection]
-      };
-      this.comm.emit("apply", ["highlight-selection", _do, _undo]);
-    });
-
-    this.comm.on(
-      "highlight-selection",
-      (idx: number, update: boolean = true) => {
-        this.highlightSelection(idx, update);
-      }
-    );
   }
 
   create() {
@@ -116,6 +87,7 @@ export class ElementView extends ViewBase {
       .classed("tag is-large is-white divider", true)
       .text("Element Queries");
     this.ElementQueryDiv.append("br");
+    this.ElementQueryDiv.append("div").html(querySelectionDropdown);
     this.ElementQueryDiv.append("div").classed("columns is-multiline", true);
 
     let elementVis = base.append("div").attr("id", "element-visualization");
@@ -165,66 +137,80 @@ export class ElementView extends ViewBase {
   update(data: ElementRenderRows, attributes: Attribute[]) {
     this.data = data;
     this.attributes = attributes;
+
     this.clearAll();
     if (this.currentSelection < 0 || this.currentSelection >= data.length) {
       this.currentSelection = data.length - 1;
       this.comm.emit("highlight-selection", this.currentSelection, false);
     }
+
     this.renderQueries(data);
 
-    if (this.data.length > 0)
-      this.updateVisualizationAndResults(
-        data[this.currentSelection],
-        attributes
-      );
+    this.updateVisualizationAndResults(data, attributes);
   }
 
   renderQueries(data: ElementRenderRows) {
     let el = this.ElementQueryDiv.select(".columns");
 
-    let tabs: d3Selection = el.selectAll(".column").data(data);
-    tabs.exit().remove();
-    tabs = tabs
+    // Render new selection:
+    let ns = this.ElementQueryDiv.select("#new-selection").html("");
+    ns.html(newselection);
+    ns.select(".color-swatch").style("color", this.tempSelection.color);
+    ns.select(".selection-text").text(this.tempSelection.name);
+
+    ns.select(".add").on("click", () => {
+      console.log("Add");
+      this.comm.emit(
+        "add-selection-trigger",
+        Object.assign({}, this.tempSelection)
+      );
+    });
+    ns.select(".remove")
+      .classed("is-invisible", this.tempSelection.id === "All Rows")
+      .on("click", () => {
+        this.comm.emit(
+          "reset-temp-selection",
+          Object.assign({}, this.tempSelection)
+        );
+      });
+    // Render Bookmarks
+    let bookmarkGroup = this.ElementQueryDiv.select("#bookmarks");
+    let bookmarks: d3Selection = bookmarkGroup.selectAll("li").data(data);
+    bookmarks.exit().remove();
+    bookmarks = bookmarks
       .enter()
-      .append("div")
-      .merge(tabs)
-      .classed("column", true)
+      .append("li")
+      .merge(bookmarks)
       .html("");
 
-    let tabContents = tabs.append("a").classed("button", true);
+    let aTags = bookmarks.append("a");
+    aTags.html(selectionCard);
 
-    tabContents
-      .append("i")
-      .classed("fa fa-square color-swatch", true)
-      .style("color", d => d.color);
-    tabContents.append("span").text(d => d.data.setSize);
-    let closeIcons = tabContents
-      .append("i")
-      .classed("fa fa-times-circle close-icon", true);
-
-    closeIcons.on("click", (_, i) => {
-      this.comm.emit("remove-selection-trigger", i);
-      d3.event.stopPropagation();
+    let that = this;
+    aTags.classed("has-background-grey-light", _ => {
+      console.log("Hello", _.shown);
+      return _.shown;
     });
+    aTags.each(function(d: ElementRenderRow) {
+      let el = d3.select(this);
 
-    tabContents.on("click", (d, i) => {
-      this.comm.emit("highlight-selection-trigger", i);
+      el.select(".color-swatch").style("color", d.color);
+      el.select(".selection-text").text(d.name);
+      el.select(".remove").on("click", () => {
+        that.comm.emit("remove-selection-trigger", d);
+      });
+      el.on("click", function() {
+        that.comm.emit("show-selection", d.hash);
+      });
     });
-
-    tabContents.classed("is-dark", (_, i) => i === this.currentSelection);
-  }
-
-  highlightSelection(idx: number, update: boolean = true) {
-    this.currentSelection = idx;
-    if (update) this.update(this.data, this.attributes);
   }
 
   updateVisualizationAndResults(
-    data: ElementRenderRow,
+    data: ElementRenderRows,
     attributes: Attribute[]
   ) {
     this.createVisualization(data, attributes);
-    this.createTable(data, attributes);
+    this.createTable(data.filter(_ => _.shown)[0], attributes);
     this.updateHeights();
   }
 
@@ -252,10 +238,24 @@ export class ElementView extends ViewBase {
     this.ElementQueryResultsDiv.html("");
   }
 
-  createVisualization(data: ElementRenderRow, attributes: Attribute[]) {
+  createVisualization(data: ElementRenderRows, attributes: Attribute[]) {
     let plottableAttributes = attributes.filter(
       _ => _.type === "integer" || _.type === "float"
     );
+
+    let _data: any[] = [];
+
+    data.forEach(ds => {
+      let data = ds.arr.slice();
+      data.forEach(_ => (_["_color_"] = ds.color));
+      _data.push(...data);
+    });
+
+    if (data.map(_ => _.hash).indexOf(this.tempSelection.hash) < 0) {
+      let ts = this.tempSelection.arr.slice();
+      ts.forEach(_ => (_["_color_"] = this.tempSelection.color));
+      _data.push(...ts);
+    }
 
     let op1: d3Selection = this.axis1
       .select(".options")
@@ -299,6 +299,10 @@ export class ElementView extends ViewBase {
         });
     }
 
+    if (plottableAttributes.length > 1 && !this.axis2Selection) {
+      this.axis2Selection = plottableAttributes[1].name;
+    }
+
     if (!this.axis2Selection)
       this.axis2Selection = this.axis2.select(".options").property("value");
     else {
@@ -317,7 +321,7 @@ export class ElementView extends ViewBase {
 
     let spec = {
       $schema: "https://vega.github.io/schema/vega-lite/v3.0.0-rc8.json",
-      data: { values: data.arr },
+      data: { values: _data },
       mark: {
         type: "circle",
         tooltip: {
@@ -334,6 +338,10 @@ export class ElementView extends ViewBase {
           field: this.axis2Selection,
           type: "quantitative",
           scale: { domain: [a2_attr.min, a2_attr.max] }
+        },
+        color: {
+          field: "_color_",
+          scale: null as any
         }
       }
     };
@@ -342,6 +350,7 @@ export class ElementView extends ViewBase {
   }
 
   createTable(data: ElementRenderRow, attributes: Attribute[]) {
+    if (!data) return;
     let downloadBtn = d3.select("#download-results");
     downloadBtn.on("click", () => {
       this.comm.emit("download-data", data.idx);

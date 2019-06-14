@@ -3,7 +3,7 @@
   <div class="accordions">
     <div id="firstAggByDropdown" class="accordion is-active">
       <div class="accordion-header toggle">
-        First Aggregate By:
+        Aggregation
       </div>
       <div class="accordion-body">
         <div class="accordion-content">
@@ -24,7 +24,7 @@
     <div id="secondAgg">
       <div id="secondAggByDropdown" class="accordion">
         <div class="accordion-header toggle">
-          Then Aggregate By:
+          Second Level Aggregation
         </div>
         <div class="accordion-body">
           <div class="accordion-content">
@@ -45,7 +45,7 @@
 
     <div class="accordion is-capitalized">
       <div class="accordion-header toggle">
-        Sort By:
+        Sorting
       </div>
       <div class="accordion-body">
         <div class="accordion-content">
@@ -57,27 +57,25 @@
 
     <div class="accordion is-capitalized">
       <div class="accordion-header toggle">
-        Data
+        Filter Intersections
       </div>
       <div class="accordion-body">
         <div class="accordion-content">
           <div class="field">
-            <label for="" class="label is-size-7">Min Degree:</label>
+            <label for="" class="label is-size-7">Show intersections with degree of</label>
             <div class="control">
-              <input id="minDegree" type="number" class="input is-small">
+            more than:  <input id="minDegree" type="number" class="input is-small">
             </div>
           </div>
           <div class="field">
-            <label for="" class="label is-size-7">Max Degree</label>
-            <div class="control">
-              <input id="maxDegree" type="number" class="input is-small">
+                      <div class="control">
+              less than: <input id="maxDegree" type="number" class="input is-small">
             </div>
           </div>
-
           <div class="field">
             <div class="control">
               <input id="hideEmpty" type="checkbox">
-              <label class="checkbox is-size-7">Hide Empty</label>
+              <label class="checkbox is-size-7">Hide Empty Intersections</label>
             </div>
           </div>
         </div>

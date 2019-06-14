@@ -65,3 +65,12 @@ th.aes:after {
 .download-props:hover {
   font-size: 1.5rem;
 }
+
+.fix-height {
+  height: 10em;
+  overflow: auto;
+}
+
+.delete-selection {
+  background-color: rgba(10, 10, 10, 0.2) !important;
+}

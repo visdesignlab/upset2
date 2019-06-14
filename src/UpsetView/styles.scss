@@ -16,6 +16,10 @@
 }
 
 .header {
+  cursor: pointer
+}
+
+.delete-cursor {
   cursor: url(/assets/trash-can.png) 1 1, pointer;
 }
 
@@ -174,12 +178,12 @@
   fill: #a3a3a3;
 }
 
-.unselectedAttribute > rect {
+.unselectedAttribute>rect {
   stroke: black;
   stroke-width: 1px;
 }
 
-.unselectedAttribute > text {
+.unselectedAttribute>text {
   color: black;
   writing-mode: vertical-lr;
 }

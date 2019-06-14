@@ -35,11 +35,11 @@ function addHeaderBars(
   maxSetSize: number,
   comm: Mitt
 ) {
-  let headerBarGroup = el.selectAll(".header-bar-group").data([1]);
+  let headerBarGroup: d3Selection = el.selectAll(".header-bar-group").data([1]);
 
   headerBarGroup.exit().remove();
 
-  let _headers = headerBarGroup
+  let _headers: d3Selection = headerBarGroup
     .enter()
     .append("g")
     .attr("class", "header-bar-group")
@@ -57,7 +57,7 @@ function addHeaderBars(
     .append("g")
     .merge(_headers)
     .html("")
-    .attr("class", "header");
+    .attr("class", "header delete-cursor");
 
   headers
     .transition()
@@ -112,10 +112,10 @@ function addForegroundBars(headers: d3Selection, maxSetSize: number) {
 }
 
 function addConnectors(data: Set[], el: d3Selection, comm: Mitt) {
-  let connectorGroup = el.selectAll(".connector-group").data([1]);
+  let connectorGroup: d3Selection = el.selectAll(".connector-group").data([1]);
   connectorGroup.exit().remove();
 
-  let _connectors = connectorGroup
+  let _connectors: d3Selection = connectorGroup
     .enter()
     .append("g")
     .merge(connectorGroup)
@@ -129,7 +129,7 @@ function addConnectors(data: Set[], el: d3Selection, comm: Mitt) {
     .duration(100)
     .remove();
 
-  let connectors = _connectors
+  let connectors: d3Selection = _connectors
     .enter()
     .append("g")
     .merge(_connectors)
@@ -397,7 +397,7 @@ function addTicks(
   y_offset: number,
   x_offset: number = 0
 ): d3Selection {
-  let g = el.selectAll(".tick-group").data([1]);
+  let g: d3Selection = el.selectAll(".tick-group").data([1]);
   g.exit().remove();
 
   let _g = g
@@ -407,7 +407,7 @@ function addTicks(
     .attr("class", "tick-group")
     .attr("transform", `translate(${x_offset}, 0)`);
 
-  let ticksG = _g.selectAll(".tick-g").data(ticksArr);
+  let ticksG: d3Selection = _g.selectAll(".tick-g").data(ticksArr);
   ticksG.exit().remove();
   let ticks = ticksG
     .enter()
@@ -679,7 +679,7 @@ function removeAttributeFromSelected(selected: Attribute[], attr: Attribute) {
 
 /** ************* */
 function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
-  let _bg = el.selectAll(".column-background-group").data([1]);
+  let _bg: d3Selection = el.selectAll(".column-background-group").data([1]);
   _bg.exit().remove();
   let backgroundGroup = _bg
     .enter()
@@ -690,7 +690,9 @@ function setupColumnBackgrounds(el: d3Selection, usedSets: number) {
     .attr("transform", `translate(${params.skew_offset}, 0)`);
 
   let arr = [...Array(usedSets).keys()];
-  let rects = backgroundGroup.selectAll(".vert-set-rect").data(arr);
+  let rects: d3Selection = backgroundGroup
+    .selectAll(".vert-set-rect")
+    .data(arr);
   rects.exit().remove();
   rects
     .enter()
@@ -711,14 +713,14 @@ function addRows(
   el: d3Selection,
   comm: Mitt
 ): d3Selection[] {
-  let _rows = el
+  let _rows: d3Selection = el
     .selectAll(".row")
     .data(data, function(d: RenderRow, i: number) {
       return d.id;
     });
   _rows.exit().remove();
 
-  let rows = _rows
+  let rows: d3Selection = _rows
     .enter()
     .append("g")
     .style("opacity", 0)
@@ -760,7 +762,7 @@ function addRows(
 
 function setupElementGroups(rows: d3Selection, comm: Mitt) {
   rows.on("click", d => {
-    comm.emit("add-selection-trigger", d);
+    comm.emit("new-bookmark-trigger", d);
   });
 
   rows.append("g").attr("class", "background-rect-g");
@@ -1131,7 +1133,9 @@ function renderCardinalityBars(el: d3Selection, scale: d3Scale) {
 
     let offset = params.horizon_offset;
 
-    let hb = g.selectAll(".cardinality-bar").data([...Array(loop).keys()]);
+    let hb: d3Selection = g
+      .selectAll(".cardinality-bar")
+      .data([...Array(loop).keys()]);
     hb.exit().remove();
     hb.enter()
       .append("rect")
@@ -1262,7 +1266,9 @@ export function addAttributeHeaders(el: d3Selection, data: Data, comm: Mitt) {
       29})`
   );
 
-  let attrHeaders = el.selectAll(".attribute").data(data.selectedAttributes);
+  let attrHeaders: d3Selection = el
+    .selectAll(".attribute")
+    .data(data.selectedAttributes);
   attrHeaders.exit().remove();
   attrHeaders = attrHeaders
     .enter()
@@ -1326,7 +1332,7 @@ function updateBackgroundAndAddAttributes(
 function addAttributes(rows: d3Selection, data: Data) {
   let attributeGroups = rows.selectAll(".attribute-group").html("");
 
-  let attrs = attributeGroups
+  let attrs: d3Selection = attributeGroups
     .selectAll(".attribute")
     .data(data.selectedAttributes);
   attrs.exit().remove();
