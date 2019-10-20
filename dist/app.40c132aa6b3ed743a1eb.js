@@ -3647,7 +3647,6 @@ class NavBarViewModel extends provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE
     }
     populateDatasetSelectorFromServer() {
         let results = [];
-        console.log(`${_app_app__WEBPACK_IMPORTED_MODULE_0__["serverUrl"]}/download/list`);
         let p = fetch(`${_app_app__WEBPACK_IMPORTED_MODULE_0__["serverUrl"]}/download/list`)
             .then(results => results.json())
             .then(jsondata => {
@@ -6009,7 +6008,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 
-const serverUrl = 'http://18.224.248.42:4040';
+const serverUrl = 'https://18.224.248.42';
 function run() {
     let application = new provenance_mvvm_framework__WEBPACK_IMPORTED_MODULE_2__["Application"]('Upset2.0', '1.0.0');
     _DataStructure_DataUtils__WEBPACK_IMPORTED_MODULE_5__["DataUtils"].app = application;
@@ -6947,7 +6946,7 @@ __webpack_require__.r(__webpack_exports__);
 
 
 const pubsub = Object(_Utils_PubSub__WEBPACK_IMPORTED_MODULE_5__["mitt"])();
-const serverUrl = 'http://18.224.248.42:4040';
+const serverUrl = 'https://18.224.248.42';
 let views = [
     {
         componentName: 'FileView',
@@ -7089,4 +7088,4 @@ if(false) {}
 /***/ })
 
 /******/ });
-//# sourceMappingURL=app.aad890cb6a4e506ca0d8.js.map
+//# sourceMappingURL=app.40c132aa6b3ed743a1eb.js.map
