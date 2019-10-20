@@ -66,7 +66,6 @@ export class NavBarViewModel extends ViewModelBase {
 
   populateDatasetSelectorFromServer() {
     let results: Promise<any>[] = [];
-    console.log(`${serverUrl}/download/list`);
     let p = fetch(`${serverUrl}/download/list`)
       .then(results => results.json())
       .then(jsondata => {
