@@ -42,7 +42,8 @@ export class DatasetSelectionView extends ViewBase {
       .select('#upload-new-dataset')
       .on('click', this.createUploadView.bind(this));
     let list = this.modalContent.select('#list');
-    d3.json(`${serverUrl}/download/list`).then((res: any[]) => {
+    d3.json(`${serverUrl}/datasets`).then(({datasets}) => {
+      let res = datasets;
       let that = this;
 
       let pres = list.selectAll('.box').data(res);
@@ -52,13 +53,13 @@ export class DatasetSelectionView extends ViewBase {
         .append('div')
         .classed('box', true)
         .merge(pres);
-      pres.each(function(d) {
+      pres.each(function(d: any) {
         let el = d3.select(this);
         el.html('');
         el.html(datasetCardHtml);
-        el.select('#dataset-name').text(d.info.name);
-        el.select('#dataset-username').text(d.info.username);
-        el.select('#dataset-description').text(d.info.description);
+        el.select('#dataset-name').text(d.name);
+        el.select('#dataset-username').text(d.username);
+        el.select('#dataset-description').text(d.description);
         el.select('#upload-date').text(
           new Date(parseInt(d.date)).toDateString(),
         );
@@ -67,7 +68,7 @@ export class DatasetSelectionView extends ViewBase {
           console.log('Test');
           that.comm.emit(
             'change-dataset-trigger',
-            DataUtils.getDataSetInfo(d.info, true),
+            DataUtils.getDataSetInfo(d, false),
           );
         });
       });
