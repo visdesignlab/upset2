@@ -4,15 +4,15 @@
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-16 11:46:38
  */
-import * as d3 from "d3";
-import { Data } from "./Data";
-import { IDataSetInfo } from "./IDataSetInfo";
-import { IDataSetJSON } from "./IDataSetJSON";
-import { Application } from "provenance_mvvm_framework";
-import { IMetaData } from "./IMetaData";
-import { ISetInfo } from "./ISetInfo";
-import { RenderConfig } from "./AggregateAndFilters";
-import { serverUrl } from "../app/app";
+import * as d3 from 'd3';
+import {Data} from './Data';
+import {IDataSetInfo} from './IDataSetInfo';
+import {IDataSetJSON} from './IDataSetJSON';
+import {Application} from 'provenance_mvvm_framework';
+import {IMetaData} from './IMetaData';
+import {ISetInfo} from './ISetInfo';
+import {RenderConfig} from './AggregateAndFilters';
+import {serverUrl} from '../app/app';
 
 export class DataUtils {
   static app: Application;
@@ -25,7 +25,7 @@ export class DataUtils {
       let m: IMetaData = {
         type: d.type,
         index: d.index,
-        name: d.name
+        name: d.name,
       };
       metas.push(m);
     });
@@ -35,7 +35,7 @@ export class DataUtils {
       let s: ISetInfo = {
         format: d.format,
         start: d.start,
-        end: d.end
+        end: d.end,
       };
       sets.push(s);
     });
@@ -50,21 +50,21 @@ export class DataUtils {
       sets: sets,
       author: data.author,
       description: data.description,
-      source: data.source
+      source: data.source,
     };
     return d;
   }
 
   static getDataSetInfo(
     data: IDataSetJSON,
-    fromServer: boolean = false
+    fromServer: boolean = false,
   ): IDataSetInfo {
     let info: IDataSetInfo = {
-      Name: "",
+      Name: '',
       SetCount: 0,
       AttributeCount: 0,
       FromServer: fromServer,
-      _data: null
+      _data: null,
     };
     info.Name = data.name;
     info.AttributeCount = data.meta.length;
@@ -72,7 +72,7 @@ export class DataUtils {
     for (let i = 0; i < data.sets.length; ++i) {
       let sdb = data.sets[i];
 
-      if (sdb.format === "binary") {
+      if (sdb.format === 'binary') {
         info.SetCount += sdb.end - sdb.start + 1;
       } else {
         console.error(`Set Definition Format ${sdb.format} not supported`);
@@ -85,24 +85,23 @@ export class DataUtils {
   static processDataSet(datasetinfo: IDataSetInfo): any {
     let dataSetDesc: IDataSetJSON = datasetinfo._data;
     if (datasetinfo.FromServer) {
-      d3.dsv(
-        dataSetDesc.separator,
-        `${serverUrl}/download/single/${datasetinfo._data.file}`
-      ).then(data => {
-        let d = new Data(DataUtils.app).load(data, dataSetDesc);
-        DataUtils.data = data;
-        d.then((d2: Data) => {
-          DataUtils.app.emit("render-config", d2.renderConfig);
-        });
-      });
-    } else {
       d3.dsv(dataSetDesc.separator, datasetinfo._data.file).then(data => {
         let d = new Data(DataUtils.app).load(data, dataSetDesc);
         DataUtils.data = data;
         d.then((d2: Data) => {
-          DataUtils.app.emit("render-config", d2.renderConfig);
+          DataUtils.app.emit('render-config', d2.renderConfig);
         });
       });
+    } else {
+      d3.dsv(dataSetDesc.separator, `${datasetinfo._data.file}?alt=media`).then(
+        data => {
+          let d = new Data(DataUtils.app).load(data, dataSetDesc);
+          DataUtils.data = data;
+          d.then((d2: Data) => {
+            DataUtils.app.emit('render-config', d2.renderConfig);
+          });
+        },
+      );
     }
     DataUtils.datasetDesc = datasetinfo._data;
   }

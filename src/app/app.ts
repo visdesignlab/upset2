@@ -30,7 +30,8 @@ import {DatasetSelectionViewModel} from '../DatasetSelectionView/DatasetSelectio
 import {DatasetSelectionView} from '../DatasetSelectionView/DatasetSelectionView';
 import {saveAs} from 'file-saver';
 
-export const serverUrl: string = 'https://18.224.248.42';
+export const serverUrl: string =
+  'https://us-central1-upset2-eaf80.cloudfunctions.net/api';
 
 function run() {
   let application = new Application('Upset2.0', '1.0.0');
