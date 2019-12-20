@@ -16,8 +16,8 @@ export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application, dsLocation: string) {
     super(view, app);
-    this.populateDatasetSelector(dsLocation);
     this.populateDatasetSelectorFromServer();
+    this.populateDatasetSelector(dsLocation);
 
     this.comm.on('load-data', () => {
       this.App.emit('open-dataset-selection');
