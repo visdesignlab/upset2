@@ -11,6 +11,7 @@ import {IDataSetInfo} from './../DataStructure/IDataSetInfo';
 import {IDataSetJSON} from './../DataStructure/IDataSetJSON';
 import {NavBarView} from './NavBarView';
 import './styles.scss';
+
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
   constructor(view: NavBarView, app: Application, dsLocation: string) {
@@ -65,23 +66,21 @@ export class NavBarViewModel extends ViewModelBase {
   }
 
   populateDatasetSelectorFromServer() {
-    let results: Promise<any>[] = [];
-    let p = fetch(`${serverUrl}/download/list`)
-      .then(results => results.json())
-      .then(jsondata => {
-        jsondata.forEach((d: any) => {
-          results.push(d.info);
-        });
+    fetch(`${serverUrl}/datasets`)
+      .then(results => {
+        return results.json();
       })
-      .then(() => {
-        results.forEach(j => {
+      .then(({datasets}) => {
+        datasets.forEach(j => {
           let a: IDataSetJSON = DataUtils.getDataSetJSON(j);
-          a.file = `${serverUrl}/download/single/${a.file}`;
           this.datasets.push(DataUtils.getDataSetInfo(a));
         });
       })
       .then(() => {
         this.comm.emit('update', this.datasets);
+      })
+      .catch(err => {
+        console.error(err);
       });
   }
 
