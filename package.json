@@ -81,12 +81,20 @@
       "@commitlint/config-conventional"
     ]
   },
-  "dependencies": {},
+  "dependencies": {
+    "@visdesignlab/provenance-lib-core": "^3.0.0",
+    "mobx": "^5.15.1",
+    "mobx-react": "^6.1.4",
+    "semantic-ui-css": "^2.4.1",
+    "semantic-ui-react": "^0.88.2"
+  },
   "peerDependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   },
   "devDependencies": {
+    "@commitlint/cli": "^8.2.0",
+    "@commitlint/config-conventional": "^8.2.0",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^8.0.2",
@@ -94,10 +102,6 @@
     "@types/node": "^13.1.2",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
-    "react-scripts": "3.3.0",
-    "typescript": "~3.7.4",
-    "@commitlint/cli": "^8.2.0",
-    "@commitlint/config-conventional": "^8.2.0",
     "colors": "^1.4.0",
     "commitizen": "^4.0.3",
     "coveralls": "^3.0.9",
@@ -110,6 +114,9 @@
     "lodash.camelcase": "^4.3.0",
     "prettier": "^1.19.1",
     "prompt": "^1.0.0",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-scripts": "3.3.0",
     "replace-in-file": "^5.0.2",
     "rimraf": "^3.0.0",
     "rollup": "^1.27.14",
@@ -118,6 +125,7 @@
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-plugin-typescript2": "0.25.3",
+    "semantic-release": "^15.14.0",
     "shelljs": "^0.8.3",
     "travis-deploy-once": "^5.0.11",
     "ts-jest": "^24.2.0",
@@ -125,8 +133,8 @@
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^9.0.0",
-    "semantic-release": "^15.14.0",
-    "typedoc": "^0.15.6"
+    "typedoc": "^0.15.6",
+    "typescript": "~3.7.4"
   },
   "eslintConfig": {
     "extends": "react-app"
