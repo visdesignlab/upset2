@@ -1,11 +1,11 @@
 {
   "name": "@visdesignlab/upset",
-  "version": "0.0.0-development",
+  "version": "0.0.4-development",
   "description": "",
   "keywords": [],
   "main": "dist/upset2.umd.js",
   "module": "dist/upset2.es5.js",
-  "typings": "dist/types/upset2.d.ts",
+  "typings": "dist/types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/visdesignlab/upset2.git"
@@ -77,7 +77,12 @@
       "@commitlint/config-conventional"
     ]
   },
-  "dependencies": {
+  "dependencies": {},
+  "peerDependencies": {
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "devDependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.4.0",
     "@testing-library/user-event": "^8.0.2",
@@ -85,8 +90,6 @@
     "@types/node": "^13.1.2",
     "@types/react": "^16.9.17",
     "@types/react-dom": "^16.9.4",
-    "react": "^16.12.0",
-    "react-dom": "^16.12.0",
     "react-scripts": "3.3.0",
     "typescript": "~3.7.4",
     "@commitlint/cli": "^8.2.0",
@@ -118,6 +121,7 @@
     "tslint": "^5.20.1",
     "tslint-config-prettier": "^1.18.0",
     "tslint-config-standard": "^9.0.0",
+    "semantic-release": "^15.14.0",
     "typedoc": "^0.15.6"
   },
   "eslintConfig": {
@@ -134,9 +138,6 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  },
-  "devDependencies": {
-    "semantic-release": "^15.14.0"
   },
   "husky": {
     "hooks": {
