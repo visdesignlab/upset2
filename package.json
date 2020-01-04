@@ -56,6 +56,9 @@
       "/node_modules/",
       "/test/"
     ],
+    "testPathIgnorePatterns": [
+      "dist/"
+    ],
     "coverageThreshold": {
       "global": {
         "branches": 0,
@@ -65,7 +68,8 @@
       }
     },
     "collectCoverageFrom": [
-      "src/*.{js,ts}"
+      "src/Upset/*.{js,ts}",
+      "!dist/*.{js,ts}"
     ]
   },
   "prettier": {
@@ -143,7 +147,7 @@
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
       "pre-commit": "lint-staged",
-      "pre-push": "npm run prebuild && npm run test:prod && npm run build-lib"
+      "pre-push": "npm run test:prod && npm run build-lib"
     }
   }
 }
