@@ -1,13 +1,14 @@
-import resolve from 'rollup-plugin-node-resolve'
-import commonjs from 'rollup-plugin-commonjs'
-import sourceMaps from 'rollup-plugin-sourcemaps'
-import camelCase from 'lodash.camelcase'
-import typescript from 'rollup-plugin-typescript2'
-import json from 'rollup-plugin-json'
+import resolve from 'rollup-plugin-node-resolve';
+import commonjs from 'rollup-plugin-commonjs';
+import sourceMaps from 'rollup-plugin-sourcemaps';
+import camelCase from 'lodash.camelcase';
+import typescript from 'rollup-plugin-typescript2';
+import json from 'rollup-plugin-json';
+import postcss from 'rollup-plugin-postcss';
 
-const pkg = require('./package.json')
+const pkg = require('./package.json');
 
-const libraryName = 'index'
+const libraryName = 'index';
 
 export default {
   input: `src/Upset/${libraryName}.tsx`,
@@ -30,8 +31,44 @@ export default {
     json(),
     // Compile TypeScript files
     typescript({ useTsconfigDeclarationDir: true }),
+    postcss({
+      extract: false,
+      modules: true
+    }),
     // Allow bundling cjs modules (unlike webpack, rollup doesn't understand cjs)
-    commonjs(),
+    commonjs({
+      namedExports: {
+        'node_modules/react/index.js': [
+          'Children',
+          'Component',
+          'PureComponent',
+          'PropTypes',
+          'createElement',
+          'Fragment',
+          'cloneElement',
+          'StrictMode',
+          'createFactory',
+          'createRef',
+          'useState',
+          'useRef',
+          'useMemo',
+          'useEffect',
+          'useCallback',
+          'useDebugValue',
+          'memo',
+          'forwardRef',
+          'createContext',
+          'isValidElement',
+          'isValidElementType'
+        ],
+        'node_modules/react-dom/index.js': [
+          'render',
+          'hydrate',
+          'createPortal',
+          'unstable_batchedUpdates'
+        ]
+      }
+    }),
     // Allow node_modules resolution, so you can use 'external' to control
     // which external modules to include in the bundle
     // https://github.com/rollup/rollup-plugin-node-resolve#usage
@@ -40,4 +77,4 @@ export default {
     // Resolve source maps to the original source
     sourceMaps()
   ]
-}
+};
