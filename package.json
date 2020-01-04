@@ -1,6 +1,6 @@
 {
   "name": "@visdesignlab/upset",
-  "version": "0.0.4-development",
+  "version": "0.0.0-development",
   "description": "",
   "keywords": [],
   "main": "dist/upset2.umd.js",
