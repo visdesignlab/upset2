@@ -1,31 +1,48 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useState, useEffect } from 'react';
 import { Menu, Header, Button, Dropdown, Label } from 'semantic-ui-react';
-import { ProvenanceContext } from '../../Upset';
+import { ProvenanceContext, DatasetOptions, fileServer } from '../../Upset';
+import { inject, observer } from 'mobx-react';
+import { UpsetStore } from '../../Store/UpsetStore';
+import axios from 'axios';
+import { DatasetInfo } from '../../Interfaces/DatasetInfo';
 
-const options: any[] = [
-  {
-    key: 'test1',
-    text: 'test1',
-    value: 'test1'
-  },
-  {
-    key: 'test2',
-    text: 'test2',
-    value: 'test2'
-  },
-  {
-    key: 'test3',
-    text: 'test3',
-    value: 'test3'
-  },
-  {
-    key: 'test4',
-    text: 'test4',
-    value: 'test4'
-  }
-];
+interface Props {
+  store?: UpsetStore;
+}
 
-const Navbar: FC = () => {
+const Navbar: FC<Props> = ({ store }: Props) => {
+  const { isAtRoot, isAtLatest, selectedDataset } = store!;
+  const [datasets, setDatasets] = useState<DatasetOptions>([]);
+  const { actions } = useContext(ProvenanceContext);
+
+  useEffect(() => {
+    axios
+      .get(`${fileServer}/datasets`)
+      .then(({ data: { datasets } }) => {
+        const ds: DatasetOptions = datasets.map((d: DatasetInfo) => ({
+          info: d,
+          key: d.file,
+          text: `${d.name} (${d.sets.length} Ssets & ${
+            d.meta.filter(m => m.type !== 'id').length
+          } Attributes)`,
+          value: d.file
+        }));
+        setDatasets(ds);
+      })
+      .catch(err => {
+        console.error(err);
+        throw new Error(err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!selectedDataset && datasets.length > 0) {
+      actions.setDataset(datasets[0].info);
+    }
+  });
+
+  const selectedDatasetValue = selectedDataset ? selectedDataset.file : '';
+
   return (
     <Menu borderless>
       <Menu.Item>
@@ -33,9 +50,9 @@ const Navbar: FC = () => {
       </Menu.Item>
       <Menu.Item>
         <Button.Group>
-          <Button icon="undo" content="Undo"></Button>
+          <Button icon="undo" content="Undo" disabled={isAtRoot}></Button>
           <Button.Or></Button.Or>
-          <Button icon="redo" content="Redo"></Button>
+          <Button icon="redo" content="Redo" disabled={isAtLatest}></Button>
         </Button.Group>
       </Menu.Item>
       <Menu.Menu position="right">
@@ -43,7 +60,13 @@ const Navbar: FC = () => {
           <Header>Choose Dataset</Header>
         </Menu.Item>
         <Menu.Item>
-          <Dropdown selection defaultValue={'test1'} options={options}></Dropdown>
+          <Dropdown
+            scrolling
+            fluid
+            selection
+            value={selectedDatasetValue}
+            options={datasets}
+          ></Dropdown>
         </Menu.Item>
         <Menu.Item>
           <Button>Load Data</Button>
@@ -59,4 +82,4 @@ const Navbar: FC = () => {
   );
 };
 
-export default Navbar;
+export default inject('store')(observer(Navbar));

@@ -1,7 +1,9 @@
+import { DatasetInfo } from './DatasetInfo';
+
 export default interface UpsetState {
-  dataset: string;
+  dataset: DatasetInfo;
 }
 
 export const defaultState: UpsetState = {
-  dataset: ''
+  dataset: undefined as any
 };

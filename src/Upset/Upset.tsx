@@ -1,12 +1,25 @@
 import React, { createContext } from 'react';
 import Navbar from './Components/Navbar';
-import { Button } from 'semantic-ui-react';
 import { setupProvenance } from './Provenance/Setup';
 import { Provider } from 'mobx-react';
 import { upsetStore } from './Store/UpsetStore';
 import UpsetProvenance from './Interfaces/UpsetProvenance';
+import { DatasetInfo } from './Interfaces/DatasetInfo';
+import { style } from 'typestyle';
+import Sidebar from './Components/SideBar/Sidebar';
+
+export type DatasetOption = {
+  info: DatasetInfo;
+  key: string;
+  text: string;
+  value: string;
+  description: string;
+};
+
+export type DatasetOptions = DatasetOption[];
 
 export const ProvenanceContext = createContext<UpsetProvenance>({} as any);
+export const fileServer = 'https://us-central1-upset2-eaf80.cloudfunctions.net/api';
 
 const Upset: React.FC = () => {
   const { provenance, actions } = setupProvenance();
@@ -14,11 +27,46 @@ const Upset: React.FC = () => {
   return (
     <Provider store={upsetStore}>
       <ProvenanceContext.Provider value={{ provenance, actions }}>
-        <Navbar></Navbar>
-        <Button primary>Test</Button>
+        <div className={layoutDiv}>
+          <div className={navBar}>
+            <Navbar></Navbar>
+          </div>
+          <div className={controlSideBar}>
+            <Sidebar></Sidebar>
+          </div>
+          <div className={upsetView}>Main</div>
+          <div className={elementView}>Details</div>
+        </div>
       </ProvenanceContext.Provider>
     </Provider>
   );
 };
 
 export default Upset;
+
+const layoutDiv = style({
+  height: '100vh',
+  width: '100vw',
+  display: 'grid',
+  gridTemplateRows: 'min-content auto',
+  gridTemplateColumns: '2fr 7fr 2fr',
+  gridTemplateAreas: `"nav nav nav"
+  "controls upset element"`
+});
+
+const navBar = style({
+  gridArea: 'nav'
+});
+
+const controlSideBar = style({
+  gridArea: 'controls',
+  padding: '1em'
+});
+
+const upsetView = style({
+  gridArea: 'upset'
+});
+
+const elementView = style({
+  gridArea: 'element'
+});

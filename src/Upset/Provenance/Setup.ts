@@ -1,7 +1,8 @@
 import UpsetProvenance from '../Interfaces/UpsetProvenance';
 import { initProvenance, isStateNode } from '@visdesignlab/provenance-lib-core';
-import { defaultState } from '../Interfaces/UpsetState';
+import UpsetState, { defaultState } from '../Interfaces/UpsetState';
 import { upsetStore } from '../Store/UpsetStore';
+import { DatasetInfo } from '../Interfaces/DatasetInfo';
 
 export function setupProvenance(): UpsetProvenance {
   const provenance = initProvenance(defaultState, true);
@@ -19,6 +20,12 @@ export function setupProvenance(): UpsetProvenance {
     upsetStore.isAtLatest = provenance.current().children.length === 0;
   });
 
+  provenance.addObserver(['dataset'], (state?: UpsetState) => {
+    if (state) {
+      upsetStore.dataset = state.dataset;
+    }
+  });
+
   provenance.done();
 
   const goForward = () => {
@@ -28,8 +35,15 @@ export function setupProvenance(): UpsetProvenance {
     provenance.goBackOneStep();
   };
 
+  const setDataset = (info: DatasetInfo) => {
+    provenance.applyAction(`Load dataset: ${info.name}`, (state: UpsetState) => {
+      state.dataset = info;
+      return state;
+    });
+  };
+
   return {
     provenance,
-    actions: { goForward, goBack }
+    actions: { goForward, goBack, setDataset }
   };
 }

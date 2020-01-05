@@ -1,0 +1,4 @@
+.main_layout {
+  display: grid;
+  grid-template-rows: min-content auto;
+}
