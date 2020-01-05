@@ -58,6 +58,7 @@ export default {
           'memo',
           'forwardRef',
           'createContext',
+          'useContext',
           'isValidElement',
           'isValidElementType'
         ],
