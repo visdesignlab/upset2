@@ -50,9 +50,14 @@ const Navbar: FC<Props> = ({ store }: Props) => {
       </Menu.Item>
       <Menu.Item>
         <Button.Group>
-          <Button icon="undo" content="Undo" disabled={isAtRoot}></Button>
+          <Button icon="undo" content="Undo" disabled={isAtRoot} onClick={actions.goBack}></Button>
           <Button.Or></Button.Or>
-          <Button icon="redo" content="Redo" disabled={isAtLatest}></Button>
+          <Button
+            icon="redo"
+            content="Redo"
+            disabled={isAtLatest}
+            onClick={actions.goForward}
+          ></Button>
         </Button.Group>
       </Menu.Item>
       <Menu.Menu position="right">
