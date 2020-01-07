@@ -89,6 +89,7 @@
     "d3": "^5.15.0",
     "mobx": "^5.15.1",
     "mobx-react": "^6.1.4",
+    "react-move": "^6.1.0",
     "rollup-plugin-postcss": "^2.0.3",
     "semantic-ui-css": "^2.4.1",
     "semantic-ui-react": "^0.88.2",

@@ -108,6 +108,8 @@ export function getRenderRows(
 
   if (sortBy === 'Cardinality') {
     data.sort((a, b) => b.size - a.size);
+  } else if (sortBy === 'Degree') {
+    data.sort((a, b) => a.noCombinedSets - b.noCombinedSets);
   }
 
   let renderRows = data.map(renderRowMap);
