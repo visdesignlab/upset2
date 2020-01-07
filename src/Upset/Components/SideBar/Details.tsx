@@ -13,8 +13,6 @@ const Details: FC<Props> = ({ store }: Props) => {
   const { name = '', author = '', description = '', meta = [], sets = [], source = '' } =
     selectedDataset || {};
 
-  console.log();
-
   return (
     <Card color="blue" fluid>
       <Card.Content>

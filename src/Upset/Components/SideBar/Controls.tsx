@@ -1,7 +1,7 @@
 import React, { FC, useState, useContext, useEffect } from 'react';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
-import { Accordion, Icon, Menu, Form, Radio, Checkbox, Input, Label } from 'semantic-ui-react';
+import { Accordion, Icon, Form, Radio, Checkbox, Input, Label } from 'semantic-ui-react';
 import { AggregationOptionsList } from '../../Interfaces/AggregationOptions';
 import { ProvenanceContext } from '../../Upset';
 import { SortingOptionsList } from '../../Interfaces/SortOptions';
@@ -19,8 +19,8 @@ const Controls: FC<Props> = ({ store }: Props) => {
   const [maxVal, setMaxVal] = useState(maxDegree);
 
   useEffect(() => {
-    if (minDegree !== minVal) setMinVal(minDegree);
-    if (maxDegree !== maxVal) setMaxVal(maxDegree);
+    setMinVal(minDegree);
+    setMaxVal(maxDegree);
   }, [minDegree, maxDegree]);
 
   const [menuStatus, setMenuStatus] = useState<{ [key: number]: boolean }>({

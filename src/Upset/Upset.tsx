@@ -7,6 +7,7 @@ import UpsetProvenance from './Interfaces/UpsetProvenance';
 import { DatasetInfo } from './Interfaces/DatasetInfo';
 import { style } from 'typestyle';
 import Sidebar from './Components/SideBar/Sidebar';
+import MainUpsetView from './Components/Main/MainUpsetView';
 
 export type DatasetOption = {
   info: DatasetInfo;
@@ -34,7 +35,9 @@ const Upset: React.FC = () => {
           <div className={controlSideBar}>
             <Sidebar></Sidebar>
           </div>
-          <div className={upsetView}>Main</div>
+          <div className={upsetView}>
+            <MainUpsetView></MainUpsetView>
+          </div>
           <div className={elementView}>Details</div>
         </div>
       </ProvenanceContext.Provider>
@@ -64,7 +67,16 @@ const controlSideBar = style({
 });
 
 const upsetView = style({
-  gridArea: 'upset'
+  gridArea: 'upset',
+  padding: '1em',
+  overflow: 'auto',
+  display: 'grid',
+  gridTemplateRows: 'min-content 0.25em auto',
+  gridTemplateColumns: 'min-content auto',
+  gridTemplateAreas: `"sets header"
+  "padding padding"
+    "matrix rows"
+  `
 });
 
 const elementView = style({
