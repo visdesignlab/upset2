@@ -7,6 +7,7 @@ export default interface UpsetState {
   firstAggregation: AggregationOptions;
   secondAggregation: AggregationOptions;
   sortBy: SortingOptions;
+  sortBySetName: string;
   hideEmpty: boolean;
   minDegree: number;
   maxDegree: number;
@@ -17,6 +18,7 @@ export const defaultState: UpsetState = {
   firstAggregation: 'None',
   secondAggregation: 'None',
   sortBy: 'Cardinality',
+  sortBySetName: '',
   hideEmpty: true,
   minDegree: 0,
   maxDegree: 3

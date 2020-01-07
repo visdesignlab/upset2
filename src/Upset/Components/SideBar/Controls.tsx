@@ -11,7 +11,15 @@ interface Props {
 }
 
 const Controls: FC<Props> = ({ store }: Props) => {
-  const { firstAggregation, secondAggregation, sortBy, hideEmpty, minDegree, maxDegree } = store!;
+  const {
+    firstAggregation,
+    secondAggregation,
+    sortBy,
+    hideEmpty,
+    minDegree,
+    maxDegree,
+    sortBySetName
+  } = store!;
 
   const { actions } = useContext(ProvenanceContext);
 
@@ -91,7 +99,14 @@ const Controls: FC<Props> = ({ store }: Props) => {
               <Form.Field key={sort}>
                 <Radio
                   name="sortBy"
-                  label={sort}
+                  label={
+                    sort !== 'Set'
+                      ? sort
+                      : sortBySetName === ''
+                      ? `${sort}`
+                      : `${sort} (${sortBySetName})`
+                  }
+                  disabled={sort === 'Set'}
                   checked={sort === sortBy}
                   onChange={() => actions.setSortBy(sort)}
                 ></Radio>

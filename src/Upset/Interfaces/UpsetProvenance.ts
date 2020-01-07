@@ -13,6 +13,7 @@ export default interface UpsetProvenance {
     setFirstAggregation: (agg: AggregationOptions) => void;
     setSecondAggregation: (agg: AggregationOptions) => void;
     setSortBy: (sortBy: SortingOptions) => void;
+    setSortBySet: (set: string) => void;
     setHideEmpty: (hide: boolean) => void;
     setMinDegree: (degree: number) => void;
     setMaxDegree: (degree: number) => void;

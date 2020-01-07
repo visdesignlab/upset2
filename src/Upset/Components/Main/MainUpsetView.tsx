@@ -11,7 +11,7 @@ interface Props {
 }
 
 const MainUpsetView: FC<Props> = ({ store }: Props) => {
-  const { selectedDataset, hideEmpty, minDegree, maxDegree, sortBy } = store!;
+  const { selectedDataset, hideEmpty, minDegree, maxDegree, sortBy, sortBySetName } = store!;
   const [data, setData] = useState<Data>(null as any);
   const stringifiedData = JSON.stringify(data);
 
@@ -31,8 +31,15 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   }, [stringifiedData, selectedDataset]);
 
   const renderRows = useMemo(() => {
-    return getRenderRows(JSON.parse(stringifiedData), hideEmpty, minDegree, maxDegree, sortBy);
-  }, [stringifiedData, hideEmpty, maxDegree, minDegree, sortBy]);
+    return getRenderRows(
+      JSON.parse(stringifiedData),
+      hideEmpty,
+      minDegree,
+      maxDegree,
+      sortBy,
+      sortBySetName
+    );
+  }, [stringifiedData, hideEmpty, maxDegree, minDegree, sortBy, sortBySetName]);
 
   if (!data) return null;
 
@@ -48,6 +55,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   return (
     <>
       <SelectedSets
+        key={sortBySetName}
         totalWidth={totalMatrixWidth}
         totalHeight={headerHeight}
         usedSets={data.usedSets}
@@ -57,6 +65,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
         columnWidth={columnWidth}
         maxSetSize={Math.max(...data.sets.map(d => d.size))}
         angle={angle}
+        sortedSetName={sortBySetName}
       ></SelectedSets>
       <svg height={headerHeight} className={header}></svg>
       <Matrix

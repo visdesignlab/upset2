@@ -43,6 +43,13 @@ export function setupProvenance(): UpsetProvenance {
   provenance.addObserver(['sortBy'], (state?: UpsetState) => {
     if (state) {
       upsetStore.sortBy = state.sortBy;
+      upsetStore.sortBySetName = state.sortBySetName;
+    }
+  });
+
+  provenance.addObserver(['sortBySetName'], (state?: UpsetState) => {
+    if (state) {
+      upsetStore.sortBySetName = state.sortBySetName;
     }
   });
 
@@ -102,6 +109,7 @@ export function setupProvenance(): UpsetProvenance {
   const setSortBy = (sortBy: SortingOptions) => {
     provenance.applyAction(`Sort By: ${sortBy}`, (state: UpsetState) => {
       state.sortBy = sortBy;
+      state.sortBySetName = '';
       return state;
     });
   };
@@ -130,6 +138,14 @@ export function setupProvenance(): UpsetProvenance {
     });
   };
 
+  const setSortBySet = (set: string) => {
+    provenance.applyAction(`Sort by set: ${set}`, (state: UpsetState) => {
+      state.sortBy = 'Set';
+      state.sortBySetName = set;
+      return state;
+    });
+  };
+
   return {
     provenance,
     actions: {
@@ -141,7 +157,8 @@ export function setupProvenance(): UpsetProvenance {
       setSortBy,
       setHideEmpty,
       setMinDegree,
-      setMaxDegree
+      setMaxDegree,
+      setSortBySet
     }
   };
 }

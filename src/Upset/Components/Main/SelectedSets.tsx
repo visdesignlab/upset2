@@ -1,9 +1,10 @@
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { Sets } from '../../Interfaces/UpsetDatasStructure/Set';
 import { style } from 'typestyle';
 import { scaleLinear, selectAll } from 'd3';
+import { ProvenanceContext } from '../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -16,23 +17,27 @@ interface Props {
   columnWidth: number;
   maxSetSize: number;
   angle: number;
+  sortedSetName: string;
 }
 
 const SelectedSets: FC<Props> = ({
   className,
-  usedSets,
   store,
+  usedSets,
   totalWidth,
   totalHeight,
   headerBarHeight,
   headerLabelHeight,
   columnWidth,
   maxSetSize,
+  sortedSetName,
   angle
 }: Props) => {
   const heightScale = scaleLinear()
     .domain([0, maxSetSize])
     .range([0, headerBarHeight]);
+
+  const { actions } = useContext(ProvenanceContext);
 
   return (
     <svg width={totalWidth} height={totalHeight} className={className}>
@@ -84,7 +89,10 @@ const SelectedSets: FC<Props> = ({
               fill="#f0f0f0"
               height={headerLabelHeight}
               width={columnWidth}
-              className={set.id}
+              className={`${set.id} ${sortedSetName === set.elementName ? highlightSorted : ''}`}
+              onClick={() => {
+                actions.setSortBySet(set.elementName);
+              }}
             ></rect>
             <text
               transform={`translate(${0.95 * (headerLabelHeight + columnWidth / 2)}, ${0.95 *
@@ -105,4 +113,8 @@ export default inject('store')(observer(SelectedSets));
 
 const highlight = style({
   fill: '#fed9a6 !important'
+});
+
+const highlightSorted = style({
+  fill: '#d0d0d0 !important'
 });

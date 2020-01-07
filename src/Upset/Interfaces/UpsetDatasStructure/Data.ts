@@ -94,7 +94,8 @@ export function getRenderRows(
   hideEmpty: boolean,
   minDegree: number,
   maxDegree: number,
-  sortBy: SortingOptions
+  sortBy: SortingOptions,
+  sortBySetName: string
 ): RenderRows {
   if (!originalData) return [];
 
@@ -110,6 +111,13 @@ export function getRenderRows(
     data.sort((a, b) => b.size - a.size);
   } else if (sortBy === 'Degree') {
     data.sort((a, b) => a.noCombinedSets - b.noCombinedSets);
+  } else if (sortBy === 'Set') {
+    const usedSetsName = originalData.usedSets.map(d => d.elementName);
+    const idx = usedSetsName.findIndex(s => s === sortBySetName);
+
+    data.sort((a, b) => {
+      return b.combinedSets[idx] - a.combinedSets[idx];
+    });
   }
 
   let renderRows = data.map(renderRowMap);

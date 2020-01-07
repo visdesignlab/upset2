@@ -11,6 +11,7 @@ export class UpsetStore {
   @observable firstAggregation: AggregationOptions = defaultState.firstAggregation;
   @observable secondAggregation: AggregationOptions = defaultState.secondAggregation;
   @observable sortBy: SortingOptions = defaultState.sortBy;
+  @observable sortBySetName: string = defaultState.sortBySetName;
   @observable hideEmpty: boolean = defaultState.hideEmpty;
   @observable minDegree: number = defaultState.minDegree;
   @observable maxDegree: number = defaultState.maxDegree;
