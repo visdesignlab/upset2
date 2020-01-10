@@ -22,7 +22,6 @@ interface Props {
 
 const SelectedSets: FC<Props> = ({
   className,
-  store,
   usedSets,
   totalWidth,
   totalHeight,

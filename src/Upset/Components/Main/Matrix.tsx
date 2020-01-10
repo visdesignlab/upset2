@@ -6,8 +6,8 @@ import { Sets } from '../../Interfaces/UpsetDatasStructure/Set';
 import { selectAll } from 'd3';
 import { style } from 'typestyle';
 import { NodeGroup } from 'react-move';
-import { BaseSet } from '../../Interfaces/UpsetDatasStructure/BaseSet';
 import MatrixRow from './MatrixRow';
+import { BaseElement } from '../../Interfaces/UpsetDatasStructure/BaseElement';
 
 interface Props {
   store?: UpsetStore;
@@ -57,25 +57,27 @@ const Matrix: FC<Props> = ({
 
   return (
     <svg className={className} height={totalHeight} width={totalWidth}>
-      <g transform={`translate(${offset}, 0)`}>
+      <g>
         {/* Two for background column highlight */}
-        {usedSets.map((set, colIdx) => (
-          <rect
-            key={set.id}
-            className={set.id}
-            height={totalHeight}
-            width={matrixColWidth / usedSets.length}
-            x={(colIdx * matrixColWidth) / usedSets.length}
-            fill="none"
-            pointerEvents="all"
-            onMouseOver={() => {
-              selectAll(`.${set.id}`).classed(highlight, true);
-            }}
-            onMouseLeave={() => {
-              selectAll(`.${set.id}`).classed(highlight, false);
-            }}
-          ></rect>
-        ))}
+        <g transform={`translate(${offset}, 0)`}>
+          {usedSets.map((set, colIdx) => (
+            <rect
+              key={set.id}
+              className={set.id}
+              height={totalHeight}
+              width={matrixColWidth / usedSets.length}
+              x={(colIdx * matrixColWidth) / usedSets.length}
+              fill="none"
+              pointerEvents="all"
+              onMouseOver={() => {
+                selectAll(`.${set.id}`).classed(highlight, true);
+              }}
+              onMouseLeave={() => {
+                selectAll(`.${set.id}`).classed(highlight, false);
+              }}
+            ></rect>
+          ))}
+        </g>
         {/* This is for rows */}
         <NodeGroup
           keyAccessor={row => row.id}
@@ -90,14 +92,16 @@ const Matrix: FC<Props> = ({
               <g>
                 {rows.map(row => {
                   const { data, key, state } = row;
-                  const element = data.element as BaseSet;
+                  const element = data.element as BaseElement;
                   return (
                     <g key={key} transform={`translate(0, ${state.y})`}>
                       <MatrixRow
                         row_id={key}
                         rowHeight={rowHeight}
-                        rowWidth={matrixColWidth}
+                        rowWidth={matrixColWidth + offset}
                         element={element}
+                        elementType={element.type}
+                        offset={offset}
                       ></MatrixRow>
                     </g>
                   );

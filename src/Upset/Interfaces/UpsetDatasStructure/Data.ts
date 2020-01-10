@@ -1,13 +1,20 @@
 import { Sets, Set, createSet } from './Set';
 import { BaseSet } from './BaseSet';
 import { BaseElement } from './BaseElement';
-import { Subsets, createSubset } from './Subset';
+import { Subsets, createSubset, Subset } from './Subset';
 import { Attributes, Attribute } from './Attribute';
 import { DatasetInfo } from '../DatasetInfo';
 import { dsv, DSVParsedArray, DSVRowString } from 'd3';
 import { SortingOptions } from '../SortOptions';
+import { Group, createGroup, addSubsetToGroup, Groups } from './Group';
+import { AggregationOptions } from '../AggregationOptions';
+import { sortWithoutAggregation, sortOnlyFirstAggregation } from './SortingFunctions';
 
-export type Element = Set | BaseSet | BaseElement;
+export type Element = Set | BaseSet | BaseElement | Group;
+export type Elements = Element[];
+
+export type ElementType = 'Set' | 'BaseSet' | 'BaseElement' | 'Group';
+
 export type RenderRow = {
   id: string;
   element: Element;
@@ -89,14 +96,47 @@ function renderRowMap(element: Element) {
   };
 }
 
-export function getRenderRows(
-  originalData: Data,
-  hideEmpty: boolean,
-  minDegree: number,
-  maxDegree: number,
-  sortBy: SortingOptions,
-  sortBySetName: string
-): RenderRows {
+export function applyAggregation(
+  inputData: Elements,
+  firstAggregation: AggregationOptions,
+  secondAggregation: AggregationOptions
+): Elements {
+  if (inputData.length === 0) return inputData;
+  let data = [...inputData];
+
+  if (firstAggregation === 'None') return data;
+
+  switch (firstAggregation) {
+    case 'Degree':
+      let groups = data.reduce((groups: any, item) => {
+        let val = (item as Subset).noCombinedSets;
+        groups[val] = groups[val] || [];
+        groups[val].push(item);
+        return groups;
+      }, {});
+
+      const groupsArr: Groups = [];
+
+      for (let group in groups) {
+        let g = createGroup(`Group_Deg_${group}`, `Degree ${group}`, 1, firstAggregation);
+        let subsets = groups[group];
+        (subsets as Subsets).forEach(subset => {
+          g = addSubsetToGroup(g, subset);
+        });
+        groupsArr.push(g);
+      }
+      data = groupsArr;
+      break;
+    default:
+      break;
+  }
+
+  if (secondAggregation === 'None') return data;
+
+  return data;
+}
+
+export function applyHideEmpty(originalData: Data, hideEmpty: boolean) {
   if (!originalData) return [];
 
   let data = [...originalData.subsets];
@@ -104,20 +144,52 @@ export function getRenderRows(
   if (hideEmpty) {
     data = data.filter(s => s.size !== 0);
   }
+  return data;
+}
 
-  data = data.filter(d => d.noCombinedSets >= minDegree && d.noCombinedSets <= maxDegree);
+export function applyMinMaxDegree(data: Subsets, minDegree: number, maxDegree: number) {
+  return data.filter(d => d.noCombinedSets >= minDegree && d.noCombinedSets <= maxDegree);
+}
 
-  if (sortBy === 'Cardinality') {
-    data.sort((a, b) => b.size - a.size);
-  } else if (sortBy === 'Degree') {
-    data.sort((a, b) => a.noCombinedSets - b.noCombinedSets);
-  } else if (sortBy === 'Set') {
-    const usedSetsName = originalData.usedSets.map(d => d.elementName);
-    const idx = usedSetsName.findIndex(s => s === sortBySetName);
+export function applySort(
+  originalData: Data,
+  inputData: Elements,
+  sortBy: SortingOptions,
+  sortBySetName: string,
+  firstAggregation: AggregationOptions,
+  secondAggregation: AggregationOptions
+) {
+  let data = [...inputData];
 
-    data.sort((a, b) => {
-      return b.combinedSets[idx] - a.combinedSets[idx];
-    });
+  if (firstAggregation !== 'None') {
+    if (secondAggregation !== 'None') {
+    } else {
+      data = sortOnlyFirstAggregation(inputData as Groups, sortBy);
+    }
+  } else {
+    data = sortWithoutAggregation(data, sortBy, sortBySetName, originalData);
+  }
+
+  return data;
+}
+
+export function getRenderRows(
+  inputData: Elements,
+  firstAggregation: AggregationOptions,
+  secondAggregation: AggregationOptions
+): RenderRows {
+  let data: Elements = [];
+
+  if (firstAggregation !== 'None') {
+    if (secondAggregation !== 'None') {
+    } else {
+      (inputData as Groups).forEach(group => {
+        data.push(group);
+        data = [...data, ...group.subsets];
+      });
+    }
+  } else {
+    data = inputData;
   }
 
   let renderRows = data.map(renderRowMap);

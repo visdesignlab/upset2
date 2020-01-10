@@ -95,6 +95,9 @@ export function setupProvenance(): UpsetProvenance {
   const setFirstAggregation = (agg: AggregationOptions) => {
     provenance.applyAction(`Aggregate first by: ${agg}`, (state: UpsetState) => {
       state.firstAggregation = agg;
+      if (state.sortBy === 'Set') {
+        state.sortBy = 'Degree';
+      }
       return state;
     });
   };
@@ -141,6 +144,8 @@ export function setupProvenance(): UpsetProvenance {
   const setSortBySet = (set: string) => {
     provenance.applyAction(`Sort by set: ${set}`, (state: UpsetState) => {
       state.sortBy = 'Set';
+      state.firstAggregation = 'None';
+      state.secondAggregation = 'None';
       state.sortBySetName = set;
       return state;
     });

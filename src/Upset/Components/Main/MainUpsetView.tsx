@@ -2,16 +2,35 @@ import React, { FC, useState, useEffect, useMemo } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { style } from 'typestyle';
-import { Data, createData, getRenderRows } from '../../Interfaces/UpsetDatasStructure/Data';
+import {
+  Data,
+  createData,
+  getRenderRows,
+  applyHideEmpty,
+  applyMinMaxDegree,
+  applySort,
+  applyAggregation
+} from '../../Interfaces/UpsetDatasStructure/Data';
 import SelectedSets from './SelectedSets';
 import Matrix from './Matrix';
+import HeaderBar from './HeaderBar';
+import { BaseElement } from '../../Interfaces/UpsetDatasStructure/BaseElement';
 
 interface Props {
   store?: UpsetStore;
 }
 
 const MainUpsetView: FC<Props> = ({ store }: Props) => {
-  const { selectedDataset, hideEmpty, minDegree, maxDegree, sortBy, sortBySetName } = store!;
+  const {
+    selectedDataset,
+    hideEmpty,
+    minDegree,
+    maxDegree,
+    sortBy,
+    sortBySetName,
+    firstAggregation,
+    secondAggregation
+  } = store!;
   const [data, setData] = useState<Data>(null as any);
   const stringifiedData = JSON.stringify(data);
 
@@ -30,18 +49,53 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     }
   }, [stringifiedData, selectedDataset]);
 
-  const renderRows = useMemo(() => {
-    return getRenderRows(
+  const hideEmptyResults = useMemo(() => {
+    return applyHideEmpty(JSON.parse(stringifiedData), hideEmpty);
+  }, [stringifiedData, hideEmpty]);
+
+  const degreeResults = useMemo(() => {
+    return applyMinMaxDegree(hideEmptyResults, minDegree, maxDegree);
+  }, [hideEmptyResults, minDegree, maxDegree]);
+
+  const aggregationResults = useMemo(() => {
+    return applyAggregation(degreeResults, firstAggregation, secondAggregation);
+  }, [degreeResults, firstAggregation, secondAggregation]);
+
+  const sortResults = useMemo(() => {
+    return applySort(
       JSON.parse(stringifiedData),
-      hideEmpty,
-      minDegree,
-      maxDegree,
+      aggregationResults,
       sortBy,
-      sortBySetName
+      sortBySetName,
+      firstAggregation,
+      secondAggregation
     );
-  }, [stringifiedData, hideEmpty, maxDegree, minDegree, sortBy, sortBySetName]);
+  }, [
+    stringifiedData,
+    sortBy,
+    sortBySetName,
+    aggregationResults,
+    firstAggregation,
+    secondAggregation
+  ]);
+
+  const renderRows = useMemo(() => {
+    return getRenderRows(sortResults, firstAggregation, secondAggregation);
+  }, [sortResults, firstAggregation, secondAggregation]);
+
+  const [cardinalityDomainLimit, setCardinalityDomainLimit] = useState(-1);
 
   if (!data) return null;
+
+  if (cardinalityDomainLimit === -1) {
+    setCardinalityDomainLimit(
+      Math.max(...renderRows.map(d => d.element).map(d => (d as BaseElement).size))
+    );
+  }
+
+  function setNewCardinalityLimit(newLimit: number) {
+    setCardinalityDomainLimit(newLimit);
+  }
 
   const setSizeHeight = 75;
   const setLabelHeight = 100;
@@ -51,6 +105,9 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   const totalMatrixWidth = setLabelHeight + data.usedSets.length * columnWidth;
   const rowHeight = 20;
   const matrixHeight = renderRows.length * rowHeight;
+  const attributeWidth = 200;
+  const padding = 10;
+  const totalHeaderWidth = (attributeWidth + padding) * 2;
 
   return (
     <>
@@ -67,7 +124,16 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
         angle={angle}
         sortedSetName={sortBySetName}
       ></SelectedSets>
-      <svg height={headerHeight} className={header}></svg>
+      <HeaderBar
+        className={header}
+        width={totalHeaderWidth}
+        height={headerHeight}
+        padding={padding}
+        attributeWidth={attributeWidth}
+        maxSize={data.items.length}
+        localDomainLimit={cardinalityDomainLimit}
+        notifyCardinalityChange={setNewCardinalityLimit}
+      ></HeaderBar>
       <Matrix
         className={matrix}
         totalHeight={matrixHeight}
