@@ -8,7 +8,7 @@ interface Props {
   store?: UpsetStore;
 }
 
-const Sidebar: FC<Props> = ({}: Props) => {
+const Sidebar: FC<Props> = () => {
   return (
     <>
       <Controls></Controls>

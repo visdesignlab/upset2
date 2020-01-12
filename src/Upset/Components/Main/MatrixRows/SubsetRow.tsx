@@ -3,7 +3,7 @@ import { UpsetStore } from '../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { Subset } from '../../../Interfaces/UpsetDatasStructure/Subset';
 import { selectAll } from 'd3';
-import { style } from 'typestyle';
+import highlight from '../HighlightedStyle';
 
 interface Props {
   store?: UpsetStore;
@@ -83,7 +83,3 @@ const SubsetRow: FC<Props> = ({ id, height, width, element }: Props) => {
 };
 
 export default inject('store')(observer(SubsetRow));
-
-const highlight = style({
-  fill: '#fed9a6 !important'
-});

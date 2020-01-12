@@ -5,6 +5,7 @@ import { Sets } from '../../Interfaces/UpsetDatasStructure/Set';
 import { style } from 'typestyle';
 import { scaleLinear, selectAll } from 'd3';
 import { ProvenanceContext } from '../../Upset';
+import highlight from './HighlightedStyle';
 
 interface Props {
   store?: UpsetStore;
@@ -109,10 +110,6 @@ const SelectedSets: FC<Props> = ({
 };
 
 export default inject('store')(observer(SelectedSets));
-
-const highlight = style({
-  fill: '#fed9a6 !important'
-});
 
 const highlightSorted = style({
   fill: '#d0d0d0 !important'

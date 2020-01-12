@@ -1,31 +1,26 @@
-import React, { FC, useEffect, useState, useMemo } from 'react';
+import React, { FC, useEffect, useState, useMemo, useContext } from 'react';
 import { UpsetStore } from '../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { scaleLinear, select, axisTop, axisBottom, drag, event } from 'd3';
 import { style } from 'typestyle';
+import { CardinalityContext } from '../../../Upset';
 
 interface Props {
   store?: UpsetStore;
   height: number;
   width: number;
   globalDomainLimit: number;
-  localDomainLimit: number;
-  notifyCardinalityChange: (newCardinality: number) => void;
 }
 
-const CardinalityHeader: FC<Props> = ({
-  width,
-  height,
-  globalDomainLimit,
-  localDomainLimit,
-  notifyCardinalityChange
-}: Props) => {
+const CardinalityHeader: FC<Props> = ({ width, height, globalDomainLimit }: Props) => {
   const topScaleHeight = 30;
   const headerBarHeight = 30;
   const bottomScaleHeight = 30;
   const padding = 5;
   const totalHeight =
     topScaleHeight + padding + headerBarHeight + padding + bottomScaleHeight + padding;
+
+  const { notifyCardinalityChange, localCardinalityLimit } = useContext(CardinalityContext);
 
   function updateLocalDomainLimit(newLimit: number) {
     notifyCardinalityChange(newLimit);
@@ -58,11 +53,11 @@ const CardinalityHeader: FC<Props> = ({
 
   const bottomScale = useMemo(() => {
     const bottomScale = scaleLinear()
-      .domain([0, localDomainLimit])
+      .domain([0, localCardinalityLimit])
       .range([0, width])
       .nice();
     return bottomScale;
-  }, [width, localDomainLimit]);
+  }, [width, localCardinalityLimit]);
 
   useEffect(() => {
     const tickCount = 20;
@@ -106,14 +101,14 @@ const CardinalityHeader: FC<Props> = ({
         <rect
           className="top-scale-indicator-rect"
           height={topScaleHeight}
-          width={topScale(localDomainLimit)}
+          width={topScale(localCardinalityLimit)}
           fill="#ccc"
           opacity={0.4}
         ></rect>
         <g className="top-scale-top"></g>
         <g transform={`translate(0, ${topScaleHeight})`} className="top-scale-bottom"></g>
         <g
-          transform={`translate(${topScale(localDomainLimit)}, ${topScaleHeight / 2 -
+          transform={`translate(${topScale(localCardinalityLimit)}, ${topScaleHeight / 2 -
             Math.tan(45) * 5})`}
           className="rect-handle"
         >
@@ -150,7 +145,7 @@ const CardinalityHeader: FC<Props> = ({
         <g className={`${triangleBlock} ${isChanging ? '' : hide}`}>
           <path
             d={`M 0 0 H ${topScale(
-              localDomainLimit
+              localCardinalityLimit
             )} L ${width} ${headerBarHeight} h -${width} V 0`}
           ></path>
         </g>

@@ -11,8 +11,6 @@ interface Props {
   padding: number;
   attributeWidth: number;
   maxSize: number;
-  localDomainLimit: number;
-  notifyCardinalityChange: (newCardinality: number) => void;
 }
 
 const HeaderBar: FC<Props> = ({
@@ -21,9 +19,7 @@ const HeaderBar: FC<Props> = ({
   width,
   padding,
   attributeWidth,
-  maxSize,
-  localDomainLimit,
-  notifyCardinalityChange
+  maxSize
 }: Props) => {
   return (
     <svg className={className} width={width} height={height}>
@@ -32,8 +28,6 @@ const HeaderBar: FC<Props> = ({
           globalDomainLimit={maxSize}
           height={height}
           width={attributeWidth}
-          localDomainLimit={localDomainLimit}
-          notifyCardinalityChange={notifyCardinalityChange}
         ></CardinalityHeader>
       </g>
     </svg>

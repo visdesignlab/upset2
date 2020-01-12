@@ -1,5 +1,4 @@
 import { Elements, Data } from './Data';
-import { AggregationOptions } from '../AggregationOptions';
 import { SortingOptions } from '../SortOptions';
 import { Subset, Subsets } from './Subset';
 import { Sets } from './Set';

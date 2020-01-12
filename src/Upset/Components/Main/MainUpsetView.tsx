@@ -15,6 +15,8 @@ import SelectedSets from './SelectedSets';
 import Matrix from './Matrix';
 import HeaderBar from './HeaderBar';
 import { BaseElement } from '../../Interfaces/UpsetDatasStructure/BaseElement';
+import Body from './Body';
+import { CardinalityContext } from '../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -124,16 +126,6 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
         angle={angle}
         sortedSetName={sortBySetName}
       ></SelectedSets>
-      <HeaderBar
-        className={header}
-        width={totalHeaderWidth}
-        height={headerHeight}
-        padding={padding}
-        attributeWidth={attributeWidth}
-        maxSize={data.items.length}
-        localDomainLimit={cardinalityDomainLimit}
-        notifyCardinalityChange={setNewCardinalityLimit}
-      ></HeaderBar>
       <Matrix
         className={matrix}
         totalHeight={matrixHeight}
@@ -144,7 +136,30 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
         rowHeight={rowHeight}
         usedSets={data.usedSets}
       ></Matrix>
-      <svg className={rows}></svg>
+      <CardinalityContext.Provider
+        value={{
+          notifyCardinalityChange: setNewCardinalityLimit,
+          localCardinalityLimit: cardinalityDomainLimit
+        }}
+      >
+        <HeaderBar
+          className={header}
+          width={totalHeaderWidth}
+          height={headerHeight}
+          padding={padding}
+          attributeWidth={attributeWidth}
+          maxSize={data.items.length}
+        ></HeaderBar>
+        <Body
+          className={rows}
+          height={matrixHeight}
+          width={totalHeaderWidth}
+          padding={padding}
+          attributeWidth={attributeWidth}
+          renderRows={renderRows}
+          rowHeight={rowHeight}
+        ></Body>
+      </CardinalityContext.Provider>
     </>
   );
 };

@@ -1,13 +1,14 @@
 import React, { FC } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
-import { RenderRows, RenderRow } from '../../Interfaces/UpsetDatasStructure/Data';
+import { RenderRows } from '../../Interfaces/UpsetDatasStructure/Data';
 import { Sets } from '../../Interfaces/UpsetDatasStructure/Set';
 import { selectAll } from 'd3';
-import { style } from 'typestyle';
 import { NodeGroup } from 'react-move';
 import MatrixRow from './MatrixRow';
 import { BaseElement } from '../../Interfaces/UpsetDatasStructure/BaseElement';
+import { getRowTransitions } from './RowTransitions';
+import highlight from './HighlightedStyle';
 
 interface Props {
   store?: UpsetStore;
@@ -21,14 +22,6 @@ interface Props {
   rowHeight: number;
 }
 
-interface BaseAnimationProps {
-  y: number | number[];
-  opacity: number;
-  timing: { duration: number };
-}
-
-export type AnimationProps = Partial<BaseAnimationProps>;
-
 const Matrix: FC<Props> = ({
   className,
   totalWidth,
@@ -39,21 +32,7 @@ const Matrix: FC<Props> = ({
   rowHeight,
   usedSets
 }: Props) => {
-  const enter = (_: RenderRow, i: number): AnimationProps => {
-    return { y: i * rowHeight };
-  };
-
-  const start = (_: RenderRow, i: number): AnimationProps => {
-    return { y: i * rowHeight, opacity: 0 };
-  };
-
-  const update = (_: RenderRow, i: number): AnimationProps => {
-    return { y: [i * rowHeight], opacity: 1, timing: { duration: 250 } };
-  };
-
-  const leave = (_: RenderRow, i: number): AnimationProps => {
-    return { y: [-i * rowHeight], opacity: 0, timing: { duration: 250 } };
-  };
+  const { start, enter, leave, update } = getRowTransitions(rowHeight);
 
   return (
     <svg className={className} height={totalHeight} width={totalWidth}>
@@ -116,7 +95,3 @@ const Matrix: FC<Props> = ({
 };
 
 export default inject('store')(observer(Matrix));
-
-const highlight = style({
-  fill: '#fed9a6 !important'
-});

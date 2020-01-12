@@ -1,14 +1,7 @@
 {
   "compilerOptions": {
     "target": "es5",
-    "lib": [
-      "es2015",
-      "es2016",
-      "es2017",
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["es2015", "es2016", "es2017", "dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -24,14 +17,11 @@
     "declaration": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
+    "downlevelIteration": true,
     "declarationDir": "dist/types",
     "outDir": "dist/lib",
-    "typeRoots": [
-      "node_modules/@types"
-    ],
+    "typeRoots": ["node_modules/@types"],
     "isolatedModules": true
   },
-  "include": [
-    "src/Upset"
-  ]
+  "include": ["src/Upset"]
 }

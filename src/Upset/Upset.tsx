@@ -19,7 +19,13 @@ export type DatasetOption = {
 
 export type DatasetOptions = DatasetOption[];
 
+export type CardinalityContextType = {
+  notifyCardinalityChange: (limit: number) => void;
+  localCardinalityLimit: number;
+};
+
 export const ProvenanceContext = createContext<UpsetProvenance>({} as any);
+export const CardinalityContext = createContext<CardinalityContextType>(null as any);
 export const fileServer = 'https://us-central1-upset2-eaf80.cloudfunctions.net/api';
 
 const Upset: React.FC = () => {
