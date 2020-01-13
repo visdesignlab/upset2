@@ -11,7 +11,9 @@ export default interface UpsetProvenance {
     goBack: () => void;
     setDataset: (datasetInfo: DatasetInfo) => void;
     setFirstAggregation: (agg: AggregationOptions) => void;
+    setFirstOverlap: (overlap: number) => void;
     setSecondAggregation: (agg: AggregationOptions) => void;
+    setSecondOverlap: (overlap: number) => void;
     setSortBy: (sortBy: SortingOptions) => void;
     setSortBySet: (set: string) => void;
     setHideEmpty: (hide: boolean) => void;

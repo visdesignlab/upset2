@@ -34,9 +34,21 @@ export function setupProvenance(): UpsetProvenance {
     }
   });
 
+  provenance.addObserver(['firstOverlap'], (state?: UpsetState) => {
+    if (state) {
+      upsetStore.firstOverlap = state.firstOverlap;
+    }
+  });
+
   provenance.addObserver(['secondAggregation'], (state?: UpsetState) => {
     if (state) {
       upsetStore.secondAggregation = state.secondAggregation;
+    }
+  });
+
+  provenance.addObserver(['secondOverlap'], (state?: UpsetState) => {
+    if (state) {
+      upsetStore.secondOverlap = state.secondOverlap;
     }
   });
 
@@ -151,6 +163,20 @@ export function setupProvenance(): UpsetProvenance {
     });
   };
 
+  const setFirstOverlap = (overlap: number) => {
+    provenance.applyAction(`Set first overlap to: ${overlap}`, (state: UpsetState) => {
+      state.firstOverlap = overlap;
+      return state;
+    });
+  };
+
+  const setSecondOverlap = (overlap: number) => {
+    provenance.applyAction(`Set second overlap to: ${overlap}`, (state: UpsetState) => {
+      state.secondOverlap = overlap;
+      return state;
+    });
+  };
+
   return {
     provenance,
     actions: {
@@ -163,7 +189,9 @@ export function setupProvenance(): UpsetProvenance {
       setHideEmpty,
       setMinDegree,
       setMaxDegree,
-      setSortBySet
+      setSortBySet,
+      setFirstOverlap,
+      setSecondOverlap
     }
   };
 }

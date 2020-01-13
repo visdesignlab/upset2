@@ -18,18 +18,24 @@ const Controls: FC<Props> = ({ store }: Props) => {
     hideEmpty,
     minDegree,
     maxDegree,
-    sortBySetName
+    sortBySetName,
+    firstOverlap,
+    secondOverlap
   } = store!;
 
   const { actions } = useContext(ProvenanceContext);
 
   const [minVal, setMinVal] = useState(minDegree);
   const [maxVal, setMaxVal] = useState(maxDegree);
+  const [foverlap, setFoverlap] = useState(firstOverlap);
+  const [soverlap, setSoverlap] = useState(secondOverlap);
 
   useEffect(() => {
     setMinVal(minDegree);
     setMaxVal(maxDegree);
-  }, [minDegree, maxDegree]);
+    setFoverlap(firstOverlap);
+    setSoverlap(secondOverlap);
+  }, [minDegree, maxDegree, firstOverlap, secondOverlap]);
 
   const [menuStatus, setMenuStatus] = useState<{ [key: number]: boolean }>({
     0: true,
@@ -54,13 +60,29 @@ const Controls: FC<Props> = ({ store }: Props) => {
         <Accordion.Content active={menuStatus[0]} index={0}>
           <Form>
             {AggregationOptionsList.map(agg => (
-              <Form.Field key={agg}>
+              <Form.Field key={agg} inline>
                 <Radio
                   name="firstAggregation"
                   label={agg}
                   checked={agg === firstAggregation}
                   onChange={() => actions.setFirstAggregation(agg)}
                 ></Radio>
+                {agg === 'Overlaps' && (
+                  <Input
+                    type="text"
+                    pattern="[0-9]"
+                    labelPosition="left"
+                    value={foverlap}
+                    onChange={(event: any) => {
+                      const value = parseInt(event.target.value, 10);
+                      setFoverlap(value);
+                    }}
+                    onBlur={() => {
+                      actions.setFirstOverlap(foverlap);
+                    }}
+                    disabled={firstAggregation !== 'Overlaps'}
+                  ></Input>
+                )}
               </Form.Field>
             ))}
           </Form>
@@ -75,13 +97,29 @@ const Controls: FC<Props> = ({ store }: Props) => {
           <Accordion.Content active={menuStatus[1]} index={1}>
             <Form>
               {AggregationOptionsList.map(agg => (
-                <Form.Field key={agg}>
+                <Form.Field key={agg} inline>
                   <Radio
                     name="secondAggregation"
                     label={agg}
                     checked={agg === secondAggregation}
                     onChange={() => actions.setSecondAggregation(agg)}
                   ></Radio>
+                  {agg === 'Overlaps' && (
+                    <Input
+                      type="text"
+                      pattern="[0-9]"
+                      labelPosition="left"
+                      value={soverlap}
+                      onChange={(event: any) => {
+                        const value = parseInt(event.target.value, 10);
+                        setSoverlap(value);
+                      }}
+                      onBlur={() => {
+                        actions.setSecondOverlap(soverlap);
+                      }}
+                      disabled={secondAggregation !== 'Overlaps'}
+                    ></Input>
+                  )}
                 </Form.Field>
               ))}
             </Form>

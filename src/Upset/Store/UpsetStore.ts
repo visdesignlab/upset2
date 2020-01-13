@@ -13,6 +13,8 @@ export class UpsetStore {
   @observable sortBy: SortingOptions = defaultState.sortBy;
   @observable sortBySetName: string = defaultState.sortBySetName;
   @observable hideEmpty: boolean = defaultState.hideEmpty;
+  @observable firstOverlap: number = defaultState.firstOverlap;
+  @observable secondOverlap: number = defaultState.secondOverlap;
   @observable minDegree: number = defaultState.minDegree;
   @observable maxDegree: number = defaultState.maxDegree;
   @computed get selectedDataset() {

@@ -11,6 +11,7 @@ export function sortWithoutAggregation(
   originalData?: Data
 ) {
   let data = [...inputData];
+
   if (sortBy === 'Cardinality') {
     data = sortByCardinality(data);
   } else if (sortBy === 'Deviation') {
@@ -26,7 +27,6 @@ export function sortWithoutAggregation(
 
 export function sortOnlyFirstAggregation(inputData: Groups, sortBy: SortingOptions) {
   let data = [...inputData];
-
   data = sortWithoutAggregation(data, sortBy) as Groups;
   data.forEach(group => {
     group.subsets = sortWithoutAggregation(group.subsets, sortBy) as Subsets;

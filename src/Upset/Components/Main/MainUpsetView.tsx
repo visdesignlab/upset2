@@ -31,7 +31,9 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     sortBy,
     sortBySetName,
     firstAggregation,
-    secondAggregation
+    secondAggregation,
+    firstOverlap,
+    secondOverlap
   } = store!;
   const [data, setData] = useState<Data>(null as any);
   const stringifiedData = JSON.stringify(data);
@@ -60,8 +62,22 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   }, [hideEmptyResults, minDegree, maxDegree]);
 
   const aggregationResults = useMemo(() => {
-    return applyAggregation(degreeResults, firstAggregation, secondAggregation);
-  }, [degreeResults, firstAggregation, secondAggregation]);
+    return applyAggregation(
+      JSON.parse(stringifiedData),
+      degreeResults,
+      firstAggregation,
+      secondAggregation,
+      firstOverlap,
+      secondOverlap
+    );
+  }, [
+    stringifiedData,
+    degreeResults,
+    firstAggregation,
+    secondAggregation,
+    firstOverlap,
+    secondOverlap
+  ]);
 
   const sortResults = useMemo(() => {
     return applySort(

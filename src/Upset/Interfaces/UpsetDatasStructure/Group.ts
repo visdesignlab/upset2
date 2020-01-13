@@ -17,13 +17,15 @@ export interface Group extends BaseElement {
   level: number;
   nestedGroups: Groups;
   aggregatedBy: AggregationOptions;
+  setMembership?: number[];
 }
 
 export function createGroup(
   id: string,
   name: string,
   level: number,
-  aggregatedBy: AggregationOptions
+  aggregatedBy: AggregationOptions,
+  setMembership?: number[]
 ): Group {
   const base = createBaseElement(id, name);
   base.type = 'Group';
@@ -41,7 +43,8 @@ export function createGroup(
     hiddenSets: [],
     expectedProbability: 0,
     disproportionality: 0,
-    disproportionalitySum: 0
+    disproportionalitySum: 0,
+    setMembership
   };
 }
 

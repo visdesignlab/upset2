@@ -5,7 +5,9 @@ import { SortingOptions } from './SortOptions';
 export default interface UpsetState {
   dataset: DatasetInfo;
   firstAggregation: AggregationOptions;
+  firstOverlap: number;
   secondAggregation: AggregationOptions;
+  secondOverlap: number;
   sortBy: SortingOptions;
   sortBySetName: string;
   hideEmpty: boolean;
@@ -15,11 +17,13 @@ export default interface UpsetState {
 
 export const defaultState: UpsetState = {
   dataset: undefined as any,
-  firstAggregation: 'None',
+  firstAggregation: 'Overlaps',
   secondAggregation: 'None',
   sortBy: 'Cardinality',
   sortBySetName: '',
   hideEmpty: true,
   minDegree: 0,
-  maxDegree: 3
+  maxDegree: 3,
+  firstOverlap: 2,
+  secondOverlap: 2
 };

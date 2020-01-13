@@ -1,14 +1,15 @@
 import { Sets, Set, createSet } from './Set';
 import { BaseSet } from './BaseSet';
 import { BaseElement } from './BaseElement';
-import { Subsets, createSubset, Subset } from './Subset';
+import { Subsets, createSubset } from './Subset';
 import { Attributes, Attribute } from './Attribute';
 import { DatasetInfo } from '../DatasetInfo';
 import { dsv, DSVParsedArray, DSVRowString } from 'd3';
 import { SortingOptions } from '../SortOptions';
-import { Group, createGroup, addSubsetToGroup, Groups } from './Group';
+import { Group, Groups } from './Group';
 import { AggregationOptions } from '../AggregationOptions';
 import { sortWithoutAggregation, sortOnlyFirstAggregation } from './SortingFunctions';
+import { applyFirstAggregation, SetNameDictionary } from './AggregationFunctions';
 
 export type Element = Set | BaseSet | BaseElement | Group;
 export type Elements = Element[];
@@ -89,47 +90,26 @@ async function createData(info: DatasetInfo): Promise<Data> {
   };
 }
 
-function renderRowMap(element: Element) {
-  return {
-    id: element.id,
-    element
-  };
-}
-
 export function applyAggregation(
+  dataset: Data,
   inputData: Elements,
   firstAggregation: AggregationOptions,
-  secondAggregation: AggregationOptions
+  secondAggregation: AggregationOptions,
+  firstOverlap: number,
+  secondOverlap: number
 ): Elements {
   if (inputData.length === 0) return inputData;
   let data = [...inputData];
 
+  const setNameDictionary: SetNameDictionary = {};
+
+  dataset.usedSets.forEach((s, i) => {
+    setNameDictionary[i] = s.elementName;
+  });
+
   if (firstAggregation === 'None') return data;
 
-  switch (firstAggregation) {
-    case 'Degree':
-      let groups = data.reduce((groups: any, item) => {
-        let val = (item as Subset).noCombinedSets;
-        groups[val] = groups[val] || [];
-        groups[val].push(item);
-        return groups;
-      }, {});
-
-      const groupsArr: Groups = [];
-
-      for (let group in groups) {
-        let g = createGroup(`Group_Deg_${group}`, `Degree ${group}`, 1, firstAggregation);
-        let subsets = groups[group];
-        (subsets as Subsets).forEach(subset => {
-          g = addSubsetToGroup(g, subset);
-        });
-        groupsArr.push(g);
-      }
-      data = groupsArr;
-      break;
-    default:
-      break;
-  }
+  data = applyFirstAggregation(data, firstAggregation, setNameDictionary, firstOverlap);
 
   if (secondAggregation === 'None') return data;
 
@@ -178,22 +158,35 @@ export function getRenderRows(
   firstAggregation: AggregationOptions,
   secondAggregation: AggregationOptions
 ): RenderRows {
-  let data: Elements = [];
+  let data: RenderRows = [];
 
   if (firstAggregation !== 'None') {
     if (secondAggregation !== 'None') {
     } else {
       (inputData as Groups).forEach(group => {
-        data.push(group);
-        data = [...data, ...group.subsets];
+        data.push({ id: group.id, element: group });
+        data = [
+          ...data,
+          ...group.subsets.map(subset => ({
+            id: `${group.id}_${subset.id}`,
+            element: subset
+          }))
+        ];
       });
     }
   } else {
-    data = inputData;
+    data = inputData.map(renderRowMap);
   }
 
-  let renderRows = data.map(renderRowMap);
-  return renderRows;
+  // let renderRows = data.map(renderRowMap);
+  return data;
+}
+
+function renderRowMap(element: Element) {
+  return {
+    id: element.id,
+    element
+  };
 }
 
 function createSignature(usedSetIds: string[], listOfSets: string[]) {
