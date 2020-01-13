@@ -45,6 +45,7 @@ const Upset: React.FC = () => {
             <MainUpsetView></MainUpsetView>
           </div>
           <div className={elementView}>Details</div>
+          <div className={nothing}></div>
         </div>
       </ProvenanceContext.Provider>
     </Provider>
@@ -57,10 +58,16 @@ const layoutDiv = style({
   height: '100vh',
   width: '100vw',
   display: 'grid',
-  gridTemplateRows: 'min-content auto',
+  gridTemplateRows: 'min-content auto  1em',
   gridTemplateColumns: '2fr 7fr 2fr',
   gridTemplateAreas: `"nav nav nav"
-  "controls upset element"`
+  "controls upset element"
+"nothing nothing nothing"
+  `
+});
+
+const nothing = style({
+  gridArea: 'nothing'
 });
 
 const navBar = style({
