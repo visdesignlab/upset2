@@ -2,6 +2,7 @@ import { Elements } from './Data';
 import { AggregationOptions } from '../AggregationOptions';
 import { Subset, Subsets } from './Subset';
 import { Groups, createGroup, addSubsetToGroup } from './Group';
+import isSubsetMemberOfGroup from '../../Utils/BitwiseCompare';
 
 export type SetNameDictionary = { [key: number]: string };
 
@@ -9,13 +10,14 @@ export function applyFirstAggregation(
   inputData: Elements,
   aggregateBy: AggregationOptions,
   setNames: SetNameDictionary,
-  overlap: number
+  overlap: number,
+  masks: number[][]
 ): Elements {
   let data = [...inputData];
 
   switch (aggregateBy) {
     case 'Overlaps':
-      data = aggregateByOverlaps(data, overlap, setNames);
+      data = aggregateByOverlaps(data, overlap, setNames, masks);
       break;
     case 'Deviation':
       data = aggregateByDeviation(data);
@@ -36,35 +38,35 @@ export function applyFirstAggregation(
 function aggregateByOverlaps(
   inputData: Elements,
   overlap: number,
-  setNames: SetNameDictionary
+  setNames: SetNameDictionary,
+  masks: number[][]
 ): Elements {
   let data: Subsets = [...inputData] as any;
 
-  data = data.filter(d => d.noCombinedSets === overlap);
+  data = data.filter(d => d.noCombinedSets >= overlap);
 
-  let combinations = data.map(d => ({
-    name: d.elementName,
-    idx: d.combinedSets
-      .map((v, i) => [i, v === i])
-      .filter(v => v[1])
-      .map(v => v[0])
-  }));
+  const maskBits = masks.map(m => {
+    return {
+      name: m
+        .map((a, i) => [i, a])
+        .filter(a => a[1])
+        .map(a => a[0])
+        .map(a => setNames[a])
+        .join(' '),
+      bitmask: m
+    };
+  });
 
   let groups = data.reduce((groups: any, item) => {
     let idx = item.combinedSets;
-    let matches = combinations.filter(c => {
-      let match = true;
-      c.idx.forEach(i => {
-        if (idx[i as number] === 0) {
-          match = false;
-        }
-      });
-      return match;
-    });
 
-    matches.forEach(m => {
-      groups[m.name] = groups[m.name] || [];
-      groups[m.name].push(item);
+    const matchedGroups = maskBits.filter(mb => isSubsetMemberOfGroup(idx, mb.bitmask));
+
+    matchedGroups.forEach(mg => {
+      const { name } = mg;
+
+      groups[name] = groups[name] || [];
+      groups[name].push(item);
     });
 
     return groups;
@@ -129,6 +131,8 @@ function aggregateByDeviation(inputData: Elements): Elements {
 function aggregateBySets(inputData: Elements, setNames: SetNameDictionary): Elements {
   let data: Subsets = [...inputData] as any;
 
+  const NOSET = 'No Set';
+
   let groups = data.reduce((groups: any, item) => {
     let val = item.combinedSets;
     let vals: number[] = [];
@@ -139,10 +143,15 @@ function aggregateBySets(inputData: Elements, setNames: SetNameDictionary): Elem
       }
     });
 
-    vals.forEach(val => {
-      groups[setNames[val]] = groups[setNames[val]] || [];
-      groups[setNames[val]].push(item);
-    });
+    if (vals.length !== 0) {
+      vals.forEach(val => {
+        groups[setNames[val]] = groups[setNames[val]] || [];
+        groups[setNames[val]].push(item);
+      });
+    } else {
+      groups[NOSET] = groups[NOSET] || [];
+      groups[NOSET].push(item);
+    }
 
     return groups;
   }, {});

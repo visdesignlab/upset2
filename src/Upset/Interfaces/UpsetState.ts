@@ -17,7 +17,7 @@ export default interface UpsetState {
 
 export const defaultState: UpsetState = {
   dataset: undefined as any,
-  firstAggregation: 'Overlaps',
+  firstAggregation: 'Sets',
   secondAggregation: 'None',
   sortBy: 'Cardinality',
   sortBySetName: '',

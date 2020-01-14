@@ -109,7 +109,13 @@ export function applyAggregation(
 
   if (firstAggregation === 'None') return data;
 
-  data = applyFirstAggregation(data, firstAggregation, setNameDictionary, firstOverlap);
+  data = applyFirstAggregation(
+    data,
+    firstAggregation,
+    setNameDictionary,
+    firstOverlap,
+    dataset.subsets.filter(d => d.noCombinedSets === firstOverlap).map(d => d.combinedSets)
+  );
 
   if (secondAggregation === 'None') return data;
 

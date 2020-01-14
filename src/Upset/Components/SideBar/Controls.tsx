@@ -74,7 +74,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
                     labelPosition="left"
                     value={foverlap}
                     onChange={(event: any) => {
-                      const value = parseInt(event.target.value, 10);
+                      const value = parseInt(event.target.value, 10) || 0;
                       setFoverlap(value);
                     }}
                     onBlur={() => {
@@ -111,7 +111,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
                       labelPosition="left"
                       value={soverlap}
                       onChange={(event: any) => {
-                        const value = parseInt(event.target.value, 10);
+                        const value = parseInt(event.target.value, 10) || 0;
                         setSoverlap(value);
                       }}
                       onBlur={() => {
@@ -179,7 +179,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
                 fluid
                 value={minVal}
                 onChange={(event: any) => {
-                  const value = parseInt(event.target.value, 10);
+                  const value = parseInt(event.target.value, 10) || 0;
                   setMinVal(value);
                 }}
                 onBlur={() => {
@@ -198,7 +198,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
                 fluid
                 value={maxVal}
                 onChange={(event: any) => {
-                  const value = parseInt(event.target.value, 10);
+                  const value = parseInt(event.target.value, 10) || 0;
                   setMaxVal(value);
                 }}
                 onBlur={() => {

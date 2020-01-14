@@ -30,7 +30,13 @@ const MatrixRow: FC<Props> = ({
     case 'Group':
       const group: Group = element as any;
       renderedRow = (
-        <GroupRow id={row_id} height={rowHeight} width={rowWidth} element={group}></GroupRow>
+        <GroupRow
+          id={row_id}
+          height={rowHeight}
+          width={rowWidth}
+          element={group}
+          offset={offset}
+        ></GroupRow>
       );
       break;
     case 'Subset':

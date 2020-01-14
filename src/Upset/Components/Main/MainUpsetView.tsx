@@ -14,7 +14,6 @@ import {
 import SelectedSets from './SelectedSets';
 import Matrix from './Matrix';
 import HeaderBar from './HeaderBar';
-import { BaseElement } from '../../Interfaces/UpsetDatasStructure/BaseElement';
 import Body from './Body';
 import { CardinalityContext } from '../../Upset';
 
@@ -103,13 +102,18 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   const [cardinalityDomainLimit, setCardinalityDomainLimit] = useState(-1);
 
-  if (!data) return null;
+  const sizes = renderRows.map(r => r.element.size);
 
-  if (cardinalityDomainLimit === -1) {
-    setCardinalityDomainLimit(
-      Math.max(...renderRows.map(d => d.element).map(d => (d as BaseElement).size))
-    );
-  }
+  useEffect(() => {
+    const maxSize = sizes.length > 0 ? Math.max(...sizes) : 0;
+    if (cardinalityDomainLimit === -1) {
+      setCardinalityDomainLimit(Math.max(maxSize));
+    } else if (maxSize !== cardinalityDomainLimit) {
+      setCardinalityDomainLimit(maxSize);
+    }
+  }, [sizes, cardinalityDomainLimit]);
+
+  if (!data) return null;
 
   function setNewCardinalityLimit(newLimit: number) {
     setCardinalityDomainLimit(newLimit);
