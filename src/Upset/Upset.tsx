@@ -4,10 +4,11 @@ import { setupProvenance } from './Provenance/Setup';
 import { Provider } from 'mobx-react';
 import { upsetStore } from './Store/UpsetStore';
 import UpsetProvenance from './Interfaces/UpsetProvenance';
-import { DatasetInfo } from './Interfaces/DatasetInfo';
+import { DatasetInfo, SetInfo } from './Interfaces/DatasetInfo';
 import { style } from 'typestyle';
 import Sidebar from './Components/SideBar/Sidebar';
 import MainUpsetView from './Components/Main/MainUpsetView';
+import { SizeContextShape, getSizeContextValue } from './Interfaces/SizeContext';
 
 export type DatasetOption = {
   info: DatasetInfo;
@@ -24,31 +25,44 @@ export type CardinalityContextType = {
   localCardinalityLimit: number;
 };
 
+export function getSetCount(sets: SetInfo[]) {
+  let setCount = 0;
+
+  sets.forEach(set => {
+    setCount += set.end - set.start + 1;
+  });
+
+  return setCount;
+}
+
 export const ProvenanceContext = createContext<UpsetProvenance>({} as any);
 export const CardinalityContext = createContext<CardinalityContextType>(null as any);
+export const SizeContext = createContext<SizeContextShape>(getSizeContextValue(0, 0, 0));
 export const fileServer = 'https://us-central1-upset2-eaf80.cloudfunctions.net/api';
 
 const Upset: React.FC = () => {
   const { provenance, actions } = setupProvenance();
 
   return (
-    <Provider store={upsetStore}>
-      <ProvenanceContext.Provider value={{ provenance, actions }}>
-        <div className={layoutDiv}>
-          <div className={navBar}>
-            <Navbar></Navbar>
+    <div>
+      <Provider store={upsetStore}>
+        <ProvenanceContext.Provider value={{ provenance, actions }}>
+          <div className={layoutDiv}>
+            <div className={navBar}>
+              <Navbar></Navbar>
+            </div>
+            <div className={controlSideBar}>
+              <Sidebar></Sidebar>
+            </div>
+            <div className={upsetView}>
+              <MainUpsetView></MainUpsetView>
+            </div>
+            <div className={elementView}>Details</div>
+            <div className={nothing}></div>
           </div>
-          <div className={controlSideBar}>
-            <Sidebar></Sidebar>
-          </div>
-          <div className={upsetView}>
-            <MainUpsetView></MainUpsetView>
-          </div>
-          <div className={elementView}>Details</div>
-          <div className={nothing}></div>
-        </div>
-      </ProvenanceContext.Provider>
-    </Provider>
+        </ProvenanceContext.Provider>
+      </Provider>
+    </div>
   );
 };
 

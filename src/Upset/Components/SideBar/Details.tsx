@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { Card, Header } from 'semantic-ui-react';
+import { getSetCount } from '../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -29,7 +30,7 @@ const Details: FC<Props> = ({ store }: Props) => {
         </Card.Content>
       )}
       <Card.Content extra>
-        <div># Sets: {sets.length}</div>
+        <div># Sets: {getSetCount(sets)}</div>
         <div># Attributes: {meta.filter(m => m.type !== 'id').length}</div>
       </Card.Content>
     </Card>

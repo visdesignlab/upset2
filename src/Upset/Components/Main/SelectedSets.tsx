@@ -4,35 +4,28 @@ import { inject, observer } from 'mobx-react';
 import { Sets } from '../../Interfaces/UpsetDatasStructure/Set';
 import { style } from 'typestyle';
 import { scaleLinear, selectAll } from 'd3';
-import { ProvenanceContext } from '../../Upset';
+import { ProvenanceContext, SizeContext } from '../../Upset';
 import highlight from './HighlightedStyle';
 
 interface Props {
   store?: UpsetStore;
   className: string;
   usedSets: Sets;
-  totalHeight: number;
-  totalWidth: number;
-  headerBarHeight: number;
-  headerLabelHeight: number;
-  columnWidth: number;
   maxSetSize: number;
-  angle: number;
   sortedSetName: string;
 }
 
-const SelectedSets: FC<Props> = ({
-  className,
-  usedSets,
-  totalWidth,
-  totalHeight,
-  headerBarHeight,
-  headerLabelHeight,
-  columnWidth,
-  maxSetSize,
-  sortedSetName,
-  angle
-}: Props) => {
+const SelectedSets: FC<Props> = ({ className, usedSets, maxSetSize, sortedSetName }: Props) => {
+  const {
+    usedSetsHeader: {
+      setSizeBarHeight: headerBarHeight,
+      totalHeaderHeight: totalHeight,
+      setLabelsHeight: headerLabelHeight,
+      setLabelAngleDegrees: angle
+    },
+    matrix: { totalMatrixWidth: totalWidth, columnWidth }
+  } = useContext(SizeContext);
+
   const heightScale = scaleLinear()
     .domain([0, maxSetSize])
     .range([0, headerBarHeight]);

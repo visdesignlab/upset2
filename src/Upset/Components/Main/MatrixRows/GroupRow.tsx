@@ -26,42 +26,39 @@ const GroupRow: FC<Props> = ({ id, height, width, element, offset }: Props) => {
   const aggregationlevel = element.level;
 
   if (showMembership) {
-    const aggregationType = element.aggregatedBy;
     if (aggregationlevel === 1) {
       const { setMembership = [] } = element;
       const isEmptySet = !setMembership.includes(1);
-      if (setMembership.length) {
-        membership = setMembership.map((mem, idx) => {
-          return (
-            <g
-              key={idx}
-              onMouseOver={() => {
-                selectAll(`.S_${idx}`).classed(highlight, true);
-                setMembership.forEach((mem, i) => {
-                  if (mem === 1) selectAll(`.S_${i}`).classed(highlight, true);
-                });
-              }}
-              onMouseLeave={() => {
-                selectAll(`.S_${idx}`).classed(highlight, false);
-                setMembership.forEach((_, i) => selectAll(`.S_${i}`).classed(highlight, false));
-              }}
-            >
-              <g transform={`translate(${idx * 20 + 10}, 10)`}>
-                {mem ? (
-                  <circle r="8" fill="#636363"></circle>
-                ) : isEmptySet ? (
-                  <circle r="8" fill="#F0F0F0" stroke="black"></circle>
-                ) : (
-                  <>
-                    <circle r="8" fill="#F0F0F0"></circle>
-                    <circle r="3" fill="#636363"></circle>
-                  </>
-                )}
-              </g>
+      membership = setMembership.map((mem, idx) => {
+        return (
+          <g
+            key={idx}
+            onMouseOver={() => {
+              selectAll(`.S_${idx}`).classed(highlight, true);
+              setMembership.forEach((mem, i) => {
+                if (mem === 1) selectAll(`.S_${i}`).classed(highlight, true);
+              });
+            }}
+            onMouseLeave={() => {
+              selectAll(`.S_${idx}`).classed(highlight, false);
+              setMembership.forEach((_, i) => selectAll(`.S_${i}`).classed(highlight, false));
+            }}
+          >
+            <g transform={`translate(${idx * 20 + 10}, 10)`}>
+              {mem ? (
+                <circle r="8" fill="#636363"></circle>
+              ) : isEmptySet ? (
+                <circle r="8" fill="#F0F0F0" stroke="black"></circle>
+              ) : (
+                <>
+                  <circle r="8" fill="#F0F0F0"></circle>
+                  <circle r="3" fill="#636363"></circle>
+                </>
+              )}
             </g>
-          );
-        });
-      }
+          </g>
+        );
+      });
     } else if (aggregationlevel === 2) {
     }
   }

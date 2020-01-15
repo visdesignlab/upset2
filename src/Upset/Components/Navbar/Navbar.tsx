@@ -1,6 +1,6 @@
 import React, { FC, useContext, useState, useEffect } from 'react';
 import { Menu, Header, Button, Dropdown, Label } from 'semantic-ui-react';
-import { ProvenanceContext, DatasetOptions, fileServer } from '../../Upset';
+import { ProvenanceContext, DatasetOptions, fileServer, getSetCount } from '../../Upset';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import axios from 'axios';
@@ -22,7 +22,7 @@ const Navbar: FC<Props> = ({ store }: Props) => {
         const ds: DatasetOptions = datasets.map((d: DatasetInfo) => ({
           info: d,
           key: d.file,
-          text: `${d.name} (${d.sets.length} Ssets & ${
+          text: `${d.name} (${getSetCount(d.sets)} Ssets & ${
             d.meta.filter(m => m.type !== 'id').length
           } Attributes)`,
           value: d.file
@@ -71,6 +71,12 @@ const Navbar: FC<Props> = ({ store }: Props) => {
             selection
             value={selectedDatasetValue}
             options={datasets}
+            onChange={(_, data) => {
+              const selectedDataset = datasets.find(d => d.value === data.value);
+              if (selectedDataset) {
+                actions.setDataset(selectedDataset.info);
+              }
+            }}
           ></Dropdown>
         </Menu.Item>
         <Menu.Item>

@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React, { FC, useContext } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { RenderRows } from '../../Interfaces/UpsetDatasStructure/Data';
@@ -9,29 +9,24 @@ import MatrixRow from './MatrixRow';
 import { BaseElement } from '../../Interfaces/UpsetDatasStructure/BaseElement';
 import { getRowTransitions } from './RowTransitions';
 import highlight from './HighlightedStyle';
+import { SizeContext } from '../../Upset';
 
 interface Props {
   store?: UpsetStore;
   className: string;
-  totalWidth: number;
-  totalHeight: number;
-  offset: number;
-  matrixColWidth: number;
   usedSets: Sets;
   renderRows: RenderRows;
-  rowHeight: number;
 }
 
-const Matrix: FC<Props> = ({
-  className,
-  totalWidth,
-  totalHeight,
-  offset,
-  matrixColWidth,
-  renderRows,
-  rowHeight,
-  usedSets
-}: Props) => {
+const Matrix: FC<Props> = ({ className, renderRows, usedSets }: Props) => {
+  const {
+    matrixHeight: totalHeight,
+    rowHeight,
+    matrix: { totalMatrixWidth: totalWidth },
+    usedSetsHeader: { setLabelsHeight, setLabelsHeight: offset }
+  } = useContext(SizeContext);
+  const matrixColWidth = totalWidth - setLabelsHeight;
+
   const { start, enter, leave, update } = getRowTransitions(rowHeight);
 
   return (

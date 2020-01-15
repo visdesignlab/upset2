@@ -1,11 +1,13 @@
 import React, { FC } from 'react';
-import { UpsetStore } from '../../../Store/UpsetStore';
+import { UpsetStore } from '../../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
-import { BaseElement } from '../../../Interfaces/UpsetDatasStructure/BaseElement';
-import RowType from '../../../Interfaces/UpsetDatasStructure/RowType';
+import { BaseElement } from '../../../../Interfaces/UpsetDatasStructure/BaseElement';
+import RowType from '../../../../Interfaces/UpsetDatasStructure/RowType';
 import { selectAll, ScaleLinear } from 'd3';
 import { style } from 'typestyle';
-import highlight from '../HighlightedStyle';
+import highlight from '../../HighlightedStyle';
+import { Subset } from '../../../../Interfaces/UpsetDatasStructure/Subset';
+import { Group } from '../../../../Interfaces/UpsetDatasStructure/Group';
 
 interface Props {
   store?: UpsetStore;
@@ -38,6 +40,12 @@ const CardinalityRow: FC<Props> = ({
   let backgroundBars = [<></>];
 
   const colors = ['#bdbdbd', '#888888', '#252525'];
+  const { disproportionality, size } = element as Subset | Group;
+
+  const sign = disproportionality / Math.abs(disproportionality);
+  const adjustedSize = size + sign * size * disproportionality;
+  const adjustedWidth = scale(adjustedSize);
+  const adjustedRemainder = adjustedWidth % width;
 
   if (requiredBars > 3) {
     backgroundBars = [...new Array(3).keys()].map(key => {
@@ -80,13 +88,15 @@ const CardinalityRow: FC<Props> = ({
       const col = colors[key];
       if (key + 1 === requiredBars) {
         return (
-          <rect
-            key={key}
-            transform={`translate(0, ${(height - barHeight) / 2})`}
-            fill={col}
-            width={remainderLength}
-            height={barHeight}
-          ></rect>
+          <g key={key}>
+            <rect
+              transform={`translate(0, ${(height - barHeight) / 2})`}
+              fill={col}
+              width={remainderLength}
+              height={barHeight}
+            ></rect>
+            <circle cx={adjustedRemainder} r={2} cy={height / 2}></circle>
+          </g>
         );
       }
       const newHeight = barHeight;

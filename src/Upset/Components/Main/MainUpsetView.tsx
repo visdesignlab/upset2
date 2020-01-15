@@ -15,7 +15,8 @@ import SelectedSets from './SelectedSets';
 import Matrix from './Matrix';
 import HeaderBar from './HeaderBar';
 import Body from './Body';
-import { CardinalityContext } from '../../Upset';
+import { CardinalityContext, SizeContext } from '../../Upset';
+import { getSizeContextValue } from '../../Interfaces/SizeContext';
 
 interface Props {
   store?: UpsetStore;
@@ -35,6 +36,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     secondOverlap
   } = store!;
   const [data, setData] = useState<Data>(null as any);
+
   const stringifiedData = JSON.stringify(data);
 
   useEffect(() => {
@@ -102,85 +104,40 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   const [cardinalityDomainLimit, setCardinalityDomainLimit] = useState(-1);
 
+  if (!data) return null;
+
   const sizes = renderRows.map(r => r.element.size);
 
-  useEffect(() => {
-    const maxSize = sizes.length > 0 ? Math.max(...sizes) : 0;
-    if (cardinalityDomainLimit === -1) {
-      setCardinalityDomainLimit(Math.max(maxSize));
-    } else if (maxSize !== cardinalityDomainLimit) {
-      setCardinalityDomainLimit(maxSize);
-    }
-  }, [sizes, cardinalityDomainLimit]);
+  const maxSize = sizes.length > 0 ? Math.max(...sizes) : 0;
 
-  if (!data) return null;
+  if (cardinalityDomainLimit === -1 || cardinalityDomainLimit >= data.items.length) {
+    setCardinalityDomainLimit(Math.max(maxSize));
+  }
 
   function setNewCardinalityLimit(newLimit: number) {
     setCardinalityDomainLimit(newLimit);
   }
 
-  const setSizeHeight = 75;
-  const setLabelHeight = 100;
-  const headerHeight = setSizeHeight + setLabelHeight;
-  const angle = 45;
-  const columnWidth = 20;
-  const totalMatrixWidth = setLabelHeight + data.usedSets.length * columnWidth;
-  const rowHeight = 20;
-  const matrixHeight = renderRows.length * rowHeight;
-  const attributeWidth = 200;
-  const padding = 10;
-  const totalHeaderWidth = (attributeWidth + padding) * 2;
-
   return (
-    <>
+    <SizeContext.Provider value={getSizeContextValue(data.usedSets.length, renderRows.length, 3)}>
       <SelectedSets
         key={sortBySetName}
-        totalWidth={totalMatrixWidth}
-        totalHeight={headerHeight}
         usedSets={data.usedSets}
         className={sets}
-        headerBarHeight={setSizeHeight}
-        headerLabelHeight={setLabelHeight}
-        columnWidth={columnWidth}
         maxSetSize={Math.max(...data.sets.map(d => d.size))}
-        angle={angle}
         sortedSetName={sortBySetName}
       ></SelectedSets>
-      <Matrix
-        className={matrix}
-        totalHeight={matrixHeight}
-        totalWidth={totalMatrixWidth}
-        offset={setLabelHeight}
-        matrixColWidth={totalMatrixWidth - setLabelHeight}
-        renderRows={renderRows}
-        rowHeight={rowHeight}
-        usedSets={data.usedSets}
-      ></Matrix>
+      <Matrix className={matrix} renderRows={renderRows} usedSets={data.usedSets}></Matrix>
       <CardinalityContext.Provider
         value={{
           notifyCardinalityChange: setNewCardinalityLimit,
           localCardinalityLimit: cardinalityDomainLimit
         }}
       >
-        <HeaderBar
-          className={header}
-          width={totalHeaderWidth}
-          height={headerHeight}
-          padding={padding}
-          attributeWidth={attributeWidth}
-          maxSize={data.items.length}
-        ></HeaderBar>
-        <Body
-          className={rows}
-          height={matrixHeight}
-          width={totalHeaderWidth}
-          padding={padding}
-          attributeWidth={attributeWidth}
-          renderRows={renderRows}
-          rowHeight={rowHeight}
-        ></Body>
+        <HeaderBar className={header} maxSize={data.items.length}></HeaderBar>
+        <Body className={rows} renderRows={renderRows} maxSize={data.items.length}></Body>
       </CardinalityContext.Provider>
-    </>
+    </SizeContext.Provider>
   );
 };
 
