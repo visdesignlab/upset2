@@ -111,6 +111,7 @@ const SelectedSets: FC<Props> = ({
               onMouseLeave={() => {
                 selectAll(`.${set.id}`).classed(highlight, false);
               }}
+              cursor="s-resize"
             >
               <rect
                 transform={`skewX(${angle})`}
@@ -134,7 +135,6 @@ const SelectedSets: FC<Props> = ({
           ))}
         </g>
       </svg>
-
       <div key={unusedSets.length} className={addSetsDiv(columnWidth * (usedSets.length * 1.1))}>
         <Dropdown
           text="Add set"

@@ -1,15 +1,16 @@
 import React, { FC } from 'react';
 import { UpsetStore } from '../../../../Store/UpsetStore';
+import { inject, observer } from 'mobx-react';
 import { BaseElement } from '../../../../Interfaces/UpsetDatasStructure/BaseElement';
 import RowType from '../../../../Interfaces/UpsetDatasStructure/RowType';
 import { ScaleLinear, selectAll } from 'd3';
-import { inject, observer } from 'mobx-react';
-import highlight from '../../HighlightedStyle';
 import { Subset } from '../../../../Interfaces/UpsetDatasStructure/Subset';
 import { Group } from '../../../../Interfaces/UpsetDatasStructure/Group';
 import groupRow from '../../GroupStyle';
+import highlight from '../../HighlightedStyle';
+import translate from '../../../ComponentUtils/Translate';
 
-interface Props {
+interface DeviationRowProps {
   store?: UpsetStore;
   id: number;
   element: BaseElement;
@@ -20,23 +21,22 @@ interface Props {
   scale: ScaleLinear<number, number>;
 }
 
-const SurpriseCardinalityRow: FC<Props> = ({
+const DeviationRow: FC<DeviationRowProps> = ({
   id,
   element,
   elementType,
-  height,
   width,
+  height,
   padding,
   scale
-}: Props) => {
-  const { size, disproportionality } = element as Subset | Group;
-  const sign = disproportionality / Math.abs(disproportionality);
-  const adjustedSize = size + sign * size * disproportionality;
-  const fill = disproportionality > 0 ? 'blue' : 'red';
+}: DeviationRowProps) => {
+  const { disproportionality } = element as Subset | Group;
+  const sign = Math.sign(disproportionality);
 
-  if (scale(adjustedSize) < 0) {
-    console.log(size, adjustedSize, disproportionality);
-  }
+  const fill = sign < 0 ? '#f46d43' : '#74add1';
+
+  const barHeight = height * 0.8;
+  const barWidth = scale(Math.abs(disproportionality));
 
   return (
     <g>
@@ -52,17 +52,19 @@ const SurpriseCardinalityRow: FC<Props> = ({
         onMouseLeave={() => {
           selectAll(`.R_${id}`).classed(highlight, false);
         }}
-      />
-      <g transform={`translate(${padding}, 0)`}>
-        <g transform={`translate(${scale(size)}, ${height / 2})`}>
-          <line stroke={fill} y1={0} y2={10}></line>
-        </g>
-        <g transform={`translate(${scale(adjustedSize)}, ${height / 2})`}>
-          <line stroke={fill} y1={0} y2={10}></line>
+      ></rect>
+      <g transform={translate(padding, (height - barHeight) / 2)}>
+        <g transform={translate(width / 2, 0)}>
+          <rect
+            x={sign < 0 ? -1 * barWidth : 0}
+            fill={fill}
+            width={barWidth}
+            height={barHeight}
+          ></rect>
         </g>
       </g>
     </g>
   );
 };
 
-export default inject('store')(observer(SurpriseCardinalityRow));
+export default inject('store')(observer(DeviationRow));

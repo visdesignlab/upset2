@@ -36,7 +36,7 @@ export function getSizeContextValue(
   const rowHeight = 20;
   const matrixHeight = rowCount * rowHeight;
   const attributeWidth = 200;
-  const attributePadding = 10;
+  const attributePadding = 30;
   const totalHeaderWidth = (attributeWidth + attributePadding) * attributeCount;
 
   return {

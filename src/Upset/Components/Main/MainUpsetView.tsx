@@ -20,6 +20,8 @@ import { CardinalityContext, SizeContext, ProvenanceContext } from '../../Upset'
 import { getSizeContextValue } from '../../Interfaces/SizeContext';
 import { DatasetInfo } from '../../Interfaces/DatasetInfo';
 import { Dimmer, Loader } from 'semantic-ui-react';
+import { Subset } from '../../Interfaces/UpsetDatasStructure/Subset';
+import { Group } from '../../Interfaces/UpsetDatasStructure/Group';
 
 interface Props {
   store?: UpsetStore;
@@ -128,6 +130,15 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   const [cardinalityDomainLimit, setCardinalityDomainLimit] = useState(-1);
 
+  const deviationLimit = useMemo(() => {
+    const deviations = renderRows
+      .map(r => r.element as any)
+      .map((r: Subset | Group) => Math.abs(r.disproportionality) * 100);
+    const deviationLimit = Math.max(...deviations);
+    const devLimitRoundedTo5 = (Math.ceil(deviationLimit / 5) * 5) / 100;
+    return devLimitRoundedTo5;
+  }, [renderRows]);
+
   if (!data) return null;
 
   const sizes = renderRows.map(r => r.element.size);
@@ -142,7 +153,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     setCardinalityDomainLimit(newLimit);
   }
 
-  const sizeValue = getSizeContextValue(data.usedSets.length, renderRows.length, 3);
+  const sizeValue = getSizeContextValue(data.usedSets.length, renderRows.length, 4);
 
   return (
     <SizeContext.Provider value={sizeValue}>
@@ -174,8 +185,17 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
           localCardinalityLimit: cardinalityDomainLimit
         }}
       >
-        <HeaderBar className={header} maxSize={data.items.length}></HeaderBar>
-        <Body className={rows} renderRows={renderRows} maxSize={data.items.length}></Body>
+        <HeaderBar
+          deviationLimit={deviationLimit}
+          className={header}
+          maxSize={data.items.length}
+        ></HeaderBar>
+        <Body
+          deviationLimit={deviationLimit}
+          className={rows}
+          renderRows={renderRows}
+          maxSize={data.items.length}
+        ></Body>
       </CardinalityContext.Provider>
     </SizeContext.Provider>
   );

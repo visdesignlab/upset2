@@ -3,7 +3,7 @@ import { UpsetStore } from '../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { scaleLinear, select, axisTop, axisBottom, drag, event } from 'd3';
 import { style } from 'typestyle';
-import { CardinalityContext } from '../../../Upset';
+import { CardinalityContext, ProvenanceContext } from '../../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -19,6 +19,8 @@ const CardinalityHeader: FC<Props> = ({ width, height, globalDomainLimit }: Prop
   const padding = 5;
   const totalHeight =
     topScaleHeight + padding + headerBarHeight + padding + bottomScaleHeight + padding;
+
+  const { actions } = useContext(ProvenanceContext);
 
   const { notifyCardinalityChange, localCardinalityLimit } = useContext(CardinalityContext);
 
@@ -124,8 +126,13 @@ const CardinalityHeader: FC<Props> = ({ width, height, globalDomainLimit }: Prop
           ></rect>
         </g>
       </g>
-      <g cursor="pointer" transform={`translate(0,${padding + topScaleHeight})`}>
-        <g className={`${headerBlock} ${isChanging ? hide : ''}`}>
+      <g cursor="s-resize" transform={`translate(0,${padding + topScaleHeight})`}>
+        <g
+          className={`${headerBlock} ${isChanging ? hide : ''}`}
+          onClick={() => {
+            actions.setSortBy('Cardinality');
+          }}
+        >
           <rect
             fill="#ccc"
             stroke="black"
