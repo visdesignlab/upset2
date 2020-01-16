@@ -144,8 +144,6 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   const sizeValue = getSizeContextValue(data.usedSets.length, renderRows.length, 3);
 
-  console.log(data.usedSets.length, data.unusedSets.length);
-
   return (
     <SizeContext.Provider value={sizeValue}>
       {isLoading && (
@@ -166,6 +164,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
         usedSets={data.usedSets}
         className={sets}
         maxSetSize={Math.max(...data.sets.map(d => d.size))}
+        unusedSets={data.unusedSets}
         sortedSetName={sortBySetName}
       ></SelectedSets>
       <Matrix className={matrix} renderRows={renderRows} usedSets={data.usedSets}></Matrix>
