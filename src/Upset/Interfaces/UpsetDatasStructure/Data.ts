@@ -32,6 +32,7 @@ export type Membership = { [key: string]: string[] };
 export type RenderRows = RenderRow[];
 
 export interface Data {
+  info: DatasetInfo;
   sets: Sets;
   usedSets: Sets;
   subsets: Subsets;
@@ -46,10 +47,9 @@ export interface Data {
   dataset: DSVParsedArray<DSVRowString>;
 }
 
-async function createData(info: DatasetInfo): Promise<Data> {
+async function createData(info: DatasetInfo, noDefaultSets: number = 6): Promise<Data> {
   const usedSets: Sets = [];
   const selectedAttributes: Attributes = [];
-  const noDefaultSets: number = 6;
   const unusedSets: Sets = [];
 
   const data = await dsv(info.separator, `${info.file}?alt=media`);
@@ -75,6 +75,7 @@ async function createData(info: DatasetInfo): Promise<Data> {
   );
 
   return {
+    info,
     sets,
     usedSets,
     subsets,
@@ -88,6 +89,22 @@ async function createData(info: DatasetInfo): Promise<Data> {
     membership,
     dataset: data
   };
+}
+
+export function updateVisibleSets(data: Data, sets: string[]): Data {
+  if (sets.length > 0) {
+    data.usedSets = data.sets.filter(d => sets.includes(d.elementName));
+    data.unusedSets = data.sets.filter(d => !sets.includes(d.elementName));
+    data = {
+      ...data,
+      ...getSubsets(
+        data.usedSets,
+        data.attributes.filter(attr => attr.type === 'sets')[0],
+        data.depth
+      )
+    };
+  }
+  return data;
 }
 
 export function applyAggregation(

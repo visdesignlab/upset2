@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useMemo } from 'react';
+import React, { FC, useState, useEffect, useMemo, useContext } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { style } from 'typestyle';
@@ -9,20 +9,24 @@ import {
   applyHideEmpty,
   applyMinMaxDegree,
   applySort,
-  applyAggregation
+  applyAggregation,
+  updateVisibleSets
 } from '../../Interfaces/UpsetDatasStructure/Data';
 import SelectedSets from './SelectedSets';
 import Matrix from './Matrix';
 import HeaderBar from './HeaderBar';
 import Body from './Body';
-import { CardinalityContext, SizeContext } from '../../Upset';
+import { CardinalityContext, SizeContext, ProvenanceContext } from '../../Upset';
 import { getSizeContextValue } from '../../Interfaces/SizeContext';
+import { DatasetInfo } from '../../Interfaces/DatasetInfo';
 
 interface Props {
   store?: UpsetStore;
 }
 
 const MainUpsetView: FC<Props> = ({ store }: Props) => {
+  const { actions } = useContext(ProvenanceContext);
+
   const {
     selectedDataset,
     hideEmpty,
@@ -33,7 +37,8 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     firstAggregation,
     secondAggregation,
     firstOverlap,
-    secondOverlap
+    secondOverlap,
+    visibleSets
   } = store!;
   const [data, setData] = useState<Data>(null as any);
 
@@ -43,8 +48,12 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     if (selectedDataset) {
       createData(selectedDataset)
         .then(d => {
-          if (stringifiedData !== JSON.stringify(d)) {
+          const info: DatasetInfo = JSON.parse(stringifiedData)
+            ? JSON.parse(stringifiedData).info
+            : ({ file: '' } as any);
+          if (info.file !== d.info.file) {
             setData(d);
+            actions.setVisibleSets(d.usedSets.map(s => s.elementName));
           }
         })
         .catch(err => {
@@ -52,7 +61,14 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
           throw new Error(err);
         });
     }
-  }, [stringifiedData, selectedDataset]);
+  }, [stringifiedData, selectedDataset, actions]);
+
+  useEffect(() => {
+    const newData = updateVisibleSets(JSON.parse(stringifiedData), visibleSets);
+    if (JSON.stringify(newData) !== stringifiedData) {
+      setData(newData);
+    }
+  }, [stringifiedData, visibleSets]);
 
   const hideEmptyResults = useMemo(() => {
     return applyHideEmpty(JSON.parse(stringifiedData), hideEmpty);

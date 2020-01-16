@@ -1,43 +1,23 @@
-import React, { FC, useContext, useState, useEffect } from 'react';
+import React, { FC, useContext, useEffect } from 'react';
 import { Menu, Header, Button, Dropdown, Label } from 'semantic-ui-react';
-import { ProvenanceContext, DatasetOptions, fileServer, getSetCount } from '../../Upset';
+import { ProvenanceContext, DatasetOptions } from '../../Upset';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
-import axios from 'axios';
 import { DatasetInfo } from '../../Interfaces/DatasetInfo';
 
 interface Props {
   store?: UpsetStore;
+  datasets: DatasetOptions;
+  loadDatasets: (dataset: DatasetInfo) => void;
 }
 
-const Navbar: FC<Props> = ({ store }: Props) => {
+const Navbar: FC<Props> = ({ store, datasets, loadDatasets }: Props) => {
   const { isAtRoot, isAtLatest, selectedDataset } = store!;
-  const [datasets, setDatasets] = useState<DatasetOptions>([]);
   const { actions } = useContext(ProvenanceContext);
 
   useEffect(() => {
-    axios
-      .get(`${fileServer}/datasets`)
-      .then(({ data: { datasets } }) => {
-        const ds: DatasetOptions = datasets.map((d: DatasetInfo) => ({
-          info: d,
-          key: d.file,
-          text: `${d.name} (${getSetCount(d.sets)} Ssets & ${
-            d.meta.filter(m => m.type !== 'id').length
-          } Attributes)`,
-          value: d.file
-        }));
-        setDatasets(ds);
-      })
-      .catch(err => {
-        console.error(err);
-        throw new Error(err);
-      });
-  }, []);
-
-  useEffect(() => {
     if (!selectedDataset && datasets.length > 0) {
-      actions.setDataset(datasets[0].info);
+      loadDatasets(datasets[0].info);
     }
   });
 
@@ -74,7 +54,7 @@ const Navbar: FC<Props> = ({ store }: Props) => {
             onChange={(_, data) => {
               const selectedDataset = datasets.find(d => d.value === data.value);
               if (selectedDataset) {
-                actions.setDataset(selectedDataset.info);
+                loadDatasets(selectedDataset.info);
               }
             }}
           ></Dropdown>

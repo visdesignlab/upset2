@@ -44,6 +44,9 @@ const SelectedSets: FC<Props> = ({ className, usedSets, maxSetSize, sortedSetNam
             onMouseLeave={() => {
               selectAll(`.${set.id}`).classed(highlight, false);
             }}
+            onClick={() => {
+              actions.removeSet(set.elementName);
+            }}
           >
             <rect
               className={set.id}

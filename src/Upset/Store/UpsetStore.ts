@@ -17,6 +17,7 @@ export class UpsetStore {
   @observable secondOverlap: number = defaultState.secondOverlap;
   @observable minDegree: number = defaultState.minDegree;
   @observable maxDegree: number = defaultState.maxDegree;
+  @observable visibleSets: string[] = defaultState.visibleSets;
   @computed get selectedDataset() {
     return this.dataset;
   }

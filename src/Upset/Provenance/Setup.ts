@@ -15,7 +15,10 @@ export function setupProvenance(): UpsetProvenance {
     const currentNode = provenance.current();
 
     if (isStateNode(currentNode)) {
-      isAtRoot = currentNode.parent === provenance.root().id;
+      isAtRoot =
+        currentNode.id === provenance.root().id ||
+        currentNode.parent === provenance.root().id ||
+        currentNode.label === 'Add initial visible sets';
     }
 
     upsetStore.isAtRoot = isAtRoot;
@@ -25,6 +28,12 @@ export function setupProvenance(): UpsetProvenance {
   provenance.addObserver(['dataset'], (state?: UpsetState) => {
     if (state) {
       upsetStore.dataset = state.dataset;
+    }
+  });
+
+  provenance.addObserver(['visibleSets'], (state?: UpsetState) => {
+    if (state) {
+      upsetStore.visibleSets = state.visibleSets;
     }
   });
 
@@ -177,6 +186,30 @@ export function setupProvenance(): UpsetProvenance {
     });
   };
 
+  const setVisibleSets = (sets: string[]) => {
+    provenance.applyAction(`Add initial visible sets`, (state: UpsetState) => {
+      state.visibleSets = sets;
+      return state;
+    });
+  };
+
+  const addSet = (set: string) => {
+    provenance.applyAction(`Add ${set} to visible list.`, (state: UpsetState) => {
+      if (!state.visibleSets.includes(set)) {
+        state.visibleSets.push(set);
+      }
+      return state;
+    });
+  };
+  const removeSet = (set: string) => {
+    provenance.applyAction(`Remove ${set} from visible list.`, (state: UpsetState) => {
+      if (state.visibleSets.includes(set)) {
+        state.visibleSets = state.visibleSets.filter(s => s !== set);
+      }
+      return state;
+    });
+  };
+
   return {
     provenance,
     actions: {
@@ -191,7 +224,10 @@ export function setupProvenance(): UpsetProvenance {
       setMaxDegree,
       setSortBySet,
       setFirstOverlap,
-      setSecondOverlap
+      setSecondOverlap,
+      setVisibleSets,
+      addSet,
+      removeSet
     }
   };
 }

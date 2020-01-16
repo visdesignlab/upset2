@@ -26,3 +26,13 @@ export type DatasetInfo = {
   description: string;
   source: string;
 };
+
+export function getSetCount(sets: SetInfo[]) {
+  let setCount = 0;
+
+  sets.forEach(set => {
+    setCount += set.end - set.start + 1;
+  });
+
+  return setCount;
+}

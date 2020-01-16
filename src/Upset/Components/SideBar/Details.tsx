@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { Card, Header } from 'semantic-ui-react';
-import { getSetCount } from '../../Upset';
+import { getSetCount } from '../../Interfaces/DatasetInfo';
 
 interface Props {
   store?: UpsetStore;

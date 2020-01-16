@@ -19,5 +19,8 @@ export default interface UpsetProvenance {
     setHideEmpty: (hide: boolean) => void;
     setMinDegree: (degree: number) => void;
     setMaxDegree: (degree: number) => void;
+    setVisibleSets: (sets: string[]) => void;
+    addSet: (set: string) => void;
+    removeSet: (set: string) => void;
   };
 }

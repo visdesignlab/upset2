@@ -1,14 +1,17 @@
-import React, { createContext } from 'react';
+import React, { createContext, useState, useEffect } from 'react';
 import Navbar from './Components/Navbar';
 import { setupProvenance } from './Provenance/Setup';
 import { Provider } from 'mobx-react';
 import { upsetStore } from './Store/UpsetStore';
 import UpsetProvenance from './Interfaces/UpsetProvenance';
-import { DatasetInfo, SetInfo } from './Interfaces/DatasetInfo';
+import { DatasetInfo, getSetCount } from './Interfaces/DatasetInfo';
 import { style } from 'typestyle';
 import Sidebar from './Components/SideBar/Sidebar';
 import MainUpsetView from './Components/Main/MainUpsetView';
 import { SizeContextShape, getSizeContextValue } from './Interfaces/SizeContext';
+import axios from 'axios';
+import { ProvenanceNode } from '@visdesignlab/provenance-lib-core';
+import UpsetState from './Interfaces/UpsetState';
 
 export type DatasetOption = {
   info: DatasetInfo;
@@ -25,31 +28,57 @@ export type CardinalityContextType = {
   localCardinalityLimit: number;
 };
 
-export function getSetCount(sets: SetInfo[]) {
-  let setCount = 0;
-
-  sets.forEach(set => {
-    setCount += set.end - set.start + 1;
-  });
-
-  return setCount;
-}
-
 export const ProvenanceContext = createContext<UpsetProvenance>({} as any);
 export const CardinalityContext = createContext<CardinalityContextType>(null as any);
 export const SizeContext = createContext<SizeContextShape>(getSizeContextValue(0, 0, 0));
 export const fileServer = 'https://us-central1-upset2-eaf80.cloudfunctions.net/api';
 
 const Upset: React.FC = () => {
-  const { provenance, actions } = setupProvenance();
+  let { provenance, actions } = setupProvenance();
+  let store = upsetStore;
+  const [datasets, setDatasets] = useState<DatasetOptions>([]);
+  const { selectedDataset } = upsetStore;
+  const file = selectedDataset ? selectedDataset.file : '';
+
+  useEffect(() => {
+    axios
+      .get(`${fileServer}/datasets`)
+      .then(({ data: { datasets } }) => {
+        const ds: DatasetOptions = datasets.map((d: DatasetInfo) => ({
+          info: d,
+          key: d.file,
+          text: `${d.name} (${getSetCount(d.sets)} Ssets & ${
+            d.meta.filter(m => m.type !== 'id').length
+          } Attributes)`,
+          value: d.file
+        }));
+        setDatasets(ds);
+      })
+      .catch(err => {
+        console.error(err);
+        throw new Error(err);
+      });
+  }, []);
+
+  function loadDataset(dataset: DatasetInfo) {
+    provenance.reset();
+    actions.setDataset(dataset);
+  }
+
+  (window as any).printProvenanceTrail = () => {
+    const { nodes } = provenance.graph();
+    const nodeArr: ProvenanceNode<UpsetState>[] = Object.values(nodes);
+    nodeArr.sort((a, b) => (a.metadata.createdOn || 0) - (b.metadata.createdOn || 0));
+    console.table(nodeArr.map(n => n.label));
+  };
 
   return (
-    <div>
-      <Provider store={upsetStore}>
+    <div key={file}>
+      <Provider store={store}>
         <ProvenanceContext.Provider value={{ provenance, actions }}>
           <div className={layoutDiv}>
             <div className={navBar}>
-              <Navbar></Navbar>
+              <Navbar datasets={datasets} loadDatasets={loadDataset}></Navbar>
             </div>
             <div className={controlSideBar}>
               <Sidebar></Sidebar>

@@ -13,6 +13,7 @@ export default interface UpsetState {
   hideEmpty: boolean;
   minDegree: number;
   maxDegree: number;
+  visibleSets: string[];
 }
 
 export const defaultState: UpsetState = {
@@ -25,5 +26,6 @@ export const defaultState: UpsetState = {
   minDegree: 0,
   maxDegree: 3,
   firstOverlap: 2,
-  secondOverlap: 2
+  secondOverlap: 2,
+  visibleSets: []
 };
