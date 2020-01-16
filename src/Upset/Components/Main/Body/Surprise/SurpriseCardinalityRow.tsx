@@ -55,10 +55,10 @@ const SurpriseCardinalityRow: FC<Props> = ({
       />
       <g transform={`translate(${padding}, 0)`}>
         <g transform={`translate(${scale(size)}, ${height / 2})`}>
-          <circle fill={fill} r={5}></circle>
+          <line stroke={fill} y1={0} y2={10}></line>
         </g>
-        <g transform={`translate(${scale(adjustedSize)}, ${(height - 10 * Math.sqrt(2)) / 2})`}>
-          <rect fill={fill} transform={`rotate(45)`} height={10} width={10}></rect>
+        <g transform={`translate(${scale(adjustedSize)}, ${height / 2})`}>
+          <line stroke={fill} y1={0} y2={10}></line>
         </g>
       </g>
     </g>

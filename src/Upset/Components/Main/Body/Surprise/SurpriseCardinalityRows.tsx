@@ -1,4 +1,4 @@
-import React, { FC, useMemo, useContext } from 'react';
+import React, { FC, useMemo } from 'react';
 import { UpsetStore } from '../../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { RenderRows } from '../../../../Interfaces/UpsetDatasStructure/Data';
@@ -7,7 +7,6 @@ import { getRowTransitions } from '../../RowTransitions';
 import { BaseElement } from '../../../../Interfaces/UpsetDatasStructure/BaseElement';
 import SurpriseCardinalityRow from './SurpriseCardinalityRow';
 import { scaleLinear } from 'd3';
-import { ProvenanceContext } from '../../../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -26,8 +25,6 @@ const SurpriseCardinalityRows: FC<Props> = ({
   globalCardinalityLimit
 }: Props) => {
   const { enter, leave, update, start } = getRowTransitions(rowHeight);
-
-  const { provenance } = useContext(ProvenanceContext);
 
   const scale = useMemo(() => {
     const scale = scaleLinear()

@@ -6,6 +6,7 @@ import { style } from 'typestyle';
 import { scaleLinear, selectAll } from 'd3';
 import { ProvenanceContext, SizeContext } from '../../Upset';
 import highlight from './HighlightedStyle';
+import translate from '../ComponentUtils/Translate';
 
 interface Props {
   store?: UpsetStore;
@@ -32,6 +33,8 @@ const SelectedSets: FC<Props> = ({ className, usedSets, maxSetSize, sortedSetNam
 
   const { actions } = useContext(ProvenanceContext);
 
+  const removeCircleRadius = 5;
+
   return (
     <svg width={totalWidth} height={totalHeight} className={className}>
       <g className="header-group">
@@ -44,27 +47,46 @@ const SelectedSets: FC<Props> = ({ className, usedSets, maxSetSize, sortedSetNam
             onMouseLeave={() => {
               selectAll(`.${set.id}`).classed(highlight, false);
             }}
-            onClick={() => {
-              actions.removeSet(set.elementName);
-            }}
           >
-            <rect
-              className={set.id}
-              fill="#f0f0f0"
-              height={headerBarHeight}
-              width={columnWidth}
-              x={i * columnWidth}
-            ></rect>
-            <rect
-              fill="#636363"
-              stroke="white"
-              strokeWidth={1}
-              key={set.id}
-              height={heightScale(set.size)}
-              width={columnWidth}
-              x={i * columnWidth}
-              y={headerBarHeight - heightScale(set.size)}
-            ></rect>
+            <g transform={`translate(${i * columnWidth}, 0)`}>
+              <rect
+                className={set.id}
+                fill="#f0f0f0"
+                height={headerBarHeight}
+                width={columnWidth}
+              ></rect>
+              <rect
+                fill="#636363"
+                stroke="white"
+                strokeWidth={1}
+                key={set.id}
+                height={heightScale(set.size)}
+                width={columnWidth}
+                y={headerBarHeight - heightScale(set.size)}
+              ></rect>
+              {usedSets.length > 2 && (
+                <g
+                  transform={translate(columnWidth / 2, removeCircleRadius * 2)}
+                  onClick={() => {
+                    actions.removeSet(set.elementName);
+                  }}
+                >
+                  <text
+                    className={hoverShow}
+                    fill="white"
+                    stroke="black"
+                    cursor="pointer"
+                    dominantBaseline="middle"
+                    textAnchor="middle"
+                    fontSize="0.9em"
+                    fontFamily="FontAwesome"
+                    opacity="0.01"
+                  >
+                    &#xf1f8;
+                  </text>
+                </g>
+              )}
+            </g>
           </g>
         ))}
       </g>
@@ -109,4 +131,12 @@ export default inject('store')(observer(SelectedSets));
 
 const highlightSorted = style({
   fill: '#d0d0d0 !important'
+});
+
+const hoverShow = style({
+  $nest: {
+    '&:hover': {
+      opacity: 1
+    }
+  }
 });

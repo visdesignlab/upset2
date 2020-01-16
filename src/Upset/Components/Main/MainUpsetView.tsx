@@ -19,6 +19,7 @@ import Body from './Body';
 import { CardinalityContext, SizeContext, ProvenanceContext } from '../../Upset';
 import { getSizeContextValue } from '../../Interfaces/SizeContext';
 import { DatasetInfo } from '../../Interfaces/DatasetInfo';
+import { Dimmer, Loader } from 'semantic-ui-react';
 
 interface Props {
   store?: UpsetStore;
@@ -26,6 +27,7 @@ interface Props {
 
 const MainUpsetView: FC<Props> = ({ store }: Props) => {
   const { actions } = useContext(ProvenanceContext);
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     selectedDataset,
@@ -46,6 +48,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   useEffect(() => {
     if (selectedDataset) {
+      setIsLoading(true);
       createData(selectedDataset)
         .then(d => {
           const info: DatasetInfo = JSON.parse(stringifiedData)
@@ -56,6 +59,9 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
             actions.setVisibleSets(d.usedSets.map(s => s.elementName));
           }
         })
+        .finally(() => {
+          setIsLoading(false);
+        })
         .catch(err => {
           console.error(err);
           throw new Error(err);
@@ -64,10 +70,12 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   }, [stringifiedData, selectedDataset, actions]);
 
   useEffect(() => {
+    setIsLoading(true);
     const newData = updateVisibleSets(JSON.parse(stringifiedData), visibleSets);
     if (JSON.stringify(newData) !== stringifiedData) {
       setData(newData);
     }
+    setIsLoading(false);
   }, [stringifiedData, visibleSets]);
 
   const hideEmptyResults = useMemo(() => {
@@ -134,8 +142,25 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     setCardinalityDomainLimit(newLimit);
   }
 
+  const sizeValue = getSizeContextValue(data.usedSets.length, renderRows.length, 3);
+
+  console.log(data.usedSets.length, data.unusedSets.length);
+
   return (
-    <SizeContext.Provider value={getSizeContextValue(data.usedSets.length, renderRows.length, 3)}>
+    <SizeContext.Provider value={sizeValue}>
+      {isLoading && (
+        <div
+          style={{
+            position: 'absolute',
+            height: sizeValue.usedSetsHeader.totalHeaderHeight + sizeValue.matrixHeight,
+            width: sizeValue.matrix.totalMatrixWidth + sizeValue.attributes.totalHeaderWidth
+          }}
+        >
+          <Dimmer inverted active>
+            <Loader size="massive">Computing</Loader>
+          </Dimmer>
+        </div>
+      )}
       <SelectedSets
         key={sortBySetName}
         usedSets={data.usedSets}
