@@ -135,24 +135,26 @@ const SelectedSets: FC<Props> = ({
           ))}
         </g>
       </svg>
-      <div key={unusedSets.length} className={addSetsDiv(columnWidth * (usedSets.length * 1.1))}>
-        <Dropdown
-          text="Add set"
-          search
-          options={unusedSets.map(set => ({
-            key: set.id,
-            text: set.elementName,
-            value: set.elementName
-          }))}
-          onChange={(_, data) => {
-            const selection = data.value;
-            if (selection) {
-              actions.addSet(selection as string);
-            }
-          }}
-          selectOnBlur={false}
-        ></Dropdown>
-      </div>
+      {unusedSets.length !== 0 && (
+        <div key={unusedSets.length} className={addSetsDiv(columnWidth * (usedSets.length * 1.1))}>
+          <Dropdown
+            text="Add set"
+            search
+            options={unusedSets.map(set => ({
+              key: set.id,
+              text: set.elementName,
+              value: set.elementName
+            }))}
+            onChange={(_, data) => {
+              const selection = data.value;
+              if (selection) {
+                actions.addSet(selection as string);
+              }
+            }}
+            selectOnBlur={false}
+          ></Dropdown>
+        </div>
+      )}
     </div>
   );
 };

@@ -6,6 +6,7 @@ import { RenderRows } from '../../Interfaces/UpsetDatasStructure/Data';
 import { SizeContext } from '../../Upset';
 import SurpriseCardinalityRows from './Body/Surprise/SurpriseCardinalityRows';
 import DeviationRows from './Body/Deviation/DeviationRows';
+import translate from '../ComponentUtils/Translate';
 
 interface Props {
   store?: UpsetStore;
@@ -22,32 +23,52 @@ const Body: FC<Props> = ({ className, renderRows, maxSize, deviationLimit }: Pro
     rowHeight
   } = useContext(SizeContext);
 
+  const cardinalityRows = (
+    <CardinalityRows
+      rowHeight={rowHeight}
+      rows={renderRows}
+      width={attributeWidth}
+      padding={padding}
+    />
+  );
+
+  const surpriseCardinalityRows = (
+    <SurpriseCardinalityRows
+      rows={renderRows}
+      rowHeight={rowHeight}
+      width={attributeWidth}
+      padding={padding}
+      globalCardinalityLimit={maxSize}
+    ></SurpriseCardinalityRows>
+  );
+
+  const deviationRows = (
+    <DeviationRows
+      rows={renderRows}
+      rowHeight={rowHeight}
+      width={attributeWidth}
+      padding={padding}
+      deviationLimit={deviationLimit}
+    ></DeviationRows>
+  );
+
+  // const headersToAdd = { cardinalityRows, surpriseCardinalityRows, deviationRows };
+  const headersToAdd = { cardinalityRows, deviationRows };
+
+  const headers: JSX.Element[] = [];
+
+  Object.entries(headersToAdd).forEach((header, idx) => {
+    const [key, val] = header;
+    headers.push(
+      <g key={key} transform={translate((attributeWidth + padding) * idx, 0)}>
+        {val}
+      </g>
+    );
+  });
+
   return (
     <svg className={className} height={height} width={width}>
-      <CardinalityRows
-        rowHeight={rowHeight}
-        rows={renderRows}
-        width={attributeWidth}
-        padding={padding}
-      />
-      <g transform={`translate(${attributeWidth + padding}, 0)`}>
-        <SurpriseCardinalityRows
-          rows={renderRows}
-          rowHeight={rowHeight}
-          width={attributeWidth}
-          padding={padding}
-          globalCardinalityLimit={maxSize}
-        ></SurpriseCardinalityRows>
-      </g>
-      <g transform={`translate(${(attributeWidth + padding) * 2})`}>
-        <DeviationRows
-          rows={renderRows}
-          rowHeight={rowHeight}
-          width={attributeWidth}
-          padding={padding}
-          deviationLimit={deviationLimit}
-        ></DeviationRows>
-      </g>
+      {headers}
     </svg>
   );
 };

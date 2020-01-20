@@ -22,5 +22,8 @@ export default interface UpsetProvenance {
     setVisibleSets: (sets: string[]) => void;
     addSet: (set: string) => void;
     removeSet: (set: string) => void;
+    setVisibleAttributes: (attributes: string[]) => void;
+    addAttribute: (attribute: string) => void;
+    removeAttribute: (attribute: string) => void;
   };
 }

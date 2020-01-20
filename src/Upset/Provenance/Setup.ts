@@ -37,6 +37,12 @@ export function setupProvenance(): UpsetProvenance {
     }
   });
 
+  provenance.addObserver(['visibleAttributes'], (state?: UpsetState) => {
+    if (state) {
+      upsetStore.visibleAttributes = state.visibleAttributes;
+    }
+  });
+
   provenance.addObserver(['firstAggregation'], (state?: UpsetState) => {
     if (state) {
       upsetStore.firstAggregation = state.firstAggregation;
@@ -201,10 +207,36 @@ export function setupProvenance(): UpsetProvenance {
       return state;
     });
   };
+
   const removeSet = (set: string) => {
     provenance.applyAction(`Remove ${set} from visible list.`, (state: UpsetState) => {
       if (state.visibleSets.includes(set)) {
         state.visibleSets = state.visibleSets.filter(s => s !== set);
+      }
+      return state;
+    });
+  };
+
+  const setVisibleAttributes = (attributes: string[]) => {
+    provenance.applyAction(`Add initial visible attributes`, (state: UpsetState) => {
+      state.visibleAttributes = attributes;
+      return state;
+    });
+  };
+
+  const addAttribute = (attribute: string) => {
+    provenance.applyAction(`Add ${attribute} to visible list`, (state: UpsetState) => {
+      if (!state.visibleAttributes.includes(attribute)) {
+        state.visibleAttributes.push(attribute);
+      }
+      return state;
+    });
+  };
+
+  const removeAttribute = (attribute: string) => {
+    provenance.applyAction(`Remove ${attribute} to visible list`, (state: UpsetState) => {
+      if (state.visibleAttributes.includes(attribute)) {
+        state.visibleAttributes = state.visibleAttributes.filter(s => s !== attribute);
       }
       return state;
     });
@@ -227,7 +259,10 @@ export function setupProvenance(): UpsetProvenance {
       setSecondOverlap,
       setVisibleSets,
       addSet,
-      removeSet
+      removeSet,
+      setVisibleAttributes,
+      addAttribute,
+      removeAttribute
     }
   };
 }

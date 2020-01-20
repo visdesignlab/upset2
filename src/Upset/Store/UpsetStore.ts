@@ -18,6 +18,7 @@ export class UpsetStore {
   @observable minDegree: number = defaultState.minDegree;
   @observable maxDegree: number = defaultState.maxDegree;
   @observable visibleSets: string[] = defaultState.visibleSets;
+  @observable visibleAttributes: string[] = defaultState.visibleAttributes;
   @computed get selectedDataset() {
     return this.dataset;
   }

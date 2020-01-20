@@ -31,13 +31,18 @@ export type Membership = { [key: string]: string[] };
 
 export type RenderRows = RenderRow[];
 
+const numericAttributeType = ['integer', 'float'];
+
 export interface Data {
   info: DatasetInfo;
   sets: Sets;
   usedSets: Sets;
   subsets: Subsets;
+  calculatedAttributes: Attributes;
   attributes: Attributes;
   selectedAttributes: Attributes;
+  unSelectedAttributes: Attributes;
+  labelAttribute: Attribute;
   combinations: number;
   items: any[];
   depth: number;
@@ -47,9 +52,14 @@ export interface Data {
   dataset: DSVParsedArray<DSVRowString>;
 }
 
-async function createData(info: DatasetInfo, noDefaultSets: number = 6): Promise<Data> {
+async function createData(
+  info: DatasetInfo,
+  noDefaultSets: number = 6,
+  noSelectedAttributes: number = 2
+): Promise<Data> {
   const usedSets: Sets = [];
   const selectedAttributes: Attributes = [];
+  const unSelectedAttributes: Attributes = [];
   const unusedSets: Sets = [];
 
   const data = await dsv(info.separator, `${info.file}?alt=media`);
@@ -66,29 +76,53 @@ async function createData(info: DatasetInfo, noDefaultSets: number = 6): Promise
     }
   });
 
-  const { attributes } = getAttributes(data, sets, info, rawData, depth);
+  const { attributes, calculatedAttributes } = getAttributes(data, sets, info, rawData, depth);
+
+  const numbericAttributes = attributes.filter(d => numericAttributeType.includes(d.type));
+
+  numbericAttributes.forEach((attr, i) => {
+    if (i < noSelectedAttributes) {
+      selectedAttributes.push(attr);
+    } else {
+      unSelectedAttributes.push(attr);
+    }
+  });
 
   const { combinations, subsets, membership } = getSubsets(
     usedSets,
-    attributes.filter(attr => attr.type === 'sets')[0],
+    calculatedAttributes.filter(attr => attr.type === 'sets')[0],
     depth
   );
+
+  const labelAttribute: Attribute = attributes.find(d => d.type === 'id') as Attribute;
 
   return {
     info,
     sets,
     usedSets,
     subsets,
+    calculatedAttributes,
     attributes,
     selectedAttributes,
+    unSelectedAttributes,
     combinations,
     items,
+    labelAttribute,
     depth,
     noDefaultSets,
     unusedSets,
     membership,
     dataset: data
   };
+}
+
+export function updateVisibleAttribute(data: Data, attributes: string[]): Data {
+  if (attributes.length > 0) {
+    const attrs = data.attributes.filter(d => d.name !== data.labelAttribute.name);
+    data.selectedAttributes = attrs.filter(d => attributes.includes(d.name));
+    data.unSelectedAttributes = attrs.filter(d => !attributes.includes(d.name));
+  }
+  return data;
 }
 
 export function updateVisibleSets(data: Data, sets: string[]): Data {
@@ -99,7 +133,7 @@ export function updateVisibleSets(data: Data, sets: string[]): Data {
       ...data,
       ...getSubsets(
         data.usedSets,
-        data.attributes.filter(attr => attr.type === 'sets')[0],
+        data.calculatedAttributes.filter(attr => attr.type === 'sets')[0],
         data.depth
       )
     };
@@ -309,6 +343,7 @@ function getAttributes(
   depth: number
 ) {
   const attributes: Attributes = [];
+  const calculatedAttributes: Attributes = [];
 
   info.meta.forEach(meta => {
     attributes.push({
@@ -336,7 +371,7 @@ function getAttributes(
 
     setCountAttribute.values[d] = setCount;
   }
-  attributes.push(setCountAttribute);
+  calculatedAttributes.push(setCountAttribute);
 
   let setAttribute: Attribute = {
     name: 'Sets',
@@ -357,7 +392,7 @@ function getAttributes(
     setAttribute.values[i] = setList;
   }
 
-  attributes.push(setAttribute);
+  calculatedAttributes.push(setAttribute);
 
   info.meta.forEach((meta, id) => {
     attributes[id].values = data.map(row => {
@@ -383,7 +418,15 @@ function getAttributes(
     });
   });
 
-  return { attributes };
+  attributes
+    .filter(d => numericAttributeType.includes(d.type))
+    .forEach(attr => {
+      const vals = attr.values;
+      attr.min = Math.min(...vals);
+      attr.max = Math.max(...vals);
+    });
+
+  return { attributes, calculatedAttributes };
 }
 
 function getSets(data: RawData, depth: number) {
