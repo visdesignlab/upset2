@@ -81,12 +81,15 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
     return newData;
   }, [stringifiedData, visibleSets]);
 
+  const attrList = JSON.stringify(Object.keys(visibleAttributes));
+
   const updatedAttributes = useMemo(() => {
     setIsLoading(true);
-    const newData = updateVisibleAttribute(updatedSets, visibleAttributes);
+    console.log('Called');
+    const newData = updateVisibleAttribute(updatedSets, JSON.parse(attrList));
     setIsLoading(false);
     return newData;
-  }, [updatedSets, visibleAttributes]);
+  }, [updatedSets, attrList]);
 
   const hideEmptyResults = useMemo(() => {
     return applyHideEmpty(updatedAttributes, hideEmpty);
@@ -213,6 +216,8 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
           className={rows}
           renderRows={renderRows}
           maxSize={updatedAttributes.items.length}
+          attributes={updatedAttributes.selectedAttributes}
+          dataset={data.dataset}
         ></Body>
       </CardinalityContext.Provider>
     </SizeContext.Provider>

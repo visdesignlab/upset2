@@ -61,6 +61,7 @@ export function addSubsetToGroup(gr: Group, subset: Subset): Group {
   }
 
   group.items = [...group.items, ...subset.items];
+  group.itemMembership = [...group.itemMembership, ...subset.itemMembership];
 
   group.size = group.items.length;
   group.expectedProbability += subset.expectedProbability;
@@ -75,6 +76,8 @@ export function addGroupToGroup(baseGroup: Group, groupToAdd: Group): Group {
   group.nestedGroups.push(groupToAdd);
   group.hiddenSets = [...group.hiddenSets, ...groupToAdd.hiddenSets];
   group.visibleSets = [...group.visibleSets, ...groupToAdd.visibleSets];
+
+  group.itemMembership = [...group.itemMembership, ...groupToAdd.itemMembership];
 
   groupToAdd.subsets.forEach(set => {
     group.aggregate = addSubsetToAggregate(group.aggregate, set);

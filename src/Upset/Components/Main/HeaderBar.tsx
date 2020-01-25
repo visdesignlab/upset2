@@ -69,7 +69,6 @@ const HeaderBar: FC<Props> = ({
           width={attributeWidth}
           minScale={attr.min || 0}
           maxScale={attr.max || 0}
-          zeroScale
         ></AttributeHeader>
       </g>
     );

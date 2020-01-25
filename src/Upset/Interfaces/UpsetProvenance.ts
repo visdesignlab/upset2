@@ -3,6 +3,7 @@ import UpsetState from './UpsetState';
 import { DatasetInfo } from './DatasetInfo';
 import { AggregationOptions } from './AggregationOptions';
 import { SortingOptions } from './SortOptions';
+import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/AttributeRow';
 
 export default interface UpsetProvenance {
   provenance: Provenance<UpsetState>;
@@ -25,5 +26,6 @@ export default interface UpsetProvenance {
     setVisibleAttributes: (attributes: string[]) => void;
     addAttribute: (attribute: string) => void;
     removeAttribute: (attribute: string) => void;
+    setAttributeType: (attribute: string, type: AttributeVisualizationType) => void;
   };
 }

@@ -1,7 +1,7 @@
 import { observable, computed } from 'mobx';
 import { DatasetInfo } from '../Interfaces/DatasetInfo';
 import { AggregationOptions } from '../Interfaces/AggregationOptions';
-import { defaultState } from '../Interfaces/UpsetState';
+import { defaultState, VisibleAttributeState } from '../Interfaces/UpsetState';
 import { SortingOptions } from '../Interfaces/SortOptions';
 
 export class UpsetStore {
@@ -18,7 +18,7 @@ export class UpsetStore {
   @observable minDegree: number = defaultState.minDegree;
   @observable maxDegree: number = defaultState.maxDegree;
   @observable visibleSets: string[] = defaultState.visibleSets;
-  @observable visibleAttributes: string[] = defaultState.visibleAttributes;
+  @observable visibleAttributes: VisibleAttributeState = defaultState.visibleAttributes;
   @computed get selectedDataset() {
     return this.dataset;
   }

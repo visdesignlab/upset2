@@ -12,6 +12,8 @@ export interface Attribute {
 export type Stats = {
   mean: number;
   median: number;
+  min: number;
+  max: number;
   lowerOutlier: number[];
   upperOutlier: number[];
   quantile: {
@@ -22,18 +24,31 @@ export type Stats = {
   };
 };
 
-export function getStats(vals: number[]): Stats {
+export function getStats(values: number[]): Stats {
+  let vals = [...values];
+  vals.sort((a, b) => a - b);
+
   const first = quantile(vals, 0.25) || 0;
   const second = quantile(vals, 0.5) || 0;
   const third = quantile(vals, 0.75) || 0;
   const IQR = third - first;
+
   const outlierLimit = 1.5 * IQR;
+
+  const min = Math.min(...vals);
+  const max = Math.max(...vals);
+
+  const lowerOutlier = vals.filter(v => v < first - outlierLimit).filter(d => d !== min);
+
+  const upperOutlier = vals.filter(v => v > third + outlierLimit).filter(d => d !== max);
 
   return {
     mean: mean(vals) || 0,
     median: median(vals) || 0,
-    lowerOutlier: vals.filter(v => v < first - outlierLimit),
-    upperOutlier: vals.filter(v => v > third - outlierLimit),
+    min,
+    max,
+    lowerOutlier,
+    upperOutlier,
     quantile: {
       first,
       second,

@@ -1,10 +1,11 @@
 import UpsetProvenance from '../Interfaces/UpsetProvenance';
 import { initProvenance, isStateNode } from '@visdesignlab/provenance-lib-core';
-import UpsetState, { defaultState } from '../Interfaces/UpsetState';
+import UpsetState, { defaultState, VisibleAttributeState } from '../Interfaces/UpsetState';
 import { upsetStore } from '../Store/UpsetStore';
 import { DatasetInfo } from '../Interfaces/DatasetInfo';
 import { AggregationOptions } from '../Interfaces/AggregationOptions';
 import { SortingOptions } from '../Interfaces/SortOptions';
+import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/AttributeRow';
 
 export function setupProvenance(): UpsetProvenance {
   const provenance = initProvenance(defaultState, true);
@@ -219,15 +220,19 @@ export function setupProvenance(): UpsetProvenance {
 
   const setVisibleAttributes = (attributes: string[]) => {
     provenance.applyAction(`Add initial visible attributes`, (state: UpsetState) => {
-      state.visibleAttributes = attributes;
+      const attrs: VisibleAttributeState = {};
+      attributes.forEach(attr => {
+        attrs[attr] = 'Dot';
+      });
+      state.visibleAttributes = attrs;
       return state;
     });
   };
 
   const addAttribute = (attribute: string) => {
     provenance.applyAction(`Add ${attribute} to visible list`, (state: UpsetState) => {
-      if (!state.visibleAttributes.includes(attribute)) {
-        state.visibleAttributes.push(attribute);
+      if (!state.visibleAttributes[attribute]) {
+        state.visibleAttributes[attribute] = 'Dot';
       }
       return state;
     });
@@ -235,8 +240,19 @@ export function setupProvenance(): UpsetProvenance {
 
   const removeAttribute = (attribute: string) => {
     provenance.applyAction(`Remove ${attribute} to visible list`, (state: UpsetState) => {
-      if (state.visibleAttributes.includes(attribute)) {
-        state.visibleAttributes = state.visibleAttributes.filter(s => s !== attribute);
+      if (state.visibleAttributes[attribute]) {
+        const attrTypeMap = JSON.parse(JSON.stringify(state.visibleAttributes));
+        delete attrTypeMap[attribute];
+        state.visibleAttributes = attrTypeMap;
+      }
+      return state;
+    });
+  };
+
+  const setAttributeType = (name: string, type: AttributeVisualizationType) => {
+    provenance.applyAction(`Set attribute ${name} type to ${type}`, (state: UpsetState) => {
+      if (state.visibleAttributes[name]) {
+        state.visibleAttributes[name] = type;
       }
       return state;
     });
@@ -262,7 +278,8 @@ export function setupProvenance(): UpsetProvenance {
       removeSet,
       setVisibleAttributes,
       addAttribute,
-      removeAttribute
+      removeAttribute,
+      setAttributeType
     }
   };
 }

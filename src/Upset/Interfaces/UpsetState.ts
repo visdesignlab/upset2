@@ -1,6 +1,9 @@
 import { DatasetInfo } from './DatasetInfo';
 import { AggregationOptions } from './AggregationOptions';
 import { SortingOptions } from './SortOptions';
+import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/AttributeRow';
+
+export type VisibleAttributeState = { [key: string]: AttributeVisualizationType };
 
 export default interface UpsetState {
   dataset: DatasetInfo;
@@ -14,12 +17,12 @@ export default interface UpsetState {
   minDegree: number;
   maxDegree: number;
   visibleSets: string[];
-  visibleAttributes: string[];
+  visibleAttributes: VisibleAttributeState;
 }
 
 export const defaultState: UpsetState = {
   dataset: undefined as any,
-  firstAggregation: 'None',
+  firstAggregation: 'Degree',
   secondAggregation: 'None',
   sortBy: 'Cardinality',
   sortBySetName: '',
@@ -29,5 +32,5 @@ export const defaultState: UpsetState = {
   firstOverlap: 2,
   secondOverlap: 2,
   visibleSets: [],
-  visibleAttributes: []
+  visibleAttributes: {}
 };

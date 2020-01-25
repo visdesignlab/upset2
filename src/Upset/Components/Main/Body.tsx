@@ -1,12 +1,15 @@
-import React, { FC, useContext } from 'react';
+import React, { FC, useContext, useMemo } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import CardinalityRows from './Body/Cardinality/CardinalityRows';
-import { RenderRows } from '../../Interfaces/UpsetDatasStructure/Data';
+import { RenderRows, AttributeRenderRows } from '../../Interfaces/UpsetDatasStructure/Data';
 import { SizeContext } from '../../Upset';
 import SurpriseCardinalityRows from './Body/Surprise/SurpriseCardinalityRows';
 import DeviationRows from './Body/Deviation/DeviationRows';
 import translate from '../ComponentUtils/Translate';
+import { Attributes, getStats } from '../../Interfaces/UpsetDatasStructure/Attribute';
+import AttributeColumn from './Body/Attributes/AttributeColumn';
+import { DSVParsedArray, DSVRowString } from 'd3';
 
 interface Props {
   store?: UpsetStore;
@@ -14,9 +17,18 @@ interface Props {
   renderRows: RenderRows;
   maxSize: number;
   deviationLimit: number;
+  attributes: Attributes;
+  dataset: DSVParsedArray<DSVRowString>;
 }
 
-const Body: FC<Props> = ({ className, renderRows, maxSize, deviationLimit }: Props) => {
+const Body: FC<Props> = ({
+  className,
+  renderRows,
+  maxSize,
+  deviationLimit,
+  attributes,
+  dataset
+}: Props) => {
   const {
     matrixHeight: height,
     attributes: { totalHeaderWidth: width, attributePadding: padding, attributeWidth },
@@ -52,8 +64,38 @@ const Body: FC<Props> = ({ className, renderRows, maxSize, deviationLimit }: Pro
     ></DeviationRows>
   );
 
+  const attributesBody = useMemo(() => {
+    return attributes.map((attr, idx) => {
+      const rows: AttributeRenderRows = renderRows.map(r => {
+        const { id, element } = r;
+
+        const values = element.itemMembership
+          .map(i => dataset[i][attr.name])
+          .map(a => {
+            return attr.type === 'integer' ? parseInt(a as string, 10) : parseFloat(a as string);
+          });
+
+        const stats = getStats(values);
+
+        return { id, element, values, stats };
+      });
+
+      return (
+        <g key={attr.name} transform={translate((padding + attributeWidth) * idx, 0)}>
+          <AttributeColumn
+            attribute={attr}
+            rows={rows}
+            rowHeight={rowHeight}
+            width={attributeWidth}
+            padding={padding}
+          ></AttributeColumn>
+        </g>
+      );
+    });
+  }, [attributeWidth, attributes, dataset, padding, renderRows, rowHeight]);
+
   // const headersToAdd = { cardinalityRows, surpriseCardinalityRows, deviationRows };
-  const headersToAdd = { cardinalityRows, deviationRows };
+  const headersToAdd = { cardinalityRows, deviationRows, attributesBody };
 
   const headers: JSX.Element[] = [];
 

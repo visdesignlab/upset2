@@ -60,9 +60,13 @@ const Upset: React.FC = () => {
       });
   }, []);
 
-  function loadDataset(dataset: DatasetInfo) {
-    provenance.reset();
-    actions.setDataset(dataset);
+  function loadDataset(dataset: DatasetInfo | undefined) {
+    if (dataset) {
+      provenance.reset();
+      actions.setDataset(dataset);
+    } else {
+      throw new Error('Cannot load dataset');
+    }
   }
 
   (window as any).printProvenanceTrail = () => {

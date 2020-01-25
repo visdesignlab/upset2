@@ -2,7 +2,7 @@ import { Sets, Set, createSet } from './Set';
 import { BaseSet } from './BaseSet';
 import { BaseElement } from './BaseElement';
 import { Subsets, createSubset } from './Subset';
-import { Attributes, Attribute } from './Attribute';
+import { Attributes, Attribute, Stats } from './Attribute';
 import { DatasetInfo } from '../DatasetInfo';
 import { dsv, DSVParsedArray, DSVRowString } from 'd3';
 import { SortingOptions } from '../SortOptions';
@@ -20,6 +20,13 @@ export type RenderRow = {
   id: string;
   element: Element;
 };
+
+export type AttributeRenderRow = RenderRow & {
+  values: number[];
+  stats: Stats;
+};
+
+export type AttributeRenderRows = AttributeRenderRow[];
 
 type RawData = {
   rawSets: number[][];

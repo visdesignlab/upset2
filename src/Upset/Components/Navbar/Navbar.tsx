@@ -8,7 +8,7 @@ import { DatasetInfo } from '../../Interfaces/DatasetInfo';
 interface Props {
   store?: UpsetStore;
   datasets: DatasetOptions;
-  loadDatasets: (dataset: DatasetInfo) => void;
+  loadDatasets: (dataset: DatasetInfo | undefined) => void;
 }
 
 const Navbar: FC<Props> = ({ store, datasets, loadDatasets }: Props) => {
@@ -17,7 +17,7 @@ const Navbar: FC<Props> = ({ store, datasets, loadDatasets }: Props) => {
 
   useEffect(() => {
     if (!selectedDataset && datasets.length > 0) {
-      loadDatasets(datasets[0].info);
+      loadDatasets(datasets.find(d => d.text.includes('Movies'))?.info);
     }
   });
 

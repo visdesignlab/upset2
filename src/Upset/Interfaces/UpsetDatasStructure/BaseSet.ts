@@ -16,7 +16,6 @@ export function createBaseSet(
 ): BaseSet {
   const base = createBaseElement(id, setName);
   let noCombinedSets = 0;
-  const itemMembership: number[] = [];
 
   combinedSets.forEach(set => {
     if (set !== 0) {
@@ -25,6 +24,7 @@ export function createBaseSet(
   });
 
   base.itemMembership = [...data];
+
   data.forEach((d, i) => {
     if (d !== 0) {
       base.items.push(i);
@@ -37,7 +37,6 @@ export function createBaseSet(
     ...base,
     combinedSets,
     noCombinedSets,
-    depth,
-    itemMembership
+    depth
   };
 }
