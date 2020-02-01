@@ -1,16 +1,15 @@
 import React, { FC, useContext } from 'react';
-import { UpsetStore } from '../../Store/UpsetStore';
-import { inject, observer } from 'mobx-react';
 import { Sets } from '../../Interfaces/UpsetDatasStructure/Set';
 import { style } from 'typestyle';
 import { scaleLinear, selectAll } from 'd3';
-import { ProvenanceContext, SizeContext } from '../../Upset';
+import { SizeContext, actions } from '../../Upset';
 import highlight from './HighlightedStyle';
 import translate from '../ComponentUtils/Translate';
 import { Dropdown } from 'semantic-ui-react';
+import { SizeContextShape } from '../../Interfaces/SizeContext';
+import { inject, observer } from 'mobx-react';
 
 interface Props {
-  store?: UpsetStore;
   className: string;
   usedSets: Sets;
   unusedSets: Sets;
@@ -34,13 +33,11 @@ const SelectedSets: FC<Props> = ({
     },
 
     matrix: { totalMatrixWidth: totalWidth, columnWidth }
-  } = useContext(SizeContext);
+  } = JSON.parse(useContext(SizeContext)) as SizeContextShape;
 
   const heightScale = scaleLinear()
     .domain([0, maxSetSize])
     .range([0, headerBarHeight]);
-
-  const { actions } = useContext(ProvenanceContext);
 
   const removeCircleRadius = 5;
 

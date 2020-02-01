@@ -5,7 +5,7 @@ import { upsetStore } from '../Store/UpsetStore';
 import { DatasetInfo } from '../Interfaces/DatasetInfo';
 import { AggregationOptions } from '../Interfaces/AggregationOptions';
 import { SortingOptions } from '../Interfaces/SortOptions';
-import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/AttributeRow';
+import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/VisualizationType';
 
 export function setupProvenance(): UpsetProvenance {
   const provenance = initProvenance(defaultState, true);
@@ -19,7 +19,7 @@ export function setupProvenance(): UpsetProvenance {
       isAtRoot =
         currentNode.id === provenance.root().id ||
         currentNode.parent === provenance.root().id ||
-        currentNode.label === 'Add initial visible sets';
+        currentNode.label === 'Add initial visible sets & attributes';
     }
 
     upsetStore.isAtRoot = isAtRoot;
@@ -34,13 +34,19 @@ export function setupProvenance(): UpsetProvenance {
 
   provenance.addObserver(['visibleSets'], (state?: UpsetState) => {
     if (state) {
-      upsetStore.visibleSets = state.visibleSets;
+      if (Object.keys(upsetStore.visibleAttributes).length > 0) {
+        upsetStore.visibleSets = state.visibleSets;
+      }
     }
   });
 
   provenance.addObserver(['visibleAttributes'], (state?: UpsetState) => {
     if (state) {
-      upsetStore.visibleAttributes = state.visibleAttributes;
+      if (upsetStore.visibleSets.length === 0) {
+        upsetStore.initialSetsAttributeSetter(state.visibleSets, state.visibleAttributes);
+      } else {
+        upsetStore.visibleAttributes = state.visibleAttributes;
+      }
     }
   });
 
@@ -222,7 +228,7 @@ export function setupProvenance(): UpsetProvenance {
     provenance.applyAction(`Add initial visible attributes`, (state: UpsetState) => {
       const attrs: VisibleAttributeState = {};
       attributes.forEach(attr => {
-        attrs[attr] = 'Dot';
+        attrs[attr] = 'KDE';
       });
       state.visibleAttributes = attrs;
       return state;
@@ -258,6 +264,18 @@ export function setupProvenance(): UpsetProvenance {
     });
   };
 
+  const setVisibleSetsAndAttributes = (sets: string[], attributes: string[]) => {
+    provenance.applyAction(`Add initial visible sets & attributes`, (state: UpsetState) => {
+      const attrs: VisibleAttributeState = {};
+      attributes.forEach(attr => {
+        attrs[attr] = 'Box';
+      });
+      state.visibleAttributes = attrs;
+      state.visibleSets = sets;
+      return state;
+    });
+  };
+
   return {
     provenance,
     actions: {
@@ -279,7 +297,8 @@ export function setupProvenance(): UpsetProvenance {
       setVisibleAttributes,
       addAttribute,
       removeAttribute,
-      setAttributeType
+      setAttributeType,
+      setVisibleSetsAndAttributes
     }
   };
 }

@@ -7,6 +7,7 @@ import { style } from 'typestyle';
 import { Popup } from 'semantic-ui-react';
 import { selectAll } from 'd3';
 import highlight from '../HighlightedStyle';
+import translate from '../../ComponentUtils/Translate';
 
 interface Props {
   store?: UpsetStore;
@@ -68,28 +69,32 @@ const GroupRow: FC<Props> = ({ id, height, width, element, offset }: Props) => {
   if (showMembership) {
     if (aggregationlevel === 1) {
       groupName = groupName.length > 10 ? groupName.substr(0, 10) + '...' : groupName;
+    } else if (aggregationlevel === 2) {
+      groupName = groupName.length > 5 ? groupName.substr(0, 5) + '...' : groupName;
     }
   }
 
   return (
     <>
-      <rect
-        className={`R_${id}`}
-        height={height}
-        width={width}
-        fill="#ccc"
-        opacity="0.3"
-        pointerEvents="all"
-      ></rect>
-      {showMembership && <g transform={`translate(${offset}, 0)`}>{membership}</g>}
-      <Popup
-        trigger={
-          <text dominantBaseline="middle" transform={`translate(5, ${height / 2})`}>
-            <tspan className={small}>{expanded}</tspan> {groupName}
-          </text>
-        }
-        content={element.elementName}
-      ></Popup>
+      <g transform={translate(aggregationlevel === 1 ? 0 : 20, 0)}>
+        <rect
+          className={`R_${id}`}
+          height={height}
+          width={width}
+          fill="#ccc"
+          opacity="0.3"
+          pointerEvents="all"
+        ></rect>
+        {showMembership && <g transform={`translate(${offset}, 0)`}>{membership}</g>}
+        <Popup
+          trigger={
+            <text dominantBaseline="middle" transform={`translate(5, ${height / 2})`}>
+              <tspan className={small}>{expanded}</tspan> {groupName}
+            </text>
+          }
+          content={element.elementName}
+        ></Popup>
+      </g>
     </>
   );
 };

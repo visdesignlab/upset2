@@ -8,6 +8,7 @@ import { NodeGroup } from 'react-move';
 import { BaseElement } from '../../../../Interfaces/UpsetDatasStructure/BaseElement';
 import translate from '../../../ComponentUtils/Translate';
 import DeviationRow from './DeviationRow';
+import { pure } from 'recompose';
 
 interface DeviationRowsProps {
   store?: UpsetStore;
@@ -71,4 +72,4 @@ const DeviationRows: FC<DeviationRowsProps> = ({
   );
 };
 
-export default inject('store')(observer(DeviationRows));
+export default pure(inject('store')(observer(DeviationRows)));

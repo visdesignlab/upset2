@@ -1,8 +1,8 @@
-import React, { FC, useMemo, useEffect, useContext } from 'react';
+import React, { FC, useMemo, useEffect } from 'react';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../../Store/UpsetStore';
 import { scaleLinear, axisBottom, axisTop, select } from 'd3';
-import { ProvenanceContext } from '../../../Upset';
+import { actions } from '../../../Upset';
 
 export interface DeviationHeaderProps {
   store?: UpsetStore;
@@ -20,8 +20,6 @@ const DeviationHeader: FC<DeviationHeaderProps> = ({
   const scaleHeight = 30;
   const padding = 5;
   const totalHeight = scaleHeight + padding + headerBarHeight + padding;
-
-  const { actions } = useContext(ProvenanceContext);
 
   const scale = useMemo(() => {
     return scaleLinear()

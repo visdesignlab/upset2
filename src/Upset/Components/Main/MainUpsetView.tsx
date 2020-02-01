@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, useMemo, useContext } from 'react';
+import React, { FC, useState, useEffect, useMemo } from 'react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { style } from 'typestyle';
@@ -17,9 +17,8 @@ import SelectedSets from './SelectedSets';
 import Matrix from './Matrix';
 import HeaderBar from './HeaderBar';
 import Body from './Body';
-import { CardinalityContext, SizeContext, ProvenanceContext } from '../../Upset';
+import { CardinalityContext, SizeContext, actions } from '../../Upset';
 import { getSizeContextValue } from '../../Interfaces/SizeContext';
-import { DatasetInfo } from '../../Interfaces/DatasetInfo';
 import { Dimmer, Loader } from 'semantic-ui-react';
 import { Subset } from '../../Interfaces/UpsetDatasStructure/Subset';
 import { Group } from '../../Interfaces/UpsetDatasStructure/Group';
@@ -29,7 +28,6 @@ interface Props {
 }
 
 const MainUpsetView: FC<Props> = ({ store }: Props) => {
-  const { actions } = useContext(ProvenanceContext);
   const [isLoading, setIsLoading] = useState(false);
 
   const {
@@ -48,21 +46,16 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   } = store!;
   const [data, setData] = useState<Data>(null as any);
 
-  const stringifiedData = JSON.stringify(data);
-
   useEffect(() => {
     if (selectedDataset) {
       setIsLoading(true);
       createData(selectedDataset)
         .then(d => {
-          const info: DatasetInfo = JSON.parse(stringifiedData)
-            ? JSON.parse(stringifiedData).info
-            : ({ file: '' } as any);
-          if (info.file !== d.info.file) {
-            setData(d);
-            actions.setVisibleAttributes(d.selectedAttributes.map(s => s.name));
-            actions.setVisibleSets(d.usedSets.map(s => s.elementName));
-          }
+          setData(d);
+          actions.setVisibleSetsAndAttributes(
+            d.usedSets.map(s => s.elementName),
+            d.selectedAttributes.map(s => s.name)
+          );
         })
         .finally(() => {
           setIsLoading(false);
@@ -72,44 +65,47 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
           throw new Error(err);
         });
     }
-  }, [stringifiedData, selectedDataset, actions]);
+  }, [selectedDataset]);
 
-  const updatedSets = useMemo(() => {
-    setIsLoading(true);
-    const newData = updateVisibleSets(JSON.parse(stringifiedData), visibleSets);
-    setIsLoading(false);
-    return newData;
-  }, [stringifiedData, visibleSets]);
+  let updatedData = data;
 
-  const attrList = JSON.stringify(Object.keys(visibleAttributes));
+  const currentSets = data ? data.usedSets.map(d => d.elementName) : [];
 
-  const updatedAttributes = useMemo(() => {
-    setIsLoading(true);
-    console.log('Called');
-    const newData = updateVisibleAttribute(updatedSets, JSON.parse(attrList));
-    setIsLoading(false);
-    return newData;
-  }, [updatedSets, attrList]);
+  if (JSON.stringify(currentSets) !== JSON.stringify(visibleSets)) {
+    updatedData = updateVisibleSets(updatedData, visibleSets);
+  }
+
+  const currentAttributes = data ? data?.selectedAttributes.map(d => d.name) : [];
+
+  const attrList = Object.keys(visibleAttributes);
+
+  if (JSON.stringify(currentAttributes.sort()) !== JSON.stringify(attrList.sort())) {
+    updatedData = updateVisibleAttribute(updatedData, attrList);
+  }
+
+  const stringifiedData = JSON.stringify(updatedData);
 
   const hideEmptyResults = useMemo(() => {
-    return applyHideEmpty(updatedAttributes, hideEmpty);
-  }, [updatedAttributes, hideEmpty]);
+    return applyHideEmpty(JSON.parse(stringifiedData), hideEmpty);
+  }, [stringifiedData, hideEmpty]);
 
   const degreeResults = useMemo(() => {
     return applyMinMaxDegree(hideEmptyResults, minDegree, maxDegree);
   }, [hideEmptyResults, minDegree, maxDegree]);
 
   const aggregationResults = useMemo(() => {
-    return applyAggregation(
-      updatedAttributes,
+    const agg = applyAggregation(
+      JSON.parse(stringifiedData),
       degreeResults,
       firstAggregation,
       secondAggregation,
       firstOverlap,
       secondOverlap
     );
+
+    return agg;
   }, [
-    updatedAttributes,
+    stringifiedData,
     degreeResults,
     firstAggregation,
     secondAggregation,
@@ -119,7 +115,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   const sortResults = useMemo(() => {
     return applySort(
-      updatedAttributes,
+      JSON.parse(stringifiedData),
       aggregationResults,
       sortBy,
       sortBySetName,
@@ -127,7 +123,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
       secondAggregation
     );
   }, [
-    updatedAttributes,
+    stringifiedData,
     sortBy,
     sortBySetName,
     aggregationResults,
@@ -156,7 +152,7 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
 
   const maxSize = sizes.length > 0 ? Math.max(...sizes) : 0;
 
-  if (cardinalityDomainLimit === -1 || cardinalityDomainLimit >= updatedAttributes.items.length) {
+  if (cardinalityDomainLimit === -1 || cardinalityDomainLimit >= updatedData.items.length) {
     setCardinalityDomainLimit(Math.max(maxSize));
   }
 
@@ -165,13 +161,15 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
   }
 
   const sizeValue = getSizeContextValue(
-    updatedAttributes.usedSets.length,
+    updatedData.usedSets.length,
     renderRows.length,
-    updatedAttributes.selectedAttributes.length + 2
+    updatedData.selectedAttributes.length + 2
   );
 
+  const sizeValueString = JSON.stringify(sizeValue);
+
   return (
-    <SizeContext.Provider value={sizeValue}>
+    <SizeContext.Provider value={sizeValueString}>
       {isLoading && (
         <div
           style={{
@@ -187,17 +185,13 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
       )}
       <SelectedSets
         key={sortBySetName}
-        usedSets={updatedAttributes.usedSets}
+        usedSets={updatedData.usedSets}
         className={sets}
-        maxSetSize={Math.max(...updatedAttributes.sets.map(d => d.size))}
-        unusedSets={updatedAttributes.unusedSets}
+        maxSetSize={Math.max(...updatedData.sets.map(d => d.size))}
+        unusedSets={updatedData.unusedSets}
         sortedSetName={sortBySetName}
-      ></SelectedSets>
-      <Matrix
-        className={matrix}
-        renderRows={renderRows}
-        usedSets={updatedAttributes.usedSets}
-      ></Matrix>
+      />
+      <Matrix className={matrix} renderRows={renderRows} usedSets={updatedData.usedSets} />
       <CardinalityContext.Provider
         value={{
           notifyCardinalityChange: setNewCardinalityLimit,
@@ -207,18 +201,18 @@ const MainUpsetView: FC<Props> = ({ store }: Props) => {
         <HeaderBar
           deviationLimit={deviationLimit}
           className={header}
-          maxSize={updatedAttributes.items.length}
-          attributes={updatedAttributes.selectedAttributes}
-          unSelectedAttributes={updatedAttributes.unSelectedAttributes.map(d => d.name)}
-        ></HeaderBar>
+          maxSize={updatedData.items.length}
+          attributes={updatedData.selectedAttributes}
+          unSelectedAttributes={updatedData.unSelectedAttributes.map(d => d.name)}
+        />
         <Body
           deviationLimit={deviationLimit}
           className={rows}
           renderRows={renderRows}
-          maxSize={updatedAttributes.items.length}
-          attributes={updatedAttributes.selectedAttributes}
+          maxSize={updatedData.items.length}
+          attributes={updatedData.selectedAttributes}
           dataset={data.dataset}
-        ></Body>
+        />
       </CardinalityContext.Provider>
     </SizeContext.Provider>
   );

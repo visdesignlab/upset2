@@ -9,7 +9,11 @@ import { SortingOptions } from '../SortOptions';
 import { Group, Groups } from './Group';
 import { AggregationOptions } from '../AggregationOptions';
 import { sortWithoutAggregation, sortOnlyFirstAggregation } from './SortingFunctions';
-import { applyFirstAggregation, SetNameDictionary } from './AggregationFunctions';
+import {
+  applyFirstAggregation,
+  SetNameDictionary,
+  applySecondAggregation
+} from './AggregationFunctions';
 
 export type Element = Set | BaseSet | BaseElement | Group;
 export type Elements = Element[];
@@ -158,6 +162,7 @@ export function applyAggregation(
 ): Elements {
   if (inputData.length === 0) return inputData;
   let data = [...inputData];
+  console.log(secondAggregation, secondOverlap);
 
   const setNameDictionary: SetNameDictionary = {};
 
@@ -167,15 +172,15 @@ export function applyAggregation(
 
   if (firstAggregation === 'None') return data;
 
-  data = applyFirstAggregation(
-    data,
-    firstAggregation,
-    setNameDictionary,
-    firstOverlap,
-    dataset.subsets.filter(d => d.noCombinedSets === firstOverlap).map(d => d.combinedSets)
-  );
+  const masks = dataset.subsets
+    .filter(d => d.noCombinedSets === firstOverlap)
+    .map(d => d.combinedSets);
+
+  data = applyFirstAggregation(data, firstAggregation, setNameDictionary, firstOverlap, masks);
 
   if (secondAggregation === 'None') return data;
+
+  data = applySecondAggregation(data, secondAggregation, setNameDictionary, secondOverlap, masks);
 
   return data;
 }
@@ -226,6 +231,19 @@ export function getRenderRows(
 
   if (firstAggregation !== 'None') {
     if (secondAggregation !== 'None') {
+      (inputData as Groups).forEach(group => {
+        data.push({ id: group.id, element: group });
+        group.nestedGroups.forEach(subGroup => {
+          data.push({ id: `${group.id}_${subGroup.id}`, element: subGroup });
+          data = [
+            ...data,
+            ...subGroup.subsets.map(subset => ({
+              id: `${group.id}_${subGroup.id}_${subset.id}`,
+              element: subset
+            }))
+          ];
+        });
+      });
     } else {
       (inputData as Groups).forEach(group => {
         data.push({ id: group.id, element: group });

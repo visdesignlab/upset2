@@ -1,6 +1,4 @@
 import React, { FC, useContext, useMemo } from 'react';
-import { UpsetStore } from '../../../../Store/UpsetStore';
-import { inject, observer } from 'mobx-react';
 import { RenderRows } from '../../../../Interfaces/UpsetDatasStructure/Data';
 import { NodeGroup } from 'react-move';
 import { scaleLinear } from 'd3';
@@ -8,9 +6,9 @@ import CardinalityRow from './CardinalityRow';
 import { BaseElement } from '../../../../Interfaces/UpsetDatasStructure/BaseElement';
 import { CardinalityContext } from '../../../../Upset';
 import { getRowTransitions } from '../../RowTransitions';
+import { inject, observer } from 'mobx-react';
 
 interface Props {
-  store?: UpsetStore;
   width: number;
   rows: RenderRows;
   rowHeight: number;

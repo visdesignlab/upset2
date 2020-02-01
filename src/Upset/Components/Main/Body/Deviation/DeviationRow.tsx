@@ -9,6 +9,7 @@ import { Group } from '../../../../Interfaces/UpsetDatasStructure/Group';
 import groupRow from '../../GroupStyle';
 import highlight from '../../HighlightedStyle';
 import translate from '../../../ComponentUtils/Translate';
+import { pure } from 'recompose';
 
 interface DeviationRowProps {
   store?: UpsetStore;
@@ -67,4 +68,5 @@ const DeviationRow: FC<DeviationRowProps> = ({
   );
 };
 
-export default inject('store')(observer(DeviationRow));
+(DeviationRow as any).whyDidYouRender = true;
+export default pure(inject('store')(observer(DeviationRow)));

@@ -1,4 +1,4 @@
-import { observable, computed } from 'mobx';
+import { observable, computed, action } from 'mobx';
 import { DatasetInfo } from '../Interfaces/DatasetInfo';
 import { AggregationOptions } from '../Interfaces/AggregationOptions';
 import { defaultState, VisibleAttributeState } from '../Interfaces/UpsetState';
@@ -21,6 +21,10 @@ export class UpsetStore {
   @observable visibleAttributes: VisibleAttributeState = defaultState.visibleAttributes;
   @computed get selectedDataset() {
     return this.dataset;
+  }
+  @action initialSetsAttributeSetter(sets: string[], attributes: VisibleAttributeState) {
+    this.visibleSets = sets;
+    this.visibleAttributes = attributes;
   }
 }
 

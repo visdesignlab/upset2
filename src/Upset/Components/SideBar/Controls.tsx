@@ -1,10 +1,10 @@
-import React, { FC, useState, useContext, useEffect } from 'react';
+import React, { FC, useState, useEffect } from 'react';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { Accordion, Icon, Form, Radio, Checkbox, Input, Label } from 'semantic-ui-react';
 import { AggregationOptionsList } from '../../Interfaces/AggregationOptions';
-import { ProvenanceContext } from '../../Upset';
 import { SortingOptionsList } from '../../Interfaces/SortOptions';
+import { actions } from '../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -23,8 +23,6 @@ const Controls: FC<Props> = ({ store }: Props) => {
     secondOverlap
   } = store!;
 
-  const { actions } = useContext(ProvenanceContext);
-
   const [minVal, setMinVal] = useState(minDegree);
   const [maxVal, setMaxVal] = useState(maxDegree);
   const [foverlap, setFoverlap] = useState(firstOverlap);
@@ -39,7 +37,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
 
   const [menuStatus, setMenuStatus] = useState<{ [key: number]: boolean }>({
     0: true,
-    1: false,
+    1: true,
     2: true,
     3: true
   });
@@ -65,6 +63,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
                   name="firstAggregation"
                   label={agg}
                   checked={agg === firstAggregation}
+                  disabled={agg !== 'None' && agg === secondAggregation}
                   onChange={() => actions.setFirstAggregation(agg)}
                 ></Radio>
                 {agg === 'Overlaps' && (
@@ -102,6 +101,7 @@ const Controls: FC<Props> = ({ store }: Props) => {
                     name="secondAggregation"
                     label={agg}
                     checked={agg === secondAggregation}
+                    disabled={agg !== 'None' && agg === firstAggregation}
                     onChange={() => actions.setSecondAggregation(agg)}
                   ></Radio>
                   {agg === 'Overlaps' && (

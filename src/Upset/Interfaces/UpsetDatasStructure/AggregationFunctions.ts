@@ -1,7 +1,7 @@
 import { Elements } from './Data';
 import { AggregationOptions } from '../AggregationOptions';
 import { Subset, Subsets } from './Subset';
-import { Groups, createGroup, addSubsetToGroup } from './Group';
+import { Groups, createGroup, addSubsetToGroup, Group, addGroupToGroup } from './Group';
 import isSubsetMemberOfGroup from '../../Utils/BitwiseCompare';
 
 export type SetNameDictionary = { [key: number]: string };
@@ -27,6 +27,34 @@ export function applyFirstAggregation(
       break;
     case 'Degree':
       data = aggregateByDegree(data);
+      break;
+    default:
+      break;
+  }
+
+  return data;
+}
+
+export function applySecondAggregation(
+  inputData: Elements,
+  aggregateBy: AggregationOptions,
+  setNames: SetNameDictionary,
+  overlap: number,
+  masks: number[][]
+): Elements {
+  let data = [...inputData];
+
+  switch (aggregateBy) {
+    case 'Sets':
+      data.forEach((group, idx) => {
+        const subsets = (group as Group).subsets;
+        const subGroups = aggregateBySets(subsets, setNames, 2);
+        (subGroups as Groups).forEach(sub => {
+          group = addGroupToGroup(group as Group, sub);
+        });
+
+        data[idx] = group;
+      });
       break;
     default:
       break;
@@ -128,7 +156,11 @@ function aggregateByDeviation(inputData: Elements): Elements {
   return groupsArr;
 }
 
-function aggregateBySets(inputData: Elements, setNames: SetNameDictionary): Elements {
+function aggregateBySets(
+  inputData: Elements,
+  setNames: SetNameDictionary,
+  level: number = 1
+): Elements {
   let data: Subsets = [...inputData] as any;
 
   const NOSET = 'No Set';
@@ -161,7 +193,13 @@ function aggregateBySets(inputData: Elements, setNames: SetNameDictionary): Elem
   for (let group in groups) {
     let membership = Object.entries(setNames).map(ent => (ent[1] === group ? 1 : 0));
 
-    let g = createGroup(`Group_set_${group.replace(' ', '_')}`, `${group}`, 1, 'Sets', membership);
+    let g = createGroup(
+      `Group_set_${group.replace(' ', '_')}`,
+      `${group}`,
+      level,
+      'Sets',
+      membership
+    );
     let subsets: Subsets = groups[group];
     subsets.forEach(subset => {
       g = addSubsetToGroup(g, subset);

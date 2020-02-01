@@ -3,7 +3,7 @@ import { UpsetStore } from '../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { scaleLinear, select, axisTop, axisBottom, drag, event } from 'd3';
 import { style } from 'typestyle';
-import { CardinalityContext, ProvenanceContext } from '../../../Upset';
+import { CardinalityContext, actions } from '../../../Upset';
 
 interface Props {
   store?: UpsetStore;
@@ -19,8 +19,6 @@ const CardinalityHeader: FC<Props> = ({ width, height, globalDomainLimit }: Prop
   const padding = 5;
   const totalHeight =
     topScaleHeight + padding + headerBarHeight + padding + bottomScaleHeight + padding;
-
-  const { actions } = useContext(ProvenanceContext);
 
   const { notifyCardinalityChange, localCardinalityLimit } = useContext(CardinalityContext);
 

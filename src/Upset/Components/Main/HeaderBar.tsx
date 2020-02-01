@@ -1,19 +1,18 @@
 import React, { FC, useContext } from 'react';
-import { UpsetStore } from '../../Store/UpsetStore';
-import { inject, observer } from 'mobx-react';
 import CardinalityHeader from './Header/CardinalityHeader';
-import { SizeContext, ProvenanceContext } from '../../Upset';
-import SurpriseCardinalityHeader from './Header/SurpriseCardinalityHeader';
+import { SizeContext, actions } from '../../Upset';
+// import SurpriseCardinalityHeader from './Header/SurpriseCardinalityHeader';
 import translate from '../ComponentUtils/Translate';
 import DeviationHeader from './Header/DeviationHeader';
 import { Attributes } from '../../Interfaces/UpsetDatasStructure/Attribute';
 import AttributeHeader from './Header/Attributes/AttributeHeader';
 import { style } from 'typestyle';
 import { Dropdown } from 'semantic-ui-react';
+import { SizeContextShape } from '../../Interfaces/SizeContext';
+import { inject, observer } from 'mobx-react';
 
 interface Props {
   className: string;
-  store?: UpsetStore;
   maxSize: number;
   deviationLimit: number;
   attributes: Attributes;
@@ -30,9 +29,7 @@ const HeaderBar: FC<Props> = ({
   const {
     attributes: { totalHeaderWidth: width, attributePadding: padding, attributeWidth },
     usedSetsHeader: { totalHeaderHeight: height }
-  } = useContext(SizeContext);
-
-  const { actions } = useContext(ProvenanceContext);
+  } = JSON.parse(useContext(SizeContext)) as SizeContextShape;
 
   const cardinalityHeader = (
     <CardinalityHeader
@@ -42,13 +39,13 @@ const HeaderBar: FC<Props> = ({
     ></CardinalityHeader>
   );
 
-  const surpriseCardinality = (
-    <SurpriseCardinalityHeader
-      height={height}
-      width={attributeWidth}
-      globalDomainLimit={maxSize}
-    ></SurpriseCardinalityHeader>
-  );
+  // const surpriseCardinality = (
+  //   <SurpriseCardinalityHeader
+  //     height={height}
+  //     width={attributeWidth}
+  //     globalDomainLimit={maxSize}
+  //   ></SurpriseCardinalityHeader>
+  // );
 
   const deviationHeader = (
     <DeviationHeader

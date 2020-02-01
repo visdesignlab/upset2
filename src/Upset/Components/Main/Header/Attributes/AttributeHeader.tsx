@@ -1,11 +1,11 @@
-import React, { FC, useMemo, useEffect, useContext } from 'react';
+import React, { FC, useMemo, useEffect } from 'react';
 import { UpsetStore } from '../../../../Store/UpsetStore';
 import { inject, observer } from 'mobx-react';
 import { scaleLinear, axisBottom, axisTop, select } from 'd3';
 import translate from '../../../ComponentUtils/Translate';
 import { style } from 'typestyle';
-import { AttributeVisualizationTypeMap } from '../../Body/Attributes/AttributeRow';
-import { ProvenanceContext } from '../../../../Upset';
+import { actions } from '../../../../Upset';
+import { AttributeVisualizationTypeMap } from '../../Body/Attributes/VisualizationType';
 
 export interface AttributeHeaderProps {
   store?: UpsetStore;
@@ -42,8 +42,6 @@ const AttributeHeader: FC<AttributeHeaderProps> = ({
   }, [width, minScale, maxScale]);
 
   const className = headerClassName(name);
-
-  const { actions } = useContext(ProvenanceContext);
 
   useEffect(() => {
     const tickCount = 8;

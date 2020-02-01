@@ -1,6 +1,4 @@
 import React, { FC } from 'react';
-import { UpsetStore } from '../../../../Store/UpsetStore';
-import { inject, observer } from 'mobx-react';
 import { BaseElement } from '../../../../Interfaces/UpsetDatasStructure/BaseElement';
 import RowType from '../../../../Interfaces/UpsetDatasStructure/RowType';
 import { selectAll, ScaleLinear } from 'd3';
@@ -8,9 +6,10 @@ import { style } from 'typestyle';
 import highlight from '../../HighlightedStyle';
 import { Subset } from '../../../../Interfaces/UpsetDatasStructure/Subset';
 import { Group } from '../../../../Interfaces/UpsetDatasStructure/Group';
+import { inject, observer } from 'mobx-react';
+import { pure } from 'recompose';
 
 interface Props {
-  store?: UpsetStore;
   id: number;
   element: BaseElement;
   elementType: RowType;
@@ -143,7 +142,7 @@ const CardinalityRow: FC<Props> = ({
   );
 };
 
-export default inject('store')(observer(CardinalityRow));
+export default pure(inject('store')(observer(CardinalityRow)));
 
 const groupRow = style({
   fill: '#ccc',

@@ -3,7 +3,7 @@ import UpsetState from './UpsetState';
 import { DatasetInfo } from './DatasetInfo';
 import { AggregationOptions } from './AggregationOptions';
 import { SortingOptions } from './SortOptions';
-import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/AttributeRow';
+import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/VisualizationType';
 
 export default interface UpsetProvenance {
   provenance: Provenance<UpsetState>;
@@ -21,9 +21,10 @@ export default interface UpsetProvenance {
     setMinDegree: (degree: number) => void;
     setMaxDegree: (degree: number) => void;
     setVisibleSets: (sets: string[]) => void;
+    setVisibleAttributes: (attributes: string[]) => void;
+    setVisibleSetsAndAttributes: (sets: string[], attributes: string[]) => void;
     addSet: (set: string) => void;
     removeSet: (set: string) => void;
-    setVisibleAttributes: (attributes: string[]) => void;
     addAttribute: (attribute: string) => void;
     removeAttribute: (attribute: string) => void;
     setAttributeType: (attribute: string, type: AttributeVisualizationType) => void;

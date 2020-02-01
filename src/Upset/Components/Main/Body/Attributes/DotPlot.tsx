@@ -1,8 +1,8 @@
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { UpsetStore } from '../../../../Store/UpsetStore';
 import { ScaleLinear } from 'd3';
-import { observer, inject } from 'mobx-react';
 import translate from '../../../ComponentUtils/Translate';
+import { pure } from 'recompose';
 
 interface DotPlotProps {
   store?: UpsetStore;
@@ -16,9 +16,13 @@ const DotPlot: FC<DotPlotProps> = ({ height, width, values, scale }: DotPlotProp
   const radius = 2;
   const reducedHeight = height * 0.5;
 
-  const getJitter = () => {
-    return Math.random() * reducedHeight;
-  };
+  const valuesString = JSON.stringify(values);
+
+  const randomYPositions = useMemo(() => {
+    const values = JSON.parse(valuesString) as number[];
+
+    return values.map(() => getJitter(reducedHeight));
+  }, [valuesString, reducedHeight]);
 
   return (
     <g transform={translate(0, (height - reducedHeight) / 2)}>
@@ -29,11 +33,15 @@ const DotPlot: FC<DotPlotProps> = ({ height, width, values, scale }: DotPlotProp
           r={radius}
           opacity={0.8}
           cx={scale(val)}
-          cy={getJitter()}
+          cy={randomYPositions[idx]}
         ></circle>
       ))}
     </g>
   );
 };
 
-export default inject('store')(observer(DotPlot));
+export default pure(DotPlot);
+
+function getJitter(max: number) {
+  return Math.random() * max;
+}

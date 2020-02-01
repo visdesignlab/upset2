@@ -1,6 +1,6 @@
-import React, { FC, useContext, useEffect } from 'react';
+import React, { FC, useEffect } from 'react';
 import { Menu, Header, Button, Dropdown, Label } from 'semantic-ui-react';
-import { ProvenanceContext, DatasetOptions } from '../../Upset';
+import { DatasetOptions, actions } from '../../Upset';
 import { inject, observer } from 'mobx-react';
 import { UpsetStore } from '../../Store/UpsetStore';
 import { DatasetInfo } from '../../Interfaces/DatasetInfo';
@@ -13,7 +13,6 @@ interface Props {
 
 const Navbar: FC<Props> = ({ store, datasets, loadDatasets }: Props) => {
   const { isAtRoot, isAtLatest, selectedDataset } = store!;
-  const { actions } = useContext(ProvenanceContext);
 
   useEffect(() => {
     if (!selectedDataset && datasets.length > 0) {

@@ -1,7 +1,7 @@
 import { DatasetInfo } from './DatasetInfo';
 import { AggregationOptions } from './AggregationOptions';
 import { SortingOptions } from './SortOptions';
-import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/AttributeRow';
+import { AttributeVisualizationType } from '../Components/Main/Body/Attributes/VisualizationType';
 
 export type VisibleAttributeState = { [key: string]: AttributeVisualizationType };
 
@@ -23,7 +23,7 @@ export default interface UpsetState {
 export const defaultState: UpsetState = {
   dataset: undefined as any,
   firstAggregation: 'Degree',
-  secondAggregation: 'None',
+  secondAggregation: 'Sets',
   sortBy: 'Cardinality',
   sortBySetName: '',
   hideEmpty: true,
