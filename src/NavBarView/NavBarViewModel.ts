@@ -1,16 +1,16 @@
-import {serverUrl} from './../app/app';
+import { serverUrl } from "./../app/app";
 /*
  * @Author: Kiran Gadhave
  * @Date: 2018-06-03 14:38:33
  * @Last Modified by: Kiran Gadhave
  * @Last Modified time: 2018-07-16 11:15:54
  */
-import {ViewModelBase, Application} from 'provenance_mvvm_framework';
-import {DataUtils} from './../DataStructure/DataUtils';
-import {IDataSetInfo} from './../DataStructure/IDataSetInfo';
-import {IDataSetJSON} from './../DataStructure/IDataSetJSON';
-import {NavBarView} from './NavBarView';
-import './styles.scss';
+import { ViewModelBase, Application } from "provenance_mvvm_framework";
+import { DataUtils } from "./../DataStructure/DataUtils";
+import { IDataSetInfo } from "./../DataStructure/IDataSetInfo";
+import { IDataSetJSON } from "./../DataStructure/IDataSetJSON";
+import { NavBarView } from "./NavBarView";
+import "./styles.scss";
 
 export class NavBarViewModel extends ViewModelBase {
   public datasets: IDataSetInfo[] = [];
@@ -19,67 +19,67 @@ export class NavBarViewModel extends ViewModelBase {
     this.populateDatasetSelectorFromServer();
     this.populateDatasetSelector(dsLocation);
 
-    this.comm.on('load-data', () => {
-      this.App.emit('open-dataset-selection');
+    this.comm.on("load-data", () => {
+      this.App.emit("open-dataset-selection");
     });
-    this.comm.on('change-dataset', dataset => {
+    this.comm.on("change-dataset", (dataset) => {
       view.oldDataset = dataset;
-      this.App.emit('change-dataset', dataset);
+      this.App.emit("change-dataset", dataset);
     });
 
-    this.App.on('change-dataset-trigger', d => {
-      this.comm.emit('change-dataset-trigger', d);
+    this.App.on("change-dataset-trigger", (d) => {
+      this.comm.emit("change-dataset-trigger", d);
     });
 
-    this.comm.on('change-dataset-trigger', (d: any) => {
+    this.comm.on("change-dataset-trigger", (d: any) => {
       let _do = {
         func: (d: any) => {
-          this.comm.emit('change-dataset', d);
+          this.comm.emit("change-dataset", d);
         },
         args: [d],
       };
       let _undo = {
         func: (d: any) => {
-          this.comm.emit('change-dataset', d);
+          this.comm.emit("change-dataset", d);
         },
         args: [view.oldDataset],
       };
-      this.apply.call(this, ['change-dataset', _do, _undo]);
+      this.apply.call(this, ["change-dataset", _do, _undo]);
     });
 
     this.registerFunctions(
-      'change-dataset',
+      "change-dataset",
       (d: any) => {
-        this.comm.emit('change-dataset', d);
+        this.comm.emit("change-dataset", d);
       },
-      this,
+      this
     );
 
     this.registerFunctions(
-      'change-dataset',
+      "change-dataset",
       (d: any) => {
-        this.comm.emit('change-dataset', d);
+        this.comm.emit("change-dataset", d);
       },
       this,
-      false,
+      false
     );
   }
 
   populateDatasetSelectorFromServer() {
     fetch(`${serverUrl}/datasets`)
-      .then(results => {
+      .then((results) => {
         return results.json();
       })
-      .then(({datasets}) => {
-        datasets.forEach(j => {
+      .then(({ datasets }) => {
+        datasets.forEach((j) => {
           let a: IDataSetJSON = DataUtils.getDataSetJSON(j);
           this.datasets.push(DataUtils.getDataSetInfo(a));
         });
       })
       .then(() => {
-        this.comm.emit('update', this.datasets);
+        this.comm.emit("update", this.datasets);
       })
-      .catch(err => {
+      .catch((err) => {
         console.error(err);
       });
   }
@@ -87,23 +87,23 @@ export class NavBarViewModel extends ViewModelBase {
   populateDatasetSelector(dsLocation: string) {
     let results: Promise<any>[] = [];
     let p = fetch(dsLocation)
-      .then(results => results.json())
-      .then(jsondata => {
+      .then((results) => results.json())
+      .then((jsondata) => {
         jsondata.forEach((d: string) => {
-          let a = fetch(d).then(res => res.json());
+          let a = fetch(d).then((res) => res.json());
           results.push(a);
         });
       })
       .then(() => {
         Promise.all(results)
-          .then(d => {
-            d.forEach(j => {
+          .then((d) => {
+            d.forEach((j) => {
               let a: IDataSetJSON = DataUtils.getDataSetJSON(j);
               this.datasets.push(DataUtils.getDataSetInfo(a));
             });
           })
           .then(() => {
-            this.comm.emit('update', this.datasets);
+            this.comm.emit("update", this.datasets);
           });
       });
   }
