@@ -1,3 +1,8 @@
 .checkbox:hover {
   color: whitesmoke !important;
 }
+
+.navbar-dropdown {
+    max-height: 500px;
+    overflow: auto;
+}
