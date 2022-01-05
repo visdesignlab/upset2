@@ -1,6 +1,29 @@
 {
-  "name": "root",
+  "name": "upset-monorepo",
   "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+      "dev": "turbo run dev --parallel --no-cache",
+      "test": "turbo run test",
+      "build": "turbo run build",
+      "prepublish": "lerna run prepublish",
+      "publish-canary": "echo 'Do something'",
+      "publish-stable": "echo 'Do something'"
+  },
+  "turbo": {
+      "pipeline": {
+          "build": {
+              "dependsOn": ["^build"],
+              "outputs": ["dist/**"]
+           },
+           "test": {
+                "outputs": []
+            },
+            "dev" : {
+                "cache": false
+            }
+        }
+  },
   "devDependencies": {
     "lerna": "^4.0.0",
     "turbo": "^1.0.24"

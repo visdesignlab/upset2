@@ -2,5 +2,12 @@
   "packages": [
     "packages/*"
   ],
-  "version": "0.0.0"
+  "version": "independant",
+  "npmClient": "yarn",
+  "useWorkspaces": true,
+  "publish": {
+      "npmClient": "npm",
+      "allowBranch": [ "main", "canary" ],
+      "registry": "https://registry.npmjs.org/"
+    }
 }
