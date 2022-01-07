@@ -1,31 +1,49 @@
 {
   "name": "upset-monorepo",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-      "dev": "turbo run dev --parallel --no-cache",
-      "test": "turbo run test",
-      "build": "turbo run build",
-      "prepublish": "lerna run prepublish",
-      "publish-canary": "echo 'Do something'",
-      "publish-stable": "echo 'Do something'"
+    "dev": "turbo run dev --parallel --no-cache",
+    "test": "turbo run test",
+    "build": "turbo run build",
+    "prepublish": "lerna run prepublish",
+    "publish-canary": "echo 'Do something'",
+    "publish-stable": "echo 'Do something'"
   },
   "turbo": {
-      "pipeline": {
-          "build": {
-              "dependsOn": ["^build"],
-              "outputs": ["dist/**"]
-           },
-           "test": {
-                "outputs": []
-            },
-            "dev" : {
-                "cache": false
-            }
-        }
+    "pipeline": {
+      "build": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          "dist/**"
+        ]
+      },
+      "test": {
+        "outputs": []
+      },
+      "dev": {
+        "cache": false
+      }
+    }
   },
   "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.9.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "eslint": "^8.6.0",
+    "eslint-config-airbnb": "^19.0.4",
+    "eslint-plugin-import": "^2.25.4",
+    "eslint-plugin-jsx-a11y": "^6.5.1",
+    "eslint-plugin-react": "^7.28.0",
+    "eslint-plugin-react-hooks": "^4.3.0",
     "lerna": "^4.0.0",
     "turbo": "^1.0.24"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": false
   }
 }
