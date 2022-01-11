@@ -1,9 +1,14 @@
-const sum = (a: number, b: number) => {
-  if (process.env.NODE_ENV === 'development') {
-    const ab = { foo: 'bar' };
-    console.log('Asd', ab);
-  }
-  return a + b;
-};
+import * as d3 from 'd3';
+import meta from './data-meta';
+import { process } from './process';
 
-export default sum;
+export async function test() {
+  const data = await d3.dsv(
+    ';',
+    'https://raw.githubusercontent.com/VCG/upset/master/data/movies/movies.csv',
+  );
+  return process(data, meta as any);
+}
+
+export * from './process';
+export * from './types';

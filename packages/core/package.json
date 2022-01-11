@@ -1,4 +1,5 @@
 {
+  "name": "@visdesignlab/upset2-core",
   "version": "0.1.0",
   "license": "MIT",
   "main": "dist/index.js",
@@ -26,13 +27,6 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "prettier": {
-    "printWidth": 80,
-    "semi": true,
-    "singleQuote": true,
-    "trailingComma": "es5"
-  },
-  "name": "packagescore",
   "author": "Kiran Gadhave",
   "module": "dist/packagescore.esm.js",
   "size-limit": [
@@ -47,10 +41,15 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.5",
+    "@types/d3": "^7.1.0",
     "husky": "^7.0.4",
     "size-limit": "^7.0.5",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4"
+  },
+  "dependencies": {
+    "d3": "^7.3.0",
+    "hyperid": "^3.0.0"
   }
 }

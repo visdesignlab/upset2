@@ -1,0 +1,31 @@
+const meta = {
+  name: 'Movies Genres',
+  author: 'grouplens',
+  description: 'MovieLens ratings dataset, curated and filtered by Alsallakh.',
+  source: 'http://grouplens.org/datasets/movielens/',
+  columns: {
+    Name: 'label',
+    ReleaseDate: 'number',
+    AvgRating: 'number',
+    Watches: 'number',
+    Action: 'boolean',
+    Adventure: 'boolean',
+    Children: 'boolean',
+    Comedy: 'boolean',
+    Crime: 'boolean',
+    Documentary: 'boolean',
+    Drama: 'boolean',
+    Fantasy: 'boolean',
+    Noir: 'boolean',
+    Horror: 'boolean',
+    Musical: 'boolean',
+    Mystery: 'boolean',
+    Romance: 'boolean',
+    SciFi: 'boolean',
+    Thriller: 'boolean',
+    War: 'boolean',
+    Western: 'boolean',
+  },
+};
+
+export default meta;

@@ -43,7 +43,9 @@
     "turbo": "^1.0.24"
   },
   "prettier": {
-    "semi": false,
-    "singleQuote": false
+    "printWidth": 80,
+    "semi": true,
+    "singleQuote": true,
+    "trailingComma": "all"
   }
 }
