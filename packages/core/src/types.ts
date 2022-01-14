@@ -34,19 +34,35 @@ export type BaseElement = {
   elementName: string;
   items: ItemId[];
   type: RowType;
-  size?: number;
-  dataRatio?: number;
-  disproportionality?: number;
+  size: number;
 };
+
+export type SetMembershipStatus = 'Yes' | 'No' | 'May';
 
 export type ISet = BaseElement & {
-  setMembership: string;
-  setMembershipCount: number;
+  setMembership: { [key: string]: SetMembershipStatus };
+};
+export type Sets = { [set_id: string]: ISet };
+
+type BaseIntersection = {
+  deviation: number;
 };
 
-export type Subset = ISet & {
-  expectedProbability?: number;
+export type Subset = ISet & BaseIntersection;
+export type Subsets = { [subset_id: string]: Subset };
+
+export type AggregateBy =
+  | 'Degree'
+  | 'Sets'
+  | 'Deviations'
+  | 'Overlaps'
+  | 'None';
+
+export type Aggregate = Subset & {
+  type: AggregateBy;
+  level: number;
 };
+export type Aggregates = { [agg_id: string]: Aggregate };
 
 export type CoreUpsetData = {
   label: ColumnName;

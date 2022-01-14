@@ -2,13 +2,44 @@ import { DSVRowArray } from 'd3';
 import hyperid from 'hyperid';
 import {
   ColumnDefs,
+  Subsets,
+  Sets,
   ColumnName,
   Meta,
+  SetMembershipStatus,
   Subset,
   ISet,
   Item,
   CoreUpsetData,
 } from './types';
+
+function calculateDeviation(
+  totalItems: number,
+  intersectionSize: number,
+  sets: Sets,
+  vSets: string[],
+  containedSets: string[],
+): number {
+  const containedProduct = containedSets
+    .map((s) => {
+      const set = sets[s];
+      return set.size / totalItems;
+    })
+    .reduce((acc, val) => acc * val, 1);
+
+  const nonContainedProduct = vSets
+    .filter((v) => !containedSets.includes(v))
+    .map((s) => {
+      const set = sets[s];
+      return 1 - set.size / totalItems;
+    })
+    .reduce((acc, val) => acc * val, 1);
+
+  const dev =
+    intersectionSize / totalItems - containedProduct * nonContainedProduct;
+
+  return dev * 100;
+}
 
 function getIdGenerator(prefix?: string) {
   const gen = hyperid({ urlSafe: true });
@@ -84,18 +115,21 @@ function getSets(
 ) {
   const setIdGen = getIdGenerator('Set');
 
-  const sets: { [id: string]: ISet } = {};
-  setColumns.forEach((col, idx) => {
-    const setM = Array<number>(setColumns.length).fill(0);
-    setM[idx] = 1;
+  const setMembershipStatus: { [col: string]: SetMembershipStatus } = {};
 
+  setColumns.forEach((set) => {
+    setMembershipStatus[set] = 'No';
+  });
+
+  const sets: Sets = {};
+  setColumns.forEach((col) => {
     const set: ISet = {
       id: setIdGen(),
       elementName: col,
       items: setMembership[col],
       type: 'Set',
-      setMembership: setM.join(''),
-      setMembershipCount: setM.filter((i) => i === 1).length,
+      size: setMembership[col].length,
+      setMembership: { ...setMembershipStatus, [col]: 'Yes' },
     };
 
     sets[set.id] = set;
@@ -124,9 +158,9 @@ export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
 
 export function getSubsets(
   items: Item[],
-  sets: { [key: string]: ISet },
+  sets: Sets,
   vSets: string[],
-): { [key: string]: Subset } {
+): Subsets {
   if (vSets.length === 0) return {};
 
   const subsetIdGen = getIdGenerator('Subset');
@@ -134,7 +168,7 @@ export function getSubsets(
   const vSetNames = vSets.map((v) => sets[v].elementName);
 
   const comboCount = 2 ** vSets.length - 1;
-  const subsets: { [key: string]: Subset } = {};
+  const subsets: Subsets = {};
 
   const setIntersectionMembership: { [key: string]: string[] } = {};
 
@@ -155,14 +189,41 @@ export function getSubsets(
     setIntersectionMembership[itemMembership].push(item['_id']);
   });
 
-  Object.entries(setIntersectionMembership).forEach(([combo, itm]) => {
+  Object.entries(setIntersectionMembership).forEach(([comboBinary, itm]) => {
+    const combo: SetMembershipStatus[] = comboBinary.split('').map((c) => {
+      const val = parseInt(c, 10);
+      switch (val) {
+        case 1:
+          return 'Yes';
+        case 0:
+          return 'No';
+        default:
+          return 'May';
+      }
+    });
+
+    const deviation = calculateDeviation(
+      items.length,
+      itm.length,
+      sets,
+      vSets,
+      vSets.filter((d) => d === 'Yes'),
+    );
+
+    const setMembershipStatus: { [col: string]: SetMembershipStatus } = {};
+
+    vSets.forEach((set, idx) => {
+      setMembershipStatus[set] = combo[idx];
+    });
+
     const subset: Subset = {
       id: subsetIdGen(),
-      elementName: intersectionName[combo],
+      elementName: intersectionName[comboBinary],
       items: itm,
+      size: itm.length,
       type: 'Subset',
-      setMembership: combo,
-      setMembershipCount: combo.split('').filter((i) => i === '1').length,
+      setMembership: setMembershipStatus,
+      deviation,
     };
 
     subsets[subset.id] = subset;
