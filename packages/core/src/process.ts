@@ -157,11 +157,13 @@ export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
 }
 
 export function getSubsets(
-  items: Item[],
+  dataItems: { [k: string]: Item },
   sets: Sets,
   vSets: string[],
 ): Subsets {
   if (vSets.length === 0) return {};
+
+  const items = Object.values(dataItems);
 
   const subsetIdGen = getIdGenerator('Subset');
 

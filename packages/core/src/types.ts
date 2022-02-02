@@ -29,6 +29,8 @@ export type Item = {
   [attr: string]: boolean | number | string;
 };
 
+export type Items = { [k: string]: Item };
+
 export type BaseElement = {
   id: string;
   elementName: string;
@@ -68,6 +70,6 @@ export type CoreUpsetData = {
   label: ColumnName;
   setColumns: ColumnName[];
   columns: ColumnName[];
-  items: { [key: string]: Item };
-  sets: { [id: string]: ISet };
+  items: Items;
+  sets: Sets;
 };
