@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
-import React, { useContext } from 'react';
-import translate from '../utils/transform';
+import { useRecoilValue } from 'recoil';
 import { css } from '@emotion/react';
+
 import { useScale } from '../hooks/useScale';
-import { UpsetContext } from '../context/UpsetContext';
+import translate from '../utils/transform';
+import { setsAtom, visibleSetsAtom } from '../atoms/setsAtoms';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
 const matrixColumnBackgroundRect = css`
   fill: #f0f0f0;
@@ -15,9 +17,10 @@ const matrixColumnForegroundRect = css`
 `;
 
 export const MatrixHeader = () => {
-  const context = useContext(UpsetContext);
+  const sets = useRecoilValue(setsAtom);
+  const visibleSets = useRecoilValue(visibleSetsAtom);
+  const dimensions = useRecoilValue(dimensionsSelector);
 
-  const { sets, visibleSets, dimensions } = context;
   const { barWidth, height, labelHeight, angle } =
     dimensions.header.matrixColumn;
 

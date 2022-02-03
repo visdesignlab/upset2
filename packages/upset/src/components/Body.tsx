@@ -1,28 +1,34 @@
-import React, { useContext } from 'react';
-import { UpsetContext } from '../context/UpsetContext';
+import { Subset } from '@visdesignlab/upset2-core';
+import { useRecoilValue } from 'recoil';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { renderRowSelector } from '../atoms/renderRowsAtom';
+import { visibleSetsAtom } from '../atoms/setsAtoms';
+import { subsetSelector } from '../atoms/subsetAtoms';
 import translate from '../utils/transform';
 import { BackgroundRects } from './BackgroundRects';
 import { CardinalityBar } from './CardinalityBars';
 import { Matrix } from './Matrix';
 
 export const Body = () => {
-  const context = useContext(UpsetContext);
-  const { dimensions, visibleSets, subsets } = context;
+  const dimensions = useRecoilValue(dimensionsSelector);
+  const visibleSets = useRecoilValue(visibleSetsAtom);
+  const subsets = useRecoilValue(renderRowSelector);
 
   return (
-    <>
-      <g transform={translate(0, dimensions.header.height() + 5)}>
-        <BackgroundRects />
-        {Object.values(subsets).map((subset, idx) => (
-          <g
-            key={subset.id}
-            transform={translate(0, idx * dimensions.body.rowHeight)}
-          >
-            <Matrix sets={visibleSets} subset={subset} />
-            <CardinalityBar size={subset.size} />
-          </g>
-        ))}
-      </g>
-    </>
+    <g transform={translate(0, dimensions.header.height() + 5)}>
+      <BackgroundRects />
+      {subsets.order.map((subsetId, idx) => (
+        <g
+          key={subsetId}
+          transform={translate(0, idx * dimensions.body.rowHeight)}
+        >
+          <Matrix
+            sets={visibleSets}
+            subset={subsets.values[subsetId] as Subset}
+          />
+          <CardinalityBar size={subsets.values[subsetId].size} />
+        </g>
+      ))}
+    </g>
   );
 };

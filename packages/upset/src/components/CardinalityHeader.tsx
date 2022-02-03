@@ -1,12 +1,15 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC, useContext, useEffect, useRef, useState } from 'react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
+import { drag, select } from 'd3';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import translate from '../utils/transform';
 import { useScale } from '../hooks/useScale';
 import { Axis } from './Axis';
-import { drag, select } from 'd3';
-import { maxCardinality, UpsetContext } from '../context/UpsetContext';
-import { useRecoilState } from 'recoil';
+import { maxCardinality } from '../atoms/maxCardinalityAtom';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { itemsAtom } from '../atoms/itemsAtoms';
+import { subsetSelector } from '../atoms/subsetAtoms';
 
 const hide = css`
   opacity: 0;
@@ -21,14 +24,20 @@ const show = css`
 export const CardinalityHeader: FC = () => {
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
-  const { dimensions, items, subsets } = useContext(UpsetContext);
+  const dimensions = useRecoilValue(dimensionsSelector);
+  const items = useRecoilValue(itemsAtom);
+  const subsets = useRecoilValue(subsetSelector);
+
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
   const [maxC, setMaxCardinality] = useRecoilState(maxCardinality);
 
   useEffect(() => {
     if (maxC !== -1) return;
-    const cardinalities = Object.values(subsets).map((s) => s.size);
+    const subs = Object.values(subsets.values);
+    if (subs.length === 0) return;
+
+    const cardinalities = subs.map((s) => s.size);
     const maxCard = Math.max(...cardinalities);
     setMaxCardinality(maxCard);
   }, [subsets, maxCardinality]);
@@ -46,25 +55,26 @@ export const CardinalityHeader: FC = () => {
   useEffect(() => {
     const { current: parent } = sliderParentRef;
     const { current } = sliderRef;
-    if (!current || !parent) return;
+    if (!current || !parent) return () => null;
 
     const dragBehavior = drag()
       .container(parent)
-      .on('start', function () {
+      .on('start', () => {
         setSliding(true);
       })
-      .on('drag', function (event) {
+      .on('drag', (event) => {
         let newPosition = event.x;
 
         if (newPosition < 0) newPosition = 0;
-        if (newPosition > dimensions.header.cardinality.width)
+        if (newPosition > dimensions.header.cardinality.width) {
           newPosition = dimensions.header.cardinality.width;
+        }
 
         const cardinality = globalScale.invert(newPosition);
 
         if (cardinality > 0.1 * itemCount) setMaxCardinality(cardinality);
       })
-      .on('end', function () {
+      .on('end', () => {
         setSliding(false);
       });
 
@@ -98,7 +108,7 @@ export const CardinalityHeader: FC = () => {
           margin={0}
           showLabel={false}
           label=""
-          tickFormatter={(_) => ''}
+          tickFormatter={() => ''}
         />
         <rect
           height={dimensions.header.cardinality.scaleHeight}
@@ -206,7 +216,7 @@ export const CardinalityHeader: FC = () => {
           margin={0}
           showLabel={false}
           label=""
-          tickFormatter={(_) => ''}
+          tickFormatter={() => ''}
         />
       </g>
     </g>

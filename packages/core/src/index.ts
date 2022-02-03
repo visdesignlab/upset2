@@ -12,3 +12,6 @@ export async function test() {
 
 export * from './process';
 export * from './types';
+export * from './aggregate';
+export * from './sort';
+export * from './filter';

@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC, useRef, useEffect, useState } from 'react';
+import React, { FC } from 'react';
 import { css } from '@emotion/react';
-import { ResizeObserver } from '@juggle/resize-observer';
 import translate from '../utils/transform';
 
 type SvgBaseSettings = {

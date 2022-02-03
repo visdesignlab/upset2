@@ -1,10 +1,13 @@
-import React, { useContext } from 'react';
-import { UpsetContext } from '../context/UpsetContext';
+import { useRecoilValue } from 'recoil';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { visibleSetsAtom } from '../atoms/setsAtoms';
+import { subsetSelector } from '../atoms/subsetAtoms';
 import translate from '../utils/transform';
 
 export const BackgroundRects = () => {
-  const context = useContext(UpsetContext);
-  const { dimensions, visibleSets, subsets } = context;
+  const dimensions = useRecoilValue(dimensionsSelector);
+  const visibleSets = useRecoilValue(visibleSetsAtom);
+  const subsets = useRecoilValue(subsetSelector);
 
   return (
     <>
@@ -33,14 +36,14 @@ export const BackgroundRects = () => {
         className="background-rows"
         transform={translate(dimensions.header.matrixColumn.labelHeight, 0)}
       >
-        {Object.values(subsets).map((subset, idx) => (
+        {subsets.order.map((subsetId, idx) => (
           <g
-            key={subset.id}
+            key={subsetId}
             transform={translate(0, idx * dimensions.body.rowHeight)}
           >
             <rect
-              key={subset.id}
-              className={subset.id}
+              key={subsetId}
+              className={subsetId}
               height={dimensions.body.rowHeight}
               width={dimensions.body.rowWidth}
               stroke="black"

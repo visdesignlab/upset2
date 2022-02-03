@@ -1,9 +1,11 @@
 /** @jsxImportSource @emotion/react */
 import { Subset } from '@visdesignlab/upset2-core';
-import React, { FC, useContext } from 'react';
+import { useRecoilValue } from 'recoil';
+
+import { FC } from 'react';
 import { css } from '@emotion/react';
 import translate from '../utils/transform';
-import { UpsetContext } from '../context/UpsetContext';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
 type Props = {
   subset: Subset;
@@ -19,7 +21,7 @@ const isMember = css`
 `;
 
 export const Matrix: FC<Props> = ({ subset, sets = [] }) => {
-  const { dimensions } = useContext(UpsetContext);
+  const dimensions = useRecoilValue(dimensionsSelector);
 
   const membership = sets.map((s) => subset.setMembership[s]);
   const memberCount = membership.filter((v) => v === 'Yes').length;

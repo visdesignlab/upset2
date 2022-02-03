@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC, useContext } from 'react';
-import { css } from '@emotion/react';
+import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
-import { maxCardinality, UpsetContext } from '../context/UpsetContext';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { maxCardinality } from '../atoms/maxCardinalityAtom';
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
 
@@ -11,7 +11,7 @@ type Props = {
 };
 
 export const CardinalityBar: FC<Props> = ({ size }) => {
-  const { dimensions } = useContext(UpsetContext);
+  const dimensions = useRecoilValue(dimensionsSelector);
   const cardinalityDomain = useRecoilValue(maxCardinality);
 
   const scale = useScale(
@@ -20,7 +20,7 @@ export const CardinalityBar: FC<Props> = ({ size }) => {
   );
 
   let fullBars = size > 0 ? Math.floor(size / cardinalityDomain) : size;
-  let rem: number = size % cardinalityDomain;
+  const rem = size % cardinalityDomain;
 
   const colors = ['#bdbdbd', '#888888', '#252525'];
 

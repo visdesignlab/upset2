@@ -161,7 +161,12 @@ export function getSubsets(
   sets: Sets,
   vSets: string[],
 ): Subsets {
-  if (vSets.length === 0) return {};
+  if (vSets.length === 0) {
+    return {
+      values: {},
+      order: [],
+    };
+  }
 
   const items = Object.values(dataItems);
 
@@ -170,7 +175,10 @@ export function getSubsets(
   const vSetNames = vSets.map((v) => sets[v].elementName);
 
   const comboCount = 2 ** vSets.length - 1;
-  const subsets: Subsets = {};
+  const subsets: Subsets = {
+    values: {},
+    order: [],
+  };
 
   const setIntersectionMembership: { [key: string]: string[] } = {};
 
@@ -228,7 +236,8 @@ export function getSubsets(
       deviation,
     };
 
-    subsets[subset.id] = subset;
+    subsets.values[subset.id] = subset;
+    subsets.order.push(subset.id);
   });
 
   return subsets;

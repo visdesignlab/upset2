@@ -1,5 +1,3 @@
-import { useMemo } from 'react';
-
 const margin = 5;
 
 const barWidth = 20;
@@ -14,7 +12,7 @@ export function calculateDimensions(
 ) {
   const header = {
     matrixColumn: {
-      barWidth: barWidth,
+      barWidth,
       width: nVisibleSets * barWidth + matrixLabelHeight,
       height: matrixColumnBarHeight,
       labelHeight: matrixLabelHeight,
@@ -26,14 +24,14 @@ export function calculateDimensions(
       scaleHeight: 30,
       gap: 3,
       buttonHeight: 25,
-      height: function () {
+      height() {
         return 2 * this.scaleHeight + 2 * this.gap + this.buttonHeight;
       },
     },
-    height: function () {
+    height() {
       return this.matrixColumn.height + this.matrixColumn.labelHeight;
     },
-    width: function () {
+    width() {
       return (
         this.matrixColumn.width +
         this.margin +
@@ -50,10 +48,10 @@ export function calculateDimensions(
       header.margin +
       header.cardinality.width +
       header.margin,
-    height: function () {
+    height() {
       return nIntersections * this.rowHeight;
     },
-    width: function () {
+    width() {
       return this.rowWidth;
     },
   };
@@ -66,15 +64,4 @@ export function calculateDimensions(
     width: header.width(),
     margin,
   };
-}
-
-export function useUpsetDimensions(
-  nVisibleSets: number,
-  nIntersections: number,
-) {
-  const dimensions = useMemo(() => {
-    return calculateDimensions(nVisibleSets, nIntersections);
-  }, [nVisibleSets, nIntersections]);
-
-  return dimensions;
 }
