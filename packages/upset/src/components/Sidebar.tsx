@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react';
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
+import { Fragment, useEffect, useState } from 'react';
 import {
   Accordion,
   AccordionDetails,
@@ -22,19 +24,31 @@ import {
 import { useRecoilState } from 'recoil';
 import {
   firstAggregateByAtom,
+  firstOverlapDegreeAtom,
   hideEmptyAtom,
   maxVisibleAtom,
   minVisibleAtom,
   secondAggregateByAtom,
+  secondOverlapDegreeAtom,
   sortByAtom,
 } from '../atoms/upsetConfigAtoms';
 
 export const Sidebar = () => {
   const [firstAggregateBy, setFirstaggregateBy] =
     useRecoilState(firstAggregateByAtom);
+
+  const [firstOverlapDegree, setFirstOverlapDegree] = useRecoilState(
+    firstOverlapDegreeAtom,
+  );
+
   const [secondAggregateBy, setSecondAggregateBy] = useRecoilState(
     secondAggregateByAtom,
   );
+
+  const [secondOverlapDegree, setSecondOverlapDegree] = useRecoilState(
+    secondOverlapDegreeAtom,
+  );
+
   const [sortBy, setSortBy] = useRecoilState(sortByAtom);
   const [maxVisible, setMaxVisible] = useRecoilState(maxVisibleAtom);
   const [minVisible, setMinVisible] = useRecoilState(minVisibleAtom);
@@ -51,8 +65,12 @@ export const Sidebar = () => {
   }, [firstAggregateBy]);
 
   return (
-    <>
-      <Accordion disableGutters>
+    <div
+      css={css`
+        width: 250px;
+      `}
+    >
+      <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Aggregation</Typography>
         </AccordionSummary>
@@ -63,16 +81,33 @@ export const Sidebar = () => {
               onChange={(ev) => {
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 setFirstaggregateBy(newAggBy);
-                if (newAggBy === 'None') setSecondAggregateBy('None');
+                if (newAggBy === 'None' || newAggBy === secondAggregateBy) {
+                  setSecondAggregateBy('None');
+                }
               }}
             >
               {aggregateByList.map((agg) => (
-                <FormControlLabel
-                  key={agg}
-                  value={agg}
-                  label={agg}
-                  control={<Radio size="small" />}
-                />
+                <Fragment key={agg}>
+                  <FormControlLabel
+                    key={agg}
+                    value={agg}
+                    label={agg}
+                    control={<Radio size="small" />}
+                  />
+                  {agg === 'Overlaps' && firstAggregateBy === agg && (
+                    <TextField
+                      label="Degree"
+                      size="small"
+                      type="number"
+                      value={firstOverlapDegree}
+                      onChange={(ev) => {
+                        let val = parseInt(ev.target.value, 10);
+                        if (val < 0) val = 0;
+                        setFirstOverlapDegree(val);
+                      }}
+                    />
+                  )}
+                </Fragment>
               ))}
             </RadioGroup>
           </FormControl>
@@ -100,12 +135,26 @@ export const Sidebar = () => {
               {aggregateByList
                 .filter((agg) => agg !== firstAggregateBy)
                 .map((agg) => (
-                  <FormControlLabel
-                    key={agg}
-                    value={agg}
-                    label={agg}
-                    control={<Radio size="small" />}
-                  />
+                  <Fragment key={agg}>
+                    <FormControlLabel
+                      value={agg}
+                      label={agg}
+                      control={<Radio size="small" />}
+                    />
+                    {agg === 'Overlaps' && secondAggregateBy === agg && (
+                      <TextField
+                        label="Degree"
+                        size="small"
+                        type="number"
+                        value={secondOverlapDegree}
+                        onChange={(ev) => {
+                          let val = parseInt(ev.target.value, 10);
+                          if (val < 0) val = 0;
+                          setSecondOverlapDegree(val);
+                        }}
+                      />
+                    )}
+                  </Fragment>
                 ))}
             </RadioGroup>
           </FormControl>
@@ -166,10 +215,15 @@ export const Sidebar = () => {
           />
           <FormGroup>
             <FormControlLabel
+              componentsProps={{
+                typography: {
+                  fontSize: '0.8em',
+                },
+              }}
               label="Hide Empty Intersections"
               control={
                 <Switch
-                  size="medium"
+                  size="small"
                   checked={hideEmpty}
                   onChange={(ev) => {
                     setHideEmpty(ev.target.checked);
@@ -180,6 +234,6 @@ export const Sidebar = () => {
           </FormGroup>
         </AccordionDetails>
       </Accordion>
-    </>
+    </div>
   );
 };

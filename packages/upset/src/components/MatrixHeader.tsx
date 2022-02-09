@@ -1,11 +1,13 @@
 /** @jsxImportSource @emotion/react */
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { css } from '@emotion/react';
 
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
 import { setsAtom, visibleSetsAtom } from '../atoms/setsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { columnHoverAtom } from '../atoms/hoverAtom';
+import { highlightBackground } from '../utils/styles';
 
 const matrixColumnBackgroundRect = css`
   fill: #f0f0f0;
@@ -20,6 +22,7 @@ export const MatrixHeader = () => {
   const sets = useRecoilValue(setsAtom);
   const visibleSets = useRecoilValue(visibleSetsAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
+  const [hoveredColumn, setHoveredColumn] = useRecoilState(columnHoverAtom);
 
   const { barWidth, height, labelHeight, angle } =
     dimensions.header.matrixColumn;
@@ -32,10 +35,20 @@ export const MatrixHeader = () => {
   return (
     <g>
       {visibleSets.map((setName, idx) => (
-        <g key={setName} transform={translate(idx * barWidth, 0)}>
+        <g
+          key={setName}
+          transform={translate(idx * barWidth, 0)}
+          onMouseEnter={() => {
+            setHoveredColumn(setName);
+          }}
+          onMouseOut={() => {
+            setHoveredColumn(null);
+          }}
+        >
           <rect
             css={css`
               ${matrixColumnBackgroundRect}
+              ${hoveredColumn === setName && highlightBackground}
             `}
             className={setName}
             height={height}
@@ -53,11 +66,20 @@ export const MatrixHeader = () => {
             fill="gray"
             transform={translate(0, height - scale(sets[setName].size))}
           />
-          <g transform={translate(0, height)}>
+          <g
+            transform={translate(0, height)}
+            onMouseEnter={() => {
+              setHoveredColumn(setName);
+            }}
+            onMouseOut={() => {
+              setHoveredColumn(null);
+            }}
+          >
             <rect
               className={setName}
               css={css`
                 ${matrixColumnBackgroundRect}
+                ${hoveredColumn === setName && highlightBackground}
               `}
               height={labelHeight}
               width={barWidth}
@@ -73,6 +95,7 @@ export const MatrixHeader = () => {
               )}rotate(${angle})`}
               textAnchor="end"
               dominantBaseline="middle"
+              pointerEvents="none"
             >
               {sets[setName].elementName}
             </text>

@@ -1,6 +1,6 @@
 import { selector } from 'recoil';
 import { calculateDimensions } from '../dimensions';
-import { renderRowsCountSelector } from './renderRowsAtom';
+import { rowsCountSelector } from './renderRowsAtom';
 import { visibleSetsAtom } from './setsAtoms';
 
 export const dimensionsSelector = selector<
@@ -9,7 +9,7 @@ export const dimensionsSelector = selector<
   key: 'dimensions',
   get: ({ get }) => {
     const visibleSets = get(visibleSetsAtom);
-    const rowCount = get(renderRowsCountSelector);
+    const rowCount = get(rowsCountSelector);
 
     return calculateDimensions(visibleSets.length, rowCount);
   },

@@ -1,14 +1,51 @@
 import { AggregateBy, SortBy, UpsetConfig } from '@visdesignlab/upset2-core';
 import { atom, DefaultValue, selector } from 'recoil';
+import { visibleSetsAtom } from './setsAtoms';
 
 export const firstAggregateByAtom = atom<AggregateBy>({
   key: 'fab',
-  default: 'None',
+  default: 'Degree',
+});
+
+const firstOverlapDegreeBaseAtom = atom({
+  key: 'fab_degree',
+  default: 2,
+});
+
+export const firstOverlapDegreeAtom = selector<number>({
+  key: 'fab_degree_selector',
+  get: ({ get }) => get(firstOverlapDegreeBaseAtom),
+  set: ({ get, set }, val) => {
+    const visibleSets = get(visibleSetsAtom);
+    let toSet = val;
+    if (val < 0) toSet = 0;
+    if (val > visibleSets.length) toSet = visibleSets.length;
+
+    set(firstOverlapDegreeBaseAtom, toSet);
+  },
 });
 
 export const secondAggregateByAtom = atom<AggregateBy>({
   key: 'sab',
-  default: 'None',
+  default: 'Sets',
+});
+
+const secondOverlapDegreeBaseAtom = atom({
+  key: 'sab_degree',
+  default: 2,
+});
+
+export const secondOverlapDegreeAtom = selector<number>({
+  key: 'sab_degree_selector',
+  get: ({ get }) => get(secondOverlapDegreeBaseAtom),
+  set: ({ get, set }, val) => {
+    const visibleSets = get(visibleSetsAtom);
+    let toSet = val;
+    if (val < 0) toSet = 0;
+    if (val > visibleSets.length) toSet = visibleSets.length;
+
+    set(secondOverlapDegreeBaseAtom, toSet);
+  },
 });
 
 export const sortByAtom = atom<SortBy>({
@@ -35,7 +72,9 @@ export const upsetConfigSelector = selector<UpsetConfig>({
   key: 'upsetConfig',
   get: ({ get }) => {
     const firstAggregateBy = get(firstAggregateByAtom);
+    const firstOverlapDegree = get(firstOverlapDegreeAtom);
     const secondAggregateBy = get(secondAggregateByAtom);
+    const secondOverlapDegree = get(secondOverlapDegreeAtom);
     const sortBy = get(sortByAtom);
     const maxVisible = get(maxVisibleAtom);
     const minVisible = get(minVisibleAtom);
@@ -43,6 +82,8 @@ export const upsetConfigSelector = selector<UpsetConfig>({
 
     return {
       firstAggregateBy,
+      firstOverlapDegree,
+      secondOverlapDegree,
       secondAggregateBy,
       sortBy,
       filters: {
@@ -54,7 +95,9 @@ export const upsetConfigSelector = selector<UpsetConfig>({
   },
   set: ({ get, set, reset }, val) => {
     const firstAggregateBy = get(firstAggregateByAtom);
+    const firstOverlapDegree = get(firstOverlapDegreeAtom);
     const secondAggregateBy = get(secondAggregateByAtom);
+    const secondOverlapDegree = get(secondOverlapDegreeAtom);
     const sortBy = get(sortByAtom);
     const maxVisible = get(maxVisibleAtom);
     const minVisible = get(minVisibleAtom);
@@ -62,7 +105,9 @@ export const upsetConfigSelector = selector<UpsetConfig>({
 
     if (val instanceof DefaultValue) {
       reset(firstAggregateByAtom);
+      reset(firstOverlapDegreeAtom);
       reset(secondAggregateByAtom);
+      reset(secondOverlapDegreeAtom);
       reset(sortByAtom);
       reset(maxVisibleAtom);
       reset(minVisibleAtom);
@@ -72,8 +117,16 @@ export const upsetConfigSelector = selector<UpsetConfig>({
         set(firstAggregateByAtom, val.firstAggregateBy);
       }
 
+      if (firstOverlapDegree !== val.firstOverlapDegree) {
+        set(firstOverlapDegreeAtom, val.firstOverlapDegree);
+      }
+
       if (secondAggregateBy !== val.secondAggregateBy) {
         set(secondAggregateByAtom, val.secondAggregateBy);
+      }
+
+      if (secondOverlapDegree !== val.secondOverlapDegree) {
+        set(secondOverlapDegreeAtom, val.secondOverlapDegree);
       }
 
       if (sortBy !== val.sortBy) {

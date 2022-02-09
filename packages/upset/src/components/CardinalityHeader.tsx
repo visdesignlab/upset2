@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import { FC, useEffect, useRef, useState } from 'react';
 import { css } from '@emotion/react';
+import { FC, useEffect, useRef, useState } from 'react';
 import { drag, select } from 'd3';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import translate from '../utils/transform';
 import { useScale } from '../hooks/useScale';
 import { Axis } from './Axis';
@@ -10,6 +10,7 @@ import { maxCardinality } from '../atoms/maxCardinalityAtom';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { subsetSelector } from '../atoms/subsetAtoms';
+import { sortByAtom } from '../atoms/upsetConfigAtoms';
 
 const hide = css`
   opacity: 0;
@@ -27,6 +28,7 @@ export const CardinalityHeader: FC = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
   const subsets = useRecoilValue(subsetSelector);
+  const setSortBy = useSetRecoilState(sortByAtom);
 
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
@@ -176,11 +178,17 @@ export const CardinalityHeader: FC = () => {
             stroke: black;
             opacity: 0.5;
             stroke-width: 0.3px;
+            cursor: s-resize;
           `}
           height={dimensions.header.cardinality.buttonHeight}
           width={dimensions.header.cardinality.width}
+          onClick={() => setSortBy('Cardinality')}
         />
         <text
+          css={css`
+            pointer-event: none;
+            cursor: s-resize;
+          `}
           dominantBaseline="middle"
           transform={translate(
             dimensions.header.cardinality.width / 2,

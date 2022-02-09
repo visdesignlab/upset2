@@ -22,10 +22,22 @@ export function calculateDimensions(
     cardinality: {
       width: attributeWidth,
       scaleHeight: 30,
+      plotHeight: 18,
       gap: 3,
       buttonHeight: 25,
+      textMargin: 70,
       height() {
         return 2 * this.scaleHeight + 2 * this.gap + this.buttonHeight;
+      },
+    },
+    attribute: {
+      width: attributeWidth,
+      scaleHeight: 30,
+      buttonHeight: 25,
+      gap: 3,
+      plotHeight: 18,
+      height() {
+        return this.scaleHeight + this.gap + this.buttonHeight;
       },
     },
     height() {
@@ -36,24 +48,23 @@ export function calculateDimensions(
         this.matrixColumn.width +
         this.margin +
         this.cardinality.width +
+        this.cardinality.textMargin +
+        this.attribute.width +
         this.margin
       );
     },
   };
 
   const body = {
-    rowHeight: 20,
-    rowWidth:
-      nVisibleSets * barWidth +
-      header.margin +
-      header.cardinality.width +
-      header.margin,
+    rowHeight: 24,
+    rowWidth: header.width(),
     height() {
       return nIntersections * this.rowHeight;
     },
     width() {
       return this.rowWidth;
     },
+    aggregateOffset: 15,
   };
 
   return {

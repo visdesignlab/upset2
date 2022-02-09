@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { Subset } from '@visdesignlab/upset2-core';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { FC } from 'react';
 import { css } from '@emotion/react';
 import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { columnHoverAtom } from '../atoms/hoverAtom';
 
 type Props = {
   subset: Subset;
@@ -22,6 +23,7 @@ const isMember = css`
 
 export const Matrix: FC<Props> = ({ subset, sets = [] }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const setHoveredColumn = useSetRecoilState(columnHoverAtom);
 
   const membership = sets.map((s) => subset.setMembership[s]);
   const memberCount = membership.filter((v) => v === 'Yes').length;
@@ -48,10 +50,17 @@ export const Matrix: FC<Props> = ({ subset, sets = [] }) => {
               r={
                 membershipStatus === 'May'
                   ? '4'
-                  : (dimensions.header.matrixColumn.barWidth - 2) / 2
+                  : (dimensions.header.matrixColumn.barWidth - 5) / 2
               }
               cx={idx * dimensions.header.matrixColumn.barWidth}
               cy={dimensions.body.rowHeight / 2}
+              pointerEvents="all"
+              onMouseEnter={() => {
+                setHoveredColumn(set);
+              }}
+              onMouseLeave={() => {
+                setHoveredColumn(null);
+              }}
             />
           );
         })}

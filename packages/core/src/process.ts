@@ -41,7 +41,7 @@ function calculateDeviation(
   return dev * 100;
 }
 
-function getIdGenerator(prefix?: string) {
+export function getIdGenerator(prefix?: string) {
   const gen = hyperid({ urlSafe: true });
 
   if (prefix && prefix.length > 0) {
@@ -217,7 +217,7 @@ export function getSubsets(
       itm.length,
       sets,
       vSets,
-      vSets.filter((d) => d === 'Yes'),
+      vSets.filter((_, i) => combo[i] === 'Yes'),
     );
 
     const setMembershipStatus: { [col: string]: SetMembershipStatus } = {};

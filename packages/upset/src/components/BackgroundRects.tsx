@@ -1,13 +1,19 @@
+/** @jsxImportSource @emotion/react */
+import { css } from '@emotion/react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { columnHoverAtom, rowHoverAtom } from '../atoms/hoverAtom';
 import { visibleSetsAtom } from '../atoms/setsAtoms';
 import { subsetSelector } from '../atoms/subsetAtoms';
+import { highlightBackground } from '../utils/styles';
 import translate from '../utils/transform';
 
 export const BackgroundRects = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetsAtom);
   const subsets = useRecoilValue(subsetSelector);
+  const hoveredRow = useRecoilValue(rowHoverAtom);
+  const hoveredColumn = useRecoilValue(columnHoverAtom);
 
   return (
     <>
@@ -22,12 +28,12 @@ export const BackgroundRects = () => {
           >
             <rect
               className={setName}
+              css={css`
+                ${hoveredColumn === setName && highlightBackground}
+              `}
               height={dimensions.body.height()}
               width={dimensions.header.matrixColumn.barWidth}
-              stroke="black"
-              strokeWidth="0.3"
               fill="none"
-              opacity="0.2"
             />
           </g>
         ))}
@@ -44,12 +50,12 @@ export const BackgroundRects = () => {
             <rect
               key={subsetId}
               className={subsetId}
+              css={css`
+                ${hoveredRow === subsetId && highlightBackground}
+              `}
               height={dimensions.body.rowHeight}
               width={dimensions.body.rowWidth}
-              stroke="black"
-              strokeWidth="0.3"
               fill="none"
-              opacity="0.2"
             />
           </g>
         ))}

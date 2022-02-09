@@ -1,33 +1,50 @@
-import { areRowsSubsets, Subsets, Rows } from './types';
+import { Aggregates, Intersections, areRowsSubsets, Rows } from './types';
+import { deepCopy } from './utils';
 
-function filterSubsets(
-  subsets: Subsets,
+function filterIntersections<T extends Intersections>(
+  rows: T,
   filters: { maxVisible: number; minVisible: number; hideEmpty: boolean },
-): Subsets {
-  if (filters.hideEmpty) {
-    const { values, order } = subsets;
+) {
+  const { values, order } = rows;
 
-    const newOrder = order.filter((id) => values[id].size > 0);
+  const newOrder = order.filter((id) => {
+    let shouldKeep = true;
 
-    const newValues: typeof values = {};
+    if (filters.hideEmpty) {
+      shouldKeep = values[id].size > 0;
+    }
 
-    newOrder.forEach((id) => {
-      newValues[id] = values[id];
-    });
+    return shouldKeep;
+  });
 
-    return { values: newValues, order: newOrder };
-  }
+  const newValues: typeof values = {};
 
-  return subsets;
+  newOrder.forEach((id) => {
+    newValues[id] = values[id];
+  });
+
+  return { values: newValues, order: newOrder };
 }
 
 export function filterRows(
-  rows: Rows,
+  baseRows: Rows,
   filters: { maxVisible: number; minVisible: number; hideEmpty: boolean },
 ): Rows {
+  const rows = deepCopy(baseRows);
+
   if (areRowsSubsets(rows)) {
-    return filterSubsets(rows, filters);
+    return filterIntersections(rows, filters);
   }
 
-  return rows;
+  const aggs: Aggregates = filterIntersections(rows as any, filters) as any;
+
+  aggs.order.forEach((aggId) => {
+    const { items } = aggs.values[aggId];
+
+    const newItems = filterRows(items, filters);
+
+    aggs.values[aggId].items = newItems;
+  });
+
+  return aggs;
 }

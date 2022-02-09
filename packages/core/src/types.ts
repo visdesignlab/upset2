@@ -42,16 +42,24 @@ export type SetMembershipStatus = 'Yes' | 'No' | 'May';
 export type ISet = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
+
+export const UNINCLUDED = 'unincluded';
+
 export type Sets = { [set_id: string]: ISet };
 
-type BaseIntersection = {
+type BaseIntersection = ISet & {
   deviation: number;
 };
 
-export type Subset = ISet & BaseIntersection;
+export type Subset = BaseIntersection;
 
 export type Subsets = {
   values: { [subset_id: string]: Subset };
+  order: string[];
+};
+
+export type Intersections = {
+  values: { [k: string]: BaseIntersection };
   order: string[];
 };
 
@@ -70,6 +78,7 @@ export type SortBy = typeof sortByList[number];
 export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
+  description: string;
   items:
     | Subsets
     | {
@@ -85,6 +94,8 @@ export type Aggregates = {
 
 export type Rows = Subsets | Aggregates;
 
+export type Row = Subset | Aggregate;
+
 export type CoreUpsetData = {
   label: ColumnName;
   setColumns: ColumnName[];
@@ -95,7 +106,9 @@ export type CoreUpsetData = {
 
 export type UpsetConfig = {
   firstAggregateBy: AggregateBy;
+  firstOverlapDegree: number;
   secondAggregateBy: AggregateBy;
+  secondOverlapDegree: number;
   sortBy: SortBy;
   filters: {
     maxVisible: number;
@@ -122,4 +135,27 @@ export function areRowsSubsets(rr: Rows): rr is Subsets {
   const row = rr.values[order[0]];
 
   return row.type === 'Subset';
+}
+
+export function isRowAggregate(row: Row): row is Aggregate {
+  return row.type === 'Aggregate';
+}
+
+export function isRowSubset(row: Row): row is Subset {
+  return row.type === 'Subset';
+}
+
+export function getDegreeFromSetMembership(membership: {
+  [key: string]: SetMembershipStatus;
+}): number {
+  if (Object.values(membership).length === 0) return -1;
+  return Object.values(membership).filter((m) => m === 'Yes').length;
+}
+
+export function getBelongingSetsFromSetMembership(membership: {
+  [key: string]: SetMembershipStatus;
+}): string[] {
+  return Object.entries(membership)
+    .filter((mem) => mem[1] === 'Yes')
+    .map((mem) => mem[0]);
 }
