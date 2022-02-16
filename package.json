@@ -14,27 +14,6 @@
     "publish-canary": "echo 'Do something'",
     "publish-stable": "echo 'Do something'"
   },
-  "turbo": {
-    "pipeline": {
-      "build": {
-        "dependsOn": [
-          "^build"
-        ],
-        "outputs": [
-          "dist/**"
-        ]
-      },
-      "test": {
-        "outputs": []
-      },
-      "dev": {
-        "cache": false
-      },
-      "storybook": {
-        "cache": false
-      }
-    }
-  },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",
