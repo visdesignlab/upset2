@@ -4,7 +4,7 @@ import { visibleSetsAtom } from './setsAtoms';
 
 export const firstAggregateByAtom = atom<AggregateBy>({
   key: 'fab',
-  default: 'Degree',
+  default: 'Deviations',
 });
 
 const firstOverlapDegreeBaseAtom = atom({

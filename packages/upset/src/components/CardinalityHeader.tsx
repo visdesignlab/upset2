@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { FC, useEffect, useRef, useState } from 'react';
+import React, { FC, useEffect, useRef, useState } from 'react';
 import { drag, select } from 'd3';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import translate from '../utils/transform';

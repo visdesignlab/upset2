@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { CoreUpsetData } from '@visdesignlab/upset2-core';
 import { Box } from '@mui/material';
 import { RecoilRoot } from 'recoil';

@@ -4,15 +4,16 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "module": "dist/upset2-react.esm.js",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
     "node": ">=10"
   },
   "scripts": {
     "start": "tsdx watch",
+    "dev": "yarn run start",
     "build": "tsdx build",
     "test": "tsdx test --passWithNoTests",
     "lint": "tsdx lint",
@@ -20,7 +21,6 @@
     "size": "size-limit",
     "analyze": "size-limit --why",
     "storybook": "start-storybook -p 6006",
-    "dev": "yarn run storybook",
     "build-storybook": "build-storybook"
   },
   "peerDependencies": {
@@ -32,17 +32,6 @@
     }
   },
   "author": "Kiran Gadhave",
-  "module": "dist/packagesupset.esm.js",
-  "size-limit": [
-    {
-      "path": "dist/packagesupset.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/packagesupset.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@size-limit/preset-small-lib": "^7.0.5",
@@ -57,8 +46,6 @@
     "@types/react-dom": "^17.0.11",
     "babel-loader": "^8.2.3",
     "husky": "^7.0.4",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2",
     "react-is": "^17.0.2",
     "size-limit": "^7.0.5",
     "tsdx": "^0.14.1",
@@ -74,6 +61,9 @@
     "@mui/material": "^5.3.0",
     "@visdesignlab/upset2-core": "*",
     "d3": "^7.3.0",
+    "multinet": "^0.21.6",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "recoil": "^0.5.2"
   }
 }

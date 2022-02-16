@@ -1,5 +1,5 @@
 import { Subset } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { visibleSetsAtom } from '../atoms/setsAtoms';
 import { CardinalityBar } from './CardinalityBars';

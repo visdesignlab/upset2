@@ -3,4 +3,4 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-export * from './components/Upset';
+export { Upset } from './components/Upset';

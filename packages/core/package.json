@@ -4,9 +4,9 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
+  "module": "dist/upset2-core.esm.js",
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "engines": {
     "node": ">=10"
@@ -28,7 +28,6 @@
     }
   },
   "author": "Kiran Gadhave",
-  "module": "dist/packagescore.esm.js",
   "size-limit": [
     {
       "path": "dist/packagescore.cjs.production.min.js",
@@ -41,7 +40,7 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.5",
-    "@types/lodash": "^4.14.178",
+    "@types/lodash-es": "^4.14.178",
     "@types/d3": "^7.1.0",
     "husky": "^7.0.4",
     "size-limit": "^7.0.5",
@@ -51,7 +50,7 @@
   },
   "dependencies": {
     "d3": "^7.3.0",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "lodash.combinations": "^18.10.0",
     "hyperid": "^3.0.0"
   }

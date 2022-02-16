@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useRecoilState, useRecoilValue } from 'recoil';
 import { css } from '@emotion/react';
-
+import React from 'react';
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
 import { setsAtom, visibleSetsAtom } from '../atoms/setsAtoms';

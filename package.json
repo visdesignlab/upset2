@@ -7,6 +7,7 @@
   "nohoist": [],
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache",
+    "storybook": "turbo run storybook",
     "test": "turbo run test",
     "build": "turbo run build",
     "prepublish": "lerna run prepublish",
@@ -28,6 +29,9 @@
       },
       "dev": {
         "cache": false
+      },
+      "storybook": {
+        "cache": false
       }
     }
   },
@@ -41,7 +45,8 @@
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-react-hooks": "^4.3.0",
     "lerna": "^4.0.0",
-    "turbo": "^1.0.24"
+    "turbo": "^1.0.24",
+    "typescript": "^4.5.5"
   },
   "prettier": {
     "printWidth": 80,

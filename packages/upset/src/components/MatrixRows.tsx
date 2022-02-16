@@ -1,5 +1,5 @@
+import React, { FC } from 'react';
 import { isRowAggregate, Row } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { RenderRow } from '../atoms/renderRowsAtom';

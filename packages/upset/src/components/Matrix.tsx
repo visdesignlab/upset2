@@ -1,8 +1,8 @@
 /** @jsxImportSource @emotion/react */
+import React, { FC } from 'react';
 import { Subset } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { FC } from 'react';
 import { css } from '@emotion/react';
 import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';

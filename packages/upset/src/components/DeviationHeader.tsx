@@ -1,3 +1,4 @@
+import React from 'react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { maxDeviationSelector } from '../atoms/maxAtoms';
