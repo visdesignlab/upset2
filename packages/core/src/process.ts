@@ -1,16 +1,17 @@
 import { DSVRowArray } from 'd3';
 import hyperid from 'hyperid';
+
 import {
   ColumnDefs,
-  Subsets,
-  Sets,
   ColumnName,
-  Meta,
-  SetMembershipStatus,
-  Subset,
+  CoreUpsetData,
   ISet,
   Item,
-  CoreUpsetData,
+  Meta,
+  SetMembershipStatus,
+  Sets,
+  Subset,
+  Subsets,
 } from './types';
 
 function calculateDeviation(
@@ -92,7 +93,8 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
       }
 
       if (type === 'boolean') {
-        item[col] = parseInt(item[col] as any, 10);
+        const val = item[col];
+        item[col] = typeof val === 'boolean' ? +val : parseInt(val as any, 10);
 
         if (!setMembership[col]) setMembership[col] = [];
 

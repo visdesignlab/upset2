@@ -1,12 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { CoreUpsetData } from '@visdesignlab/upset2-core';
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
+
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
-import { multinetApi } from 'multinet';
 import { Body } from './Body';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
@@ -21,11 +21,6 @@ type Props = {
   data: CoreUpsetData;
 };
 
-function test() {
-  const api = multinetApi('http://localhost:8000/api');
-  console.log(api.userInfo());
-}
-
 export const Root: FC<Props> = ({ data }) => {
   const setSets = useRecoilState(setsAtom)[1];
   const setItems = useRecoilState(itemsAtom)[1];
@@ -33,7 +28,6 @@ export const Root: FC<Props> = ({ data }) => {
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
-    test();
   }, [data, setSets, setItems]);
 
   const dimensions = useRecoilValue(dimensionsSelector);

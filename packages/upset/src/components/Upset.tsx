@@ -1,6 +1,6 @@
-import React, { FC } from 'react';
-import { CoreUpsetData } from '@visdesignlab/upset2-core';
 import { Box } from '@mui/material';
+import { CoreUpsetData } from '@visdesignlab/upset2-core';
+import React, { FC } from 'react';
 import { RecoilRoot } from 'recoil';
 
 import { Root } from './Root';

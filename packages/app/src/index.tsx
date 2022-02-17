@@ -1,16 +1,24 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import App from './App';
+import './index.css';
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import './index.css';
+
+import React, { Suspense } from 'react';
+import ReactDOM from 'react-dom';
+import { RecoilRoot } from 'recoil';
+
+import App from './App';
+
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <RecoilRoot>
+      <Suspense fallback={<div>...Loading</div>}>
+        <App />
+      </Suspense>
+    </RecoilRoot>
   </React.StrictMode>,
   document.getElementById('root'),
 );
