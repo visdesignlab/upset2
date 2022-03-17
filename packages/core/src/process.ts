@@ -1,12 +1,13 @@
-import { DSVRowArray } from 'd3';
-import hyperid from 'hyperid';
+import { DSVRowArray, max, mean, median, min, quantile } from 'd3';
 
 import {
+  Attributes,
   ColumnDefs,
   ColumnName,
   CoreUpsetData,
   ISet,
   Item,
+  Items,
   Meta,
   SetMembershipStatus,
   Sets,
@@ -42,14 +43,8 @@ function calculateDeviation(
   return dev * 100;
 }
 
-export function getIdGenerator(prefix?: string) {
-  const gen = hyperid({ urlSafe: true });
-
-  if (prefix && prefix.length > 0) {
-    return () => `${prefix}_${gen()}`;
-  }
-
-  return gen;
+export function getId(prefix: string, ...arr: string[]) {
+  return `${prefix}_${arr.map((s) => s.replace(' ', '_')).join('_')}`;
 }
 
 function getLabel(columns: ColumnDefs): ColumnName | false {
@@ -68,17 +63,23 @@ function getSetColumns(columns: ColumnDefs): ColumnName[] {
     .map((col) => col[0]);
 }
 
+function getAttributeColumns(columns: ColumnDefs): ColumnName[] {
+  return Object.entries(columns)
+    .filter((col) => col[1] === 'number')
+    .map((col) => col[0]);
+}
+
 function processRawData(data: DSVRowArray, columns: ColumnDefs) {
-  const itemId = getIdGenerator('Item');
   const labelColumn = getLabel(columns) || '_id';
   const setColumns = getSetColumns(columns);
+  const attributeColumns = getAttributeColumns(columns);
 
   const items: { [id: string]: Item } = {};
 
   const setMembership: { [col: string]: string[] } = {};
 
-  data.forEach((row) => {
-    const id = itemId();
+  data.forEach((row, idx) => {
+    const id = getId('Item', idx.toString());
 
     const item: Item = {
       _id: id,
@@ -106,17 +107,41 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
   return {
     labelColumn,
     setColumns,
+    attributeColumns,
     items,
     setMembership,
   };
 }
 
+export function getFiveNumberSummary(
+  items: Items,
+  memberItems: string[],
+  attributeColumns: string[],
+): Attributes {
+  const attributes: Attributes = {};
+
+  attributeColumns.forEach((attribute) => {
+    const values = memberItems.map((d) => items[d][attribute] as number);
+
+    attributes[attribute] = {
+      min: min(values) || 0,
+      max: max(values) || 0,
+      median: median(values) || 0,
+      mean: mean(values) || 0,
+      first: quantile(values, 0.25) || 0,
+      third: quantile(values, 0.75) || 0,
+    };
+  });
+
+  return attributes;
+}
+
 function getSets(
   setMembership: { [col: string]: string[] },
   setColumns: ColumnName[],
+  items: Items,
+  attributeColumns: ColumnName[],
 ) {
-  const setIdGen = getIdGenerator('Set');
-
   const setMembershipStatus: { [col: string]: SetMembershipStatus } = {};
 
   setColumns.forEach((set) => {
@@ -126,12 +151,17 @@ function getSets(
   const sets: Sets = {};
   setColumns.forEach((col) => {
     const set: ISet = {
-      id: setIdGen(),
+      id: getId('Set', col),
       elementName: col,
       items: setMembership[col],
       type: 'Set',
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
+      attributes: getFiveNumberSummary(
+        items,
+        setMembership[col],
+        attributeColumns,
+      ),
     };
 
     sets[set.id] = set;
@@ -143,15 +173,14 @@ function getSets(
 export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
   const { columns } = meta;
 
-  const { items, setMembership, labelColumn, setColumns } = processRawData(
-    data,
-    columns,
-  );
-  const sets = getSets(setMembership, setColumns);
+  const { items, setMembership, labelColumn, setColumns, attributeColumns } =
+    processRawData(data, columns);
+  const sets = getSets(setMembership, setColumns, items, attributeColumns);
 
   return {
     label: labelColumn,
     setColumns,
+    attributeColumns,
     columns: Object.keys(columns),
     items,
     sets,
@@ -162,6 +191,7 @@ export function getSubsets(
   dataItems: { [k: string]: Item },
   sets: Sets,
   vSets: string[],
+  attributeColumns: string[],
 ): Subsets {
   if (vSets.length === 0) {
     return {
@@ -171,8 +201,6 @@ export function getSubsets(
   }
 
   const items = Object.values(dataItems);
-
-  const subsetIdGen = getIdGenerator('Subset');
 
   const vSetNames = vSets.map((v) => sets[v].elementName);
 
@@ -229,13 +257,14 @@ export function getSubsets(
     });
 
     const subset: Subset = {
-      id: subsetIdGen(),
+      id: getId('Subset', intersectionName[comboBinary]),
       elementName: intersectionName[comboBinary],
       items: itm,
       size: itm.length,
       type: 'Subset',
       setMembership: setMembershipStatus,
       deviation,
+      attributes: getFiveNumberSummary(dataItems, itm, attributeColumns),
     };
 
     subsets.values[subset.id] = subset;

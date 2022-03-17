@@ -1,6 +1,9 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC } from 'react';
+import '@fortawesome/fontawesome-free/css/all.css';
+
 import { css } from '@emotion/react';
+import React, { FC } from 'react';
+
 import translate from '../utils/transform';
 
 type SvgBaseSettings = {
@@ -21,6 +24,11 @@ export const SvgBase: FC<Props> = ({ children, defaultSettings = {} }) => {
       css={css`
         height: 100%;
         width: 100%;
+        text.icon {
+          font-family: 'Font Awesome 5 Free';
+          font-weight: 700;
+          font-size: 12px;
+        }
       `}
     >
       <svg height={height + 2 * margin} width={width + 2 * margin}>

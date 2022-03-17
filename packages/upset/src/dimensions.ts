@@ -1,78 +1,98 @@
-const margin = 5;
-
-const barWidth = 20;
-const matrixColumnBarHeight = 75;
-const matrixLabelHeight = 100;
-const matrixAngle = 45;
-const attributeWidth = 200;
-
 export function calculateDimensions(
   nVisibleSets: number = 0,
+  nHiddenSets: number = 0,
   nIntersections: number = 0,
+  nAttributes: number = 0,
 ) {
-  const header = {
-    matrixColumn: {
-      barWidth,
-      width: nVisibleSets * barWidth + matrixLabelHeight,
-      height: matrixColumnBarHeight,
-      labelHeight: matrixLabelHeight,
-      angle: matrixAngle,
+  const gap = 20;
+
+  const margin = 5;
+
+  const attribute = {
+    width: 200,
+    labelHeight: 20,
+    vGap: 25,
+    gap: 5,
+    scaleHeight: 30,
+    buttonHeight: 25,
+    plotHeight: 18,
+    get height() {
+      return this.scaleHeight + this.gap + this.buttonHeight;
     },
-    margin: 20,
+  };
+
+  const set = {
+    width: 20,
     cardinality: {
-      width: attributeWidth,
-      scaleHeight: 30,
-      plotHeight: 18,
-      gap: 3,
-      buttonHeight: 25,
-      textMargin: 70,
-      height() {
-        return 2 * this.scaleHeight + 2 * this.gap + this.buttonHeight;
-      },
+      height: 100,
     },
-    attribute: {
-      width: attributeWidth,
-      scaleHeight: 30,
-      buttonHeight: 25,
-      gap: 3,
-      plotHeight: 18,
-      height() {
-        return this.scaleHeight + this.gap + this.buttonHeight;
-      },
+    label: {
+      height: 100,
+      skew: 45,
     },
-    height() {
-      return this.matrixColumn.height + this.matrixColumn.labelHeight;
+  };
+
+  const matrixColumn = {
+    visibleSetsWidth: set.width * nVisibleSets,
+    buttonsWidth: 150,
+    hiddenSetsWidth: (set.width + 2) * nHiddenSets,
+    width: set.label.height + set.width * nVisibleSets,
+    get totalWidth() {
+      return this.width + gap + this.buttonsWidth + gap;
     },
-    width() {
-      return (
-        this.matrixColumn.width +
-        this.margin +
-        this.cardinality.width +
-        this.cardinality.textMargin +
-        this.attribute.width +
-        this.margin
-      );
+  };
+
+  const cardinality = {
+    scaleHeight: 30,
+    buttonHeight: 25,
+    gap: 3,
+    textMargin: 30,
+    plotHeight: attribute.plotHeight,
+    get height() {
+      return 2 * this.scaleHeight + 2 * this.gap + this.buttonHeight;
     },
+    get width() {
+      return attribute.width + this.textMargin;
+    },
+  };
+
+  const header = {
+    totalWidth:
+      set.label.height + // Label Height === Label Width
+      set.width * nVisibleSets + // Offset for total sets
+      gap + // Add margin
+      cardinality.width + // Cardinality
+      gap + //
+      attribute.width + // Deviation
+      attribute.vGap +
+      (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
+    totalHeight: set.cardinality.height + set.label.height,
   };
 
   const body = {
     rowHeight: 24,
-    rowWidth: header.width(),
-    height() {
+    rowWidth: header.totalWidth,
+    aggregateOffset: 15,
+    get height() {
       return nIntersections * this.rowHeight;
     },
-    width() {
-      return this.rowWidth;
-    },
-    aggregateOffset: 15,
   };
 
+  const totalWidth =
+    matrixColumn.totalWidth > header.totalWidth
+      ? matrixColumn.totalWidth
+      : header.totalWidth;
+
   return {
-    barWidth,
-    header,
+    height: header.totalHeight + body.height,
+    width: totalWidth,
+    cardinality,
     body,
-    height: header.height() + 5 + body.height(),
-    width: header.width(),
+    matrixColumn,
     margin,
+    gap,
+    attribute,
+    set,
+    header,
   };
 }

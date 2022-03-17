@@ -1,6 +1,5 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React from 'react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -31,7 +30,7 @@ export const CardinalityBar: FC<Props> = ({ size }) => {
 
   const scale = useScale(
     [0, cardinalityDomain],
-    [0, dimensions.header.cardinality.width],
+    [0, dimensions.attribute.width],
   );
 
   let fullBars = size > 0 ? Math.floor(size / cardinalityDomain) : size;
@@ -55,24 +54,23 @@ export const CardinalityBar: FC<Props> = ({ size }) => {
   return (
     <g
       transform={translate(
-        dimensions.header.matrixColumn.width + dimensions.header.margin,
-        (dimensions.body.rowHeight - dimensions.header.cardinality.plotHeight) /
-          2,
+        dimensions.matrixColumn.width + dimensions.gap,
+        (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,
       )}
     >
       {rectArray.map((arr) => (
         <rect
           transform={translate(0, (arr * offset) / 2)}
           key={arr}
-          height={dimensions.header.cardinality.plotHeight - arr * offset}
-          width={dimensions.header.cardinality.width}
+          height={dimensions.cardinality.plotHeight - arr * offset}
+          width={dimensions.attribute.width}
           css={colors[arr]}
         />
       ))}
       {fullBars < 3 && (
         <rect
           transform={translate(0, (fullBars * offset) / 2)}
-          height={dimensions.header.cardinality.plotHeight - fullBars * offset}
+          height={dimensions.cardinality.plotHeight - fullBars * offset}
           width={scale(rem)}
           css={colors[fullBars]}
         />
@@ -82,16 +80,16 @@ export const CardinalityBar: FC<Props> = ({ size }) => {
           <line
             stroke="white"
             strokeWidth="2px"
-            x1={dimensions.header.cardinality.width * 0.8}
-            x2={dimensions.header.cardinality.width * 0.85}
+            x1={dimensions.attribute.width * 0.8}
+            x2={dimensions.attribute.width * 0.85}
             y1={0}
             y2={dimensions.body.rowHeight}
           />
           <line
             stroke="white"
             strokeWidth="2px"
-            x1={dimensions.header.cardinality.width * 0.78}
-            x2={dimensions.header.cardinality.width * 0.83}
+            x1={dimensions.attribute.width * 0.78}
+            x2={dimensions.attribute.width * 0.83}
             y1={0}
             y2={dimensions.body.rowHeight}
           />
@@ -101,7 +99,7 @@ export const CardinalityBar: FC<Props> = ({ size }) => {
         textAnchor="start"
         dominantBaseline="middle"
         transform={translate(
-          (fullBars > 0 ? dimensions.header.cardinality.width : scale(rem)) + 5,
+          (fullBars > 0 ? dimensions.attribute.width : scale(rem)) + 5,
           dimensions.body.rowHeight / 2,
         )}
       >

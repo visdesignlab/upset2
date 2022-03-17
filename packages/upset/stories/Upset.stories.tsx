@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
 import { Meta, Story } from '@storybook/react';
-import { test, CoreUpsetData } from '@visdesignlab/upset2-core';
-import { Upset, UpsetProps } from '../src';
+import { CoreUpsetData, test } from '@visdesignlab/upset2-core';
+import React, { useEffect, useState } from 'react';
+
+import { Upset } from '../src';
 
 const meta: Meta = {
   title: 'Upset',
@@ -28,7 +29,7 @@ const Template: Story<{ dataset: string }> = (args) => {
   }, []);
 
   return data ? (
-    <Upset data={data} />
+    <Upset data={data} loadAttributes={3} />
   ) : (
     <div>Loading {args.dataset} dataset</div>
   );

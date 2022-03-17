@@ -1,7 +1,8 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC } from 'react';
 import { css } from '@emotion/react';
+import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
+
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { deviationScaleAtom } from '../atoms/scaleAtoms';
 import translate from '../utils/transform';
@@ -21,18 +22,17 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const deviationScale = useRecoilValue(deviationScaleAtom);
-  deviationScale.range([0, dimensions.header.attribute.width / 2]);
+  deviationScale.range([0, dimensions.attribute.width / 2]);
 
   return (
     <g
       transform={translate(
-        dimensions.header.matrixColumn.width +
-          dimensions.header.margin +
-          dimensions.header.cardinality.width +
-          dimensions.header.cardinality.textMargin +
-          dimensions.header.attribute.width / 2,
-        (dimensions.body.rowHeight - dimensions.header.attribute.plotHeight) /
-          2,
+        dimensions.matrixColumn.width +
+          dimensions.gap +
+          dimensions.cardinality.width +
+          dimensions.gap +
+          dimensions.attribute.width / 2,
+        (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
       )}
     >
       <rect
@@ -43,7 +43,7 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
           deviation > 0 ? 0 : -deviationScale(Math.abs(deviation)),
           0,
         )}
-        height={dimensions.header.attribute.plotHeight}
+        height={dimensions.attribute.plotHeight}
         width={deviationScale(Math.abs(deviation))}
       />
     </g>

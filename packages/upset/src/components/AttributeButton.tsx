@@ -1,15 +1,17 @@
 /** @jsxImportSource @emotion/react */
-import React, { FC } from 'react';
 import { css } from '@emotion/react';
+import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
+
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
 
 type Props = {
   label: string;
+  sort?: boolean;
 };
 
-export const AttributeButton: FC<Props> = ({ label }) => {
+export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   return (
@@ -21,18 +23,21 @@ export const AttributeButton: FC<Props> = ({ label }) => {
           opacity: 0.5;
           stroke-width: 0.3px;
         `}
-        height={dimensions.header.attribute.buttonHeight}
-        width={dimensions.header.attribute.width}
+        height={dimensions.attribute.buttonHeight}
+        width={dimensions.attribute.width}
       />
       <text
-        css={css`
-          pointer-event: none;
-          cursor: s-resize;
-        `}
+        css={
+          sort &&
+          css`
+            pointer-event: none;
+            cursor: s-resize;
+          `
+        }
         dominantBaseline="middle"
         transform={translate(
-          dimensions.header.attribute.width / 2,
-          dimensions.header.attribute.buttonHeight / 2,
+          dimensions.attribute.width / 2,
+          dimensions.attribute.buttonHeight / 2,
         )}
         textAnchor="middle"
       >

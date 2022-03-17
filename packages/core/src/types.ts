@@ -29,12 +29,26 @@ export type Item = {
 
 export type Items = { [k: string]: Item };
 
+export type FiveNumberSummary = {
+  min: number;
+  max: number;
+  median: number;
+  mean: number;
+  first: number;
+  third: number;
+};
+
+export type Attributes = {
+  [attribute: string]: FiveNumberSummary;
+};
+
 export type BaseElement = {
   id: string;
   elementName: string;
   items: string[];
   type: RowType;
   size: number;
+  attributes: Attributes;
 };
 
 export type SetMembershipStatus = 'Yes' | 'No' | 'May';
@@ -99,6 +113,7 @@ export type Row = Subset | Aggregate;
 export type CoreUpsetData = {
   label: ColumnName;
   setColumns: ColumnName[];
+  attributeColumns: ColumnName[];
   columns: ColumnName[];
   items: Items;
   sets: Sets;
@@ -115,6 +130,8 @@ export type UpsetConfig = {
     minVisible: number;
     hideEmpty: boolean;
   };
+  visibleSets: ColumnName[];
+  visibleAttributes: ColumnName[];
 };
 
 export function areRowsAggregates(rr: Rows): rr is Aggregates {

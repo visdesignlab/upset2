@@ -1,6 +1,8 @@
-import React, { FC } from 'react';
 import { isRowAggregate, Row } from '@visdesignlab/upset2-core';
+import React, { FC } from 'react';
+import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
+
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { RenderRow } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
@@ -21,12 +23,23 @@ export function rowRenderer(row: Row) {
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
+  const rowTransitions = useTransition(
+    rows.map(({ row, id }, idx) => ({
+      id,
+      row,
+      y: idx * dimensions.body.rowHeight,
+    })),
+    {
+      keys: (d) => d.id,
+      enter: ({ y }) => ({ transform: translate(0, y) }),
+      update: ({ y }) => ({ transform: translate(0, y) }),
+    },
+  );
+
   return (
     <>
-      {rows.map(({ row, id }, idx) => (
-        <g key={id} transform={translate(0, idx * dimensions.body.rowHeight)}>
-          {rowRenderer(row)}
-        </g>
+      {rowTransitions((props, item) => (
+        <a.g transform={props.transform}>{rowRenderer(item.row)}</a.g>
       ))}
     </>
   );

@@ -16,6 +16,8 @@
     "@types/node": "^16.11.22",
     "@types/react": "^17.0.39",
     "@types/react-dom": "^17.0.11",
+    "@visdesignlab/trrack": "^2.0.0-alpha.10",
+    "@visdesignlab/trrack-vis": "^2.0.0-alpha.12",
     "@visdesignlab/upset2-react": "*",
     "multinet": "^0.21.6",
     "react": "^17.0.2",

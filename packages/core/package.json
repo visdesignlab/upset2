@@ -41,7 +41,6 @@
   ],
   "devDependencies": {
     "@size-limit/preset-small-lib": "^7.0.5",
-    "@types/lodash-es": "^4.14.178",
     "@types/d3": "^7.1.0",
     "husky": "^7.0.4",
     "size-limit": "^7.0.5",
@@ -51,8 +50,6 @@
   },
   "dependencies": {
     "d3": "^7.3.0",
-    "lodash-es": "^4.17.21",
-    "lodash.combinations": "^18.10.0",
     "hyperid": "^3.0.0"
   }
 }

@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
+
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
@@ -25,14 +26,13 @@ export const AttributeScale: FC<Props> = ({
   tickFormatter = defaultTickFormatter,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const scale = useScale(domain, [0, dimensions.header.attribute.width]);
+  const scale = useScale(domain, [0, dimensions.attribute.width]);
 
   return (
     <g
       transform={translate(
         0,
-        dimensions.header.attribute.buttonHeight +
-          dimensions.header.attribute.gap,
+        dimensions.attribute.buttonHeight + dimensions.attribute.gap,
       )}
     >
       <Axis

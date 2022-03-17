@@ -1,16 +1,18 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC, useEffect, useRef, useState } from 'react';
 import { drag, select } from 'd3';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import translate from '../utils/transform';
-import { useScale } from '../hooks/useScale';
-import { Axis } from './Axis';
-import { maxCardinality } from '../atoms/maxCardinalityAtom';
+import { FC, useContext, useEffect, useRef, useState } from 'react';
+import { useRecoilState, useRecoilValue } from 'recoil';
+
+import { sortBySelector } from '../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
+import { maxCardinality } from '../atoms/maxCardinalityAtom';
 import { subsetSelector } from '../atoms/subsetAtoms';
-import { sortByAtom } from '../atoms/upsetConfigAtoms';
+import { useScale } from '../hooks/useScale';
+import translate from '../utils/transform';
+import { Axis } from './Axis';
+import { ProvenanceContext } from './Root';
 
 const hide = css`
   opacity: 0;
@@ -23,12 +25,13 @@ const show = css`
 `;
 
 export const CardinalityHeader: FC = () => {
+  const { actions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
   const subsets = useRecoilValue(subsetSelector);
-  const setSortBy = useSetRecoilState(sortByAtom);
+  const sortBy = useRecoilValue(sortBySelector);
 
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
@@ -44,15 +47,9 @@ export const CardinalityHeader: FC = () => {
     setMaxCardinality(maxCard);
   }, [subsets, maxCardinality]);
 
-  const globalScale = useScale(
-    [0, itemCount],
-    [0, dimensions.header.cardinality.width],
-  );
+  const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
 
-  const detailScale = useScale(
-    [0, maxC],
-    [0, dimensions.header.cardinality.width],
-  );
+  const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
   useEffect(() => {
     const { current: parent } = sliderParentRef;
@@ -68,8 +65,8 @@ export const CardinalityHeader: FC = () => {
         let newPosition = event.x;
 
         if (newPosition < 0) newPosition = 0;
-        if (newPosition > dimensions.header.cardinality.width) {
-          newPosition = dimensions.header.cardinality.width;
+        if (newPosition > dimensions.attribute.width) {
+          newPosition = dimensions.attribute.width;
         }
 
         const cardinality = globalScale.invert(newPosition);
@@ -90,8 +87,8 @@ export const CardinalityHeader: FC = () => {
   return (
     <g
       transform={translate(
-        dimensions.header.margin + dimensions.header.matrixColumn.width,
-        dimensions.header.height() - dimensions.header.cardinality.height(),
+        dimensions.matrixColumn.width + dimensions.gap,
+        dimensions.header.totalHeight - dimensions.cardinality.height,
       )}
     >
       <g className="sliding-scale" ref={sliderParentRef}>
@@ -104,7 +101,7 @@ export const CardinalityHeader: FC = () => {
           label=""
         />
         <Axis
-          transform={translate(0, dimensions.header.cardinality.scaleHeight)}
+          transform={translate(0, dimensions.cardinality.scaleHeight)}
           scale={globalScale}
           type="top"
           margin={0}
@@ -113,7 +110,7 @@ export const CardinalityHeader: FC = () => {
           tickFormatter={() => ''}
         />
         <rect
-          height={dimensions.header.cardinality.scaleHeight}
+          height={dimensions.cardinality.scaleHeight}
           width={globalScale(maxC)}
           css={css`
             fill: #aaa;
@@ -126,7 +123,7 @@ export const CardinalityHeader: FC = () => {
           className="slider-knob"
           transform={translate(
             globalScale(maxC),
-            dimensions.header.cardinality.scaleHeight / 2 - Math.sqrt(200) / 2,
+            dimensions.cardinality.scaleHeight / 2 - Math.sqrt(200) / 2,
           )}
         >
           <rect
@@ -150,15 +147,14 @@ export const CardinalityHeader: FC = () => {
         css={css`
           ${!sliding ? hide : show}
         `}
-        transform={translate(0, dimensions.header.cardinality.scaleHeight)}
+        transform={translate(0, dimensions.cardinality.scaleHeight)}
       >
         <path
           opacity="0.3"
           fill="#ccc"
           d={`M ${globalScale(maxC)} 0 H 0 V ${
-            dimensions.header.cardinality.buttonHeight +
-            2 * dimensions.header.cardinality.gap
-          } H ${dimensions.header.cardinality.width} z`}
+            dimensions.cardinality.buttonHeight + 2 * dimensions.cardinality.gap
+          } H ${dimensions.attribute.width} z`}
         />
       </g>
       <g
@@ -168,8 +164,7 @@ export const CardinalityHeader: FC = () => {
         `}
         transform={translate(
           0,
-          dimensions.header.cardinality.scaleHeight +
-            dimensions.header.cardinality.gap,
+          dimensions.cardinality.scaleHeight + dimensions.cardinality.gap,
         )}
       >
         <rect
@@ -180,9 +175,11 @@ export const CardinalityHeader: FC = () => {
             stroke-width: 0.3px;
             cursor: s-resize;
           `}
-          height={dimensions.header.cardinality.buttonHeight}
-          width={dimensions.header.cardinality.width}
-          onClick={() => setSortBy('Cardinality')}
+          height={dimensions.cardinality.buttonHeight}
+          width={dimensions.attribute.width}
+          onClick={() => {
+            if (sortBy !== 'Cardinality') actions.sortBy('Cardinality');
+          }}
         />
         <text
           css={css`
@@ -191,8 +188,8 @@ export const CardinalityHeader: FC = () => {
           `}
           dominantBaseline="middle"
           transform={translate(
-            dimensions.header.cardinality.width / 2,
-            dimensions.header.cardinality.buttonHeight / 2,
+            dimensions.attribute.width / 2,
+            dimensions.cardinality.buttonHeight / 2,
           )}
           textAnchor="middle"
         >
@@ -203,10 +200,10 @@ export const CardinalityHeader: FC = () => {
         className="details-scale"
         transform={translate(
           0,
-          dimensions.header.cardinality.scaleHeight +
-            dimensions.header.cardinality.gap +
-            dimensions.header.cardinality.buttonHeight +
-            dimensions.header.cardinality.gap,
+          dimensions.cardinality.scaleHeight +
+            dimensions.cardinality.gap +
+            dimensions.cardinality.buttonHeight +
+            dimensions.cardinality.gap,
         )}
       >
         <Axis
@@ -218,7 +215,7 @@ export const CardinalityHeader: FC = () => {
           label=""
         />
         <Axis
-          transform={translate(0, dimensions.header.cardinality.scaleHeight)}
+          transform={translate(0, dimensions.cardinality.scaleHeight)}
           scale={detailScale}
           type="top"
           margin={0}

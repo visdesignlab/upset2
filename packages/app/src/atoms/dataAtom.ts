@@ -13,6 +13,7 @@ export const dataAtom = selector<any | null>({
     if (!isLoggedIn) return null;
 
     const { workspace, table } = get(queryParamAtom);
+
     if (!workspace || !table) return null;
 
     const rows = (
@@ -22,8 +23,6 @@ export const dataAtom = selector<any | null>({
     ).results;
 
     const annotations = await api.columnTypes(workspace, table);
-
-    console.log(annotations);
 
     return process(rows as any, { columns: annotations } as any);
   },

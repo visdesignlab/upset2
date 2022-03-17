@@ -4,21 +4,25 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
+import { ThemeProvider } from '@mui/material';
 import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { RecoilRoot } from 'recoil';
 
 import App from './App';
+import DefaultTheme from './components/theme';
 
 // import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <RecoilRoot>
-      <Suspense fallback={<div>...Loading</div>}>
-        <App />
-      </Suspense>
-    </RecoilRoot>
+    <ThemeProvider theme={DefaultTheme}>
+      <RecoilRoot>
+        <Suspense fallback={<div>...Loading</div>}>
+          <App />
+        </Suspense>
+      </RecoilRoot>
+    </ThemeProvider>
   </React.StrictMode>,
   document.getElementById('root'),
 );
@@ -26,4 +30,4 @@ ReactDOM.render(
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-// reportWebVitals();
+// reportWebVitals(console.log);

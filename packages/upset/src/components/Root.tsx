@@ -1,41 +1,82 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { CoreUpsetData } from '@visdesignlab/upset2-core';
-import { FC, useEffect } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import { createContext, FC, useEffect, useMemo } from 'react';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+import { attributeAtom } from '../atoms/attributeAtom';
+import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
+import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
 import { Body } from './Body';
 import { Header } from './Header';
 import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 
+export const ProvenanceContext = createContext<{
+  provenance: UpsetProvenance;
+  actions: UpsetActions;
+}>(undefined!);
+
 const baseStyle = css`
   padding: 0.25em;
-  /* border: 1px solid red; */
 `;
 
 type Props = {
   data: CoreUpsetData;
+  config: UpsetConfig;
+  extProvenance?: {
+    provenance: UpsetProvenance;
+    actions: UpsetActions;
+  };
 };
 
-export const Root: FC<Props> = ({ data }) => {
-  const setSets = useRecoilState(setsAtom)[1];
-  const setItems = useRecoilState(itemsAtom)[1];
+export const Root: FC<Props> = ({ data, config, extProvenance }) => {
+  // Get setter for recoil config atom
+  const setState = useSetRecoilState(upsetConfigAtom);
 
+  useEffect(() => {
+    setState(config);
+  }, []);
+
+  // Initialize Provenance and pass it setter to connect
+  const { provenance, actions } = useMemo(() => {
+    if (extProvenance) {
+      const { provenance, actions } = extProvenance;
+
+      provenance.addGlobalObserver(() => setState(provenance.state));
+
+      provenance.done();
+      return { provenance, actions };
+    }
+
+    const provenance = initializeProvenanceTracking(config, setState);
+    const actions = getActions(provenance);
+    return { provenance, actions };
+  }, [config]);
+
+  const [sets, setSets] = useRecoilState(setsAtom);
+  const [items, setItems] = useRecoilState(itemsAtom);
+  const setAttributeColumns = useSetRecoilState(attributeAtom);
+
+  // This hook will populate initial sets, items, attributes
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
-  }, [data, setSets, setItems]);
+    setAttributeColumns(data.attributeColumns);
+  }, [data]);
 
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const { height, width, margin } = dimensions;
 
+  if (Object.keys(sets).length === 0 || Object.keys(items).length === 0)
+    return null;
+
   return (
-    <>
+    <ProvenanceContext.Provider value={{ provenance, actions }}>
       <div
         css={css`
           flex: 0 0 auto;
@@ -57,6 +98,6 @@ export const Root: FC<Props> = ({ data }) => {
           <Body />
         </SvgBase>
       </div>
-    </>
+    </ProvenanceContext.Provider>
   );
 };

@@ -1,15 +1,15 @@
 /** @jsxImportSource @emotion/react */
-import React from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+
+import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { columnHoverAtom, rowHoverAtom } from '../atoms/hoverAtom';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
-import { visibleSetsAtom } from '../atoms/setsAtoms';
 import translate from '../utils/transform';
 
 export const ForegroundRects = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const visibleSets = useRecoilValue(visibleSetsAtom);
+  const visibleSets = useRecoilValue(visibleSetSelector);
   const rows = useRecoilValue(flattenedRowsSelector);
   const setHoveredRow = useSetRecoilState(rowHoverAtom);
   const setHoveredColumn = useSetRecoilState(columnHoverAtom);
@@ -18,17 +18,14 @@ export const ForegroundRects = () => {
     <>
       <g
         className="foreground-columns"
-        transform={translate(dimensions.header.matrixColumn.labelHeight, 0)}
+        transform={translate(dimensions.set.label.height, 0)}
       >
         {visibleSets.map((setName, idx) => (
-          <g
-            key={setName}
-            transform={translate(idx * dimensions.body.rowHeight, 0)}
-          >
+          <g key={setName} transform={translate(idx * dimensions.set.width, 0)}>
             <rect
-              height={dimensions.body.height()}
+              height={dimensions.body.height}
               pointerEvents="all"
-              width={dimensions.header.matrixColumn.barWidth}
+              width={dimensions.set.width}
               fill="none"
               onMouseEnter={() => {
                 setHoveredColumn(setName);
@@ -42,7 +39,7 @@ export const ForegroundRects = () => {
       </g>
       <g
         className="foreground-rows"
-        transform={translate(dimensions.header.matrixColumn.labelHeight, 0)}
+        transform={translate(dimensions.set.label.height, 0)}
       >
         {rows.map((row, idx) => (
           <g

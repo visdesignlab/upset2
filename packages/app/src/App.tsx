@@ -5,10 +5,13 @@ import { Upset } from '@visdesignlab/upset2-react';
 import { useRecoilValue } from 'recoil';
 
 import { dataAtom } from './atoms/dataAtom';
+import Header from './components/Header';
 
 const AppCss = css`
   overflow: hidden;
   height: 100vh;
+  display: grid;
+  grid-template-rows: min-content auto;
 `;
 
 function App() {
@@ -18,6 +21,7 @@ function App() {
 
   return (
     <div css={AppCss}>
+      <Header />
       <Upset data={data} />
     </div>
   );

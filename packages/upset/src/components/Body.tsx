@@ -1,5 +1,6 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
+
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
@@ -12,7 +13,7 @@ export const Body = () => {
   const rows = useRecoilValue(flattenedRowsSelector);
 
   return (
-    <g transform={translate(0, dimensions.header.height() + 5)}>
+    <g transform={translate(0, dimensions.header.totalHeight + 5)}>
       <BackgroundRects />
       <MatrixRows rows={rows} />
       <ForegroundRects />

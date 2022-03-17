@@ -1,27 +1,24 @@
-/** @jsxImportSource @emotion/react */
+import { Aggregate, Subset } from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
-import { Subset } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { css } from '@emotion/react';
-import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { columnHoverAtom } from '../atoms/hoverAtom';
+import ConnectingLine from './custom/ConnectingLine';
+import Group from './custom/Group';
+import MemberShipCircle from './custom/MembershipCircle';
 
 type Props = {
-  subset: Subset;
+  subset: Subset | Aggregate;
   sets: string[];
+  showConnectingBar?: boolean;
 };
 
-const isNotMember = css`
-  fill: #f0f0f0;
-`;
-
-const isMember = css`
-  fill: #636363;
-`;
-
-export const Matrix: FC<Props> = ({ subset, sets = [] }) => {
+export const Matrix: FC<Props> = ({
+  subset,
+  showConnectingBar = true,
+  sets = [],
+}) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const setHoveredColumn = useSetRecoilState(columnHoverAtom);
 
@@ -36,23 +33,16 @@ export const Matrix: FC<Props> = ({ subset, sets = [] }) => {
   if (memberCount > 1) lastMember = membership.lastIndexOf('Yes');
 
   return (
-    <g transform={translate(dimensions.header.matrixColumn.labelHeight, 0)}>
-      <g transform={translate(dimensions.header.matrixColumn.barWidth / 2, 0)}>
+    <Group tx={dimensions.set.label.height} ty={0}>
+      <Group tx={dimensions.set.width / 2} ty={0}>
         {sets.map((set, idx) => {
           const membershipStatus = subset.setMembership[set];
 
           return (
-            <circle
-              css={css`
-                ${membershipStatus !== 'No' ? isMember : isNotMember}
-              `}
+            <MemberShipCircle
               key={set}
-              r={
-                membershipStatus === 'May'
-                  ? '4'
-                  : (dimensions.header.matrixColumn.barWidth - 5) / 2
-              }
-              cx={idx * dimensions.header.matrixColumn.barWidth}
+              membershipStatus={membershipStatus}
+              cx={idx * dimensions.set.width}
               cy={dimensions.body.rowHeight / 2}
               pointerEvents="all"
               onMouseEnter={() => {
@@ -64,19 +54,15 @@ export const Matrix: FC<Props> = ({ subset, sets = [] }) => {
             />
           );
         })}
-        {memberCount > 1 && (
-          <line
-            css={css`
-              stroke: #636363;
-            `}
-            x1={firstMember * dimensions.header.matrixColumn.barWidth}
-            x2={lastMember * dimensions.header.matrixColumn.barWidth}
+        {showConnectingBar && memberCount > 1 && (
+          <ConnectingLine
+            x1={firstMember * dimensions.set.width}
+            x2={lastMember * dimensions.set.width}
             y1={dimensions.body.rowHeight / 2}
             y2={dimensions.body.rowHeight / 2}
-            strokeWidth="3"
           />
         )}
-      </g>
-    </g>
+      </Group>
+    </Group>
   );
 };

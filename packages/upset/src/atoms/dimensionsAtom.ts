@@ -1,16 +1,25 @@
 import { selector } from 'recoil';
+
 import { calculateDimensions } from '../dimensions';
+import { visibleAttributesSelector } from './config/visibleAttributes';
+import { hiddenSetSelector, visibleSetSelector } from './config/visibleSetsAtoms';
 import { rowsCountSelector } from './renderRowsAtom';
-import { visibleSetsAtom } from './setsAtoms';
 
 export const dimensionsSelector = selector<
   ReturnType<typeof calculateDimensions>
 >({
   key: 'dimensions',
   get: ({ get }) => {
-    const visibleSets = get(visibleSetsAtom);
+    const visibleSets = get(visibleSetSelector);
     const rowCount = get(rowsCountSelector);
+    const hiddenSets = get(hiddenSetSelector);
+    const attributes = get(visibleAttributesSelector);
 
-    return calculateDimensions(visibleSets.length, rowCount);
+    return calculateDimensions(
+      visibleSets.length,
+      hiddenSets.length,
+      rowCount,
+      attributes.length,
+    );
   },
 });

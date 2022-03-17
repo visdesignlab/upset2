@@ -1,6 +1,5 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { Fragment, useEffect, useState } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import {
   Accordion,
   AccordionDetails,
@@ -14,45 +13,34 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import {
-  AggregateBy,
-  aggregateByList,
-  SortBy,
-  sortByList,
-} from '@visdesignlab/upset2-core';
-import { useRecoilState } from 'recoil';
-import {
-  firstAggregateByAtom,
-  firstOverlapDegreeAtom,
-  hideEmptyAtom,
-  maxVisibleAtom,
-  minVisibleAtom,
-  secondAggregateByAtom,
-  secondOverlapDegreeAtom,
-  sortByAtom,
-} from '../atoms/upsetConfigAtoms';
+import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
+import React, { Fragment, useContext, useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
+import {
+  firstAggregateSelector,
+  firstOvelapDegreeSelector,
+  secondAggregateSelector,
+  secondOverlapDegreeSelector,
+} from '../atoms/config/aggregateAtoms';
+import { hideEmptySelector, maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
+import { sortBySelector } from '../atoms/config/sortByAtom';
+import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
+import { ProvenanceContext } from './Root';
+
+/** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
-  const [firstAggregateBy, setFirstaggregateBy] =
-    useRecoilState(firstAggregateByAtom);
+  const { actions } = useContext(ProvenanceContext);
+  const visibleSets = useRecoilValue(visibleSetSelector);
+  const firstAggregateBy = useRecoilValue(firstAggregateSelector);
+  const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
+  const secondAggregateBy = useRecoilValue(secondAggregateSelector);
+  const secondOverlapDegree = useRecoilValue(secondOverlapDegreeSelector);
 
-  const [firstOverlapDegree, setFirstOverlapDegree] = useRecoilState(
-    firstOverlapDegreeAtom,
-  );
-
-  const [secondAggregateBy, setSecondAggregateBy] = useRecoilState(
-    secondAggregateByAtom,
-  );
-
-  const [secondOverlapDegree, setSecondOverlapDegree] = useRecoilState(
-    secondOverlapDegreeAtom,
-  );
-
-  const [sortBy, setSortBy] = useRecoilState(sortByAtom);
-  const [maxVisible, setMaxVisible] = useRecoilState(maxVisibleAtom);
-  const [minVisible, setMinVisible] = useRecoilState(minVisibleAtom);
-  const [hideEmpty, setHideEmpty] = useRecoilState(hideEmptyAtom);
+  const sortBy = useRecoilValue(sortBySelector);
+  const maxVisible = useRecoilValue(maxVisibleSelector);
+  const minVisible = useRecoilValue(minVisibleSelector);
+  const hideEmpty = useRecoilValue(hideEmptySelector);
 
   const [secondaryAccordionOpen, setSecondaryAccordionOpen] = useState(
     secondAggregateBy !== 'None',
@@ -80,10 +68,7 @@ export const Sidebar = () => {
               value={firstAggregateBy}
               onChange={(ev) => {
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
-                setFirstaggregateBy(newAggBy);
-                if (newAggBy === 'None' || newAggBy === secondAggregateBy) {
-                  setSecondAggregateBy('None');
-                }
+                actions.firstAggregateBy(newAggBy);
               }}
             >
               {aggregateByList.map((agg) => (
@@ -102,8 +87,9 @@ export const Sidebar = () => {
                       value={firstOverlapDegree}
                       onChange={(ev) => {
                         let val = parseInt(ev.target.value, 10);
-                        if (val < 0) val = 0;
-                        setFirstOverlapDegree(val);
+                        if (val < 2) val = 2;
+                        if (val > visibleSets.length) val = visibleSets.length;
+                        actions.firstOverlapBy(val);
                       }}
                     />
                   )}
@@ -129,7 +115,8 @@ export const Sidebar = () => {
             <RadioGroup
               value={secondAggregateBy}
               onChange={(ev) => {
-                setSecondAggregateBy(ev.target.value as AggregateBy);
+                const newAggBy: AggregateBy = ev.target.value as AggregateBy;
+                actions.secondAggregateBy(newAggBy);
               }}
             >
               {aggregateByList
@@ -149,8 +136,10 @@ export const Sidebar = () => {
                         value={secondOverlapDegree}
                         onChange={(ev) => {
                           let val = parseInt(ev.target.value, 10);
-                          if (val < 0) val = 0;
-                          setSecondOverlapDegree(val);
+                          if (val < 2) val = 2;
+                          if (val > visibleSets.length)
+                            val = visibleSets.length;
+                          actions.secondOverlapBy(val);
                         }}
                       />
                     )}
@@ -169,7 +158,7 @@ export const Sidebar = () => {
             <RadioGroup
               value={sortBy}
               onChange={(ev) => {
-                setSortBy(ev.target.value as SortBy);
+                actions.sortBy(ev.target.value as SortBy);
               }}
             >
               {sortByList.map((sort) => (
@@ -198,7 +187,7 @@ export const Sidebar = () => {
             onChange={(ev) => {
               let val = parseInt(ev.target.value, 10);
               if (val < 0) val = 0;
-              setMinVisible(val);
+              actions.setMinVisible(val);
             }}
           />
           <TextField
@@ -210,7 +199,7 @@ export const Sidebar = () => {
             onChange={(ev) => {
               let val = parseInt(ev.target.value, 10);
               if (val < 0) val = 0;
-              setMaxVisible(val);
+              actions.setMaxVisible(val);
             }}
           />
           <FormGroup>
@@ -226,7 +215,7 @@ export const Sidebar = () => {
                   size="small"
                   checked={hideEmpty}
                   onChange={(ev) => {
-                    setHideEmpty(ev.target.checked);
+                    actions.setHideEmpty(ev.target.checked);
                   }}
                 />
               }
