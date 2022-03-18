@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { createContext, FC, useEffect, useMemo } from 'react';
@@ -11,10 +10,12 @@ import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
 import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
 import { Body } from './Body';
-import { Header } from './Header';
+import { ElementSidebar } from './ElementView/ElementSidebar';
+import { Header } from './Header/Header';
 import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 
+/** @jsxImportSource @emotion/react */
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
@@ -98,6 +99,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance }) => {
           <Body />
         </SvgBase>
       </div>
+      <ElementSidebar />
     </ProvenanceContext.Provider>
   );
 };

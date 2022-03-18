@@ -34,11 +34,11 @@ export function calculateDimensions(
 
   const matrixColumn = {
     visibleSetsWidth: set.width * nVisibleSets,
-    buttonsWidth: 150,
+    setManagementWidth: 230,
     hiddenSetsWidth: (set.width + 2) * nHiddenSets,
     width: set.label.height + set.width * nVisibleSets,
     get totalWidth() {
-      return this.width + gap + this.buttonsWidth + gap;
+      return this.width + gap + this.setManagementWidth + gap;
     },
   };
 

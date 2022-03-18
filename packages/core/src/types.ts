@@ -132,6 +132,7 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
+  bookmarkedIntersections: string[];
 };
 
 export function areRowsAggregates(rr: Rows): rr is Aggregates {

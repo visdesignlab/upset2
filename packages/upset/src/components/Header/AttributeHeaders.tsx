@@ -1,9 +1,9 @@
 import { useRecoilValue } from 'recoil';
 
-import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import translate from '../utils/transform';
-import { Attribute } from './Attribute';
+import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import translate from '../../utils/transform';
+import { AttributeHeader } from './AttributeHeader';
 
 export const AttributeHeaders = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -30,7 +30,7 @@ export const AttributeHeaders = () => {
               0,
             )}
           >
-            <Attribute attribute={attribute} />
+            <AttributeHeader attribute={attribute} />
           </g>
         );
       })}

@@ -1,10 +1,10 @@
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { useScale } from '../hooks/useScale';
-import translate from '../utils/transform';
-import { Axis } from './Axis';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { useScale } from '../../hooks/useScale';
+import translate from '../../utils/transform';
+import { Axis } from '../Axis';
 
 type Props = {
   domain: [number, number];

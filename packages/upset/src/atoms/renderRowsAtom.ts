@@ -138,6 +138,20 @@ export const flattenedRowsSelector = selector<RenderRow[]>({
   },
 });
 
+export const flattenedOnlyRows = selector({
+  key: 'only-rows',
+  get: ({ get }) => {
+    const rows = get(flattenedRowsSelector);
+    const onlyRows: { [key: string]: Row } = {};
+
+    rows.forEach(({ row }) => {
+      onlyRows[row.id] = row;
+    });
+
+    return onlyRows;
+  },
+});
+
 export const rowsCountSelector = selector({
   key: 'rrCount',
   get: ({ get }) => {

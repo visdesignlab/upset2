@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { styled } from '@mui/material';
-import { ComponentProps, FC, SVGProps, useEffect, useMemo, useRef, useState } from 'react';
+import { ComponentProps, FC } from 'react';
 
 import translate from '../../utils/transform';
 
@@ -9,6 +9,9 @@ const ButtonRect = styled('rect')({
   stroke: 'black',
   opacity: 0.5,
   strokeWidth: '0.3px',
+  '&:hover': {
+    opacity: 1,
+  },
 });
 
 type Props = ComponentProps<typeof ButtonRect> & {

@@ -14,6 +14,7 @@ export const defaultConfig: UpsetConfig = {
   },
   visibleSets: [],
   visibleAttributes: [],
+  bookmarkedIntersections: [],
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({

@@ -1,9 +1,9 @@
 import React from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { maxDeviationSelector } from '../atoms/maxAtoms';
-import translate from '../utils/transform';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { maxDeviationSelector } from '../../atoms/maxAtoms';
+import translate from '../../utils/transform';
 import { AttributeButton } from './AttributeButton';
 import { AttributeScale } from './AttributeScale';
 
@@ -21,7 +21,7 @@ export const DeviationHeader = () => {
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >
-      <AttributeButton label="Deviation" />
+      <AttributeButton label="Deviation" sort />
       <g
         transform={translate(
           0,

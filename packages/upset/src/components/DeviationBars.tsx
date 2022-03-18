@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../atoms/dimensionsAtom';

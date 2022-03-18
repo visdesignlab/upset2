@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { itemsAtom } from '../atoms/itemsAtoms';
-import translate from '../utils/transform';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { itemsAtom } from '../../atoms/itemsAtoms';
+import translate from '../../utils/transform';
 import { AttributeButton } from './AttributeButton';
 import { AttributeScale } from './AttributeScale';
 
@@ -11,7 +11,7 @@ type Props = {
   attribute: string;
 };
 
-export const Attribute: FC<Props> = ({ attribute }) => {
+export const AttributeHeader: FC<Props> = ({ attribute }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
   const attributes = Object.values(items).map(

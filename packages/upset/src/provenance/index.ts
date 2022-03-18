@@ -120,6 +120,30 @@ const removeMultipleVisibleAttributes = createAction<
   return state;
 });
 
+const bookmarkIntersectionAction = createAction<UpsetConfig, [string], Events>(
+  (state, intersectionId) => {
+    if (!state.bookmarkedIntersections.includes(intersectionId))
+      state.bookmarkedIntersections = [
+        intersectionId,
+        ...state.bookmarkedIntersections,
+      ];
+
+    return state;
+  },
+);
+
+const removeBookmarkIntersectionAction = createAction<
+  UpsetConfig,
+  [string],
+  Events
+>((state, intersectionId) => {
+  state.bookmarkedIntersections = state.bookmarkedIntersections.filter(
+    (id) => intersectionId !== id,
+  );
+
+  return state;
+});
+
 export function initializeProvenanceTracking(
   config: Partial<UpsetConfig> = {},
   setter?: (state: UpsetConfig) => void,
@@ -202,6 +226,14 @@ export function getActions(provenance: UpsetProvenance) {
         removeMultipleVisibleAttributes.setLabel(
           `Hide ${attrs.length} attributes`,
         )(attrs),
+      ),
+    bookmarkIntersection: (id: string, name: string) =>
+      provenance.apply(
+        bookmarkIntersectionAction.setLabel(`Bookmark ${name}`)(id),
+      ),
+    unBookmarkIntersection: (id: string, name: string) =>
+      provenance.apply(
+        removeBookmarkIntersectionAction.setLabel(`Unbookmark ${name}`)(id),
       ),
   };
 }

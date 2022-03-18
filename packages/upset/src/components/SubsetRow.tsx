@@ -18,7 +18,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   return (
     <>
       <Matrix sets={visibleSets} subset={subset} />
-      <CardinalityBar size={subset.size} />
+      <CardinalityBar size={subset.size} row={subset} />
       <DeviationBar deviation={subset.deviation} />
       <AttributeBars attributes={subset.attributes} />
     </>

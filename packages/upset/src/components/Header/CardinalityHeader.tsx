@@ -1,19 +1,19 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { drag, select } from 'd3';
 import { FC, useContext, useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { sortBySelector } from '../atoms/config/sortByAtom';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { itemsAtom } from '../atoms/itemsAtoms';
-import { maxCardinality } from '../atoms/maxCardinalityAtom';
-import { subsetSelector } from '../atoms/subsetAtoms';
-import { useScale } from '../hooks/useScale';
-import translate from '../utils/transform';
-import { Axis } from './Axis';
-import { ProvenanceContext } from './Root';
+import { sortBySelector } from '../../atoms/config/sortByAtom';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { itemsAtom } from '../../atoms/itemsAtoms';
+import { maxCardinality } from '../../atoms/maxCardinalityAtom';
+import { subsetSelector } from '../../atoms/subsetAtoms';
+import { useScale } from '../../hooks/useScale';
+import translate from '../../utils/transform';
+import { Axis } from '../Axis';
+import { ProvenanceContext } from '../Root';
 
+/** @jsxImportSource @emotion/react */
 const hide = css`
   opacity: 0;
   transition: opacity 0.5s;
