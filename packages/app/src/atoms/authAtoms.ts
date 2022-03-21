@@ -1,3 +1,6 @@
+import OauthClient from '@girder/oauth-client';
+import { multinetApi } from 'multinet';
+
 export const host: string =
   process.env.VUE_APP_MULTINET_HOST || 'http://localhost:8000';
 
@@ -12,9 +15,5 @@ const client_id =
 console.log({ host, oauthApiRoot, login_url, client_id });
 console.log(process.env);
 
-export const oAuth: any = {};
-
-export const api: any = {};
-
-// export const oAuth = new OauthClient(login_url, client_id);
-// export const api = multinetApi(`${host}/api`);
+export const oAuth = new OauthClient(login_url, client_id);
+export const api = multinetApi(`${host}/api`);
