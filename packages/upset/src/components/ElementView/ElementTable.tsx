@@ -40,7 +40,7 @@ export const ElementTable: FC<Props> = ({ id }) => {
   return (
     <Box
       sx={{
-        minHeight: 500,
+        minHeight: 550,
       }}
     >
       <DataGrid rows={rows} columns={columns} />

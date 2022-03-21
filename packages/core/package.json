@@ -28,7 +28,7 @@
       "pre-commit": "tsdx lint"
     }
   },
-  "author": "Kiran Gadhave",
+  "author": "Kiran Gadhave (kirangadhave2@gmail.com)",
   "size-limit": [
     {
       "path": "dist/packagescore.cjs.production.min.js",
