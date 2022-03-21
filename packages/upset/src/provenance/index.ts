@@ -1,5 +1,5 @@
 import { createAction, initProvenance } from '@visdesignlab/trrack';
-import { AggregateBy, SortBy, UpsetConfig } from '@visdesignlab/upset2-core';
+import { AggregateBy, Plot, SortBy, UpsetConfig } from '@visdesignlab/upset2-core';
 
 import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
 
@@ -144,6 +144,48 @@ const removeBookmarkIntersectionAction = createAction<
   return state;
 });
 
+const addPlotAction = createAction<UpsetConfig, [Plot], Events>(
+  (state, plot) => {
+    switch (plot.type) {
+      case 'Histogram':
+        state.plots.histograms = [...state.plots.histograms, plot];
+        break;
+      case 'Scatterplot':
+        state.plots.scatterplots = [...state.plots.scatterplots, plot];
+        break;
+      case 'Word Cloud':
+        state.plots.wordClouds = [...state.plots.wordClouds, plot];
+        break;
+    }
+
+    return state;
+  },
+);
+
+const removePlotAction = createAction<UpsetConfig, [Plot], Events>(
+  (state, plot) => {
+    switch (plot.type) {
+      case 'Histogram':
+        state.plots.histograms = state.plots.histograms.filter(
+          (d) => d.id !== plot.id,
+        );
+        break;
+      case 'Scatterplot':
+        state.plots.scatterplots = state.plots.scatterplots.filter(
+          (d) => d.id !== plot.id,
+        );
+        break;
+      case 'Word Cloud':
+        state.plots.wordClouds = state.plots.wordClouds.filter(
+          (d) => d.id !== plot.id,
+        );
+        break;
+    }
+
+    return state;
+  },
+);
+
 export function initializeProvenanceTracking(
   config: Partial<UpsetConfig> = {},
   setter?: (state: UpsetConfig) => void,
@@ -235,6 +277,10 @@ export function getActions(provenance: UpsetProvenance) {
       provenance.apply(
         removeBookmarkIntersectionAction.setLabel(`Unbookmark ${name}`)(id),
       ),
+    addPlot: (plot: Plot) =>
+      provenance.apply(addPlotAction.setLabel(`Add ${plot}`)(plot)),
+    removePlot: (plot: Plot) =>
+      provenance.apply(removePlotAction.setLabel(`Remove ${plot}`)(plot)),
   };
 }
 

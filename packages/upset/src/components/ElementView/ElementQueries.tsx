@@ -1,10 +1,16 @@
+import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Chip, Stack, Typography } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/currentIntersectionAtom';
+import {
+  bookmarkedColorPalette,
+  bookmarkedIntersectionSelector,
+  currentIntersectionAtom,
+  nextColorSelector,
+} from '../../atoms/config/currentIntersectionAtom';
 import { flattenedOnlyRows } from '../../atoms/renderRowsAtom';
 import { ProvenanceContext } from '../Root';
 
@@ -14,7 +20,11 @@ export const ElementQueries = () => {
     currentIntersectionAtom,
   );
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  const colorPallete = useRecoilValue(bookmarkedColorPalette);
+  const nextColor = useRecoilValue(nextColorSelector);
   const rows = useRecoilValue(flattenedOnlyRows);
+
+  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -28,8 +38,12 @@ export const ElementQueries = () => {
           <Chip
             sx={(theme) => ({
               margin: theme.spacing(0.5),
+              '.MuiChip-icon': {
+                color: nextColor,
+              },
+              backgroundColor: 'rgba(0,0,0,0.2)',
             })}
-            color="success"
+            icon={<SquareIcon fontSize={'1em' as any} />}
             label={`${currentIntersection.elementName} - ${currentIntersection.size}`}
             onDelete={() => {
               actions.bookmarkIntersection(
@@ -45,15 +59,29 @@ export const ElementQueries = () => {
             <Chip
               sx={(theme) => ({
                 margin: theme.spacing(0.5),
+                '.MuiChip-icon': {
+                  color: colorPallete[id],
+                },
+                backgroundColor:
+                  id === currentIntersection?.id
+                    ? 'rgba(0,0,0,0.2)'
+                    : 'default',
               })}
-              color={id === currentIntersection?.id ? 'success' : 'default'}
               key={id}
               label={`${rows[id].elementName} - ${rows[id].size}`}
+              icon={<SquareIcon fontSize={'1em' as any} />}
               deleteIcon={<StarIcon />}
-              onClick={() => setCurrentIntersection(rows[id])}
-              onDelete={() =>
-                actions.unBookmarkIntersection(id, rows[id].elementName)
-              }
+              onClick={() => {
+                if (currentIntersection?.id === id)
+                  setCurrentIntersection(null);
+                else setCurrentIntersection(rows[id]);
+              }}
+              onDelete={() => {
+                if (currentIntersection?.id === id) {
+                  setCurrentIntersection(null);
+                }
+                actions.unBookmarkIntersection(id, rows[id].elementName);
+              }}
             />
           );
         })}

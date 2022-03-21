@@ -15,6 +15,11 @@ export const defaultConfig: UpsetConfig = {
   visibleSets: [],
   visibleAttributes: [],
   bookmarkedIntersections: [],
+  plots: {
+    scatterplots: [],
+    histograms: [],
+    wordClouds: [],
+  },
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({

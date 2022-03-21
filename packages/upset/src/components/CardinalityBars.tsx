@@ -1,18 +1,18 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { currentIntersectionAtom } from '../atoms/currentIntersectionAtom';
+import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { maxCardinality } from '../atoms/maxCardinalityAtom';
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
 
+/** @jsxImportSource @emotion/react */
 type Props = {
   size: number;
-  row: Row;
+  row?: Row;
 };
 
 const color1 = css`
@@ -57,7 +57,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
 
   return (
     <g
-      onClick={() => setCurrentIntersectionAtom(row)}
+      onClick={() => row && setCurrentIntersectionAtom(row)}
       transform={translate(
         dimensions.matrixColumn.width + dimensions.gap,
         (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,

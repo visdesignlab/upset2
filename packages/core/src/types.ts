@@ -119,6 +119,31 @@ export type CoreUpsetData = {
   sets: Sets;
 };
 
+export type BasePlot = {
+  id: string;
+};
+
+export type Scatterplot = BasePlot & {
+  type: 'Scatterplot';
+  x: string;
+  y: string;
+  xScaleLog?: boolean;
+  yScaleLog?: boolean;
+};
+
+export type Histogram = BasePlot & {
+  type: 'Histogram';
+  attribute: string;
+  bins: number;
+  frequency: boolean;
+};
+
+export type WordCloud = BasePlot & {
+  type: 'Word Cloud';
+};
+
+export type Plot = Scatterplot | Histogram | WordCloud;
+
 export type UpsetConfig = {
   firstAggregateBy: AggregateBy;
   firstOverlapDegree: number;
@@ -133,6 +158,11 @@ export type UpsetConfig = {
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
   bookmarkedIntersections: string[];
+  plots: {
+    scatterplots: Scatterplot[];
+    histograms: Histogram[];
+    wordClouds: WordCloud[];
+  };
 };
 
 export function areRowsAggregates(rr: Rows): rr is Aggregates {
