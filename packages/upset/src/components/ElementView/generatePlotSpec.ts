@@ -125,7 +125,7 @@ export function createHistogramSpec(
     mark: 'bar',
     encoding: {
       x: {
-        bin: true,
+        bin: { maxbins: bins },
         field: attribute,
       },
       y: { aggregate: 'count' },

@@ -12,19 +12,23 @@ export type UpsetProps = {
   parentHasHeight?: boolean;
   data: CoreUpsetData;
   config?: Partial<UpsetConfig>;
+  elementViewWidth?: number;
   loadAttributes?: number;
   extProvenance?: {
     provenance: UpsetProvenance;
     actions: UpsetActions;
   };
+  yOffset?: number;
 };
 
 export const Upset: FC<UpsetProps> = ({
   data,
   parentHasHeight = false,
+  yOffset = 0,
   config = {},
   loadAttributes = 0,
   extProvenance,
+  elementViewWidth = 450,
 }) => {
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
@@ -46,7 +50,7 @@ export const Upset: FC<UpsetProps> = ({
       <Box
         sx={{
           display: 'flex',
-          height: parentHasHeight ? '100%' : '100vh',
+          height: parentHasHeight ? '100%' : `calc(100vh - ${yOffset}px)`,
           width: '100%',
           fontFamily: 'Roboto, Arial',
         }}
@@ -54,8 +58,10 @@ export const Upset: FC<UpsetProps> = ({
         <RecoilRoot>
           <Root
             data={data}
+            elementViewWidth={elementViewWidth}
             config={combinedConfig}
             extProvenance={extProvenance}
+            yOffset={yOffset}
           />
         </RecoilRoot>
       </Box>

@@ -64,6 +64,7 @@
     "@juggle/resize-observer": "^3.3.1",
     "@mui/icons-material": "^5.3.0",
     "@mui/material": "^5.3.0",
+    "@mui/x-data-grid": "^5.6.1",
     "@visdesignlab/trrack": "^2.0.0-alpha.10",
     "@visdesignlab/trrack-vis": "^2.0.0-alpha.12",
     "@visdesignlab/upset2-core": "*",

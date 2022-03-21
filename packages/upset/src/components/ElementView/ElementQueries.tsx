@@ -2,7 +2,7 @@ import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Chip, Stack, Typography } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import {
@@ -23,8 +23,6 @@ export const ElementQueries = () => {
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const rows = useRecoilValue(flattenedOnlyRows);
-
-  const [count, setCount] = useState(0);
 
   return (
     <>

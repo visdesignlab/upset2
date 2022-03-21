@@ -1,5 +1,7 @@
-import { Table, TableBody, TableCell, TableHead, TableRow } from '@mui/material';
-import { FC } from 'react';
+import { Box } from '@mui/material';
+import { DataGrid, GridRowsProp } from '@mui/x-data-grid';
+import { Item } from '@visdesignlab/upset2-core';
+import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { attributeAtom } from '../../atoms/attributeAtom';
@@ -9,31 +11,39 @@ type Props = {
   id: string;
 };
 
+function useRows(items: Item[]): GridRowsProp {
+  return useMemo(() => {
+    const newItems: GridRowsProp = items.map((item) => ({
+      ...item,
+      id: item._id,
+    }));
+
+    return newItems;
+  }, [items]);
+}
+
+function useColumns(columns: string[]) {
+  return useMemo(() => {
+    return columns.map((col) => ({
+      field: col,
+      headerName: col === '_id' ? 'ID' : col === '_label' ? 'Label' : col,
+    }));
+  }, [columns]);
+}
+
 export const ElementTable: FC<Props> = ({ id }) => {
   const attributeColumns = useRecoilValue(attributeAtom);
-
   const elements = useRecoilValue(elementSelector(id));
+  const rows = useRows(elements);
+  const columns = useColumns(['_id', '_label', ...attributeColumns]);
 
   return (
-    <Table>
-      <TableHead>
-        <TableRow>
-          <TableCell>Label</TableCell>
-          {attributeColumns.map((col) => (
-            <TableCell key={col}>{col}</TableCell>
-          ))}
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {elements.map((el) => (
-          <TableRow key={el._id}>
-            <TableCell>{el._label}</TableCell>
-            {attributeColumns.map((col) => (
-              <TableCell key={col}>{el[col]}</TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+    <Box
+      sx={{
+        minHeight: 500,
+      }}
+    >
+      <DataGrid rows={rows} columns={columns} />
+    </Box>
   );
 };

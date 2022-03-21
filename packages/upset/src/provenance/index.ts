@@ -70,7 +70,8 @@ const hideEmptyAction = createAction<UpsetConfig, [boolean], Events>(
 
 const addToVisibleAction = createAction<UpsetConfig, [string], Events>(
   (state, newSet) => {
-    state.visibleSets = [...new Set([...state.visibleSets, newSet])];
+    const newSets = new Set([...state.visibleSets, newSet]);
+    state.visibleSets = Array.from(newSets);
     return state;
   },
 );
@@ -84,9 +85,8 @@ const removeFromVisibleAction = createAction<UpsetConfig, [string], Events>(
 
 const addToVisibleAttributeAction = createAction<UpsetConfig, [string], Events>(
   (state, attribute) => {
-    state.visibleAttributes = [
-      ...new Set([...state.visibleAttributes, attribute]),
-    ];
+    const newAttributes = new Set([...state.visibleAttributes, attribute]);
+    state.visibleAttributes = Array.from(newAttributes);
     return state;
   },
 );

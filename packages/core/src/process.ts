@@ -79,7 +79,7 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
   const setMembership: { [col: string]: string[] } = {};
 
   data.forEach((row, idx) => {
-    const id = getId('Item', idx.toString());
+    const id = row['_id'] ? row['_id'] : getId('Item', idx.toString());
 
     const item: Item = {
       _id: id,

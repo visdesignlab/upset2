@@ -38,7 +38,7 @@ export const SvgBase: FC<Props> = ({ children, defaultSettings = {} }) => {
             width={width}
             fill="none"
             stroke="black"
-            opacity="0.2"
+            opacity="0"
           />
           {children}
         </g>

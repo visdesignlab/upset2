@@ -11,7 +11,7 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
-import { FC, useContext, useEffect, useState } from 'react';
+import { FC, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { attributeAtom } from '../../atoms/attributeAtom';
