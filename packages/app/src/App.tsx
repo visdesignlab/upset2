@@ -3,10 +3,7 @@
 import { css } from '@emotion/react';
 import { Box, CircularProgress } from '@mui/material';
 import { Suspense, useEffect, useRef, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 
-import { getMultinetDataUrl } from './atoms/authAtoms';
-import { queryParamAtom } from './atoms/queryParamAtom';
 import { Body } from './components/Body';
 import Header from './components/Header';
 
@@ -18,7 +15,6 @@ const AppCss = css`
 `;
 
 function App() {
-  const { workspace, table } = useRecoilValue(queryParamAtom);
   const ref = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(-1);
 
@@ -31,10 +27,6 @@ function App() {
     setHeaderHeight(current.clientHeight);
   }, [headerHeight, ref]);
 
-  if (!workspace || !table) {
-    window.location.href = getMultinetDataUrl();
-  }
-
   return (
     <div css={AppCss}>
       <Box
@@ -45,6 +37,7 @@ function App() {
       >
         <Header />
       </Box>
+
       <Suspense
         fallback={
           <Box
