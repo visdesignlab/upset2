@@ -18,9 +18,7 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={DefaultTheme}>
       <RecoilRoot>
-        <Suspense fallback={<div>...Loading</div>}>
-          <App />
-        </Suspense>
+        <App />
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>,

@@ -1,12 +1,17 @@
 import { css } from '@emotion/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import RedoIcon from '@mui/icons-material/Redo';
+import UndoIcon from '@mui/icons-material/Undo';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Box,
+  ButtonGroup,
   FormControl,
   FormControlLabel,
   FormGroup,
+  IconButton,
   Radio,
   RadioGroup,
   Switch,
@@ -30,7 +35,8 @@ import { ProvenanceContext } from './Root';
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions, provenance, isAtLatest, isAtRoot } =
+    useContext(ProvenanceContext);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
@@ -58,6 +64,16 @@ export const Sidebar = () => {
         width: 250px;
       `}
     >
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <ButtonGroup>
+          <IconButton disabled={isAtRoot} onClick={() => provenance.undo()}>
+            <UndoIcon />
+          </IconButton>
+          <IconButton disabled={isAtLatest} onClick={() => provenance.redo()}>
+            <RedoIcon />
+          </IconButton>
+        </ButtonGroup>
+      </Box>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Aggregation</Typography>
