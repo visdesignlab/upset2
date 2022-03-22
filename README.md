@@ -1,5 +1,8 @@
 # UpSet2.0 - Visualizing Intersecting Sets
 
+Deployed at: [Upset](https://upset.multinet.app/)
+Deployment Status: [![Netlify Status](https://api.netlify.com/api/v1/badges/edb8054f-7bfd-4b6a-8325-b26c279e2991/deploy-status)](https://app.netlify.com/sites/upset2/deploys)
+
 ## About
 
 UpSet is an interactive, web based visualization technique designed to analyze set-based data. UpSet visualizes both, set intersections and their properties, and the items (elements) in the dataset. Please see the project website at http://vcg.github.io/upset/about for details about the technique, publications and videos.
