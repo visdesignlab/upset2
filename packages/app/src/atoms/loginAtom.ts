@@ -1,6 +1,7 @@
 import { selector } from 'recoil';
 
 import { api, oAuth } from './authAtoms';
+import { restoreQueryParam, saveQueryParam } from './queryParamAtom';
 
 export const logInStatusSelector = selector({
   key: 'login_status',
@@ -9,25 +10,11 @@ export const logInStatusSelector = selector({
 
     if (oAuth.isLoggedIn) {
       Object.assign(api.axios.defaults.headers.common, oAuth.authHeaders);
-
-      const retrivedSearch = window.localStorage.getItem('preserve-qp');
-
-      if (retrivedSearch && retrivedSearch.length > 0) {
-        console.log('Detected saved qp');
-        window.location.search = retrivedSearch;
-        window.localStorage.removeItem('preserve-qp');
-        console.log(retrivedSearch);
-      }
-
+      restoreQueryParam();
       return true;
     }
 
-    const { search } = window.location;
-
-    if (search.length > 0) {
-      window.localStorage.setItem('preserve-qp', search);
-    }
-
+    saveQueryParam();
     oAuth.redirectToLogin();
     return false;
   },
