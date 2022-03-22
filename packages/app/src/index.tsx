@@ -5,7 +5,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { ThemeProvider } from '@mui/material';
-import React, { Suspense } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { RecoilRoot } from 'recoil';
 
