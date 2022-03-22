@@ -1,11 +1,12 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScaleLinear } from 'd3';
-import { FC } from 'react';
+import { FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
+import { ProvenanceContext } from '../Root';
 import Group from './Group';
 
 const matrixColumnBackgroundRect = css`
@@ -31,16 +32,24 @@ type Props = {
 export const SetSizeBar: FC<Props> = ({
   scale,
   size,
+  setId,
   label,
   tx = 0,
   ty = tx,
   foregroundOpacity = 1,
   showLabel = false,
 }) => {
+  const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
 
   return (
-    <Group tx={tx} ty={ty}>
+    <Group
+      tx={tx}
+      ty={ty}
+      onClick={() => {
+        if (!showLabel) actions.removeVisibleSet(setId);
+      }}
+    >
       <title>
         {label} - {size}
       </title>

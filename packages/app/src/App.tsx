@@ -1,12 +1,13 @@
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css } from '@emotion/react';
-import { Box } from '@mui/material';
-import { Upset } from '@visdesignlab/upset2-react';
-import { useEffect, useRef, useState } from 'react';
+import { Box, CircularProgress } from '@mui/material';
+import { Suspense, useEffect, useRef, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { dataAtom } from './atoms/dataAtom';
+import { getMultinetDataUrl } from './atoms/authAtoms';
+import { queryParamAtom } from './atoms/queryParamAtom';
+import { Body } from './components/Body';
 import Header from './components/Header';
 
 const AppCss = css`
@@ -17,11 +18,9 @@ const AppCss = css`
 `;
 
 function App() {
-  const data = useRecoilValue(dataAtom);
+  const { workspace, table } = useRecoilValue(queryParamAtom);
   const ref = useRef<HTMLDivElement>(null);
   const [headerHeight, setHeaderHeight] = useState(-1);
-
-  console.table(data);
 
   useEffect(() => {
     const { current } = ref;
@@ -32,7 +31,9 @@ function App() {
     setHeaderHeight(current.clientHeight);
   }, [headerHeight, ref]);
 
-  if (!data) return <div>No Data</div>;
+  if (!workspace || !table) {
+    window.location.href = getMultinetDataUrl();
+  }
 
   return (
     <div css={AppCss}>
@@ -44,11 +45,23 @@ function App() {
       >
         <Header />
       </Box>
-      <Upset
-        data={data}
-        loadAttributes={3}
-        yOffset={headerHeight === -1 ? 0 : headerHeight}
-      />
+      <Suspense
+        fallback={
+          <Box
+            sx={{
+              display: 'flex',
+              height: '100%',
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        }
+      >
+        <Body yOffset={headerHeight} />
+      </Suspense>
     </div>
   );
 }

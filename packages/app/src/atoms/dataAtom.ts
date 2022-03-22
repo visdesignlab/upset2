@@ -5,7 +5,7 @@ import { api } from './authAtoms';
 import { logInStatusSelector } from './loginAtom';
 import { queryParamAtom } from './queryParamAtom';
 
-export const dataAtom = selector<any | null>({
+export const dataAtom = selector({
   key: 'upset-data',
   get: async ({ get }) => {
     const isLoggedIn = get(logInStatusSelector);

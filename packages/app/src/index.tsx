@@ -5,7 +5,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import { ThemeProvider } from '@mui/material';
-import React, { Suspense } from 'react';
+import React from 'react';
 import ReactDOM from 'react-dom';
 import { RecoilRoot } from 'recoil';
 
@@ -18,9 +18,7 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={DefaultTheme}>
       <RecoilRoot>
-        <Suspense fallback={<div>...Loading</div>}>
-          <App />
-        </Suspense>
+        <App />
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>,

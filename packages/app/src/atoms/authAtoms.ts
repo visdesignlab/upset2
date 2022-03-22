@@ -12,8 +12,13 @@ const client_id =
   process.env.REACT_APP_OAUTH_CLIENT_ID ||
   '7K4fAnTtGGjCKEI6RpXxCFAM5nHG9jhTmBGsSw5x';
 
-console.log({ host, oauthApiRoot, login_url, client_id });
-console.log(process.env);
+export const multinetDatasets =
+  process.env.REACT_APP_UPLOAD_URL || 'http://localhost:8080';
+
+export function getMultinetDataUrl(workspace?: string | null) {
+  if (workspace) return `${multinetDatasets}/#/workspaces/${workspace}`;
+  return multinetDatasets;
+}
 
 export const oAuth = new OauthClient(login_url, client_id);
 export const api = multinetApi(`${host}/api`);

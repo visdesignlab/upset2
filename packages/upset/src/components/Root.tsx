@@ -19,6 +19,8 @@ import { SvgBase } from './SvgBase';
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
+  isAtLatest: boolean;
+  isAtRoot: boolean;
 }>(undefined!);
 
 const baseStyle = css`
@@ -85,7 +87,14 @@ export const Root: FC<Props> = ({
     return null;
 
   return (
-    <ProvenanceContext.Provider value={{ provenance, actions }}>
+    <ProvenanceContext.Provider
+      value={{
+        provenance,
+        actions,
+        isAtLatest: provenance.current.children.length === 0,
+        isAtRoot: provenance.current.id === provenance.root.id,
+      }}
+    >
       <div
         css={css`
           flex: 0 0 auto;
