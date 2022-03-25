@@ -28,7 +28,6 @@ export const Upset: FC<UpsetProps> = ({
   config = {},
   loadAttributes = 0,
   extProvenance,
-  elementViewWidth = 450,
 }) => {
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
@@ -58,7 +57,6 @@ export const Upset: FC<UpsetProps> = ({
         <RecoilRoot>
           <Root
             data={data}
-            elementViewWidth={elementViewWidth}
             config={combinedConfig}
             extProvenance={extProvenance}
             yOffset={yOffset}

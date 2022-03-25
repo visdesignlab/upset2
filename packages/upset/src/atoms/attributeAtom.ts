@@ -8,7 +8,7 @@ export const attributeAtom = atom<string[]>({
 });
 
 export const attributeValuesSelector = selectorFamily<number[], string>({
-  key: 'attributeValueSelectorFamily',
+  key: 'attribute-values',
   get:
     (attribute: string) =>
     ({ get }) => {
@@ -24,7 +24,7 @@ export const attributeMinMaxSelector = selectorFamily<
   { min: number; max: number },
   string
 >({
-  key: 'attributeMinMaxSelector',
+  key: 'attribute-min-max',
   get:
     (attribute: string) =>
     ({ get }) => {

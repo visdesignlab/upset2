@@ -1,7 +1,7 @@
 import { selector } from 'recoil';
 
 export const queryParamAtom = selector({
-  key: 'query',
+  key: 'query-params',
   get: () => {
     const { search } = window.location;
     const searchParams = new URLSearchParams(search);

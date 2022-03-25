@@ -3,16 +3,16 @@ import { selector } from 'recoil';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
 export const maxVisibleSelector = selector({
-  key: 'maxVisible',
+  key: 'max-visible',
   get: ({ get }) => get(upsetConfigAtom).filters.maxVisible,
 });
 
 export const minVisibleSelector = selector({
-  key: 'minVisible',
+  key: 'min-visible',
   get: ({ get }) => get(upsetConfigAtom).filters.minVisible,
 });
 
 export const hideEmptySelector = selector({
-  key: 'hideEmpty',
+  key: 'hide-empty',
   get: ({ get }) => get(upsetConfigAtom).filters.hideEmpty,
 });

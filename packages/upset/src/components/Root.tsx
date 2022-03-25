@@ -32,17 +32,10 @@ type Props = {
     provenance: UpsetProvenance;
     actions: UpsetActions;
   };
-  elementViewWidth: number;
   yOffset: number;
 };
 
-export const Root: FC<Props> = ({
-  data,
-  config,
-  extProvenance,
-  elementViewWidth,
-  yOffset,
-}) => {
+export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
 
@@ -107,7 +100,7 @@ export const Root: FC<Props> = ({
           <Body />
         </SvgBase>
       </div>
-      <ElementSidebar width={elementViewWidth} yOffset={yOffset} />
+      <ElementSidebar yOffset={yOffset} />
     </ProvenanceContext.Provider>
   );
 };

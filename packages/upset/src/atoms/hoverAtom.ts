@@ -1,11 +1,11 @@
 import { atom } from 'recoil';
 
 export const rowHoverAtom = atom<string | null>({
-  key: 'rowHover',
+  key: 'row-hover',
   default: null,
 });
 
 export const columnHoverAtom = atom<string | null>({
-  key: 'columnHover',
+  key: 'column-hover',
   default: null,
 });

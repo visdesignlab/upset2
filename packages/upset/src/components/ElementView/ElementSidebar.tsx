@@ -1,8 +1,8 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Divider, Drawer, Fab, IconButton, Typography } from '@mui/material';
-import { useState } from 'react';
+import { Box, Divider, Drawer, Fab, IconButton, Typography } from '@mui/material';
+import React, { useCallback, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
@@ -10,28 +10,52 @@ import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 
+const initialDrawerWidth = 450;
+const minDrawerWidth = 100;
+
 /** @jsxImportSource @emotion/react */
-export const ElementSidebar = ({
-  width,
-  yOffset,
-}: {
-  width: number;
-  yOffset: number;
-}) => {
+export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
   const [fullWidth, setFullWidth] = useState(false);
   const [hide, setHide] = useState(false);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
+  const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
+
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    const newWidth = document.body.clientWidth - e.clientX;
+
+    console.log(document.body.clientWidth, document.body.offsetWidth);
+    if (newWidth > minDrawerWidth) {
+      setDrawerWidth(newWidth);
+    }
+  }, []);
+
+  const handleMouseUp = useCallback(() => {
+    document.removeEventListener('mouseup', handleMouseUp, true);
+    document.removeEventListener('mousemove', handleMouseMove, true);
+  }, [handleMouseMove]);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      document.addEventListener('mouseup', handleMouseUp, true);
+      document.addEventListener('mousemove', handleMouseMove, true);
+    },
+    [handleMouseUp, handleMouseMove],
+  );
 
   return (
     <>
       <Drawer
         sx={{
-          width: hide ? 0 : fullWidth ? '100%' : width,
+          width: hide ? 0 : fullWidth ? '100%' : drawerWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             padding: '1em',
             paddingTop: `${yOffset}px`,
-            width: hide ? 0 : fullWidth ? '100%' : width,
+            width: hide ? 0 : fullWidth ? '100%' : drawerWidth,
             visibility: hide ? 'hidden' : 'initial',
             boxSizing: 'border-box',
           },
@@ -40,6 +64,21 @@ export const ElementSidebar = ({
         variant="persistent"
         anchor="right"
       >
+        <Box
+          sx={{
+            width: '5px',
+            cursor: 'ew-resize',
+            padding: '4px 0 0',
+            borderTop: '1px solid #ddd',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            zIndex: 100,
+            backgroundColor: '#f4f7f9',
+          }}
+          onMouseDown={(e) => handleMouseDown(e)}
+        />
         <div>
           <IconButton
             onClick={() => {

@@ -1,9 +1,10 @@
 import { scaleLinear } from 'd3';
 import { selector } from 'recoil';
+
 import { maxDeviationSelector } from './maxAtoms';
 
 export const deviationScaleAtom = selector({
-  key: 'deviationScale',
+  key: 'deviation-scale',
   get: ({ get }) => {
     const maxDeviation = get(maxDeviationSelector);
 

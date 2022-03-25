@@ -3,7 +3,7 @@ import { selector } from 'recoil';
 import { api, oAuth } from './authAtoms';
 
 export const logInStatusSelector = selector({
-  key: 'login_status',
+  key: 'login-status',
   get: async () => {
     await oAuth.maybeRestoreLogin();
     if (oAuth.isLoggedIn) {
