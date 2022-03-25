@@ -4,7 +4,7 @@ import { api, oAuth } from './authAtoms';
 import { restoreQueryParam, saveQueryParam } from './queryParamAtom';
 
 export const logInStatusSelector = selector({
-  key: 'login_status',
+  key: 'login-status',
   get: async () => {
     await oAuth.maybeRestoreLogin();
 

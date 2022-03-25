@@ -3,7 +3,7 @@ import { selector } from 'recoil';
 const QUERY_PARAM_KEY = 'pre-redirect-query-param';
 
 export const queryParamAtom = selector({
-  key: 'query',
+  key: 'query-params',
   get: () => {
     const { search } = window.location;
     const searchParams = new URLSearchParams(search);

@@ -23,6 +23,6 @@ export const defaultConfig: UpsetConfig = {
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({
-  key: 'upsetConfig',
+  key: 'upset-config',
   default: defaultConfig,
 });

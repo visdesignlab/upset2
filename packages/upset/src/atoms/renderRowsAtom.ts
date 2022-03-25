@@ -25,7 +25,7 @@ import { setsAtom } from './setsAtoms';
 import { subsetSelector } from './subsetAtoms';
 
 const firstAggRRSelector = selector<Rows>({
-  key: 'farr',
+  key: 'first-aggregate-render-row',
   get: ({ get }) => {
     const aggBy = get(firstAggregateSelector);
     const overlapDegree = get(firstOvelapDegreeSelector);
@@ -46,7 +46,7 @@ const firstAggRRSelector = selector<Rows>({
 });
 
 const secondAggRRSelector = selector<Rows>({
-  key: 'sarr',
+  key: 'second-aggregate-render-row',
   get: ({ get }) => {
     const aggBy = get(secondAggregateSelector);
     const overlapDegree = get(secondOverlapDegreeSelector);
@@ -71,7 +71,7 @@ const secondAggRRSelector = selector<Rows>({
 });
 
 const sortByRRSelector = selector<Rows>({
-  key: 'sortRR',
+  key: 'sort-render-row',
   get: ({ get }) => {
     const sortBy = get(sortBySelector);
     const rr = get(secondAggRRSelector);
@@ -81,7 +81,7 @@ const sortByRRSelector = selector<Rows>({
 });
 
 const filterRRSelector = selector<Rows>({
-  key: 'filterRR',
+  key: 'filter-render-row',
   get: ({ get }) => {
     const maxVisible = get(maxVisibleSelector);
     const minVisible = get(minVisibleSelector);
@@ -130,7 +130,7 @@ function flattenRows(
 }
 
 export const flattenedRowsSelector = selector<RenderRow[]>({
-  key: 'flattenedRows',
+  key: 'flattened-rows',
   get: ({ get }) => {
     const rows = get(rowsSelector);
 
@@ -153,7 +153,7 @@ export const flattenedOnlyRows = selector({
 });
 
 export const rowsCountSelector = selector({
-  key: 'rrCount',
+  key: 'render-row-count',
   get: ({ get }) => {
     const rr = get(flattenedRowsSelector);
     return rr.length;
@@ -161,7 +161,7 @@ export const rowsCountSelector = selector({
 });
 
 export const rowConfigSelector = selector<RowConfigMap>({
-  key: 'rowConfig',
+  key: 'row-config',
   get: ({ get }) => {
     const flattenedRows = get(flattenedRowsSelector);
     const dimensions = get(dimensionsSelector);

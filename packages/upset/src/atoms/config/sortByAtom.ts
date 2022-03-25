@@ -4,6 +4,6 @@ import { selector } from 'recoil';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
 export const sortBySelector = selector<SortBy>({
-  key: 'sortBy',
+  key: 'sort-by',
   get: ({ get }) => get(upsetConfigAtom).sortBy,
 });

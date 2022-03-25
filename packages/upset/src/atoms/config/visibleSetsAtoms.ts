@@ -4,7 +4,7 @@ import { setsAtom } from '../setsAtoms';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
 export const visibleSetSelector = selector<string[]>({
-  key: 'visibleSets',
+  key: 'visible-sets',
   get: ({ get }) => get(upsetConfigAtom).visibleSets,
 });
 

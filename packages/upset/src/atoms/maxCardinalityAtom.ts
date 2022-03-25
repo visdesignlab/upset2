@@ -1,6 +1,6 @@
 import { atom } from 'recoil';
 
 export const maxCardinality = atom({
-  key: 'maxCardinality',
+  key: 'max-cardinality',
   default: -1,
 });
