@@ -1,5 +1,3 @@
-/** @jsxImportSource @emotion/react */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { css } from '@emotion/react';
 import { Box, CircularProgress } from '@mui/material';
 import { Suspense, useEffect, useRef, useState } from 'react';
@@ -7,6 +5,8 @@ import { Suspense, useEffect, useRef, useState } from 'react';
 import { Body } from './components/Body';
 import Header from './components/Header';
 
+/** @jsxImportSource @emotion/react */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const AppCss = css`
   overflow: hidden;
   height: 100vh;
@@ -31,7 +31,7 @@ function App() {
     <div css={AppCss}>
       <Box
         sx={{
-          zIndex: (theme) => theme.zIndex.drawer + 1,
+          zIndex: theme => theme.zIndex.drawer + 1,
         }}
         ref={ref}
       >

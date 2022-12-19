@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { useRecoilValue } from 'recoil';
 
@@ -9,6 +8,7 @@ import { subsetSelector } from '../atoms/subsetAtoms';
 import { highlightBackground } from '../utils/styles';
 import translate from '../utils/transform';
 
+/** @jsxImportSource @emotion/react */
 export const BackgroundRects = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);

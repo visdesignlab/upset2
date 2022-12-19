@@ -13,7 +13,7 @@ type Props = {
 
 function useRows(items: Item[]): GridRowsProp {
   return useMemo(() => {
-    const newItems: GridRowsProp = items.map((item) => ({
+    const newItems: GridRowsProp = items.map(item => ({
       ...item,
       id: item._id,
     }));
@@ -24,7 +24,7 @@ function useRows(items: Item[]): GridRowsProp {
 
 function useColumns(columns: string[]) {
   return useMemo(() => {
-    return columns.map((col) => ({
+    return columns.map(col => ({
       field: col,
       headerName: col === '_id' ? 'ID' : col === '_label' ? 'Label' : col,
     }));

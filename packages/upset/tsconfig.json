@@ -1,8 +1,8 @@
 {
   "include": ["src", "types"],
   "compilerOptions": {
-    "types": ["@emotion/core"],
     "module": "esnext",
+    "types": ["@emotion/react/types/css-prop"],
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
@@ -16,6 +16,7 @@
     "noUnusedParameters": true,
     "moduleResolution": "node",
     "jsx": "preserve",
+    "jsxImportSource": "@emotion/react",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

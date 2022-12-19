@@ -35,8 +35,9 @@ import { ProvenanceContext } from './Root';
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
-  const { actions, provenance, isAtLatest, isAtRoot } =
-    useContext(ProvenanceContext);
+  const { actions, provenance, isAtLatest, isAtRoot } = useContext(
+    ProvenanceContext,
+  );
   const visibleSets = useRecoilValue(visibleSetSelector);
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
@@ -82,12 +83,12 @@ export const Sidebar = () => {
           <FormControl>
             <RadioGroup
               value={firstAggregateBy}
-              onChange={(ev) => {
+              onChange={ev => {
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 actions.firstAggregateBy(newAggBy);
               }}
             >
-              {aggregateByList.map((agg) => (
+              {aggregateByList.map(agg => (
                 <Fragment key={agg}>
                   <FormControlLabel
                     key={agg}
@@ -101,7 +102,7 @@ export const Sidebar = () => {
                       size="small"
                       type="number"
                       value={firstOverlapDegree}
-                      onChange={(ev) => {
+                      onChange={ev => {
                         let val = parseInt(ev.target.value, 10);
                         if (val < 2) val = 2;
                         if (val > visibleSets.length) val = visibleSets.length;
@@ -130,14 +131,14 @@ export const Sidebar = () => {
           <FormControl>
             <RadioGroup
               value={secondAggregateBy}
-              onChange={(ev) => {
+              onChange={ev => {
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 actions.secondAggregateBy(newAggBy);
               }}
             >
               {aggregateByList
-                .filter((agg) => agg !== firstAggregateBy)
-                .map((agg) => (
+                .filter(agg => agg !== firstAggregateBy)
+                .map(agg => (
                   <Fragment key={agg}>
                     <FormControlLabel
                       value={agg}
@@ -150,7 +151,7 @@ export const Sidebar = () => {
                         size="small"
                         type="number"
                         value={secondOverlapDegree}
-                        onChange={(ev) => {
+                        onChange={ev => {
                           let val = parseInt(ev.target.value, 10);
                           if (val < 2) val = 2;
                           if (val > visibleSets.length)
@@ -173,11 +174,11 @@ export const Sidebar = () => {
           <FormControl>
             <RadioGroup
               value={sortBy}
-              onChange={(ev) => {
+              onChange={ev => {
                 actions.sortBy(ev.target.value as SortBy);
               }}
             >
-              {sortByList.map((sort) => (
+              {sortByList.map(sort => (
                 <FormControlLabel
                   key={sort}
                   value={sort}
@@ -200,7 +201,7 @@ export const Sidebar = () => {
             label="More Than"
             type="number"
             value={minVisible}
-            onChange={(ev) => {
+            onChange={ev => {
               let val = parseInt(ev.target.value, 10);
               if (val < 0) val = 0;
               actions.setMinVisible(val);
@@ -212,7 +213,7 @@ export const Sidebar = () => {
             label="Less Than"
             type="number"
             value={maxVisible}
-            onChange={(ev) => {
+            onChange={ev => {
               let val = parseInt(ev.target.value, 10);
               if (val < 0) val = 0;
               actions.setMaxVisible(val);
@@ -230,7 +231,7 @@ export const Sidebar = () => {
                 <Switch
                   size="small"
                   checked={hideEmpty}
-                  onChange={(ev) => {
+                  onChange={ev => {
                     actions.setHideEmpty(ev.target.checked);
                   }}
                 />

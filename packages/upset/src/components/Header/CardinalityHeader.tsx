@@ -42,7 +42,7 @@ export const CardinalityHeader: FC = () => {
     const subs = Object.values(subsets.values);
     if (subs.length === 0) return;
 
-    const cardinalities = subs.map((s) => s.size);
+    const cardinalities = subs.map(s => s.size);
     const maxCard = Math.max(...cardinalities);
     setMaxCardinality(maxCard);
   }, [subsets, maxCardinality]);
@@ -61,7 +61,7 @@ export const CardinalityHeader: FC = () => {
       .on('start', () => {
         setSliding(true);
       })
-      .on('drag', (event) => {
+      .on('drag', event => {
         let newPosition = event.x;
 
         if (newPosition < 0) newPosition = 0;
@@ -80,7 +80,10 @@ export const CardinalityHeader: FC = () => {
     select(current).call(dragBehavior as any);
 
     return () => {
-      dragBehavior.on('start', null).on('drag', null).on('end', null);
+      dragBehavior
+        .on('start', null)
+        .on('drag', null)
+        .on('end', null);
     };
   }, [sliderRef, sliderParentRef, dimensions, globalScale]);
 
@@ -152,9 +155,9 @@ export const CardinalityHeader: FC = () => {
         <path
           opacity="0.3"
           fill="#ccc"
-          d={`M ${globalScale(maxC)} 0 H 0 V ${
-            dimensions.cardinality.buttonHeight + 2 * dimensions.cardinality.gap
-          } H ${dimensions.attribute.width} z`}
+          d={`M ${globalScale(maxC)} 0 H 0 V ${dimensions.cardinality
+            .buttonHeight +
+            2 * dimensions.cardinality.gap} H ${dimensions.attribute.width} z`}
         />
       </g>
       <g

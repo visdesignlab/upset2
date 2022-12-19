@@ -63,7 +63,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
         (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,
       )}
     >
-      {rectArray.map((arr) => (
+      {rectArray.map(arr => (
         <rect
           transform={translate(0, (arr * offset) / 2)}
           key={arr}

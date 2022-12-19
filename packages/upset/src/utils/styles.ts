@@ -1,6 +1,6 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 
+/** @jsxImportSource @emotion/react */
 export const highlightBackground = css`
   fill: #fed9a6;
 `;

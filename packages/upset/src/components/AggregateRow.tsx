@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
@@ -11,6 +10,7 @@ import { CardinalityBar } from './CardinalityBars';
 import { DeviationBar } from './DeviationBars';
 import { Matrix } from './Matrix';
 
+/** @jsxImportSource @emotion/react */
 type Props = {
   aggregateRow: Aggregate;
 };

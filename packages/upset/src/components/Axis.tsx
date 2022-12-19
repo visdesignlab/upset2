@@ -1,9 +1,10 @@
-/** @jsxImportSource @emotion/react */
-import React, { useMemo } from 'react';
-import { ScaleLinear } from 'd3';
-import translate from '../utils/transform';
 import { css } from '@emotion/react';
+import { ScaleLinear } from 'd3';
+import React, { useMemo } from 'react';
 
+import translate from '../utils/transform';
+
+/** @jsxImportSource @emotion/react */
 const shadow = css`
   textshadow: 0 0 5px white;
 `;
@@ -55,7 +56,7 @@ export const Axis = ({
     const numberOfTicksTarget = Math.max(1, Math.floor(width / pixelsPerTick));
 
     return {
-      ticks: scale.ticks(numberOfTicksTarget).map((value) => ({
+      ticks: scale.ticks(numberOfTicksTarget).map(value => ({
         value,
         formattedValue: tickFormatter(value),
         offset: scale(value),

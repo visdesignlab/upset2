@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -7,6 +6,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import Group from './Group';
 
+/** @jsxImportSource @emotion/react */
 const matrixColumnBackgroundRect = css`
   fill: #f0f0f0;
 `;
