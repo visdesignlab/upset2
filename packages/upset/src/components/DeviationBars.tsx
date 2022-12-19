@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -7,6 +6,7 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { deviationScaleAtom } from '../atoms/scaleAtoms';
 import translate from '../utils/transform';
 
+/** @jsxImportSource @emotion/react */
 type Props = {
   deviation: number;
 };

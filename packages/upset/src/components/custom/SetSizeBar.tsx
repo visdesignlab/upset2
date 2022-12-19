@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
 import { ScaleLinear } from 'd3';
 import { FC, useContext } from 'react';
@@ -9,6 +8,7 @@ import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import Group from './Group';
 
+/** @jsxImportSource @emotion/react */
 const matrixColumnBackgroundRect = css`
   fill: #f0f0f0;
 `;

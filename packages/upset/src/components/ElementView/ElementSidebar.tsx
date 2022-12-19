@@ -1,11 +1,15 @@
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DownloadIcon from '@mui/icons-material/Download';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box, Divider, Drawer, Fab, IconButton, Typography } from '@mui/material';
+import { Box, Divider, Drawer, Fab, IconButton, Tooltip, Typography } from '@mui/material';
+import { Item } from '@visdesignlab/upset2-core';
 import React, { useCallback, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
+import { columnsAtom } from '../../atoms/columnAtom';
 import { currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import { elementSelector, intersectionCountSelector } from '../../atoms/elementsSelectors';
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
@@ -13,12 +17,49 @@ import { ElementVisualization } from './ElementVisualization';
 const initialDrawerWidth = 450;
 const minDrawerWidth = 100;
 
+function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
+  if (items.length < 1 || columns.length < 1) return;
+
+  const saveText: string[] = [];
+
+  saveText.push(columns.map(h => (h.includes(',') ? `"${h}"` : h)).join(','));
+
+  items.forEach(item => {
+    const row: string[] = [];
+
+    columns.forEach(col => {
+      row.push(item[col].toString());
+    });
+
+    saveText.push(row.map(r => (r.includes(',') ? `"${r}"` : r)).join(','));
+  });
+
+  const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
+  const blobUrl = URL.createObjectURL(blob);
+
+  const anchor: any = document.createElement('a');
+  anchor.style = 'display: none';
+  document.body.appendChild(anchor);
+  anchor.href = blobUrl;
+  anchor.download = `${name}_${Date.now()}.csv`;
+  anchor.click();
+  anchor.remove();
+}
+
 /** @jsxImportSource @emotion/react */
 export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
   const [fullWidth, setFullWidth] = useState(false);
   const [hide, setHide] = useState(false);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
+  const intersectionCounter = useRecoilValue(
+    intersectionCountSelector(currentIntersection?.id),
+  );
+  const currentIntersectionElements = useRecoilValue(
+    elementSelector(currentIntersection?.id),
+  );
+
+  const columns = useRecoilValue(columnsAtom);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -77,7 +118,7 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
             zIndex: 100,
             backgroundColor: '#f4f7f9',
           }}
-          onMouseDown={(e) => handleMouseDown(e)}
+          onMouseDown={e => handleMouseDown(e)}
         />
         <div>
           <IconButton
@@ -112,6 +153,27 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
         <ElementVisualization />
         <Typography variant="button" fontSize="1em">
           Query Result
+          <Tooltip
+            title={
+              currentIntersection
+                ? `Download ${intersectionCounter} elements`
+                : ''
+            }
+          >
+            <IconButton
+              disabled={!currentIntersection}
+              onClick={() => {
+                if (currentIntersection)
+                  downloadElementsAsCSV(
+                    currentIntersectionElements,
+                    columns,
+                    currentIntersection.elementName,
+                  );
+              }}
+            >
+              <DownloadIcon />
+            </IconButton>
+          </Tooltip>
         </Typography>
         <Divider />
         {currentIntersection ? (

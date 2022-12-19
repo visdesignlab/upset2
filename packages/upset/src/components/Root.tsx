@@ -4,6 +4,7 @@ import { createContext, FC, useEffect, useMemo } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
+import { columnsAtom } from '../atoms/columnAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
@@ -64,12 +65,14 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
+  const setAllColumns = useSetRecoilState(columnsAtom);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
     setAttributeColumns(data.attributeColumns);
+    setAllColumns(data.columns);
   }, [data]);
 
   const dimensions = useRecoilValue(dimensionsSelector);
