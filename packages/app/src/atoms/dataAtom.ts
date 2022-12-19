@@ -24,9 +24,6 @@ export const dataAtom = selector({
 
     const annotations = await api.columnTypes(workspace, table);
 
-    console.log(rows);
-    console.log(annotations);
-
     return process(rows as any, { columns: annotations } as any);
   },
 });

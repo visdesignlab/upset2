@@ -20,6 +20,10 @@ const minDrawerWidth = 100;
 function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
+  console.group(name);
+  console.log(columns);
+  console.table(items.filter((_, idx) => idx < 10));
+
   const saveText: string[] = [];
 
   saveText.push(columns.map(h => (h.includes(',') ? `"${h}"` : h)).join(','));
@@ -28,11 +32,14 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
     const row: string[] = [];
 
     columns.forEach(col => {
-      row.push(item[col].toString());
+      row.push(item[col]?.toString() || '-');
     });
 
     saveText.push(row.map(r => (r.includes(',') ? `"${r}"` : r)).join(','));
   });
+
+  console.log(saveText);
+  console.groupEnd();
 
   const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
   const blobUrl = URL.createObjectURL(blob);
