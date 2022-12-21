@@ -17,7 +17,7 @@ import {
   UNINCLUDED,
 } from './types';
 
-function getItems(row: Row) {
+export function getItems(row: Row) {
   if (isRowSubset(row)) {
     return row.items;
   } else {

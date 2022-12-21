@@ -87,7 +87,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           showConnectingBar={aggregateRow.aggregateBy !== 'Overlaps'}
         />
       )}
-      <CardinalityBar size={aggregateRow.size} />
+      <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
       <DeviationBar deviation={aggregateRow.deviation} />
     </g>
   );

@@ -1,6 +1,6 @@
-import { Item } from '@visdesignlab/upset2-core';
+import { isRowAggregate, Item } from '@visdesignlab/upset2-core';
+import { getItems } from '@visdesignlab/upset2-core';
 import { selectorFamily } from 'recoil';
-
 import { bookmarkedColorPalette, currentIntersectionAtom, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { flattenedOnlyRows } from './renderRowsAtom';
@@ -21,7 +21,10 @@ export const elementSelector = selectorFamily<
 
     if (!row) return [];
 
-    const memberElements = row.items as string[];
+    // allows aggregate rows to be selected via getItems method
+    // TODO: fix issue for nested aggregation return the wrong row
+    // TODO: add the list of items to aggregate upon creation rather than when queried
+    const memberElements = (isRowAggregate(row) ? getItems(row) : row.items as string[]);
 
     return memberElements.map(el => ({
       ...items[el],
@@ -45,7 +48,8 @@ export const intersectionCountSelector = selectorFamily<
 
     const intersections = get(flattenedOnlyRows);
     const row = intersections[id];
-
+    console.log(id);
+    console.log(intersections);
     return row.size;
   },
 });
@@ -56,14 +60,16 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
     const currentIntersection = get(currentIntersectionAtom);
     const items: Item[] = [];
 
-    if (currentIntersection && !ids.includes(currentIntersection.id)) {
-      items.push(...get(elementSelector(currentIntersection.id)));
-    }
+    if (!currentIntersection) return [];
 
-    ids.forEach(id => {
-      items.push(...get(elementSelector(id)));
-    });
+    if (!ids.includes(currentIntersection.id)) {
+        items.push(...get(elementSelector(currentIntersection.id)));
+      }
 
+      ids.forEach(id => {
+        items.push(...get(elementSelector(id)));
+      });
+    
     return items;
   },
 });
