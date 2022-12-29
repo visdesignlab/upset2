@@ -47,9 +47,10 @@ export const intersectionCountSelector = selectorFamily<
     if (!id) return 0;
 
     const intersections = get(flattenedOnlyRows);
+  
+    if (!intersections[id]) { return 0; }
+    
     const row = intersections[id];
-    console.log(id);
-    console.log(intersections);
     return row.size;
   },
 });
