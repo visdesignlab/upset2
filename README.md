@@ -10,8 +10,8 @@ UpSet is an interactive, web based visualization technique designed to analyze s
 ## Local Deployment
 
 1.  Clone the repository using <code>git clone</code> or download and extract the zip file.
-2.  Open terminal in the cloned folder and run <code>npm install</code>
-3.  Run <code>npm run build-client</code> in the terminal to compile.
+2.  Open terminal in the cloned folder and run <code>yarn install</code>
+3.  Run <code>yarn build</code> in the terminal to compile.
 4.  Start a server using
-    > <code>npm run serve</code>
+    > <code>yarn dev</code>
 5.  A browser window should open with the tool loaded. If it doesn't just go to the url pointed to in the terminal window.
