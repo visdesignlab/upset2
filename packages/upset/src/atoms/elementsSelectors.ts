@@ -21,9 +21,6 @@ export const elementSelector = selectorFamily<
 
     if (!row) return [];
 
-    // allows aggregate rows to be selected via getItems method
-    // TODO: fix issue for nested aggregation return the wrong row
-    // TODO: add the list of items to aggregate upon creation rather than when queried
     const memberElements = (isRowAggregate(row) ? getItems(row) : row.items as string[]);
 
     return memberElements.map(el => ({
