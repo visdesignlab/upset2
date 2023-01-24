@@ -9,7 +9,7 @@
     "dev": "turbo run dev --parallel --no-cache",
     "storybook": "turbo run storybook",
     "test": "turbo run test",
-    "build": "turbo run build",
+    "build": "turbo run build --force",
     "prepublish": "lerna run prepublish",
     "publish-canary": "echo 'Do something'",
     "publish-stable": "echo 'Do something'"
