@@ -4,6 +4,8 @@ import { useRecoilValue } from 'recoil';
 import { dataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
 
+import { ErrorModal } from './ErrorModal';
+
 type Props = {
   yOffset: number;
 };
@@ -18,10 +20,15 @@ export const Body = ({ yOffset }: Props) => {
   if (!data) return null;
 
   return (
-    <Upset
-      data={data}
-      loadAttributes={3}
-      yOffset={yOffset === -1 ? 0 : yOffset}
-    />
+    <div>
+      { data.setColumns.length === 0 ? 
+      <ErrorModal /> :
+      <Upset
+        data={data}
+        loadAttributes={3}
+        yOffset={yOffset === -1 ? 0 : yOffset}
+      />
+      }
+    </div>
   );
 };
