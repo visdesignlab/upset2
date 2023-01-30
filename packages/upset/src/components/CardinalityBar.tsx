@@ -31,6 +31,10 @@ const color4 = css`
   fill: rgb(116, 173, 209);
 `;
 
+const rowStyle = css`
+  cursor: pointer;
+`;
+
 export const CardinalityBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const cardinalityDomain = useRecoilValue(maxCardinality);
@@ -67,7 +71,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
         dimensions.matrixColumn.width + dimensions.gap,
         (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,
       )}
-      css={css`cursor:pointer;`}
+      css={rowStyle}
     >
       {rectArray.map(arr => (
         <rect
@@ -75,7 +79,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           key={arr}
           height={dimensions.cardinality.plotHeight - arr * offset}
           width={dimensions.attribute.width}
-          css={currentIntersection === row ? color4 : colors[arr]}
+          css={currentIntersection === row ? colors[3] : colors[arr]}
         />
       ))}
       {fullBars < 3 && (
@@ -83,7 +87,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           transform={translate(0, (fullBars * offset) / 2)}
           height={dimensions.cardinality.plotHeight - fullBars * offset}
           width={scale(rem)}
-          css={currentIntersection === row ? color4 : colors[fullBars]}
+          css={currentIntersection === row ? colors[3] : colors[fullBars]}
         />
       )}
       {fullBars === 3 && (
