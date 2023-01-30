@@ -206,7 +206,10 @@ export const Sidebar = () => {
               if (Number.isNaN(val) || val < 0) {
                 val = 0;
               }
+
+              // removes leading 0's in text
               ev.target.value = `${val}`;
+
               actions.setMinVisible(val);
             }}
           />
@@ -221,7 +224,10 @@ export const Sidebar = () => {
               if (Number.isNaN(val) || val < 0) {
                 val = 0;
               }
+
+              // removes leading 0's in text
               ev.target.value = `${val}`;
+              
               actions.setMaxVisible(val);
             }}
           />

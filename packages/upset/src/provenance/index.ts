@@ -79,8 +79,8 @@ const addToVisibleAction = registry.register('add-to-visible',
 );
 
 const removeFromVisibleAction = registry.register('remove-from-visible',
-  (state, newSet) => {
-    state.visibleSets = state.visibleSets.filter((v: string) => v !== newSet);
+  (state: UpsetConfig, newSet) => {
+    state.visibleSets = state.visibleSets.filter((v) => v !== newSet);
     return state;
   },
 );
@@ -100,18 +100,18 @@ const addMultipleVisibleAttributes = registry.register('add-multiple-visible-att
 });
 
 const removeFromVisibleAttributes = registry.register('remove-from-visible-attributes',
-  (state, attribute) => {
+  (state : UpsetConfig, attribute) => {
     state.visibleAttributes = state.visibleAttributes.filter(
-      (v: string) => v !== attribute,
+      (v) => v !== attribute,
     );
     return state;
   },
 );
 
 const removeMultipleVisibleAttributes = registry.register('remove-multiple-visible-attributes',
-(state, attribute) => {
+(state: UpsetConfig, attribute) => {
   state.visibleAttributes = state.visibleAttributes.filter(
-    (v: string) => !attribute.includes(v),
+    (v) => !attribute.includes(v),
   );
   return state;
 });
@@ -129,9 +129,9 @@ const bookmarkIntersectionAction = registry.register('bookmark-intersection',
 );
 
 const removeBookmarkIntersectionAction = registry.register('remove-bookmark-intersection',
-(state, intersectionId) => {
+(state: UpsetConfig, intersectionId) => {
   state.bookmarkedIntersections = state.bookmarkedIntersections.filter(
-    (id: any) => intersectionId !== id,
+    (id) => intersectionId !== id,
   );
 
   return state;
@@ -156,21 +156,21 @@ const addPlotAction = registry.register('add-plot',
 );
 
 const removePlotAction = registry.register('remove-plot',
-  (state, plot) => {
+  (state: UpsetConfig, plot) => {
     switch (plot.type) {
       case 'Histogram':
         state.plots.histograms = state.plots.histograms.filter(
-          (d: { id: any; }) => d.id !== plot.id,
+          (d) => d.id !== plot.id,
         );
         break;
       case 'Scatterplot':
         state.plots.scatterplots = state.plots.scatterplots.filter(
-          (d: { id: any; }) => d.id !== plot.id,
+          (d) => d.id !== plot.id,
         );
         break;
       case 'Word Cloud':
         state.plots.wordClouds = state.plots.wordClouds.filter(
-          (d: { id: any; }) => d.id !== plot.id,
+          (d) => d.id !== plot.id,
         );
         break;
     }
