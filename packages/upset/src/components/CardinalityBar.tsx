@@ -27,10 +27,15 @@ const color3 = css`
   fill: rgb(37, 37, 37);
 `;
 
+const color4 = css`
+  fill: rgb(116, 173, 209);
+`;
+
 export const CardinalityBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const cardinalityDomain = useRecoilValue(maxCardinality);
   const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
+  let currentIntersection = useRecoilValue(currentIntersectionAtom);
 
   const scale = useScale(
     [0, cardinalityDomain],
@@ -40,7 +45,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
   let fullBars = size > 0 ? Math.floor(size / cardinalityDomain) : size;
   const rem = size % cardinalityDomain;
 
-  const colors = [color1, color2, color3];
+  const colors = [color1, color2, color3, color4];
 
   if (size < 0 || cardinalityDomain < 0) return null;
 
@@ -57,11 +62,12 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
 
   return (
     <g
-      onClick={() => row && setCurrentIntersectionAtom(row)}
+      onClick={() => row && (setCurrentIntersectionAtom(row))}
       transform={translate(
         dimensions.matrixColumn.width + dimensions.gap,
         (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,
       )}
+      css={css`cursor:pointer;`}
     >
       {rectArray.map(arr => (
         <rect
@@ -69,7 +75,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           key={arr}
           height={dimensions.cardinality.plotHeight - arr * offset}
           width={dimensions.attribute.width}
-          css={colors[arr]}
+          css={currentIntersection === row ? color4 : colors[arr]}
         />
       ))}
       {fullBars < 3 && (
@@ -77,7 +83,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           transform={translate(0, (fullBars * offset) / 2)}
           height={dimensions.cardinality.plotHeight - fullBars * offset}
           width={scale(rem)}
-          css={colors[fullBars]}
+          css={currentIntersection === row ? color4 : colors[fullBars]}
         />
       )}
       {fullBars === 3 && (
