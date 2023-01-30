@@ -51,7 +51,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
     if (extProvenance) {
       const { provenance, actions } = extProvenance;
 
-      provenance.addGlobalObserver(() => setState(provenance.state));
+      provenance.currentChange(() => setState(provenance.getState()));
 
       provenance.done();
       return { provenance, actions };

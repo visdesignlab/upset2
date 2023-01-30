@@ -203,7 +203,13 @@ export const Sidebar = () => {
             value={minVisible}
             onChange={ev => {
               let val = parseInt(ev.target.value, 10);
-              if (val < 0) val = 0;
+              if (Number.isNaN(val) || val < 0) {
+                val = 0;
+              }
+
+              // removes leading 0's in text
+              ev.target.value = `${val}`;
+
               actions.setMinVisible(val);
             }}
           />
@@ -215,7 +221,13 @@ export const Sidebar = () => {
             value={maxVisible}
             onChange={ev => {
               let val = parseInt(ev.target.value, 10);
-              if (val < 0) val = 0;
+              if (Number.isNaN(val) || val < 0) {
+                val = 0;
+              }
+
+              // removes leading 0's in text
+              ev.target.value = `${val}`;
+              
               actions.setMaxVisible(val);
             }}
           />

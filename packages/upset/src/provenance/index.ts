@@ -1,7 +1,7 @@
-import { createAction, initProvenance } from '@visdesignlab/trrack';
 import { AggregateBy, Plot, SortBy, UpsetConfig } from '@visdesignlab/upset2-core';
 
 import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
+import { Registry, initializeTrrack } from '@trrack/core';
 
 export type Events = 'Test';
 
@@ -9,7 +9,9 @@ export type Metadata = {
   [key: string]: unknown;
 };
 
-const firstAggAction = createAction<UpsetConfig, [AggregateBy], Events>(
+const registry = Registry.create();
+
+const firstAggAction = registry.register('first-agg',
   (state, aggBy) => {
     state.firstAggregateBy = aggBy;
     if (aggBy === 'None' || aggBy === state.secondAggregateBy) {
@@ -19,56 +21,56 @@ const firstAggAction = createAction<UpsetConfig, [AggregateBy], Events>(
   },
 );
 
-const firstOverlapAction = createAction<UpsetConfig, [number], Events>(
+const firstOverlapAction = registry.register('first-overlap',
   (state, overlap) => {
     state.firstOverlapDegree = overlap;
     return state;
   },
 );
 
-const secondAggAction = createAction<UpsetConfig, [AggregateBy], Events>(
+const secondAggAction = registry.register('second-agg',
   (state, aggBy) => {
     state.secondAggregateBy = aggBy;
     return state;
   },
 );
 
-const secondOverlapAction = createAction<UpsetConfig, [number], Events>(
+const secondOverlapAction = registry.register('second-overlap',
   (state, overlap) => {
     state.secondOverlapDegree = overlap;
     return state;
   },
 );
 
-const sortByAction = createAction<UpsetConfig, [SortBy], Events>(
+const sortByAction = registry.register('sort-by',
   (state, sort) => {
     state.sortBy = sort;
     return state;
   },
 );
 
-const maxVisibleAction = createAction<UpsetConfig, [number], Events>(
+const maxVisibleAction = registry.register('max-visible',
   (state, maxVisible) => {
     state.filters.maxVisible = maxVisible;
     return state;
   },
 );
 
-const minVisibleAction = createAction<UpsetConfig, [number], Events>(
+const minVisibleAction = registry.register('min-visible',
   (state, minVisible) => {
     state.filters.minVisible = minVisible;
     return state;
   },
 );
 
-const hideEmptyAction = createAction<UpsetConfig, [boolean], Events>(
+const hideEmptyAction = registry.register('hide-empty',
   (state, hide) => {
     state.filters.hideEmpty = hide;
     return state;
   },
 );
 
-const addToVisibleAction = createAction<UpsetConfig, [string], Events>(
+const addToVisibleAction = registry.register('add-to-visible',
   (state, newSet) => {
     const newSets = new Set([...state.visibleSets, newSet]);
     state.visibleSets = Array.from(newSets);
@@ -76,14 +78,14 @@ const addToVisibleAction = createAction<UpsetConfig, [string], Events>(
   },
 );
 
-const removeFromVisibleAction = createAction<UpsetConfig, [string], Events>(
-  (state, newSet) => {
+const removeFromVisibleAction = registry.register('remove-from-visible',
+  (state: UpsetConfig, newSet) => {
     state.visibleSets = state.visibleSets.filter((v) => v !== newSet);
     return state;
   },
 );
 
-const addToVisibleAttributeAction = createAction<UpsetConfig, [string], Events>(
+const addToVisibleAttributeAction = registry.register('add-to-visible-attribute',
   (state, attribute) => {
     const newAttributes = new Set([...state.visibleAttributes, attribute]);
     state.visibleAttributes = Array.from(newAttributes);
@@ -91,17 +93,14 @@ const addToVisibleAttributeAction = createAction<UpsetConfig, [string], Events>(
   },
 );
 
-const addMultipleVisibleAttributes = createAction<
-  UpsetConfig,
-  [string[]],
-  Events
->((state, attributes) => {
+const addMultipleVisibleAttributes = registry.register('add-multiple-visible-attributes',
+(state, attributes) => {
   state.visibleAttributes = attributes;
   return state;
 });
 
-const removeFromVisibleAttributes = createAction<UpsetConfig, [string], Events>(
-  (state, attribute) => {
+const removeFromVisibleAttributes = registry.register('remove-from-visible-attributes',
+  (state : UpsetConfig, attribute) => {
     state.visibleAttributes = state.visibleAttributes.filter(
       (v) => v !== attribute,
     );
@@ -109,18 +108,15 @@ const removeFromVisibleAttributes = createAction<UpsetConfig, [string], Events>(
   },
 );
 
-const removeMultipleVisibleAttributes = createAction<
-  UpsetConfig,
-  [string[]],
-  Events
->((state, attribute) => {
+const removeMultipleVisibleAttributes = registry.register('remove-multiple-visible-attributes',
+(state: UpsetConfig, attribute) => {
   state.visibleAttributes = state.visibleAttributes.filter(
     (v) => !attribute.includes(v),
   );
   return state;
 });
 
-const bookmarkIntersectionAction = createAction<UpsetConfig, [string], Events>(
+const bookmarkIntersectionAction = registry.register('bookmark-intersection',
   (state, intersectionId) => {
     if (!state.bookmarkedIntersections.includes(intersectionId))
       state.bookmarkedIntersections = [
@@ -132,11 +128,8 @@ const bookmarkIntersectionAction = createAction<UpsetConfig, [string], Events>(
   },
 );
 
-const removeBookmarkIntersectionAction = createAction<
-  UpsetConfig,
-  [string],
-  Events
->((state, intersectionId) => {
+const removeBookmarkIntersectionAction = registry.register('remove-bookmark-intersection',
+(state: UpsetConfig, intersectionId) => {
   state.bookmarkedIntersections = state.bookmarkedIntersections.filter(
     (id) => intersectionId !== id,
   );
@@ -144,7 +137,7 @@ const removeBookmarkIntersectionAction = createAction<
   return state;
 });
 
-const addPlotAction = createAction<UpsetConfig, [Plot], Events>(
+const addPlotAction = registry.register('add-plot',
   (state, plot) => {
     switch (plot.type) {
       case 'Histogram':
@@ -162,8 +155,8 @@ const addPlotAction = createAction<UpsetConfig, [Plot], Events>(
   },
 );
 
-const removePlotAction = createAction<UpsetConfig, [Plot], Events>(
-  (state, plot) => {
+const removePlotAction = registry.register('remove-plot',
+  (state: UpsetConfig, plot) => {
     switch (plot.type) {
       case 'Histogram':
         state.plots.histograms = state.plots.histograms.filter(
@@ -191,15 +184,13 @@ export function initializeProvenanceTracking(
   setter?: (state: UpsetConfig) => void,
 ) {
   const finalConfig: UpsetConfig = { ...defaultConfig, ...config };
-  const provenance = initProvenance<UpsetConfig, Events, Metadata>(
-    finalConfig,
-    {
-      loadFromUrl: false,
-    },
+ 
+  const provenance = initializeTrrack (
+    { initialState : finalConfig, registry }
   );
 
   if (setter) {
-    provenance.addGlobalObserver(() => setter(provenance.state));
+    provenance.currentChange(() => setter(provenance.getState()));
   }
 
   provenance.done();
@@ -213,74 +204,68 @@ export function getActions(provenance: UpsetProvenance) {
   return {
     firstAggregateBy: (aggBy: AggregateBy) =>
       provenance.apply(
-        firstAggAction.setLabel(`First aggregate by ${aggBy}`)(aggBy),
+        `First aggregate by ${aggBy}`, firstAggAction(aggBy),
       ),
     firstOverlapBy: (overlap: number) =>
       provenance.apply(
-        firstOverlapAction.setLabel(`First overlap by ${overlap}`)(overlap),
+        `First overlap by ${overlap}`, firstOverlapAction(overlap),
       ),
     secondAggregateBy: (aggBy: AggregateBy) =>
       provenance.apply(
-        secondAggAction.setLabel(`Second aggregate by ${aggBy}`)(aggBy),
+        `Second aggregate by ${aggBy}`, secondAggAction(aggBy),
       ),
     secondOverlapBy: (overlap: number) =>
       provenance.apply(
-        secondOverlapAction.setLabel(`Second overlap by ${overlap}`)(overlap),
+        `Second overlap by ${overlap}`, secondOverlapAction(overlap),
       ),
     sortBy: (sort: SortBy) =>
-      provenance.apply(sortByAction.setLabel(`Sort by ${sort}`)(sort)),
+      provenance.apply(`Sort by ${sort}`, sortByAction(sort)),
     setMaxVisible: (val: number) =>
       provenance.apply(
-        maxVisibleAction.setLabel(`Hide intersections above ${val}`)(val),
+        `Hide intersections above ${val}`, maxVisibleAction(val),
       ),
     setMinVisible: (val: number) =>
       provenance.apply(
-        minVisibleAction.setLabel(`Hide intersections below ${val}`)(val),
+        `Hide intersections below ${val}`, minVisibleAction(val),
       ),
     setHideEmpty: (val: boolean) =>
       provenance.apply(
-        hideEmptyAction.setLabel(
-          val ? 'Hide empty intersections' : 'Show empty intersections',
-        )(val),
+        val ? 'Hide empty intersections' : 'Show empty intersections', hideEmptyAction(val)
       ),
     addVisibleSet: (set: string) =>
-      provenance.apply(addToVisibleAction.setLabel(`Add set ${set}`)(set)),
+      provenance.apply(`Add set ${set}`, addToVisibleAction(set)),
     removeVisibleSet: (set: string) =>
       provenance.apply(
-        removeFromVisibleAction.setLabel(`Remove set ${set}`)(set),
+        `Remove set ${set}`, removeFromVisibleAction(set),
       ),
     addAttribute: (attr: string) =>
       provenance.apply(
-        addToVisibleAttributeAction.setLabel(`Show ${attr}`)(attr),
+        `Show ${attr}`, addToVisibleAttributeAction(attr),
       ),
     removeAttribute: (attr: string) =>
       provenance.apply(
-        removeFromVisibleAttributes.setLabel(`Hide ${attr}`)(attr),
+        `Hide ${attr}`, removeFromVisibleAttributes(attr),
       ),
     addMultipleAttributes: (attrs: string[]) =>
       provenance.apply(
-        addMultipleVisibleAttributes.setLabel(
-          `Show ${attrs.length} attributes`,
-        )(attrs),
+        `Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs),
       ),
     removeMultipleVisibleAttributes: (attrs: string[]) =>
       provenance.apply(
-        removeMultipleVisibleAttributes.setLabel(
-          `Hide ${attrs.length} attributes`,
-        )(attrs),
+        `Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs),
       ),
     bookmarkIntersection: (id: string, name: string) =>
       provenance.apply(
-        bookmarkIntersectionAction.setLabel(`Bookmark ${name}`)(id),
+        `Bookmark ${name}`, bookmarkIntersectionAction(id),
       ),
     unBookmarkIntersection: (id: string, name: string) =>
       provenance.apply(
-        removeBookmarkIntersectionAction.setLabel(`Unbookmark ${name}`)(id),
+        `Unbookmark ${name}`, removeBookmarkIntersectionAction(id),
       ),
     addPlot: (plot: Plot) =>
-      provenance.apply(addPlotAction.setLabel(`Add ${plot}`)(plot)),
+      provenance.apply(`Add ${plot}`, addPlotAction(plot)),
     removePlot: (plot: Plot) =>
-      provenance.apply(removePlotAction.setLabel(`Remove ${plot}`)(plot)),
+      provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
   };
 }
 
