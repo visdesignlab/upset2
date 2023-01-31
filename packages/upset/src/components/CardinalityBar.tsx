@@ -31,6 +31,14 @@ const color4 = css`
   fill: rgb(116, 173, 209);
 `;
 
+const color5 = css`
+  fill: rgb(116, 125, 209);
+`;
+
+const color6 = css`
+  fill: rgb(75, 104, 181);
+`;
+
 const rowStyle = css`
   cursor: pointer;
 `;
@@ -49,7 +57,9 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
   let fullBars = size > 0 ? Math.floor(size / cardinalityDomain) : size;
   const rem = size % cardinalityDomain;
 
-  const colors = [color1, color2, color3, color4];
+  const colors = [color1, color2, color3, color4, color5, color6];
+
+  const highlightOffset = 3;
 
   if (size < 0 || cardinalityDomain < 0) return null;
 
@@ -79,7 +89,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           key={arr}
           height={dimensions.cardinality.plotHeight - arr * offset}
           width={dimensions.attribute.width}
-          css={currentIntersection === row ? colors[3] : colors[arr]}
+          css={currentIntersection === row ? colors[arr + highlightOffset] : colors[arr]}
         />
       ))}
       {fullBars < 3 && (
@@ -87,7 +97,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           transform={translate(0, (fullBars * offset) / 2)}
           height={dimensions.cardinality.plotHeight - fullBars * offset}
           width={scale(rem)}
-          css={currentIntersection === row ? colors[3] : colors[fullBars]}
+          css={currentIntersection === row ? colors[fullBars + highlightOffset] : colors[fullBars]}
         />
       )}
       {fullBars === 3 && (
