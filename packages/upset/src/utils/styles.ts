@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 
 /** @jsxImportSource @emotion/react */
-export const highlightBackground = css`
+export const highlight = css`
   fill: #fed9a6;
   stroke: #feca82;
   stroke-width: 2;

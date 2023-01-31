@@ -30,7 +30,9 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
         dimensions.matrixColumn.width +
           dimensions.gap +
           dimensions.cardinality.width +
-          dimensions.gap +
+          dimensions.bookmarkStar.gap +
+          dimensions.bookmarkStar.width +
+          dimensions.bookmarkStar.gap +
           dimensions.attribute.width / 2,
         (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
       )}

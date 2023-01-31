@@ -78,6 +78,13 @@ export function calculateDimensions(
     },
   };
 
+
+  const bookmarkStar = {
+    width: 20,
+    height: body.rowHeight,
+    gap: 10,
+  }
+
   const totalWidth =
     matrixColumn.totalWidth > header.totalWidth
       ? matrixColumn.totalWidth
@@ -87,6 +94,7 @@ export function calculateDimensions(
     height: header.totalHeight + body.height,
     width: totalWidth,
     cardinality,
+    bookmarkStar,
     body,
     matrixColumn,
     margin,
