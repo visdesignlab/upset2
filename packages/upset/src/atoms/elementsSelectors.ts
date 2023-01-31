@@ -1,5 +1,4 @@
-import { Item } from '@visdesignlab/upset2-core';
-import { getItems } from '@visdesignlab/upset2-core';
+import { Item, getItems } from '@visdesignlab/upset2-core';
 import { selectorFamily } from 'recoil';
 import { bookmarkedColorPalette, currentIntersectionAtom, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';

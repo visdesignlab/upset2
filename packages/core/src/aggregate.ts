@@ -303,7 +303,6 @@ function aggregateByOverlaps(
     const elementName = setNames.join(' - ');
 
     const id = getId(`${parentPrefix}Agg`, elementName);
-    
     const sm = { ...setMembership };
     comboSets.forEach((s) => {
       sm[s] = 'Yes';
