@@ -17,7 +17,7 @@ import {
   UNINCLUDED,
 } from './types';
 
-function getItems(row: Row) {
+export function getItems(row: Row) {
   if (isRowSubset(row)) {
     return row.items;
   } else {
@@ -38,6 +38,7 @@ function aggregateByDegree(
   level: number,
   items: Items,
   attributeColumns: string[],
+  parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
 
@@ -50,7 +51,7 @@ function aggregateByDegree(
   const setList = Object.keys(subsets.values[subsets.order[0]].setMembership);
 
   for (let i = 0; i <= setList.length; ++i) {
-    const id = getId('Agg', `Degree ${i}`);
+    const id = getId(`${parentPrefix}Agg`, `Degree ${i}`);
 
     const agg: Aggregate = {
       id,
@@ -103,6 +104,7 @@ function aggregateBySets(
   level: number,
   items: Items,
   attributeColumns: string[],
+  parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
 
@@ -126,7 +128,7 @@ function aggregateBySets(
 
   setList.forEach((set) => {
     const elementName = sets[set]?.elementName || 'No Set';
-    const id = getId('Agg', elementName);
+    const id = getId(`${parentPrefix}Agg`, elementName);
 
     const agg: Aggregate = {
       id,
@@ -195,6 +197,7 @@ function aggregateByDeviation(
   level: number,
   items: Items,
   attributeColumns: string[],
+  parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
 
@@ -218,7 +221,7 @@ function aggregateByDeviation(
   Object.entries(deviationTypes).forEach(([type, val]) => {
     const { elementName, description } = val;
 
-    const id = getId('Agg', elementName);
+    const id = getId(`${parentPrefix}Agg`, elementName);
 
     const agg: Aggregate = {
       id,
@@ -272,6 +275,7 @@ function aggregateByOverlaps(
   level: number,
   items: Items,
   attributeColumns: string[],
+  parentPrefix : string,
 ) {
   if (subsets.order.length === 0) return subsets;
 
@@ -298,8 +302,7 @@ function aggregateByOverlaps(
     const setNames = comboSets.map((set) => sets[set].elementName);
     const elementName = setNames.join(' - ');
 
-    const id = getId('Agg', elementName);
-
+    const id = getId(`${parentPrefix}Agg`, elementName);
     const sm = { ...setMembership };
     comboSets.forEach((s) => {
       sm[s] = 'Yes';
@@ -365,13 +368,14 @@ function aggregateSubsets(
   items: Items,
   attributeColumns: string[],
   level: number = 1,
+  parentPrefix : string = ""
 ) {
   if (aggregateBy === 'Degree')
-    return aggregateByDegree(subsets, level, items, attributeColumns);
+    return aggregateByDegree(subsets, level, items, attributeColumns, parentPrefix);
   if (aggregateBy === 'Sets')
-    return aggregateBySets(subsets, sets, level, items, attributeColumns);
+    return aggregateBySets(subsets, sets, level, items, attributeColumns, parentPrefix);
   if (aggregateBy === 'Deviations')
-    return aggregateByDeviation(subsets, level, items, attributeColumns);
+    return aggregateByDeviation(subsets, level, items, attributeColumns, parentPrefix);
   if (aggregateBy === 'Overlaps')
     return aggregateByOverlaps(
       subsets,
@@ -380,6 +384,7 @@ function aggregateSubsets(
       level,
       items,
       attributeColumns,
+      parentPrefix
     );
   return subsets;
 }
@@ -426,6 +431,7 @@ export function secondAggregation(
         items,
         attributeColumns,
         2,
+        agg.id
       );
       const newAgg = { ...agg, items: itms };
       aggs.values[aggId] = newAgg;

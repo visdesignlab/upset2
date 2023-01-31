@@ -1,6 +1,5 @@
-import { Item } from '@visdesignlab/upset2-core';
+import { Item, getItems } from '@visdesignlab/upset2-core';
 import { selectorFamily } from 'recoil';
-
 import { bookmarkedColorPalette, currentIntersectionAtom, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { flattenedOnlyRows } from './renderRowsAtom';
@@ -21,7 +20,7 @@ export const elementSelector = selectorFamily<
 
     if (!row) return [];
 
-    const memberElements = row.items as string[];
+    const memberElements = getItems(row);
 
     return memberElements.map(el => ({
       ...items[el],
@@ -44,8 +43,10 @@ export const intersectionCountSelector = selectorFamily<
     if (!id) return 0;
 
     const intersections = get(flattenedOnlyRows);
+  
+    if (intersections[id] === undefined) { return 0; }
+    
     const row = intersections[id];
-
     return row.size;
   },
 });
@@ -56,14 +57,16 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
     const currentIntersection = get(currentIntersectionAtom);
     const items: Item[] = [];
 
-    if (currentIntersection && !ids.includes(currentIntersection.id)) {
-      items.push(...get(elementSelector(currentIntersection.id)));
-    }
+    if (currentIntersection === null) return [];
 
-    ids.forEach(id => {
-      items.push(...get(elementSelector(id)));
-    });
+    if (!ids.includes(currentIntersection.id)) {
+        items.push(...get(elementSelector(currentIntersection.id)));
+      }
 
+      ids.forEach(id => {
+        items.push(...get(elementSelector(id)));
+      });
+    
     return items;
   },
 });

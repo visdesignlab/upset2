@@ -6,8 +6,8 @@ import { useRecoilValue } from 'recoil';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
-import { CardinalityBar } from './CardinalityBars';
-import { DeviationBar } from './DeviationBars';
+import { CardinalityBar } from './CardinalityBar';
+import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 
 /** @jsxImportSource @emotion/react */
@@ -87,7 +87,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           showConnectingBar={aggregateRow.aggregateBy !== 'Overlaps'}
         />
       )}
-      <CardinalityBar size={aggregateRow.size} />
+      <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
       <DeviationBar deviation={aggregateRow.deviation} />
     </g>
   );

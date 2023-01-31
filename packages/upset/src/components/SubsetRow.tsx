@@ -4,8 +4,8 @@ import { useRecoilValue } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from './AttributeBars';
-import { CardinalityBar } from './CardinalityBars';
-import { DeviationBar } from './DeviationBars';
+import { CardinalityBar } from './CardinalityBar';
+import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 
 type Props = {
