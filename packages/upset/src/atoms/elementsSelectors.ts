@@ -1,4 +1,4 @@
-import { isRowAggregate, Item } from '@visdesignlab/upset2-core';
+import { Item } from '@visdesignlab/upset2-core';
 import { getItems } from '@visdesignlab/upset2-core';
 import { selectorFamily } from 'recoil';
 import { bookmarkedColorPalette, currentIntersectionAtom, nextColorSelector } from './config/currentIntersectionAtom';
@@ -21,7 +21,7 @@ export const elementSelector = selectorFamily<
 
     if (!row) return [];
 
-    const memberElements = (isRowAggregate(row) ? getItems(row) : row.items as string[]);
+    const memberElements = getItems(row);
 
     return memberElements.map(el => ({
       ...items[el],
@@ -45,7 +45,7 @@ export const intersectionCountSelector = selectorFamily<
 
     const intersections = get(flattenedOnlyRows);
   
-    if (!intersections[id]) { return 0; }
+    if (intersections[id] === undefined) { return 0; }
     
     const row = intersections[id];
     return row.size;
@@ -58,7 +58,7 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
     const currentIntersection = get(currentIntersectionAtom);
     const items: Item[] = [];
 
-    if (!currentIntersection) return [];
+    if (currentIntersection === null) return [];
 
     if (!ids.includes(currentIntersection.id)) {
         items.push(...get(elementSelector(currentIntersection.id)));
