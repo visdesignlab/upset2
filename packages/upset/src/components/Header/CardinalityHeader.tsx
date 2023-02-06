@@ -90,7 +90,10 @@ export const CardinalityHeader: FC = () => {
   return (
     <g
       transform={translate(
-        dimensions.matrixColumn.width + dimensions.gap,
+        dimensions.matrixColumn.width +
+        dimensions.bookmarkStar.gap +
+        dimensions.bookmarkStar.width +
+        dimensions.bookmarkStar.gap,
         dimensions.header.totalHeight - dimensions.cardinality.height,
       )}
     >

@@ -15,11 +15,11 @@ export const DeviationHeader = () => {
     <g
       transform={translate(
         dimensions.matrixColumn.width +
-          dimensions.gap +
-          dimensions.cardinality.width +
-          dimensions.bookmarkStar.gap +
-          dimensions.bookmarkStar.width +
-          dimensions.bookmarkStar.gap,
+        dimensions.bookmarkStar.gap +
+        dimensions.bookmarkStar.width +
+        dimensions.bookmarkStar.gap +
+        dimensions.cardinality.width +
+        dimensions.gap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >

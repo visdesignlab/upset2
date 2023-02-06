@@ -55,6 +55,12 @@ export function calculateDimensions(
       return attribute.width + this.textMargin;
     },
   };
+  
+  const bookmarkStar = {
+    width: 20,
+    height: 24,
+    gap: 10,
+  }
 
   const header = {
     totalWidth:
@@ -62,7 +68,9 @@ export function calculateDimensions(
       set.width * nVisibleSets + // Offset for total sets
       gap + // Add margin
       cardinality.width + // Cardinality
-      gap + //
+      bookmarkStar.gap +
+      bookmarkStar.width + // Bookmark Star
+      bookmarkStar.gap +
       attribute.width + // Deviation
       attribute.vGap +
       (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
@@ -77,13 +85,6 @@ export function calculateDimensions(
       return nIntersections * this.rowHeight;
     },
   };
-
-
-  const bookmarkStar = {
-    width: 20,
-    height: body.rowHeight,
-    gap: 10,
-  }
 
   const totalWidth =
     matrixColumn.totalWidth > header.totalWidth

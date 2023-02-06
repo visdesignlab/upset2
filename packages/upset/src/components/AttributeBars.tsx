@@ -19,11 +19,11 @@ export const AttributeBars: FC<Props> = ({ attributes }) => {
     <g
       transform={translate(
         dimensions.matrixColumn.width +
-          dimensions.gap +
-          dimensions.cardinality.width +
           dimensions.bookmarkStar.gap +
           dimensions.bookmarkStar.width +
           dimensions.bookmarkStar.gap +
+          dimensions.cardinality.width +
+          dimensions.gap +
           dimensions.attribute.width +
           dimensions.attribute.vGap,
         (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
