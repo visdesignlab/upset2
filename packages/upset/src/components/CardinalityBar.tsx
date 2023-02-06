@@ -32,11 +32,11 @@ const color4 = css`
 `;
 
 const color5 = css`
-  fill: rgb(116, 125, 209);
+  fill: rgb(94, 102, 171);
 `;
 
 const color6 = css`
-  fill: rgb(75, 104, 181);
+  fill: rgb(29, 41, 71);
 `;
 
 const rowStyle = css`
@@ -47,7 +47,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const cardinalityDomain = useRecoilValue(maxCardinality);
   const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
-  let currentIntersection = useRecoilValue(currentIntersectionAtom);
+  const currentIntersection = useRecoilValue(currentIntersectionAtom);
 
   const scale = useScale(
     [0, cardinalityDomain],
@@ -89,7 +89,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           key={arr}
           height={dimensions.cardinality.plotHeight - arr * offset}
           width={dimensions.attribute.width}
-          css={currentIntersection === row ? colors[arr + highlightOffset] : colors[arr]}
+          css={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[arr + highlightOffset] : colors[arr]}
         />
       ))}
       {fullBars < 3 && (
@@ -97,7 +97,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
           transform={translate(0, (fullBars * offset) / 2)}
           height={dimensions.cardinality.plotHeight - fullBars * offset}
           width={scale(rem)}
-          css={currentIntersection === row ? colors[fullBars + highlightOffset] : colors[fullBars]}
+          css={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[fullBars + highlightOffset] : colors[fullBars]}
         />
       )}
       {fullBars === 3 && (

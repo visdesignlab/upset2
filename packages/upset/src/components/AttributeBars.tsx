@@ -21,9 +21,9 @@ export const AttributeBars: FC<Props> = ({ attributes }) => {
         dimensions.matrixColumn.width +
           dimensions.gap +
           dimensions.cardinality.width +
-          dimensions.gap +
+          dimensions.bookmarkStar.gap +
           dimensions.bookmarkStar.width +
-          dimensions.gap +
+          dimensions.bookmarkStar.gap +
           dimensions.attribute.width +
           dimensions.attribute.vGap,
         (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,

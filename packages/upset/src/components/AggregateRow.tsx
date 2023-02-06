@@ -57,7 +57,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(aggregateRow.level === 2 ? 15 : 2, 0)}>
         <rect
           transform={translate(0, 2)}
-          css={currentIntersection === aggregateRow ? 
+          css={currentIntersection !== null && currentIntersection.id === aggregateRow.id ? 
             highlight : 
             css`
             fill: #cccccc;
