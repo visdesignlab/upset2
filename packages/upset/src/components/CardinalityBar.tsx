@@ -78,7 +78,10 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
     <g
       onClick={() => row && (setCurrentIntersectionAtom(row))}
       transform={translate(
-        dimensions.matrixColumn.width + dimensions.gap,
+        dimensions.matrixColumn.width +
+        dimensions.bookmarkStar.gap +
+        dimensions.bookmarkStar.width +
+        dimensions.bookmarkStar.gap,
         (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,
       )}
       css={rowStyle}

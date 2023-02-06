@@ -20,9 +20,6 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
         onClick={() => row && (setCurrentIntersectionAtom(row))}
         transform={translate(
             dimensions.matrixColumn.width + 
-            dimensions.bookmarkStar.gap +
-            dimensions.bookmarkStar.gap / 2 +
-            dimensions.cardinality.width + 
             dimensions.bookmarkStar.gap,
             0)}
             css={css`cursor:pointer;`}>

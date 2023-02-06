@@ -26,10 +26,10 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
     <>
       <rect height={dimensions.body.rowHeight} width={dimensions.body.rowWidth} css={currentIntersection !== null && currentIntersection.id === subset.id ? highlight : defaultBackground} rx="5" ry="10"></rect>
       <Matrix sets={visibleSets} subset={subset} />
-      <CardinalityBar size={subset.size} row={subset} />
       {bookmarkedIntersections.includes(subset.id) &&
         <BookmarkStar row={subset} />
       }
+      <CardinalityBar size={subset.size} row={subset} />
       <DeviationBar deviation={subset.deviation} />
       <AttributeBars attributes={subset.attributes} />
     </>
