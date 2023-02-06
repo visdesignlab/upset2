@@ -5,7 +5,7 @@ import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { columnHoverAtom, rowHoverAtom } from '../atoms/hoverAtom';
 import { subsetSelector } from '../atoms/subsetAtoms';
-import { highlightBackground } from '../utils/styles';
+import { highlight } from '../utils/styles';
 import translate from '../utils/transform';
 
 /** @jsxImportSource @emotion/react */
@@ -27,7 +27,7 @@ export const BackgroundRects = () => {
             <rect
               className={setName}
               css={css`
-                ${hoveredColumn === setName && highlightBackground}
+                ${hoveredColumn === setName && highlight}
               `}
               height={dimensions.body.height}
               width={dimensions.set.width}
@@ -49,7 +49,7 @@ export const BackgroundRects = () => {
               key={subsetId}
               className={subsetId}
               css={css`
-                ${hoveredRow === subsetId && highlightBackground}
+                ${hoveredRow === subsetId && highlight}
               `}
               height={dimensions.body.rowHeight}
               width={dimensions.body.rowWidth}

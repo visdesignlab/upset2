@@ -15,7 +15,9 @@ export const AttributeHeaders = () => {
         dimensions.matrixColumn.width +
           dimensions.gap +
           dimensions.cardinality.width +
-          dimensions.gap +
+          dimensions.bookmarkStar.gap +
+          dimensions.bookmarkStar.width +
+          dimensions.bookmarkStar.gap +
           dimensions.attribute.width +
           dimensions.attribute.vGap,
         dimensions.header.totalHeight - dimensions.attribute.height,

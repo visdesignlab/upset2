@@ -5,10 +5,13 @@ import { useRecoilValue } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import translate from '../utils/transform';
+import { highlight } from '../utils/styles';
 import { CardinalityBar } from './CardinalityBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
+import { BookmarkStar } from './BookmarkStar';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -35,6 +38,8 @@ export const collapsed = (
 export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionAtom);
+  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -52,7 +57,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(aggregateRow.level === 2 ? 15 : 2, 0)}>
         <rect
           transform={translate(0, 2)}
-          css={css`
+          css={currentIntersection !== null && currentIntersection.id === aggregateRow.id ? 
+            highlight : 
+            css`
             fill: #cccccc;
             opacity: 0.3;
             stroke: #555555;
@@ -88,6 +95,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         />
       )}
       <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
+      { bookmarkedIntersections.includes(aggregateRow.id) &&
+          <BookmarkStar row={aggregateRow} />
+      }
       <DeviationBar deviation={aggregateRow.deviation} />
     </g>
   );
