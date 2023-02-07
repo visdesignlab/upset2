@@ -144,6 +144,8 @@ export type WordCloud = BasePlot & {
 
 export type Plot = Scatterplot | Histogram | WordCloud;
 
+export type Bookmark = { id: string, label: string, size: number }
+
 export type UpsetConfig = {
   firstAggregateBy: AggregateBy;
   firstOverlapDegree: number;
@@ -157,7 +159,7 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
-  bookmarkedIntersections: string[];
+  bookmarkedIntersections: Bookmark[];
   plots: {
     scatterplots: Scatterplot[];
     histograms: Histogram[];

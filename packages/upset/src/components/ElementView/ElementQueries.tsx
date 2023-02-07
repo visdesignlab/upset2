@@ -19,11 +19,11 @@ export const ElementQueries = () => {
   const [currentIntersection, setCurrentIntersection] = useRecoilState(
     currentIntersectionAtom,
   );
-  const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const rows = useRecoilValue(flattenedOnlyRows);
-
+  const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  
   return (
     <>
       {!currentIntersection && bookmarked.length === 0 && (
@@ -32,57 +32,59 @@ export const ElementQueries = () => {
         </Typography>
       )}
       <Stack direction="row" sx={{ flexFlow: 'row wrap' }}>
-        {currentIntersection && !bookmarked.includes(currentIntersection.id) && (
-          <Chip
+        {bookmarked.map((bookmark) => {
+          return (
+            <Chip
+            disabled={rows[bookmark.id] === undefined}
             sx={(theme) => ({
               margin: theme.spacing(0.5),
               '.MuiChip-icon': {
-                color: nextColor,
-              },
-              backgroundColor: 'rgba(0,0,0,0.2)',
-            })}
-            icon={<SquareIcon fontSize={'1em' as any} />}
-            label={`${currentIntersection.elementName} - ${currentIntersection.size}`}
-            onDelete={() => {
-              actions.bookmarkIntersection(
-                currentIntersection.id,
-                currentIntersection.elementName,
-              );
-            }}
-            deleteIcon={<StarBorderIcon />}
-          />
-        )}
-        {bookmarked.map((id) => {
-          return (
-            <Chip
-              sx={(theme) => ({
-                margin: theme.spacing(0.5),
-                '.MuiChip-icon': {
-                  color: colorPallete[id],
+                  color: colorPallete[bookmark.id],
                 },
                 backgroundColor:
-                  id === currentIntersection?.id
-                    ? 'rgba(0,0,0,0.2)'
-                    : 'default',
+                bookmark.id === currentIntersection?.id
+                ? 'rgba(0,0,0,0.2)'
+                : 'default',
               })}
-              key={id}
-              label={`${rows[id].elementName} - ${rows[id].size}`}
+              key={bookmark.id}
+              label={`${bookmark.label} - ${bookmark.size}`}
               icon={<SquareIcon fontSize={'1em' as any} />}
               deleteIcon={<StarIcon />}
               onClick={() => {
-                if (currentIntersection?.id === id)
-                  setCurrentIntersection(null);
-                else setCurrentIntersection(rows[id]);
+                if (currentIntersection?.id === bookmark.id)
+                setCurrentIntersection(null);
+                else setCurrentIntersection(rows[bookmark.id]);
               }}
               onDelete={() => {
-                if (currentIntersection?.id === id) {
+                if (currentIntersection?.id === bookmark.id) {
                   setCurrentIntersection(null);
                 }
-                actions.unBookmarkIntersection(id, rows[id].elementName);
+                actions.unBookmarkIntersection(bookmark.id, bookmark.label, bookmark.size);
               }}
-            />
-          );
-        })}
+              />
+              );
+            })}
+            {currentIntersection && !bookmarked.find((b) => b.id === currentIntersection.id) && (
+              <Chip
+                sx={(theme) => ({
+                  margin: theme.spacing(0.5),
+                  '.MuiChip-icon': {
+                    color: nextColor,
+                  },
+                  backgroundColor: 'rgba(0,0,0,0.2)',
+                })}
+                icon={<SquareIcon fontSize={'1em' as any} />}
+                label={`${currentIntersection.elementName} - ${currentIntersection.size}`}
+                onDelete={() => {
+                  actions.bookmarkIntersection(
+                    currentIntersection.id,
+                    currentIntersection.elementName,
+                    currentIntersection.size,
+                  );
+                }}
+                deleteIcon={<StarBorderIcon />}
+              />
+            )}
       </Stack>
     </>
   );

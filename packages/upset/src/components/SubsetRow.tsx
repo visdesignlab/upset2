@@ -26,7 +26,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
     <>
       <rect height={dimensions.body.rowHeight} width={dimensions.body.rowWidth} css={currentIntersection !== null && currentIntersection.id === subset.id ? highlight : defaultBackground} rx="5" ry="10"></rect>
       <Matrix sets={visibleSets} subset={subset} />
-      {bookmarkedIntersections.includes(subset.id) &&
+      {bookmarkedIntersections.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />
       }
       <CardinalityBar size={subset.size} row={subset} />
