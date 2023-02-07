@@ -94,7 +94,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           showConnectingBar={aggregateRow.aggregateBy !== 'Overlaps'}
         />
       )}
-      { bookmarkedIntersections.includes(aggregateRow.id) &&
+      { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
           <BookmarkStar row={aggregateRow} />
       }
       <CardinalityBar row={aggregateRow} size={aggregateRow.size} />

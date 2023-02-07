@@ -1,4 +1,4 @@
-import { Row } from '@visdesignlab/upset2-core';
+import { Bookmark, Row } from '@visdesignlab/upset2-core';
 import { atom, selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
@@ -9,7 +9,7 @@ export const currentIntersectionAtom = atom<Row | null>({
   default: null,
 });
 
-export const bookmarkedIntersectionSelector = selector<string[]>({
+export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
   key: 'bookmarked-intersection',
   get: ({ get }) => {
     const intersection = get(upsetConfigAtom).bookmarkedIntersections;
@@ -27,8 +27,8 @@ export const bookmarkedColorPalette = selector<{
 
     const bookmarks = get(bookmarkedIntersectionSelector);
 
-    [...bookmarks].reverse().forEach((inter, idx) => {
-      colorPalette[inter] = queryColorPalette[idx] || '#000';
+    [...bookmarks].forEach((inter, idx) => {
+      colorPalette[inter.id] = queryColorPalette[idx] || '#000';
     });
 
     return colorPalette;
