@@ -15,7 +15,7 @@ export const ElementVisualization = () => {
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
-  const items = useRecoilValue(elementItemMapSelector(bookmarked));
+  const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
 
   const onClose = () => setOpenAddPlot(false);
 
