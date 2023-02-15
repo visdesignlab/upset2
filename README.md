@@ -1,7 +1,7 @@
 # UpSet 2.0 – Visualizing Intersecting Sets
 
-Deployed at: [Upset](https://upset.multinet.app/)
-Deployment Status: [![Netlify Status](https://api.netlify.com/api/v1/badges/edb8054f-7bfd-4b6a-8325-b26c279e2991/deploy-status)](https://app.netlify.com/sites/upset2/deploys)
+Deployed at: [Upset](https://upset.multinet.app/). 
+Deployment Status: [![Netlify Status](https://api.netlify.com/api/v1/badges/edb8054f-7bfd-4b6a-8325-b26c279e2991/deploy-status)](https://app.netlify.com/sites/upset2/deploys). 
 
 ## About
 
