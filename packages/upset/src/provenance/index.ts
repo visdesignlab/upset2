@@ -180,8 +180,7 @@ const removePlotAction = registry.register('remove-plot',
 );
 
 const replaceStateAction = registry.register('set-state',
-  (state: UpsetConfig, newState: UpsetConfig) => {
-    console.log("State change from", JSON.stringify(state), "to", JSON.stringify(newState));
+  (_state: UpsetConfig, newState: UpsetConfig) => {
     return newState;
   });
 

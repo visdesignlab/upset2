@@ -55,7 +55,7 @@ export const Sidebar = () => {
     secondAggregateBy !== 'None',
   );
 
-  const [ showImportModal, setShowImportModal] = useState(false);
+  const [ showImportModal, setShowImportModal ] = useState(false);
 
   useEffect(() => {
     if (firstAggregateBy === 'None') {

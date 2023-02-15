@@ -46,7 +46,7 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
 };
 
 export const exportStateGrammar = (provenance: any) => {
-    const fileName = "upset_state";
+    const fileName = `upset_state_${new Date().toJSON().slice(0,10)}`;
     const json = JSON.stringify(provenance.getState(), null, 2);
     const blob = new Blob([json], { type: "application/json" });
     const href = URL.createObjectURL(blob);
