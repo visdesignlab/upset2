@@ -1139,10 +1139,17 @@
     core-js-pure "^3.25.1"
     regenerator-runtime "^0.13.11"
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.20.6", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7", "@babel/runtime@^7.9.2":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.1.2", "@babel/runtime@^7.10.2", "@babel/runtime@^7.11.2", "@babel/runtime@^7.12.13", "@babel/runtime@^7.12.5", "@babel/runtime@^7.16.3", "@babel/runtime@^7.17.8", "@babel/runtime@^7.18.3", "@babel/runtime@^7.18.9", "@babel/runtime@^7.20.6", "@babel/runtime@^7.3.1", "@babel/runtime@^7.5.0", "@babel/runtime@^7.5.5", "@babel/runtime@^7.7.2", "@babel/runtime@^7.7.6", "@babel/runtime@^7.8.4", "@babel/runtime@^7.8.7":
   version "7.20.6"
   resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.6.tgz#facf4879bfed9b5326326273a64220f099b0fce3"
   integrity sha512-Q+8MqP7TiHMWzSfwiJwXCjyf4GYA4Dgw3emg/7xmwsdLJOZUp+nMqcOwOzzYheuM1rhDu8FSj2l0aoMygEuXuA==
+  dependencies:
+    regenerator-runtime "^0.13.11"
+
+"@babel/runtime@^7.9.2":
+  version "7.20.13"
+  resolved "https://registry.yarnpkg.com/@babel/runtime/-/runtime-7.20.13.tgz#7055ab8a7cff2b8f6058bf6ae45ff84ad2aded4b"
+  integrity sha512-gt3PKXs0DBoL9xCvOIIZ2NEqAGZqHjAnmVbfQtB620V0uReIQutpel14KcneZuer7UioY8ALKZ7iocavvzTNFA==
   dependencies:
     regenerator-runtime "^0.13.11"
 
@@ -4557,19 +4564,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trrack/core@1.0.1":
+"@trrack/core@1.0.1", "@trrack/core@^1.0.1":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.0.1.tgz#47c292a530b3022cd296389b9504d8f8f91ae2b0"
   integrity sha512-UAXQqbFtH9P/qwdLjs5dIuf32t6XTStzciKcDULC2Hu7Lctg+sSQNccC3O1IjJ0lQKQeFO7MwmXQci/OdA1RHg==
-  dependencies:
-    "@reduxjs/toolkit" "^1.9.1"
-    fast-json-patch "^3.1.1"
-    uuid "^9.0.0"
-
-"@trrack/core@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.0.0.tgz#a3be0096fc895f4794416a9ea31418d11a28ef73"
-  integrity sha512-hxSFqseoSbMxueZ4gzkVUnW0g7YiYGnsAdw/c8VbnO465bnOGhzW7aElQnxY8Ph/8Tx5K36+niSOoml3OvkmTg==
   dependencies:
     "@reduxjs/toolkit" "^1.9.1"
     fast-json-patch "^3.1.1"
