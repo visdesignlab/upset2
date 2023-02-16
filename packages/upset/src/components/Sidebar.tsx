@@ -7,6 +7,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Button,
   ButtonGroup,
   FormControl,
   FormControlLabel,
@@ -32,6 +33,7 @@ import { hideEmptySelector, maxVisibleSelector, minVisibleSelector } from '../at
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
+import { exportStateGrammar, ImportModal } from './ImportModal';
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
@@ -53,11 +55,17 @@ export const Sidebar = () => {
     secondAggregateBy !== 'None',
   );
 
+  const [ showImportModal, setShowImportModal ] = useState(false);
+
   useEffect(() => {
     if (firstAggregateBy === 'None') {
       setSecondaryAccordionOpen(false);
     }
   }, [firstAggregateBy]);
+
+  const handleImportModalClose = () => {
+    setShowImportModal(false);
+  }
 
   return (
     <div
@@ -74,6 +82,18 @@ export const Sidebar = () => {
             <RedoIcon />
           </IconButton>
         </ButtonGroup>
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <ButtonGroup>
+          <Button onClick={() => setShowImportModal(true) }>
+            Import
+          </Button>
+          <Button onClick={() => exportStateGrammar(provenance)}>
+            Export
+          </Button>
+        </ButtonGroup>
+        
+        <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Box>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>

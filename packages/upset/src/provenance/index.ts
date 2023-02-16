@@ -179,6 +179,11 @@ const removePlotAction = registry.register('remove-plot',
   },
 );
 
+const replaceStateAction = registry.register('set-state',
+  (_state: UpsetConfig, newState: UpsetConfig) => {
+    return newState;
+  });
+
 export function initializeProvenanceTracking(
   config: Partial<UpsetConfig> = {},
   setter?: (state: UpsetConfig) => void,
@@ -266,6 +271,8 @@ export function getActions(provenance: UpsetProvenance) {
       provenance.apply(`Add ${plot}`, addPlotAction(plot)),
     removePlot: (plot: Plot) =>
       provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
+    replaceState: (state: UpsetConfig) =>
+        provenance.apply(`Replace state`, replaceStateAction(state)),
   };
 }
 
