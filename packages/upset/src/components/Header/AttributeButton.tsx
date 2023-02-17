@@ -1,9 +1,12 @@
-import { css } from '@emotion/react';
-import { FC } from 'react';
+import { FC, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
+import { SortBy } from '@visdesignlab/upset2-core';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
+import { ProvenanceContext } from '../Root';
+import { sortBySelector } from '../../atoms/config/sortByAtom';
+import { Menu, MenuItem, css } from '@mui/material';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -13,26 +16,83 @@ type Props = {
 
 export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const { actions } = useContext(
+    ProvenanceContext,
+  );
+  const sortBy = useRecoilValue(sortBySelector);
+  const [contextMenu, setContextMenu] = useState<{
+    mouseX: number;
+    mouseY: number;
+  } | null>(null);
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  }
+
+  const handleContextMenuOpen = (event: React.MouseEvent) => {
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX,
+            mouseY: event.clientY,
+          }
+        : null,
+    );
+  }
+
+  const sortByHeader = () => {
+    actions.sortBy(label as SortBy);
+  }
 
   return (
-    <g>
+    <g
+      css={{
+        '&:hover': {
+          opacity: 0.7,
+        },
+        cursor: (sort ? 'context-menu' : 'default'),
+      }}
+      onContextMenu={(e) => {
+        if (sort) {
+          e.preventDefault();
+          handleContextMenuOpen(e);
+        }
+      }}
+      onClick={() => { if (sort && sortBy !== label) sortByHeader(); }}
+    >
+      <Menu
+        id="header-context-menu"
+        anchorReference="anchorPosition"
+        anchorPosition={
+          contextMenu !== null
+            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+            : undefined
+        }
+        open={contextMenu !== null}
+        onClose={handleContextMenuClose}
+        css={css`
+          width: 100%;
+        `}
+      >
+        <MenuItem onClick={() => {
+            sortByHeader();
+            handleContextMenuClose();
+          }} 
+          disabled={sortBy === label}>
+            Sort by {label}
+        </MenuItem>
+      </Menu>
       <rect
+        height={dimensions.attribute.buttonHeight}
+        width={dimensions.attribute.width}
         css={{
           fill: '#ccc',
           stroke: 'black',
           opacity: 0.5,
           'stroke-width': ' 0.3px',
-          '&:hover': {
-            opacity: 0.7,
-          },
         }}
-        height={dimensions.attribute.buttonHeight}
-        width={dimensions.attribute.width}
       />
       <text
-        css={css`
-          cursor: s-resize;
-        `}
         pointerEvents={sort ? 'default' : 'none'}
         dominantBaseline="middle"
         transform={translate(

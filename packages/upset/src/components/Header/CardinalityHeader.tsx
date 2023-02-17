@@ -12,6 +12,7 @@ import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { Axis } from '../Axis';
 import { ProvenanceContext } from '../Root';
+import { Menu, MenuItem } from '@mui/material';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -36,6 +37,30 @@ export const CardinalityHeader: FC = () => {
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
   const [maxC, setMaxCardinality] = useRecoilState(maxCardinality);
+
+  const [contextMenu, setContextMenu] = useState<{
+    mouseX: number;
+    mouseY: number;
+  } | null>(null);
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  }
+
+  const handleContextMenuOpen = (event: React.MouseEvent) => {
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: event.clientX,
+            mouseY: event.clientY,
+          }
+        : null,
+    );
+  }
+
+  const sortByCardinality = () => {
+    actions.sortBy('Cardinality');
+  }
 
   useEffect(() => {
     if (maxC !== -1) return;
@@ -166,20 +191,51 @@ export const CardinalityHeader: FC = () => {
       <g
         className="cardinality-button"
         css={css`
-          ${sliding ? hide : show}
+          ${sliding ? hide : show};
+          cursor: context-menu;
+          &:hover {
+            opacity: 0.7;
+            transition: opacity 0s;
+          }
         `}
         transform={translate(
           0,
           dimensions.cardinality.scaleHeight + dimensions.cardinality.gap,
         )}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          handleContextMenuOpen(e);
+      }}
       >
+        <Menu
+          id="header-context-menu"
+          anchorReference="anchorPosition"
+          anchorPosition={
+            contextMenu !== null
+              ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+              : undefined
+          }
+          open={contextMenu !== null}
+          onClose={handleContextMenuClose}
+          css={css`
+            width: 100%;
+          `}
+        >
+          <MenuItem 
+            onClick={() => {
+              sortByCardinality();
+              handleContextMenuClose();
+            }}
+            disabled={sortBy === 'Cardinality'}>
+              Sort by Cardinality
+          </MenuItem>
+        </Menu>
         <rect
           css={css`
             fill: #ccc;
             stroke: black;
             opacity: 0.5;
             stroke-width: 0.3px;
-            cursor: s-resize;
           `}
           height={dimensions.cardinality.buttonHeight}
           width={dimensions.attribute.width}
@@ -190,7 +246,6 @@ export const CardinalityHeader: FC = () => {
         <text
           css={css`
             pointer-event: none;
-            cursor: s-resize;
           `}
           dominantBaseline="middle"
           transform={translate(
