@@ -7,7 +7,6 @@ import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
 import { Menu, MenuItem, css } from '@mui/material';
-import { attributeAtom } from '../../atoms/attributeAtom';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -25,7 +24,6 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
     mouseX: number;
     mouseY: number;
   } | null>(null);
-  const attributes = useRecoilValue(attributeAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);

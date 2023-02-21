@@ -83,7 +83,7 @@ export const Sidebar = () => {
           </IconButton>
         </ButtonGroup>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '5px', }}>
         <ButtonGroup>
           <Button onClick={() => setShowImportModal(true) }>
             Import
@@ -95,6 +95,36 @@ export const Sidebar = () => {
         
         <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Box>
+
+      <Accordion disableGutters>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Sorting</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <FormControl>
+            <RadioGroup
+              value={sortBy}
+              onChange={ev => {
+                actions.sortBy(ev.target.value as SortBy);
+              }}
+            >
+              {sortByList.map(sort => {
+                return ( sort === "Deviation" ?
+                (
+                  <Typography>Use column headers for custom sorting</Typography>
+                ):
+                (
+                  <FormControlLabel
+                    key={sort}
+                    value={sort}
+                    label={sort}
+                    control={<Radio size="small" />}
+                  />
+                ))})}
+            </RadioGroup>
+          </FormControl>
+        </AccordionDetails>
+      </Accordion>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Aggregation</Typography>
@@ -182,30 +212,6 @@ export const Sidebar = () => {
                     )}
                   </Fragment>
                 ))}
-            </RadioGroup>
-          </FormControl>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion disableGutters>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Sorting</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormControl>
-            <RadioGroup
-              value={sortBy}
-              onChange={ev => {
-                actions.sortBy(ev.target.value as SortBy);
-              }}
-            >
-              {sortByList.map(sort => (
-                <FormControlLabel
-                  key={sort}
-                  value={sort}
-                  label={sort}
-                  control={<Radio size="small" />}
-                />
-              ))}
             </RadioGroup>
           </FormControl>
         </AccordionDetails>
