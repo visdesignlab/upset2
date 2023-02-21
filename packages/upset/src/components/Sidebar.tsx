@@ -96,7 +96,7 @@ export const Sidebar = () => {
         <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Box>
 
-      <Accordion disableGutters>
+      <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Sorting</Typography>
         </AccordionSummary>
@@ -125,7 +125,7 @@ export const Sidebar = () => {
           </FormControl>
         </AccordionDetails>
       </Accordion>
-      <Accordion disableGutters defaultExpanded>
+      <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Aggregation</Typography>
         </AccordionSummary>
@@ -216,11 +216,26 @@ export const Sidebar = () => {
           </FormControl>
         </AccordionDetails>
       </Accordion>
-      <Accordion defaultExpanded disableGutters>
+      <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Filter Intersections</Typography>
         </AccordionSummary>
         <AccordionDetails>
+        <FormGroup sx={{ mb: 2.5, width: '90%' }}>
+            <FormControlLabel
+              label="Hide Empty Intersections"
+              control={
+                <Switch
+                  size="small"
+                  checked={hideEmpty}
+                  onChange={ev => {
+                    actions.setHideEmpty(ev.target.checked);
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+          </FormGroup>
           <TextField
             size="small"
             sx={{ m: 1, display: 'block' }}
@@ -257,25 +272,6 @@ export const Sidebar = () => {
               actions.setMaxVisible(val);
             }}
           />
-          <FormGroup>
-            <FormControlLabel
-              componentsProps={{
-                typography: {
-                  fontSize: '0.8em',
-                },
-              }}
-              label="Hide Empty Intersections"
-              control={
-                <Switch
-                  size="small"
-                  checked={hideEmpty}
-                  onChange={ev => {
-                    actions.setHideEmpty(ev.target.checked);
-                  }}
-                />
-              }
-            />
-          </FormGroup>
         </AccordionDetails>
       </Accordion>
     </div>
