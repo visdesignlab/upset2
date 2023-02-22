@@ -1,12 +1,12 @@
 import { FC, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { SortBy } from '@visdesignlab/upset2-core';
+import { Menu, MenuItem, css } from '@mui/material';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
-import { Menu, MenuItem, css } from '@mui/material';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -29,12 +29,12 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
     setContextMenu(null);
   }
 
-  const handleContextMenuOpen = (event: React.MouseEvent) => {
+  const handleContextMenuOpen = (e: React.MouseEvent) => {
     setContextMenu(
       contextMenu === null
         ? {
-            mouseX: event.clientX,
-            mouseY: event.clientY,
+            mouseX: e.clientX,
+            mouseY: e.clientY,
           }
         : null,
     );

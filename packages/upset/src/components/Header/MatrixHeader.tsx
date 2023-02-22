@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
@@ -14,6 +14,7 @@ import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
 import { SetHeader } from './SetHeader';
 import { SetManagement } from './SetManagement';
+import { css, Menu, MenuItem } from '@mui/material';
 
 export const MatrixHeader = () => {
   const { actions } = useContext(ProvenanceContext);
@@ -36,6 +37,28 @@ export const MatrixHeader = () => {
 
   const scale = useScale([0, maxCarinality], [0, set.cardinality.height]);
 
+  const [contextMenu, setContextMenu] = useState<{
+    mouseX: number;
+    mouseY: number;
+    set: string;
+  } | null>(null);
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  }
+
+  const handleContextMenuOpen = (e: React.MouseEvent, setName: string) => {
+    setContextMenu(
+      contextMenu === null
+        ? {
+            mouseX: e.clientX,
+            mouseY: e.clientY,
+            set: setName,
+          }
+        : null,
+    );
+  }
+
   return (
     <>
       <SetHeader visibleSets={visibleSets} scale={scale} />
@@ -53,8 +76,30 @@ export const MatrixHeader = () => {
           return (
             <a.g
               transform={transform}
-              onClick={() => actions.addVisibleSet(item.id)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                handleContextMenuOpen(e, item.id);
+              }}
+              css={css`cursor: context-menu;`}
             >
+              <Menu
+                id="hidden-set-context-menu"
+                anchorReference="anchorPosition"
+                anchorPosition={
+                  contextMenu !== null
+                    ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
+                    : undefined
+                }
+                open={contextMenu !== null && contextMenu.set === item.id}
+                onClose={handleContextMenuClose}
+              >
+                <MenuItem onClick={() => {
+                  actions.addVisibleSet(item.id);
+                  handleContextMenuClose();
+                }}>
+                  Add {item.id.replace('_', ': ')}
+                </MenuItem>
+              </Menu>
               <SetSizeBar
                 scale={scale}
                 setId={item.id}

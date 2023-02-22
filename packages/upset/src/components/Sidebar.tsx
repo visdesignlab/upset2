@@ -111,7 +111,7 @@ export const Sidebar = () => {
               {sortByList.map(sort => {
                 return ( sort === "Deviation" ?
                 (
-                  <Typography>Use column headers for custom sorting</Typography>
+                  <Typography key={sort}>Use column headers for custom sorting</Typography>
                 ):
                 (
                   <FormControlLabel
