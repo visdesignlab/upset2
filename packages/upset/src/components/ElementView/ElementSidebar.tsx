@@ -1,8 +1,9 @@
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import OpenInFullIcon from '@mui/icons-material/OpenInFull';
+import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
+import CloseIcon from '@mui/icons-material/Close';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Box, Divider, Drawer, Fab, IconButton, Tooltip, Typography } from '@mui/material';
+import { Box, Divider, Drawer, Fab, IconButton, Tooltip, Typography, css } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import React, { useCallback, useState } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -103,9 +104,8 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             padding: '1em',
-            paddingTop: `${yOffset}px`,
+            paddingTop: `${yOffset + 5}px`,
             width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-            // visibility: hideElementSidebar ? 'hidden' : 'initial',
             boxSizing: 'border-box',
           },
         }}
@@ -128,15 +128,18 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
           }}
           onMouseDown={e => handleMouseDown(e)}
         />
-        <div>
+        <div css={css`
+          display: flex;
+          justify-content: space-between;
+        `}>
+          { !fullWidth ?
           <IconButton
             onClick={() => {
               setFullWidth(true);
             }}
-            disabled={fullWidth}
           >
-            <ChevronLeftIcon />
-          </IconButton>
+            <OpenInFullIcon />
+          </IconButton>:
           <IconButton
             onClick={() => {
               if (fullWidth) {
@@ -146,7 +149,15 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
               }
             }}
           >
-            <ChevronRightIcon />
+            <CloseFullscreen />
+          </IconButton>
+          }
+          <IconButton
+            onClick={() => {
+              setHideElementSidebar(true);
+            }}
+          >
+            <CloseIcon />
           </IconButton>
         </div>
         <Typography variant="button" fontSize="1em">

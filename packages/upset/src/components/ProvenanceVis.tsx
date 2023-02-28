@@ -3,7 +3,7 @@ import { ProvenanceContext } from './Root';
 import { ProvVis } from '@trrack/vis-react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
-import { Divider, Drawer, Fab, Typography, css } from '@mui/material';
+import { Divider, Drawer, IconButton, Typography, css } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
@@ -30,12 +30,12 @@ return (
                 <Typography variant="button" fontSize="1em">
                     Provenance Tree
                 </Typography>
-                <Fab size="small" color="primary" sx={{ boxShadow: 0 }} 
+                <IconButton size="small" sx={{ boxShadow: 0 }} 
                     onClick={() => { 
                         setProvenanceVis(false);
                         setHideElementSidebar(false); 
                     }}
-                ><CloseIcon /></Fab>
+                ><CloseIcon /></IconButton>
             </div>
             <Divider />
             <ProvVis
