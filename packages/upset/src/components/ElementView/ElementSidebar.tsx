@@ -5,7 +5,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Divider, Drawer, Fab, IconButton, Tooltip, Typography } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import React, { useCallback, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
 import { currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
@@ -13,6 +13,7 @@ import { elementSelector, intersectionCountSelector } from '../../atoms/elements
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
+import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 
 const initialDrawerWidth = 450;
 const minDrawerWidth = 100;
@@ -56,7 +57,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 /** @jsxImportSource @emotion/react */
 export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
   const [fullWidth, setFullWidth] = useState(false);
-  const [hide, setHide] = useState(false);
+  const [ hideElementSidebar, setHideElementSidebar] = useRecoilState(elementSidebarAtom);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
   const intersectionCounter = useRecoilValue(
@@ -98,17 +99,17 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
     <>
       <Drawer
         sx={{
-          width: hide ? 0 : fullWidth ? '100%' : drawerWidth,
+          width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             padding: '1em',
             paddingTop: `${yOffset}px`,
-            width: hide ? 0 : fullWidth ? '100%' : drawerWidth,
-            visibility: hide ? 'hidden' : 'initial',
+            width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
+            // visibility: hideElementSidebar ? 'hidden' : 'initial',
             boxSizing: 'border-box',
           },
         }}
-        open
+        open={!hideElementSidebar}
         variant="persistent"
         anchor="right"
       >
@@ -141,7 +142,7 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
               if (fullWidth) {
                 setFullWidth(false);
               } else {
-                setHide(true);
+                setHideElementSidebar(true);
               }
             }}
           >
@@ -191,11 +192,11 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
           </Typography>
         )}
       </Drawer>
-      {hide && (
+      {hideElementSidebar && (
         <Fab
           sx={{ position: 'absolute', right: 0, opacity: 0.5 }}
           aria-label="add"
-          onClick={() => setHide(false)}
+          onClick={() => setHideElementSidebar(false)}
         >
           <MenuIcon />
         </Fab>
