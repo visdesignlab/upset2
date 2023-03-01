@@ -215,29 +215,6 @@ export const CardinalityHeader: FC = () => {
           openContextMenu(e);
       }}
       >
-        {/* <Menu
-          id="header-context-menu"
-          anchorReference="anchorPosition"
-          anchorPosition={
-            contextMenu !== null
-              ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-              : undefined
-          }
-          open={contextMenu !== null}
-          onClose={handleContextMenuClose}
-          css={css`
-            width: 100%;
-          `}
-        >
-          <MenuItem 
-            onClick={() => {
-              sortByCardinality();
-              handleContextMenuClose();
-            }}
-            disabled={sortBy === 'Cardinality'}>
-              Sort by Cardinality
-          </MenuItem>
-        </Menu> */}
         <rect
           css={css`
             fill: #ccc;

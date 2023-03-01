@@ -83,24 +83,6 @@ export const MatrixHeader = () => {
               }}
               css={css`cursor: context-menu;`}
             >
-              {/* <Menu
-                id="hidden-set-context-menu"
-                anchorReference="anchorPosition"
-                anchorPosition={
-                  contextMenu !== null
-                    ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                    : undefined
-                }
-                open={contextMenu !== null && contextMenu.set === item.id}
-                onClose={handleContextMenuClose}
-              >
-                <MenuItem onClick={() => {
-                  actions.addVisibleSet(item.id);
-                  handleContextMenuClose();
-                }}>
-                  Add {item.id.replace('_', ': ')}
-                </MenuItem>
-              </Menu> */}
               <SetSizeBar
                 scale={scale}
                 setId={item.id}
