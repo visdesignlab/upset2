@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
 import React, { Fragment, useContext, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
   firstAggregateSelector,
@@ -34,6 +34,8 @@ import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { exportStateGrammar, ImportModal } from './ImportModal';
+import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
+import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
@@ -51,7 +53,11 @@ export const Sidebar = () => {
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
 
-  const [secondaryAccordionOpen, setSecondaryAccordionOpen] = useState(
+  const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
+  
+  const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
+
+  const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
   );
 
@@ -94,6 +100,16 @@ export const Sidebar = () => {
         </ButtonGroup>
         
         <ImportModal open={showImportModal} close={handleImportModalClose} />
+      </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', margin: '5px 0' }}>
+        <Button variant="outlined" onClick={() => {
+          if (provenanceVis === false) { 
+            setProvenanceVis(true); 
+            setHideElementSidebar(true); 
+          };
+        }}>
+          Provenance Vis
+        </Button>
       </Box>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
