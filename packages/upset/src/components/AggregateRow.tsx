@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import translate from '../utils/transform';
-import { highlight } from '../utils/styles';
+import { highlight, mousePointer } from '../utils/styles';
 import { CardinalityBar } from './CardinalityBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
@@ -39,6 +39,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
+  const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
 
   let width = dimensions.body.rowWidth;
@@ -53,7 +54,10 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       : `${aggregateRow.elementName.slice(0, 11)}...`;
 
   return (
-    <g>
+    <g
+      onClick={() => aggregateRow && (setCurrentIntersectionAtom(aggregateRow))}
+      css={mousePointer}
+    >
       <g transform={translate(aggregateRow.level === 2 ? 15 : 2, 0)}>
         <rect
           transform={translate(0, 2)}

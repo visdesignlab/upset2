@@ -25,3 +25,7 @@ export const queryColorPalette = [
   '#bcbd22',
   '#17becf',
 ];
+
+export const mousePointer = css`
+  cursor: pointer;
+`;

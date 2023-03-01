@@ -89,7 +89,7 @@ export const Sidebar = () => {
           </IconButton>
         </ButtonGroup>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '5px', }}>
         <ButtonGroup>
           <Button onClick={() => setShowImportModal(true) }>
             Import
@@ -112,6 +112,35 @@ export const Sidebar = () => {
         </Button>
       </Box>
       <Accordion disableGutters defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Sorting</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <FormControl>
+            <RadioGroup
+              value={sortBy}
+              onChange={ev => {
+                actions.sortBy(ev.target.value as SortBy);
+              }}
+            >
+              {sortByList.map(sort => {
+                return ( sort === "Deviation" ?
+                (
+                  <Typography key={sort}>Use column headers for custom sorting</Typography>
+                ):
+                (
+                  <FormControlLabel
+                    key={sort}
+                    value={sort}
+                    label={sort}
+                    control={<Radio size="small" />}
+                  />
+                ))})}
+            </RadioGroup>
+          </FormControl>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Aggregation</Typography>
         </AccordionSummary>
@@ -204,33 +233,24 @@ export const Sidebar = () => {
       </Accordion>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Sorting</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormControl>
-            <RadioGroup
-              value={sortBy}
-              onChange={ev => {
-                actions.sortBy(ev.target.value as SortBy);
-              }}
-            >
-              {sortByList.map(sort => (
-                <FormControlLabel
-                  key={sort}
-                  value={sort}
-                  label={sort}
-                  control={<Radio size="small" />}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion defaultExpanded disableGutters>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Filter Intersections</Typography>
         </AccordionSummary>
         <AccordionDetails>
+        <FormGroup sx={{ mb: 2.5, width: '90%' }}>
+            <FormControlLabel
+              label="Hide Empty Intersections"
+              control={
+                <Switch
+                  size="small"
+                  checked={hideEmpty}
+                  onChange={ev => {
+                    actions.setHideEmpty(ev.target.checked);
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+          </FormGroup>
           <TextField
             size="small"
             sx={{ m: 1, display: 'block' }}
@@ -267,25 +287,6 @@ export const Sidebar = () => {
               actions.setMaxVisible(val);
             }}
           />
-          <FormGroup>
-            <FormControlLabel
-              componentsProps={{
-                typography: {
-                  fontSize: '0.8em',
-                },
-              }}
-              label="Hide Empty Intersections"
-              control={
-                <Switch
-                  size="small"
-                  checked={hideEmpty}
-                  onChange={ev => {
-                    actions.setHideEmpty(ev.target.checked);
-                  }}
-                />
-              }
-            />
-          </FormGroup>
         </AccordionDetails>
       </Accordion>
     </div>
