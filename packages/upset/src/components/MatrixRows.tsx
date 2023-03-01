@@ -8,6 +8,7 @@ import { RenderRow } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
+import { collapsedAtom } from '../atoms/collapsedAtom';
 
 type Props = {
   rows: RenderRow[];
@@ -20,15 +21,37 @@ export function rowRenderer(row: Row) {
   return <SubsetRow subset={row} />;
 }
 
+
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const collapsedIds = useRecoilValue(collapsedAtom);
+  let numRowsToRender = 0;
+  
+  const shouldRender = (row: Row) => {
+    const parentId = row.parent;
+    
+    if (parentId === undefined) return true;
+
+    if (parentId.includes('-')) {
+      const topLevelAggId = parentId.substring(0,parentId.indexOf('-'));
+      if (collapsedIds[topLevelAggId] === true) {
+        return false;
+      }
+    }
+
+    if (collapsedIds[parentId] === true) return false;
+
+    return true;
+  }
 
   const rowTransitions = useTransition(
-    rows.map(({ row, id }, idx) => ({
-      id,
-      row,
-      y: idx * dimensions.body.rowHeight,
-    })),
+    rows.map(({ row, id }) => {
+      return {
+        id,
+        row,
+        y: (shouldRender(row) ? numRowsToRender++ : numRowsToRender) * dimensions.body.rowHeight,
+      }
+    }),
     {
       keys: (d) => d.id,
       enter: ({ y }) => ({ transform: translate(0, y) }),
@@ -38,9 +61,12 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   return (
     <>
-      {rowTransitions((props, item) => (
-        <a.g transform={props.transform}>{rowRenderer(item.row)}</a.g>
-      ))}
+      {rowTransitions((props, item) =>
+        (
+          shouldRender(item.row) &&
+          <a.g transform={props.transform}>{rowRenderer(item.row)}</a.g>
+        )
+      )}
     </>
   );
 };

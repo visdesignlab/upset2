@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { useContext } from 'react';
 import { a, useTransition } from 'react-spring';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { hiddenSetSelector, visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -14,6 +14,8 @@ import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
 import { SetHeader } from './SetHeader';
 import { SetManagement } from './SetManagement';
+import { css } from '@mui/material';
+import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 export const MatrixHeader = () => {
   const { actions } = useContext(ProvenanceContext);
@@ -36,6 +38,28 @@ export const MatrixHeader = () => {
 
   const scale = useScale([0, maxCarinality], [0, set.cardinality.height]);
 
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  }
+
+  const openContextMenu = (e: React.MouseEvent, setName: string) => {
+    setContextMenu({
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        id: `${setName}-menu`,
+        items: [{
+          label: `Add ${setName.replace('_', ': ')}`,
+          onClick: () => {
+            actions.addVisibleSet(setName);
+            handleContextMenuClose();
+          }
+        }]
+      }
+    );
+  }
+
   return (
     <>
       <SetHeader visibleSets={visibleSets} scale={scale} />
@@ -53,7 +77,11 @@ export const MatrixHeader = () => {
           return (
             <a.g
               transform={transform}
-              onClick={() => actions.addVisibleSet(item.id)}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                openContextMenu(e, item.id);
+              }}
+              css={css`cursor: context-menu;`}
             >
               <SetSizeBar
                 scale={scale}

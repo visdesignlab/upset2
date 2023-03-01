@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
 import React, { Fragment, useContext, useEffect, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
 
 import {
   firstAggregateSelector,
@@ -34,6 +34,9 @@ import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { exportStateGrammar, ImportModal } from './ImportModal';
+import { collapsedAtom } from '../atoms/collapsedAtom';
+import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
+import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
@@ -51,7 +54,10 @@ export const Sidebar = () => {
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
 
-  const [secondaryAccordionOpen, setSecondaryAccordionOpen] = useState(
+  const resetCollapsedIds = useResetRecoilState(collapsedAtom);
+  const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
+  const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
+  const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
   );
 
@@ -83,7 +89,7 @@ export const Sidebar = () => {
           </IconButton>
         </ButtonGroup>
       </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '5px', }}>
         <ButtonGroup>
           <Button onClick={() => setShowImportModal(true) }>
             Import
@@ -95,7 +101,46 @@ export const Sidebar = () => {
         
         <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Box>
+      <Box sx={{ display: 'flex', justifyContent: 'center', margin: '5px 0' }}>
+        <Button variant="outlined" onClick={() => {
+          if (provenanceVis === false) { 
+            setProvenanceVis(true); 
+            setHideElementSidebar(true); 
+          };
+        }}>
+          Provenance Vis
+        </Button>
+      </Box>
       <Accordion disableGutters defaultExpanded>
+        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+          <Typography>Sorting</Typography>
+        </AccordionSummary>
+        <AccordionDetails>
+          <FormControl>
+            <RadioGroup
+              value={sortBy}
+              onChange={ev => {
+                actions.sortBy(ev.target.value as SortBy);
+              }}
+            >
+              {sortByList.map(sort => {
+                return ( sort === "Deviation" ?
+                (
+                  <Typography key={sort}>Use column headers for custom sorting</Typography>
+                ):
+                (
+                  <FormControlLabel
+                    key={sort}
+                    value={sort}
+                    label={sort}
+                    control={<Radio size="small" />}
+                  />
+                ))})}
+            </RadioGroup>
+          </FormControl>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Aggregation</Typography>
         </AccordionSummary>
@@ -104,6 +149,7 @@ export const Sidebar = () => {
             <RadioGroup
               value={firstAggregateBy}
               onChange={ev => {
+                resetCollapsedIds();
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 actions.firstAggregateBy(newAggBy);
               }}
@@ -152,6 +198,7 @@ export const Sidebar = () => {
             <RadioGroup
               value={secondAggregateBy}
               onChange={ev => {
+                resetCollapsedIds();
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 actions.secondAggregateBy(newAggBy);
               }}
@@ -188,33 +235,24 @@ export const Sidebar = () => {
       </Accordion>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Sorting</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormControl>
-            <RadioGroup
-              value={sortBy}
-              onChange={ev => {
-                actions.sortBy(ev.target.value as SortBy);
-              }}
-            >
-              {sortByList.map(sort => (
-                <FormControlLabel
-                  key={sort}
-                  value={sort}
-                  label={sort}
-                  control={<Radio size="small" />}
-                />
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion defaultExpanded disableGutters>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Filter Intersections</Typography>
         </AccordionSummary>
         <AccordionDetails>
+        <FormGroup sx={{ mb: 2.5, width: '90%' }}>
+            <FormControlLabel
+              label="Hide Empty Intersections"
+              control={
+                <Switch
+                  size="small"
+                  checked={hideEmpty}
+                  onChange={ev => {
+                    actions.setHideEmpty(ev.target.checked);
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+          </FormGroup>
           <TextField
             size="small"
             sx={{ m: 1, display: 'block' }}
@@ -251,25 +289,6 @@ export const Sidebar = () => {
               actions.setMaxVisible(val);
             }}
           />
-          <FormGroup>
-            <FormControlLabel
-              componentsProps={{
-                typography: {
-                  fontSize: '0.8em',
-                },
-              }}
-              label="Hide Empty Intersections"
-              control={
-                <Switch
-                  size="small"
-                  checked={hideEmpty}
-                  onChange={ev => {
-                    actions.setHideEmpty(ev.target.checked);
-                  }}
-                />
-              }
-            />
-          </FormGroup>
         </AccordionDetails>
       </Accordion>
     </div>

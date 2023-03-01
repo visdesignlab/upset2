@@ -15,6 +15,8 @@ import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
 import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
+import { ContextMenu } from './ContextMenu';
+import { ProvenanceVis } from './ProvenanceVis';
 
 /** @jsxImportSource @emotion/react */
 export const ProvenanceContext = createContext<{
@@ -112,6 +114,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
           <Body />
         </SvgBase>
       </div>
+      <ContextMenu />
+      <ProvenanceVis yOffset={yOffset} />
       <ElementSidebar yOffset={yOffset} />
     </ProvenanceContext.Provider>
   );

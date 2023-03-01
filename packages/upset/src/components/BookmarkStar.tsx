@@ -1,11 +1,10 @@
 import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import StarIcon from '@mui/icons-material/Star'
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
-import { bookmarkedColorPalette, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
-import { css } from '@emotion/react';
+import { bookmarkedColorPalette } from '../atoms/config/currentIntersectionAtom';
 
 type Props = {
     row: Row;
@@ -14,15 +13,13 @@ type Props = {
 export const BookmarkStar: FC<Props> = ({ row }) => {
     const dimensions = useRecoilValue(dimensionsSelector);
     const colorPallete = useRecoilValue(bookmarkedColorPalette);
-    const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
 
     return (<g 
-        onClick={() => row && (setCurrentIntersectionAtom(row))}
-        transform={translate(
-            dimensions.matrixColumn.width + 
-            dimensions.bookmarkStar.gap,
-            0)}
-            css={css`cursor:pointer;`}>
+                transform={translate(
+                    dimensions.matrixColumn.width + 
+                    dimensions.bookmarkStar.gap,
+                0)}
+            >
                 <StarIcon height={dimensions.body.rowHeight} width={dimensions.set.width} fontSize={'1em' as any} sx={{ color: colorPallete[row.id] }}/>
             </g>)
 }

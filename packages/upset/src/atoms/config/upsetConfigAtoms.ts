@@ -2,7 +2,7 @@ import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { atom } from 'recoil';
 
 export const defaultConfig: UpsetConfig = {
-  firstAggregateBy: 'Degree',
+  firstAggregateBy: 'None',
   firstOverlapDegree: 2,
   secondAggregateBy: 'None',
   secondOverlapDegree: 2,

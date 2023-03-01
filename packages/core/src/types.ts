@@ -49,6 +49,7 @@ export type BaseElement = {
   type: RowType;
   size: number;
   attributes: Attributes;
+  parent?: string
 };
 
 export type SetMembershipStatus = 'Yes' | 'No' | 'May';
