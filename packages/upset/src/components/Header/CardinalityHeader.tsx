@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { drag, select } from 'd3';
 import { FC, useContext, useEffect, useRef, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -12,7 +12,7 @@ import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { Axis } from '../Axis';
 import { ProvenanceContext } from '../Root';
-import { Menu, MenuItem } from '@mui/material';
+import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -38,24 +38,32 @@ export const CardinalityHeader: FC = () => {
   const [sliding, setSliding] = useState(false);
   const [maxC, setMaxCardinality] = useRecoilState(maxCardinality);
 
-  const [contextMenu, setContextMenu] = useState<{
-    mouseX: number;
-    mouseY: number;
-  } | null>(null);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
   }
 
-  const handleContextMenuOpen = (event: React.MouseEvent) => {
+  const openContextMenu = (e: React.MouseEvent) => {
     setContextMenu(
-      contextMenu === null
-        ? {
-            mouseX: event.clientX,
-            mouseY: event.clientY,
-          }
-        : null,
+      {
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        id: `header-menu-Cardinality`,
+        items: getMenuItems()
+      }
     );
+  }
+
+  const getMenuItems = () => {
+    return [{
+      label: "Sort by Cardinality",
+      onClick: () => {
+        sortByCardinality();
+        handleContextMenuClose();
+      },
+      disabled: sortBy === "Cardinality"
+    }]
   }
 
   const sortByCardinality = () => {
@@ -204,10 +212,10 @@ export const CardinalityHeader: FC = () => {
         )}
         onContextMenu={(e) => {
           e.preventDefault();
-          handleContextMenuOpen(e);
+          openContextMenu(e);
       }}
       >
-        <Menu
+        {/* <Menu
           id="header-context-menu"
           anchorReference="anchorPosition"
           anchorPosition={
@@ -229,7 +237,7 @@ export const CardinalityHeader: FC = () => {
             disabled={sortBy === 'Cardinality'}>
               Sort by Cardinality
           </MenuItem>
-        </Menu>
+        </Menu> */}
         <rect
           css={css`
             fill: #ccc;

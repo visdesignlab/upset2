@@ -1,12 +1,12 @@
-import { FC, useContext, useState } from 'react';
-import { useRecoilValue } from 'recoil';
+import { FC, useContext } from 'react';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { SortBy } from '@visdesignlab/upset2-core';
-import { Menu, MenuItem, css } from '@mui/material';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
+import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -20,28 +20,48 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
     ProvenanceContext,
   );
   const sortBy = useRecoilValue(sortBySelector);
-  const [contextMenu, setContextMenu] = useState<{
-    mouseX: number;
-    mouseY: number;
-  } | null>(null);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
   }
 
-  const handleContextMenuOpen = (e: React.MouseEvent) => {
+  const openContextMenu = (e: React.MouseEvent) => {
     setContextMenu(
-      contextMenu === null
-        ? {
-            mouseX: e.clientX,
-            mouseY: e.clientY,
-          }
-        : null,
+      {
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        id: `header-menu-${label}`,
+        items: getMenuItems()
+      }
     );
   }
 
   const sortByHeader = () => {
     actions.sortBy(label as SortBy);
+  }
+
+  const getMenuItems = () => {
+    const items = [];
+    if (sort) {
+      items.push({
+        label: `Sort by ${label}`,
+        onClick: () => {
+          sortByHeader();
+          handleContextMenuClose();
+        },
+        disabled: sortBy === label,
+      })
+    }
+    items.push({
+      label: `Remove ${label}`,
+      onClick: () => {
+        actions.removeAttribute(label);
+        handleContextMenuClose();
+      },
+    })
+
+    return items;
   }
 
   return (
@@ -54,38 +74,9 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
       }}
       onContextMenu={(e) => {
           e.preventDefault();
-          handleContextMenuOpen(e);
+          openContextMenu(e);
       }}
     >
-      <Menu
-        id="header-context-menu"
-        anchorReference="anchorPosition"
-        anchorPosition={
-          contextMenu !== null
-            ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-            : undefined
-        }
-        open={contextMenu !== null}
-        onClose={handleContextMenuClose}
-        css={css`
-          width: 100%;
-        `}
-      >
-        { sort &&
-        <MenuItem onClick={() => {
-            sortByHeader();
-            handleContextMenuClose();
-          }} 
-          disabled={sortBy === label}>
-            Sort by {label}
-        </MenuItem>
-        }
-        <MenuItem onClick={() => {
-            actions.removeAttribute(label);
-          }}>
-            Remove {label}
-        </MenuItem>
-      </Menu>
       <rect
         height={dimensions.attribute.buttonHeight}
         width={dimensions.attribute.width}

@@ -1,7 +1,7 @@
 import { ScaleLinear } from 'd3';
-import { FC, useContext, useState } from 'react';
-import { useRecoilValue } from 'recoil';
-import { css, Menu, MenuItem } from '@mui/material';
+import { FC, useContext } from 'react';
+import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { css } from '@mui/material';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { setsAtom } from '../../atoms/setsAtoms';
@@ -9,6 +9,7 @@ import Group from '../custom/Group';
 import { SetLabel } from '../custom/SetLabel';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
+import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 type Props = {
   visibleSets: string[];
@@ -22,25 +23,25 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     ProvenanceContext,
   );
 
-  const [contextMenu, setContextMenu] = useState<{
-    mouseX: number;
-    mouseY: number;
-    set: string;
-  } | null>(null);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
   }
 
-  const handleContextMenuOpen = (e: React.MouseEvent, setName: string) => {
-    setContextMenu(
-      contextMenu === null
-        ? {
+  const openContextMenu = (e: React.MouseEvent, setName: string) => {
+    setContextMenu({
             mouseX: e.clientX,
             mouseY: e.clientY,
-            set: setName,
+            id: `${setName}-menu`,
+            items: [{
+              label: `Remove ${setName.replace('_', ': ')}`,
+              onClick: () => {
+                actions.removeVisibleSet(setName);
+                handleContextMenuClose();
+              }
+            }],
           }
-        : null,
     );
   }
 
@@ -53,28 +54,10 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
           ty={0}
           onContextMenu={(e) => {
             e.preventDefault();
-            handleContextMenuOpen(e, setName);
+            openContextMenu(e, setName);
           }}
           css={css`cursor: context-menu;`}
         >
-          <Menu
-            id="set-context-menu"
-            anchorReference="anchorPosition"
-            anchorPosition={
-              contextMenu !== null
-                ? { top: contextMenu.mouseY, left: contextMenu.mouseX }
-                : undefined
-            }
-            open={contextMenu !== null && contextMenu.set === setName}
-            onClose={handleContextMenuClose}
-          >
-            <MenuItem onClick={() => {
-              actions.removeVisibleSet(setName);
-              handleContextMenuClose();
-            }}>
-              Remove {setName.replace('_', ': ')}
-            </MenuItem>
-          </Menu>
           <SetSizeBar
             scale={scale}
             size={sets[setName].size}

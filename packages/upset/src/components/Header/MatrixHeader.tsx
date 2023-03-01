@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import { a, useTransition } from 'react-spring';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { hiddenSetSelector, visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -14,7 +14,8 @@ import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
 import { SetHeader } from './SetHeader';
 import { SetManagement } from './SetManagement';
-import { css, Menu, MenuItem } from '@mui/material';
+import { css } from '@mui/material';
+import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 export const MatrixHeader = () => {
   const { actions } = useContext(ProvenanceContext);
@@ -37,25 +38,25 @@ export const MatrixHeader = () => {
 
   const scale = useScale([0, maxCarinality], [0, set.cardinality.height]);
 
-  const [contextMenu, setContextMenu] = useState<{
-    mouseX: number;
-    mouseY: number;
-    set: string;
-  } | null>(null);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
   }
 
-  const handleContextMenuOpen = (e: React.MouseEvent, setName: string) => {
-    setContextMenu(
-      contextMenu === null
-        ? {
-            mouseX: e.clientX,
-            mouseY: e.clientY,
-            set: setName,
+  const openContextMenu = (e: React.MouseEvent, setName: string) => {
+    setContextMenu({
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        id: `${setName}-menu`,
+        items: [{
+          label: `Add ${setName.replace('_', ': ')}`,
+          onClick: () => {
+            actions.addVisibleSet(setName);
+            handleContextMenuClose();
           }
-        : null,
+        }]
+      }
     );
   }
 
@@ -78,11 +79,11 @@ export const MatrixHeader = () => {
               transform={transform}
               onContextMenu={(e) => {
                 e.preventDefault();
-                handleContextMenuOpen(e, item.id);
+                openContextMenu(e, item.id);
               }}
               css={css`cursor: context-menu;`}
             >
-              <Menu
+              {/* <Menu
                 id="hidden-set-context-menu"
                 anchorReference="anchorPosition"
                 anchorPosition={
@@ -99,7 +100,7 @@ export const MatrixHeader = () => {
                 }}>
                   Add {item.id.replace('_', ': ')}
                 </MenuItem>
-              </Menu>
+              </Menu> */}
               <SetSizeBar
                 scale={scale}
                 setId={item.id}
