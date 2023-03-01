@@ -113,7 +113,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
           <Body />
         </SvgBase>
       </div>
-      <ProvenanceVis />
+      <ProvenanceVis yOffset={yOffset} />
       <ElementSidebar yOffset={yOffset} />
     </ProvenanceContext.Provider>
   );

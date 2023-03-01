@@ -7,7 +7,7 @@ import { Divider, Drawer, IconButton, Typography, css } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
-export const ProvenanceVis = () => {
+export const ProvenanceVis = ({ yOffset }: { yOffset: number }) => {
 const { provenance } = useContext(ProvenanceContext);
 const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
 const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
@@ -18,26 +18,25 @@ return (
         open={provenanceVis}
         variant='persistent'
     >
-        <div css={css`
-            margin-top: 30px;
-        `}>
+        <div>
             <div css={css`
                 display: flex;
                 justify-content: space-between;
-                margin: 30px 10px 10px;
+                margin: ${yOffset}px 12px 0;
                 align-items: center;
+                width: 95%;
             `}>
                 <Typography variant="button" fontSize="1em">
                     Provenance Tree
                 </Typography>
-                <IconButton size="small" sx={{ boxShadow: 0 }} 
+                <IconButton 
                     onClick={() => { 
                         setProvenanceVis(false);
                         setHideElementSidebar(false); 
                     }}
                 ><CloseIcon /></IconButton>
             </div>
-            <Divider />
+            <Divider css={css`width:95%; margin:auto;`}/>
             <ProvVis
                 root={provenance.root.id}
                 config={{

@@ -104,7 +104,7 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             padding: '1em',
-            paddingTop: `${yOffset + 5}px`,
+            paddingTop: `${yOffset}px`,
             width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
             boxSizing: 'border-box',
           },
@@ -139,8 +139,8 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
             }}
           >
             <OpenInFullIcon />
-          </IconButton>:
-          <IconButton
+          </IconButton>
+          : <IconButton
             onClick={() => {
               if (fullWidth) {
                 setFullWidth(false);
