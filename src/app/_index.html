@@ -29,6 +29,18 @@
   </head>
 
   <body>
+    <nav
+      id="permanent_notice"
+      class="navbar"
+      role="navigation"
+      aria-label="dropdown navigation"
+      style="min-height: min-content;"
+    >
+      <div class="navbar-item" style="padding: 0; margin:0 auto;">
+        This website will be available till March 31st, 2023.
+        <a id="notice-read-more" style="padding-left: 2px"> Read more here.</a>
+      </div>
+    </nav>
     <div id="navigation-bar"></div>
     <div id="body" class="columns">
       <div id="left-side-bar" class="is-paddingless column is-2">
@@ -188,7 +200,11 @@
         });
       });
 
-      // Add a click event on buttons to open a specific modal
+      document
+        .getElementById("notice-read-more")
+        .addEventListener("click", () => {
+          openModal(document.getElementById(modal_selector));
+        });
 
       const $target = document.getElementById(modal_selector);
 
