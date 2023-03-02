@@ -57,6 +57,7 @@ export const Sidebar = () => {
   const resetCollapsedIds = useResetRecoilState(collapsedAtom);
   const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
   const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
+
   const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
   );
