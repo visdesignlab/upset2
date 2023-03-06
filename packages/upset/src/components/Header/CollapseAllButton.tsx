@@ -38,7 +38,7 @@ export const CollapseAllButton = () => {
     }
     
     const getTransform = () => {
-        if (allCollapsed) {
+        if (!allCollapsed) {
             return `rotate(-90deg) translate(-${iconSize}px, -${iconSize}px)`;
         } else {
             return `rotate(90deg)`;
