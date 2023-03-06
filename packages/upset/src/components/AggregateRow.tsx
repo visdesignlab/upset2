@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
@@ -12,6 +12,7 @@ import { CardinalityBar } from './CardinalityBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 import { BookmarkStar } from './BookmarkStar';
+import { collapsedAtom } from '../atoms/collapsedAtom';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -41,10 +42,15 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
   const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+  const [ collapsedIds, setCollapsedIds ] = useRecoilState(collapsedAtom);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
     width -= dimensions.body.aggregateOffset;
+  }
+
+  const setAggCollapseState = (collapseState: boolean) => {
+    setCollapsedIds({...collapsedIds, [aggregateRow.id]:collapseState})
   }
 
   const desc =
@@ -74,9 +80,18 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           rx={5}
           ry={10}
         />
-        <g transform={translate(10, dimensions.body.rowHeight / 2)}>
-          {expanded}
-          {/* {collapsed} */}
+        <g 
+          transform={translate(10, dimensions.body.rowHeight / 2)}
+          onClick={() => {
+            if (collapsedIds[aggregateRow.id] === true) {
+              setAggCollapseState(false);
+            }
+            else {
+              setAggCollapseState(true); 
+            }
+          }}
+        >
+          { collapsedIds[aggregateRow.id] === true ? collapsed : expanded}
         </g>
         <text
           css={css`

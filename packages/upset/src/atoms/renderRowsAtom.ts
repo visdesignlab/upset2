@@ -56,7 +56,7 @@ const secondAggRRSelector = selector<Rows>({
     const attributeColumns = get(attributeAtom);
 
     if (areRowsAggregates(rr)) {
-      return secondAggregation(
+      const secondAgg =  secondAggregation(
         rr,
         aggBy,
         overlapDegree,
@@ -64,8 +64,9 @@ const secondAggRRSelector = selector<Rows>({
         items,
         attributeColumns,
       );
-    }
 
+      return secondAgg
+    }
     return rr;
   },
 });
