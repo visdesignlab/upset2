@@ -1,6 +1,6 @@
 import { DoubleArrow } from "@mui/icons-material";
 import Group from "../custom/Group";
-import { css, SvgIcon } from "@mui/material";
+import { css, SvgIcon, Tooltip } from "@mui/material";
 import { collapsedAtom } from "../../atoms/collapsedAtom";
 import { useRecoilState, useRecoilValue } from "recoil";
 import { useState } from "react";
@@ -47,17 +47,21 @@ export const CollapseAllButton = () => {
 
     return (
         <>
-            <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} css={firstAggregateBy === 'None' && hidden}>
-                <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0}></rect>
-                <SvgIcon
-                    sx={{ transform: getTransform }} 
-                    height={iconSize} 
-                    width={iconSize}
-                    css={mousePointer}
-                    onClick={toggleCollapseAll}
-                    >
-                    <DoubleArrow></DoubleArrow>
-                </SvgIcon>
+            <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} css={firstAggregateBy === 'None' && hidden}>               
+                <Tooltip title={`${allCollapsed ? "Expand All" : "Collapse All"}`}>
+                    <g>
+                        <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0}></rect>
+                        <SvgIcon
+                            sx={{ transform: getTransform }} 
+                            height={iconSize} 
+                            width={iconSize}
+                            css={mousePointer}
+                            onClick={toggleCollapseAll}
+                            >
+                            <DoubleArrow></DoubleArrow>
+                        </SvgIcon>
+                    </g>
+                </Tooltip>
             </Group>
         </>
     );
