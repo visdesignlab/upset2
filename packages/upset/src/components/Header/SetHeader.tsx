@@ -10,6 +10,8 @@ import { SetLabel } from '../custom/SetLabel';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { SortVisibleBy } from '@visdesignlab/upset2-core';
+import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
 
 type Props = {
   visibleSets: string[];
@@ -19,6 +21,7 @@ type Props = {
 export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
+  const sortVisibleBy = useRecoilValue(visibleSortSelector);
   const { actions } = useContext(
     ProvenanceContext,
   );
@@ -34,13 +37,39 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
             mouseX: e.clientX,
             mouseY: e.clientY,
             id: `${setName}-menu`,
-            items: [{
-              label: `Remove ${setName.replace('_', ': ')}`,
-              onClick: () => {
-                actions.removeVisibleSet(setName);
-                handleContextMenuClose();
-              }
-            }],
+            items: [
+              {
+                label: `Remove ${setName.replace('_', ': ')}`,
+                onClick: () => {
+                  actions.removeVisibleSet(setName);
+                  handleContextMenuClose();
+                }
+              },
+              {
+                label: `Sort matrix headers by Alphabetical`,
+                onClick: () => {
+                  actions.sortVisibleBy('Alphabetical' as SortVisibleBy);
+                  handleContextMenuClose();
+                },
+                disabled: sortVisibleBy === 'Alphabetical',
+              },
+              {
+                label: `Sort matrix headers by size - Ascending`,
+                onClick: () => {
+                  actions.sortVisibleBy('Size - Ascending' as SortVisibleBy);
+                  handleContextMenuClose();
+                },
+                disabled: sortVisibleBy === 'Size - Ascending',
+              },
+              {
+                label: `Sort matrix headers by size - Descending`,
+                onClick: () => {
+                  actions.sortVisibleBy('Size - Descending' as SortVisibleBy);
+                  handleContextMenuClose();
+                },
+                disabled: sortVisibleBy === 'Size - Descending',
+              },
+            ],
           }
     );
   }
