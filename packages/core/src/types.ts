@@ -111,11 +111,16 @@ export type Rows = Subsets | Aggregates;
 
 export type Row = Subset | Aggregate;
 
+export type ColumnTypes = {
+    [key: string]: string;
+}
+
 export type CoreUpsetData = {
   label: ColumnName;
   setColumns: ColumnName[];
   attributeColumns: ColumnName[];
   columns: ColumnName[];
+  columnTypes: ColumnTypes;
   items: Items;
   sets: Sets;
 };

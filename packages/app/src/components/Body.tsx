@@ -1,9 +1,7 @@
 import { Upset } from '@visdesignlab/upset2-react';
 import { useRecoilValue } from 'recoil';
-
-import { dataAtom } from '../atoms/dataAtom';
+import { dataSelector, encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
-
 import { ErrorModal } from './ErrorModal';
 
 type Props = {
@@ -12,22 +10,25 @@ type Props = {
 
 export const Body = ({ yOffset }: Props) => {
   const { workspace, table } = useRecoilValue(queryParamAtom);
-  const data = useRecoilValue(dataAtom);
+  const multinetData = useRecoilValue(dataSelector);
+  const encodedData = useRecoilValue(encodedDataAtom);
+  const data = (encodedData === null) ? multinetData : encodedData
+  
+  if (data === null) return null;
 
-  if ((!workspace || !table) && !doesHaveSavedQueryParam())
+  // if no data has been loaded or if the error/one-hot modal has been closed by the user
+  if (((!workspace || !table) && !doesHaveSavedQueryParam()) || (encodedData !== null && data.setColumns.length === 0))
     return <div>Please click Load Data button to go to data interface.</div>;
-
-  if (!data) return null;
 
   return (
     <div>
-      { data.setColumns.length === 0 ? 
-      <ErrorModal /> :
-      <Upset
+      { data.setColumns.length === 0 ?
+        <ErrorModal />:
+        <Upset
         data={data}
         loadAttributes={3}
         yOffset={yOffset === -1 ? 0 : yOffset}
-      />
+        />
       }
     </div>
   );
