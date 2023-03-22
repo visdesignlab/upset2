@@ -161,6 +161,7 @@ export type UpsetConfig = {
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
   bookmarkedIntersections: Bookmark[];
+  collapsed: string[];
   plots: {
     scatterplots: Scatterplot[];
     histograms: Histogram[];

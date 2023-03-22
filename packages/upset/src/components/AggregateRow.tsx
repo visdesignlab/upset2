@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { FC, useContext } from 'react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
@@ -12,7 +12,8 @@ import { CardinalityBar } from './CardinalityBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 import { BookmarkStar } from './BookmarkStar';
-import { collapsedAtom } from '../atoms/collapsedAtom';
+import { collapsedSelector } from '../atoms/collapsedAtom';
+import { ProvenanceContext } from './Root';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -36,21 +37,20 @@ export const collapsed = (
   </text>
 );
 
+const secondLevelXOffset = 15;
+
 export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
   const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
-  const [ collapsedIds, setCollapsedIds ] = useRecoilState(collapsedAtom);
+  const collapsedIds = useRecoilValue(collapsedSelector);
+  const { actions } = useContext(ProvenanceContext)
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
     width -= dimensions.body.aggregateOffset;
-  }
-
-  const setAggCollapseState = (collapseState: boolean) => {
-    setCollapsedIds({...collapsedIds, [aggregateRow.id]:collapseState})
   }
 
   const desc =
@@ -64,7 +64,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       onClick={() => aggregateRow && (setCurrentIntersectionAtom(aggregateRow))}
       css={mousePointer}
     >
-      <g transform={translate(aggregateRow.level === 2 ? 15 : 2, 0)}>
+      <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
         <rect
           transform={translate(0, 2)}
           css={currentIntersection !== null && currentIntersection.id === aggregateRow.id ? 
@@ -83,15 +83,14 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <g 
           transform={translate(10, dimensions.body.rowHeight / 2)}
           onClick={() => {
-            if (collapsedIds[aggregateRow.id] === true) {
-              setAggCollapseState(false);
-            }
-            else {
-              setAggCollapseState(true); 
+            if (collapsedIds.includes(aggregateRow.id)) {
+              actions.removeCollapsed(aggregateRow.id);
+            } else {
+              actions.addCollapsed(aggregateRow.id);
             }
           }}
         >
-          { collapsedIds[aggregateRow.id] === true ? collapsed : expanded}
+          { collapsedIds.includes(aggregateRow.id) ? collapsed : expanded}
         </g>
         <text
           css={css`
