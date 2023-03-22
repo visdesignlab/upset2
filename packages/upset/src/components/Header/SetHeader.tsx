@@ -1,17 +1,18 @@
 import { ScaleLinear } from 'd3';
 import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { a, useTransition } from 'react-spring';
 import { css } from '@mui/material';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { setsAtom } from '../../atoms/setsAtoms';
-import Group from '../custom/Group';
 import { SetLabel } from '../custom/SetLabel';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { SortVisibleBy } from '@visdesignlab/upset2-core';
 import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
+import translate from '../../utils/transform';
 
 type Props = {
   visibleSets: string[];
@@ -74,27 +75,40 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     );
   }
 
+  const columnTransitions = useTransition(
+    visibleSets.map((setName, idx) => {
+      return {
+        setName,
+        x: idx * dimensions.set.width,
+      }
+    }),
+    {
+      keys: (d) => d.setName,
+      enter: ({ x }) => ({ transform: translate(x, 0) }),
+      update: ({ x }) => ({ transform: translate(x, 0) }),
+    },
+  );
+
   return (
     <g>
-      {visibleSets.map((setName, idx) => (
-        <Group 
-          key={setName} 
-          tx={idx * dimensions.set.width}
-          ty={0}
+      {columnTransitions((props, set) => (
+        <a.g 
+          key={set.setName} 
+          transform={props.transform}
           onContextMenu={(e) => {
             e.preventDefault();
-            openContextMenu(e, setName);
+            openContextMenu(e, set.setName);
           }}
           css={css`cursor: context-menu;`}
         >
           <SetSizeBar
             scale={scale}
-            size={sets[setName].size}
-            setId={setName}
-            label={sets[setName].elementName}
+            size={sets[set.setName].size}
+            setId={set.setName}
+            label={sets[set.setName].elementName}
           />
-          <SetLabel setId={setName} name={sets[setName].elementName} />
-        </Group>
+          <SetLabel setId={sets[set.setName].id} name={sets[set.setName].elementName} />
+        </a.g>
       ))}
     </g>
   );
