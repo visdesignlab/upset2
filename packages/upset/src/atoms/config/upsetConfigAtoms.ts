@@ -6,6 +6,7 @@ export const defaultConfig: UpsetConfig = {
   firstOverlapDegree: 2,
   secondAggregateBy: 'None',
   secondOverlapDegree: 2,
+  sortVisibleBy: 'Alphabetical',
   sortBy: 'Cardinality',
   filters: {
     maxVisible: 3,

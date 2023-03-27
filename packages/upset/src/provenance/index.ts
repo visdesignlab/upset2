@@ -1,4 +1,4 @@
-import { AggregateBy, Plot, SortBy, UpsetConfig } from '@visdesignlab/upset2-core';
+import { AggregateBy, Plot, SortBy, SortVisibleBy, UpsetConfig } from '@visdesignlab/upset2-core';
 
 import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -40,6 +40,13 @@ const secondAggAction = registry.register('second-agg',
 const secondOverlapAction = registry.register('second-overlap',
   (state, overlap) => {
     state.secondOverlapDegree = overlap;
+    return state;
+  },
+);
+
+const sortVisibleSetsAction = registry.register('sort-visible-by',
+  (state, sort) => {
+    state.sortVisibleBy = sort;
     return state;
   },
 );
@@ -255,6 +262,8 @@ export function getActions(provenance: UpsetProvenance) {
       provenance.apply(
         `Second overlap by ${overlap}`, secondOverlapAction(overlap),
       ),
+    sortVisibleBy: (sort: SortVisibleBy) =>
+        provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
     sortBy: (sort: SortBy) =>
       provenance.apply(`Sort by ${sort}`, sortByAction(sort)),
     setMaxVisible: (val: number) =>

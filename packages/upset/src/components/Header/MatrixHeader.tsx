@@ -49,13 +49,15 @@ export const MatrixHeader = () => {
         mouseX: e.clientX,
         mouseY: e.clientY,
         id: `${setName}-menu`,
-        items: [{
-          label: `Add ${setName.replace('_', ': ')}`,
-          onClick: () => {
-            actions.addVisibleSet(setName);
-            handleContextMenuClose();
-          }
-        }]
+        items: [
+          {
+            label: `Add ${setName.replace('_', ': ')}`,
+            onClick: () => {
+              actions.addVisibleSet(setName);
+              handleContextMenuClose();
+            }
+          },
+      ]
       }
     );
   }

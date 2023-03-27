@@ -1,5 +1,5 @@
 import { isRowAggregate, Row } from '@visdesignlab/upset2-core';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
