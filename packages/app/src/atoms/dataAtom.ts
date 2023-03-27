@@ -10,8 +10,6 @@ export const dataSelector = selector<CoreUpsetData | null>({
   get: async ({ get }) => {
     const isLoggedIn = get(logInStatusSelector);
 
-    // public data inaccessible
-    // TODO: Fix
     if (!isLoggedIn) return null;
 
     const { workspace, table } = get(queryParamAtom);

@@ -16,6 +16,8 @@ export const Body = ({ yOffset }: Props) => {
   
   if (data === null) return null;
 
+  console.log(encodedData === null);
+
   // if no data has been loaded or if the error/one-hot modal has been closed by the user
   if (((!workspace || !table) && !doesHaveSavedQueryParam()) || (encodedData !== null && data.setColumns.length === 0))
     return <div>Please click Load Data button to go to data interface.</div>;
