@@ -29,24 +29,23 @@ export const CollapseAllButton = () => {
     const [ allCollapsed, setAllCollapsed ] = useState(false);
 
     const toggleCollapseAll = () => {
-        const collapsed = !allCollapsed;
         const ids: string[] = [];
 
         if (allCollapsed === true) {
             actions.expandAll();
-            setAllCollapsed(collapsed);
-            return;
+            setAllCollapsed(false);
         }
-
-        Object.entries(rows.values).forEach((entry) => {
+        else {
+            Object.entries(rows.values).forEach((entry) => {
             const row = entry[1];
             if(isRowAggregate(row)) {
                 ids.push(row.id);
             }
         })
     
-        setAllCollapsed(collapsed);
-        actions.collapseAll(ids);
+            setAllCollapsed(true);
+            actions.collapseAll(ids);
+        }
     }
     
     const getTransform = () => {
