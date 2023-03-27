@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
   firstAggregateSelector,
@@ -34,7 +34,6 @@ import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { exportStateGrammar, ImportModal } from './ImportModal';
-import { collapsedAtom } from '../atoms/collapsedAtom';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
@@ -54,7 +53,6 @@ export const Sidebar = () => {
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
 
-  const resetCollapsedIds = useResetRecoilState(collapsedAtom);
   const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
   const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
 
@@ -150,7 +148,6 @@ export const Sidebar = () => {
             <RadioGroup
               value={firstAggregateBy}
               onChange={ev => {
-                resetCollapsedIds();
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 actions.firstAggregateBy(newAggBy);
               }}
@@ -199,7 +196,6 @@ export const Sidebar = () => {
             <RadioGroup
               value={secondAggregateBy}
               onChange={ev => {
-                resetCollapsedIds();
                 const newAggBy: AggregateBy = ev.target.value as AggregateBy;
                 actions.secondAggregateBy(newAggBy);
               }}

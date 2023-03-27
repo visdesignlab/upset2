@@ -16,6 +16,7 @@ export const defaultConfig: UpsetConfig = {
   visibleSets: [],
   visibleAttributes: [],
   bookmarkedIntersections: [],
+  collapsed: [],
   plots: {
     scatterplots: [],
     histograms: [],

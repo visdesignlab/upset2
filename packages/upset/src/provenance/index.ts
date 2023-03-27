@@ -17,6 +17,7 @@ const firstAggAction = registry.register('first-agg',
     if (aggBy === 'None' || aggBy === state.secondAggregateBy) {
       state.secondAggregateBy = 'None';
     }
+    state.collapsed.length = 0; // reset collapsed state without triggering trrack event
     return state;
   },
 );
@@ -31,6 +32,7 @@ const firstOverlapAction = registry.register('first-overlap',
 const secondAggAction = registry.register('second-agg',
   (state, aggBy) => {
     state.secondAggregateBy = aggBy;
+    state.collapsed.length = 0; // reset collapsed state without triggering trrack event
     return state;
   },
 );
@@ -189,7 +191,37 @@ const removePlotAction = registry.register('remove-plot',
 const replaceStateAction = registry.register('set-state',
   (_state: UpsetConfig, newState: UpsetConfig) => {
     return newState;
-  });
+  },
+);
+
+const addCollapsedAction = registry.register('add-collapsed',
+  (state, id) => {
+    const newCollapsed = new Set([...state.collapsed, id]);
+    state.collapsed = Array.from(newCollapsed).sort();
+    return state;
+  },
+);
+
+const removeCollapsedAction = registry.register('remove-collapsed',
+  (state: UpsetConfig, id) => {
+    state.collapsed = state.collapsed.filter((v) => v !== id);
+    return state;
+  },
+);
+
+const collapseAllAction = registry.register('collapse-all', 
+  (state, ids) => {
+    state.collapsed = ids.sort();
+    return state;
+  },
+);
+
+const expandAllAction = registry.register('expand-all', 
+  (state: UpsetConfig, newCollapsed) => {
+    state.collapsed = [...newCollapsed];
+    return state;
+  },
+);
 
 export function initializeProvenanceTracking(
   config: Partial<UpsetConfig> = {},
@@ -277,11 +309,33 @@ export function getActions(provenance: UpsetProvenance) {
         `Unbookmark ${label}`, removeBookmarkIntersectionAction({id, label, size}),
       ),
     addPlot: (plot: Plot) =>
-      provenance.apply(`Add ${plot}`, addPlotAction(plot)),
+      provenance.apply(
+        `Add ${plot}`, addPlotAction(plot)
+      ),
     removePlot: (plot: Plot) =>
-      provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
+      provenance.apply(
+        `Remove ${plot}`, removePlotAction(plot)
+      ),
     replaceState: (state: UpsetConfig) =>
-        provenance.apply(`Replace state`, replaceStateAction(state)),
+        provenance.apply(
+          `Replace state`, replaceStateAction(state)
+        ),
+    addCollapsed: (id: string) => 
+        provenance.apply(
+          `Collapsed ${id}`, addCollapsedAction(id)
+        ),
+    removeCollapsed: (id: string) =>
+        provenance.apply(
+          `Expanded ${id}`, removeCollapsedAction(id)
+        ),
+    collapseAll: (ids: string[]) =>
+        provenance.apply(
+          `Collapsed all rows`, collapseAllAction(ids)
+        ),
+    expandAll: () =>
+        provenance.apply(
+          `Expanded all rows`, expandAllAction([])
+        ),
   };
 }
 

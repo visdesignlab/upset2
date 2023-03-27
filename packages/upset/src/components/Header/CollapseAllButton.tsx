@@ -1,12 +1,14 @@
-import { DoubleArrow } from "@mui/icons-material";
-import Group from "../custom/Group";
 import { css, SvgIcon, Tooltip } from "@mui/material";
-import { collapsedAtom } from "../../atoms/collapsedAtom";
-import { useRecoilState, useRecoilValue } from "recoil";
-import { useState } from "react";
+import { DoubleArrow } from "@mui/icons-material";
+import { isRowAggregate } from "@visdesignlab/upset2-core";
+import { useRecoilValue } from "recoil";
+import { useContext, useState } from "react";
+import Group from "../custom/Group";
+import { mousePointer } from '../../utils/styles';
+import { ProvenanceContext } from "../Root";
 import { firstAggregateSelector } from "../../atoms/config/aggregateAtoms";
 import { dimensionsSelector } from "../../atoms/dimensionsAtom";
-import { mousePointer } from '../../utils/styles';
+import { rowsSelector } from "../../atoms/renderRowsAtom";
 
 const iconSize = 16;
 
@@ -20,21 +22,30 @@ const collapseAllStyle = css`
 `;
 
 export const CollapseAllButton = () => {
-    const [ collapsedIds, setCollapsedIds ] = useRecoilState(collapsedAtom);
     const firstAggregateBy = useRecoilValue(firstAggregateSelector);
     const dimensions = useRecoilValue(dimensionsSelector);
-
+    const { actions } = useContext(ProvenanceContext);
+    const rows = useRecoilValue(rowsSelector);
     const [ allCollapsed, setAllCollapsed ] = useState(false);
 
     const toggleCollapseAll = () => {
-      const collapsed = !allCollapsed;
-      const ids: {[id: string]: boolean} = {};
-      Object.entries(collapsedIds).forEach((entry) => {
-        ids[entry[0]] = collapsed;
-      })
-  
-      setAllCollapsed(collapsed);
-      setCollapsedIds(ids);
+        const ids: string[] = [];
+
+        if (allCollapsed === true) {
+            actions.expandAll();
+            setAllCollapsed(false);
+        }
+        else {
+            Object.entries(rows.values).forEach((entry) => {
+            const row = entry[1];
+            if(isRowAggregate(row)) {
+                ids.push(row.id);
+            }
+        })
+    
+            setAllCollapsed(true);
+            actions.collapseAll(ids);
+        }
     }
     
     const getTransform = () => {
