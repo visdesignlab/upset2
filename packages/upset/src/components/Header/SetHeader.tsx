@@ -55,20 +55,20 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
                 disabled: sortVisibleBy === 'Alphabetical',
               },
               {
-                label: `Sort matrix headers by size - Ascending`,
+                label: `Sort matrix headers by Size - Ascending`,
                 onClick: () => {
-                  actions.sortVisibleBy('Size - Ascending' as SortVisibleBy);
+                  actions.sortVisibleBy('Ascending' as SortVisibleBy);
                   handleContextMenuClose();
                 },
-                disabled: sortVisibleBy === 'Size - Ascending',
+                disabled: sortVisibleBy === 'Ascending',
               },
               {
-                label: `Sort matrix headers by size - Descending`,
+                label: `Sort matrix headers by Size - Descending`,
                 onClick: () => {
-                  actions.sortVisibleBy('Size - Descending' as SortVisibleBy);
+                  actions.sortVisibleBy('Descending' as SortVisibleBy);
                   handleContextMenuClose();
                 },
-                disabled: sortVisibleBy === 'Size - Descending',
+                disabled: sortVisibleBy === 'Descending',
               },
             ],
           }

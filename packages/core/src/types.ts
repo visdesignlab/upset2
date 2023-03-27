@@ -90,7 +90,7 @@ export type AggregateBy = typeof aggregateByList[number];
 export const sortByList = ['Degree', 'Cardinality', 'Deviation'] as const;
 export type SortBy = typeof sortByList[number];
 
-export const sortVisibleByList = ['Alphabetical', 'Size - Ascending', 'Size - Descending'] as const;
+export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
 export type SortVisibleBy = typeof sortVisibleByList[number];
 
 export type Aggregate = Omit<Subset, 'items'> & {

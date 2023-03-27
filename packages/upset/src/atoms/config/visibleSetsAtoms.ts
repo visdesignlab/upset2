@@ -16,10 +16,10 @@ export const visibleSetSelector = selector<string[]>({
       case 'Alphabetical':
         visibleSetList.sort();
         break;
-      case 'Size - Ascending':
+      case 'Ascending':
         visibleSetList.sort((a, b) => sets[a].size - sets[b].size);
         break;
-      case 'Size - Descending':
+      case 'Descending':
         visibleSetList.sort((a, b) => sets[b].size - sets[a].size);
     }
     return visibleSetList;
