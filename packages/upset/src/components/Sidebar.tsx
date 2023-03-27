@@ -21,7 +21,7 @@ import {
 } from '@mui/material';
 import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useResetRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
   firstAggregateSelector,
