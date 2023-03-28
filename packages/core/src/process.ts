@@ -182,6 +182,7 @@ export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
     setColumns,
     attributeColumns,
     columns: Object.keys(columns),
+    columnTypes: columns,
     items,
     sets,
   };
