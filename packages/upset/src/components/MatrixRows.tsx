@@ -1,5 +1,5 @@
 import { isRowAggregate, Row } from '@visdesignlab/upset2-core';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
@@ -8,7 +8,7 @@ import { RenderRow } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
-import { collapsedAtom } from '../atoms/collapsedAtom';
+import { collapsedSelector } from '../atoms/collapsedAtom';
 
 type Props = {
   rows: RenderRow[];
@@ -24,7 +24,7 @@ export function rowRenderer(row: Row) {
 
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const collapsedIds = useRecoilValue(collapsedAtom);
+  const collapsedIds = useRecoilValue(collapsedSelector);
   let numRowsToRender = 0;
   
   const shouldRender = (row: Row) => {
@@ -34,12 +34,12 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
     if (parentId.includes('-')) {
       const topLevelAggId = parentId.substring(0,parentId.indexOf('-'));
-      if (collapsedIds[topLevelAggId] === true) {
+      if (collapsedIds.includes(topLevelAggId)) {
         return false;
       }
     }
 
-    if (collapsedIds[parentId] === true) return false;
+    if (collapsedIds.includes(parentId)) return false;
 
     return true;
   }

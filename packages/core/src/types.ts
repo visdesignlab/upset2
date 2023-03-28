@@ -90,6 +90,9 @@ export type AggregateBy = typeof aggregateByList[number];
 export const sortByList = ['Degree', 'Cardinality', 'Deviation'] as const;
 export type SortBy = typeof sortByList[number];
 
+export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
+export type SortVisibleBy = typeof sortVisibleByList[number];
+
 export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
@@ -157,6 +160,7 @@ export type UpsetConfig = {
   firstOverlapDegree: number;
   secondAggregateBy: AggregateBy;
   secondOverlapDegree: number;
+  sortVisibleBy: SortVisibleBy;
   sortBy: SortBy;
   filters: {
     maxVisible: number;
@@ -166,6 +170,7 @@ export type UpsetConfig = {
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
   bookmarkedIntersections: Bookmark[];
+  collapsed: string[];
   plots: {
     scatterplots: Scatterplot[];
     histograms: Histogram[];
