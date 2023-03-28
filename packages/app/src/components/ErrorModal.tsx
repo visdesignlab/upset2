@@ -46,9 +46,9 @@ export const ErrorModal = () => {
         // get the unique names of every new column to be added. 
         //    ex: group1_a, group1_b, group2_a, group2_b, group3_c, ....
         encodeList.forEach((s) => Object.entries(data.items).forEach(([id, row]) => {
-            const names = `${row[s]}`.split(',');
-            if (!(names.length === 1 && names[0] === ""))
-                newColNames.push(...names.map((val) => `${s}_${val}`))
+            let names = `${row[s]}`.split(',');
+            names = names.filter((n) => n !== "")
+            newColNames.push(...names.map((val) => `${s}_${val}`))
         }))
         const uniqueColNames: Set<string> = new Set(newColNames);
 
