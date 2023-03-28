@@ -1,16 +1,18 @@
 import { AccessibleData, Row, Rows, isRowAggregate } from "@visdesignlab/upset2-core";
 
-export const exportStateGrammar = (provenance: any, data?: any) => {
+export const exportState = (provenance: any, data?: any, rows?: Rows) => {
   const filename = `upset_state_${new Date().toJSON().slice(0,10)}`;
   let dataObj = provenance.getState();
 
-  if (data) {
-    dataObj = {...dataObj, 'data': data}
+  if (data && rows) {
+    dataObj = {...dataObj, 'rawData': data, 'processedData': rows, 'accessibleProcessedData': getAccessibleData(rows)}
+  } else if (data) {
+    dataObj = {...dataObj, 'rawData': data}
   }
 
   const json = JSON.stringify(dataObj, null, 2);
 
-  downloadJSON(filename, json)
+  downloadJSON(filename, json);
 }
 
 export const exportRawData = (data: any) => {

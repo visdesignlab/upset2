@@ -82,31 +82,13 @@ export const Sidebar: FC<Props> = ({ data }) => {
           {
             label: `Export State`,
             onClick: () => {
-              exportStateGrammar(provenance);
+              exportState(provenance);
             }
           },
           {
             label: `Export State + Data`,
             onClick: () => {
-              exportStateGrammar(provenance, data);
-            }
-          },
-          {
-            label: `Export Raw Data`,
-            onClick: () => {
-              exportRawData(data);
-            }
-          },
-          {
-            label: `Export Processed Data`,
-            onClick: () => {
-              exportProcessedData(rows);
-            }
-          },
-          {
-            label: `Export Accessible Data`,
-            onClick: () => {
-              exportProcessedData(rows, true);
+              exportState(provenance, data, rows);
             }
           },
         ]
