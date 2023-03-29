@@ -308,9 +308,9 @@ export function getActions(provenance: UpsetProvenance) {
       provenance.apply(
         `Unbookmark ${label}`, removeBookmarkIntersectionAction({id, label, size}),
       ),
-    addPlot: (plot: Plot) =>
+    addPlot: (plot: Plot) => 
       provenance.apply(
-        `Add ${plot}`, addPlotAction(plot)
+        `Add Plot: ${plot.type}`, addPlotAction(plot)
       ),
     removePlot: (plot: Plot) =>
       provenance.apply(
