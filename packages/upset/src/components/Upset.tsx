@@ -1,6 +1,6 @@
 import { Box, ThemeProvider } from '@mui/material';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 
 import { defaultConfig } from '../atoms/config/upsetConfigAtoms';

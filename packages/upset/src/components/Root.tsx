@@ -55,6 +55,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
 
       provenance.currentChange(() => setState(provenance.getState()));
 
+      console.log('prov initialized')
+
       provenance.done();
       return { provenance, actions };
     }
