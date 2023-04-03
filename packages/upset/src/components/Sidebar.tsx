@@ -42,6 +42,8 @@ export const Sidebar = () => {
   const { actions, provenance, isAtLatest, isAtRoot } = useContext(
     ProvenanceContext,
   );
+
+  console.log(isAtRoot, isAtLatest);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);

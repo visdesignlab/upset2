@@ -33,7 +33,6 @@ function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVi
 
 function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets) {
   const { values, order } = rows;
-  console.log(order);
   const newOrder = [...order].sort(
     (a, b) => {
       const diff = getDegreeFromSetMembership(values[a].setMembership) -
@@ -53,7 +52,6 @@ function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSet
       }
     },
   );
-  console.log(newOrder);
 
   return { values, order: newOrder };
 }
@@ -87,8 +85,6 @@ function sortIntersections<T extends Intersections>(
 
 export function sortRows(baseRows: Rows, sortBy: SortBy, vSetSortBy: SortVisibleBy, visibleSets: Sets): Rows {
   const rows = deepCopy(baseRows);
-
-  console.log(rows);
 
   if (areRowsSubsets(rows)) {
     return sortIntersections(rows, sortBy, vSetSortBy, visibleSets);

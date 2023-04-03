@@ -5,7 +5,6 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
 import { columnsAtom } from '../atoms/columnAtom';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
@@ -17,6 +16,7 @@ import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
+import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 
 /** @jsxImportSource @emotion/react */
 export const ProvenanceContext = createContext<{
@@ -53,9 +53,9 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
     if (extProvenance) {
       const { provenance, actions } = extProvenance;
 
-      provenance.currentChange(() => setState(provenance.getState()));
-
-      console.log('prov initialized')
+      provenance.currentChange(() => {
+        setState(provenance.getState());
+      });
 
       provenance.done();
       return { provenance, actions };

@@ -1,61 +1,49 @@
-import { css } from '@emotion/react';
-import { Box, CircularProgress } from '@mui/material';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo } from 'react';
 
-import { Body } from './components/Body';
-import Header from './components/Header';
+import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
+import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
+import { Root } from './components/Root';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const AppCss = css`
-  overflow: hidden;
-  height: 100vh;
-  display: grid;
-  grid-template-rows: min-content auto;
-`;
 
 function App() {
-  const ref = useRef<HTMLDivElement>(null);
-  const [headerHeight, setHeaderHeight] = useState(-1);
+  const multinetData = useRecoilValue(dataSelector);
+  const encodedData = useRecoilValue(encodedDataAtom);
+  const data = (encodedData === null) ? multinetData : encodedData
+  const config = useRecoilValue(upsetConfigAtom);
+
+  const setState = useSetRecoilState(upsetConfigAtom);
 
   useEffect(() => {
-    const { current } = ref;
-    if (!current) return;
+    setState(config);
+  }, [config, setState]);
 
-    if (headerHeight > 0) return;
+  const conf = useMemo(() => {
+    if (data !== null) {
+      const conf = {...config}
+      if (config.visibleSets.length === 0) {
+        const setList = Object.keys(data.sets);
+        conf.visibleSets = setList.slice(0, 6);
+      }
 
-    setHeaderHeight(current.clientHeight);
-  }, [headerHeight, ref]);
+      conf.visibleAttributes = data.attributeColumns.slice(0, 3);
+
+      return conf;
+    }
+  }, [config, data]);
+
+  // Initialize Provenance and pass it setter to connect
+  const { provenance, actions } = useMemo(() => {
+    const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
+    const actions: UpsetActions = getActions(provenance);
+    return { provenance, actions };
+  }, [conf]);
 
   return (
-    <div css={AppCss}>
-      <Box
-        sx={{
-          zIndex: theme => theme.zIndex.drawer + 1,
-        }}
-        ref={ref}
-      >
-        <Header />
-      </Box>
-
-      <Suspense
-        fallback={
-          <Box
-            sx={{
-              display: 'flex',
-              height: '100%',
-              width: '100%',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <CircularProgress />
-          </Box>
-        }
-      >
-        <Body yOffset={headerHeight} />
-      </Suspense>
-    </div>
+    <Root provenance={provenance} actions={actions} data={data} config={conf} />
   );
 }
 

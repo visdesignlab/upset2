@@ -1,29 +1,23 @@
 import { Upset } from '@visdesignlab/upset2-react';
 import { useRecoilValue } from 'recoil';
-import { dataSelector, encodedDataAtom } from '../atoms/dataAtom';
+import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { useMemo } from 'react';
-import { UpsetActions, UpsetProvenance, getActions, initializeProvenanceTracking } from '../provenance';
+import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { ProvenanceContext } from './Root';
+import { useContext } from 'react';
 
 type Props = {
   yOffset: number;
+  data: any;
+  config?: UpsetConfig;
 };
 
-export const Body = ({ yOffset }: Props) => {
+export const Body = ({ yOffset, data, config }: Props) => {
   const { workspace, table } = useRecoilValue(queryParamAtom);
-  const multinetData = useRecoilValue(dataSelector);
-  const encodedData = useRecoilValue(encodedDataAtom);
-  const data = (encodedData === null) ? multinetData : encodedData
-  const config = useRecoilValue(upsetConfigAtom);
+  const { provenance, actions } = useContext(ProvenanceContext);
 
-  // Initialize Provenance and pass it setter to connect
-  const { provenance, actions } = useMemo(() => {
-    const provenance: UpsetProvenance = initializeProvenanceTracking(config);
-    const actions: UpsetActions = getActions(provenance);
-    return { provenance, actions };
-  }, [config]);
+  const encodedData = useRecoilValue(encodedDataAtom);
 
   if (data === null) return null;
 
@@ -40,10 +34,8 @@ export const Body = ({ yOffset }: Props) => {
         data={data}
         loadAttributes={3}
         yOffset={yOffset === -1 ? 0 : yOffset}
-        extProvenance={{
-          provenance,
-          actions
-        }}
+        extProvenance={{provenance, actions}}
+        config={config}
         />
       }
     </div>
