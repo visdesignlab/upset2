@@ -1,16 +1,16 @@
 import { useContext } from 'react';
 import { ProvenanceContext } from './Root';
 import { ProvVis } from '@trrack/vis-react';
-import { useRecoilState, useSetRecoilState } from 'recoil';
-import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
+import { useRecoilState } from 'recoil';
 import { Divider, Drawer, IconButton, Typography, css } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
+import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
+// import { elementSidebarAtom } from '@visdesignlab/upset2-react';
 
 export const ProvenanceVis = ({ yOffset }: { yOffset: number }) => {
 const { provenance } = useContext(ProvenanceContext);
 const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
-const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
+// const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
 
 return (
     <Drawer
@@ -32,7 +32,7 @@ return (
                 <IconButton 
                     onClick={() => { 
                         setProvenanceVis(false);
-                        setHideElementSidebar(false); 
+                        // setHideElementSidebar(false); 
                     }}
                 ><CloseIcon /></IconButton>
             </div>

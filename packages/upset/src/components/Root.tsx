@@ -15,7 +15,6 @@ import { Header } from './Header/Header';
 import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
-import { ProvenanceVis } from './ProvenanceVis';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 
 /** @jsxImportSource @emotion/react */
@@ -117,7 +116,6 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
         </SvgBase>
       </div>
       <ContextMenu />
-      <ProvenanceVis yOffset={yOffset} />
       <ElementSidebar yOffset={yOffset} />
     </ProvenanceContext.Provider>
   );

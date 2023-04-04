@@ -4,6 +4,7 @@ import { Body } from "./Body"
 import Header from "./Header"
 import { UpsetConfig } from "@visdesignlab/upset2-core"
 import { useRef, useState, useEffect, createContext } from "react"
+import { ProvenanceVis } from "./ProvenanceVis"
 
 type Props = {
     provenance: UpsetProvenance,
@@ -58,6 +59,7 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                 >
                     <Header />
                 </Box>
+                <ProvenanceVis yOffset={headerHeight} />
                 {data === null && <div>Please click Load Data button to go to data interface.</div>}
                 <Body yOffset={headerHeight} data={data} config={config}/>
             </div>
