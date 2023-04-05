@@ -19,6 +19,10 @@ export type UpsetProps = {
     actions: UpsetActions;
   };
   yOffset?: number;
+  provVis?: {
+    open: boolean;
+    close: () => void;
+  };
 };
 
 export const Upset: FC<UpsetProps> = ({
@@ -28,6 +32,7 @@ export const Upset: FC<UpsetProps> = ({
   config = {},
   loadAttributes = 0,
   extProvenance,
+  provVis,
 }) => {
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
@@ -60,6 +65,7 @@ export const Upset: FC<UpsetProps> = ({
             config={combinedConfig}
             extProvenance={extProvenance}
             yOffset={yOffset}
+            provVis={provVis}
           />
         </RecoilRoot>
       </Box>

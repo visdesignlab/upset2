@@ -1,11 +1,13 @@
 import { Upset } from '@visdesignlab/upset2-react';
-import { useRecoilValue } from 'recoil';
+import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
-import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { ProvenanceContext } from './Root';
 import { useContext } from 'react';
+import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
+import React from 'react';
 
 type Props = {
   yOffset: number;
@@ -15,9 +17,14 @@ type Props = {
 
 export const Body = ({ yOffset, data, config }: Props) => {
   const { workspace, table } = useRecoilValue(queryParamAtom);
-  const { provenance, actions } = useContext(ProvenanceContext);
-
+  const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
+  const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
+
+  const provVisObj = {
+    open: isProvVisOpen,
+    close: () => { setIsProvVisOpen(false) }
+  }
 
   if (data === null) return null;
 
@@ -34,8 +41,9 @@ export const Body = ({ yOffset, data, config }: Props) => {
         data={data}
         loadAttributes={3}
         yOffset={yOffset === -1 ? 0 : yOffset}
-        extProvenance={{provenance, actions}}
+        extProvenance={provObject}
         config={config}
+        provVis={provVisObj}
         />
       }
     </div>

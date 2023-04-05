@@ -1,10 +1,10 @@
-import { Box, css } from "@mui/material"
 import { UpsetActions, UpsetProvenance } from "@visdesignlab/upset2-react"
+import { UpsetConfig } from "@visdesignlab/upset2-core"
+import { Box, css } from "@mui/material"
 import { Body } from "./Body"
 import Header from "./Header"
-import { UpsetConfig } from "@visdesignlab/upset2-core"
 import { useRef, useState, useEffect, createContext } from "react"
-import { ProvenanceVis } from "./ProvenanceVis"
+import React from "react"
 
 type Props = {
     provenance: UpsetProvenance,
@@ -31,6 +31,21 @@ export const Root = ({provenance, actions, data, config}: Props) => {
     const ref = useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = useState(-1);
   
+    const [trrackPosition, setTrrackPosition] = useState({
+        isAtLatest: true,
+        isAtRoot: true
+    })
+
+    useEffect(()=>{
+        provenance.currentChange(() => {
+            setTrrackPosition({
+                isAtLatest: provenance.current.children.length === 0,
+                isAtRoot: provenance.current.id === provenance.root.id,
+            })
+        })
+    }, [provenance])
+  
+
     useEffect(() => {
       const { current } = ref;
       if (!current) return;
@@ -45,8 +60,8 @@ export const Root = ({provenance, actions, data, config}: Props) => {
             value={{
                 provenance,
                 actions,
-                isAtLatest: provenance.current.children.length === 0,
-                isAtRoot: provenance.current.id === provenance.root.id,
+                isAtLatest: trrackPosition.isAtLatest,
+                isAtRoot: trrackPosition.isAtRoot
             }}
         >
             <div css={AppCss}>
@@ -59,7 +74,6 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                 >
                     <Header />
                 </Box>
-                <ProvenanceVis yOffset={headerHeight} />
                 {data === null && <div>Please click Load Data button to go to data interface.</div>}
                 <Body yOffset={headerHeight} data={data} config={config}/>
             </div>

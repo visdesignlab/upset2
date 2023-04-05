@@ -1,22 +1,24 @@
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { AppBar, Button, ButtonGroup, Container, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { useContext, useState } from 'react';
 
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { queryParamAtom } from '../../atoms/queryParamAtom';
 import { ProvenanceContext } from '../Root';
 import { ImportModal, exportStateGrammar } from '../ImportModal';
+import React from 'react';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
+import { AccountCircle } from '@mui/icons-material';
 
 const Header = () => {
   const { workspace } = useRecoilValue(queryParamAtom);
+  const setIsProvVisOpen = useSetRecoilState(provenanceVisAtom);
   const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
 
   const [ showImportModal, setShowImportModal ] = useState(false);
-  const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
 
@@ -34,14 +36,14 @@ const Header = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar sx={{position:"static", boxShadow:"none"}}>
       <Toolbar variant="dense" sx={{ 
         width: '98vw',                     
         backgroundColor: "#e0e0e0",
         color: "rgba(0, 0, 0, 0.87)",
         justifyContent: "space-between",
       }}>
-        <Container sx={{display: 'flex', flexGrow: '1', justifyContent: 'start', alignItems: 'center', margin: 0, padding: 0}}>
+        <Box sx={{display: 'flex', flexGrow: '1', justifyContent: 'start', alignItems: 'center', margin: 0, padding: 0}}>
           <img className="logo" id="multinet-logo" src="https://raw.githubusercontent.com/multinet-app/multinet-components/main/src/assets/multinet_logo.svg" alt="Multinet Logo"/>
           <Typography variant="h6" noWrap component="div" sx={{ marginRight: '5px', lineHeight: '1.5', fontWeight: 'normal' }}>
             Upset - Visualizing Intersecting Sets
@@ -54,8 +56,8 @@ const Header = () => {
               <RedoIcon />
             </IconButton>
           </ButtonGroup>
-        </Container>
-        <Container sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0, width: '15%'}}>
+        </Box>
+        <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           <Button
             color="inherit"
             onClick={() => {
@@ -73,11 +75,8 @@ const Header = () => {
                 Export
             </MenuItem>
             <MenuItem onClick={() => {
-                if (provenanceVis === false) { 
-                  setProvenanceVis(true); 
+                  setIsProvVisOpen(true); 
                   handleMenuClose();
-                  // setHideElementSidebar(true); 
-                };
               }}>
                 Show History
             </MenuItem>
@@ -89,9 +88,9 @@ const Header = () => {
               if (window) window.location.href = getMultinetDataUrl(workspace);
             }}
           >
-            Logout
+            <AccountCircle color="inherit"></AccountCircle>
           </Button>
-        </Container>
+        </Box>
         <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Toolbar>
     </AppBar>

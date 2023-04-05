@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import { createContext, FC, useEffect, useMemo } from 'react';
+import { createContext, FC, useEffect, useMemo, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
@@ -16,6 +16,7 @@ import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { ProvenanceVis } from './ProvenanceVis';
 
 /** @jsxImportSource @emotion/react */
 export const ProvenanceContext = createContext<{
@@ -37,11 +38,20 @@ type Props = {
     actions: UpsetActions;
   };
   yOffset: number;
+  provVis?: {
+    open: boolean;
+    close: () => void;
+  };
 };
 
-export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
+export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
+
+  const [trrackPosition, setTrrackPosition] = useState({
+    isAtLatest: true,
+    isAtRoot: true
+})
 
   useEffect(() => {
     setState(config);
@@ -64,6 +74,16 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
     const actions = getActions(provenance);
     return { provenance, actions };
   }, [config]);
+
+
+  useEffect(()=>{
+      provenance.currentChange(() => {
+          setTrrackPosition({
+              isAtLatest: provenance.current.children.length === 0,
+              isAtRoot: provenance.current.id === provenance.root.id,
+          })
+      })
+  }, [provenance])
 
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
@@ -90,8 +110,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
       value={{
         provenance,
         actions,
-        isAtLatest: provenance.current.children.length === 0,
-        isAtRoot: provenance.current.id === provenance.root.id,
+        isAtLatest: trrackPosition.isAtLatest,
+        isAtRoot: trrackPosition.isAtRoot
       }}
     >
       <div
@@ -117,6 +137,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
       </div>
       <ContextMenu />
       <ElementSidebar yOffset={yOffset} />
+      {provVis && <ProvenanceVis yOffset={yOffset} open={provVis.open} close={provVis.close} />}
     </ProvenanceContext.Provider>
   );
 };
