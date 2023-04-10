@@ -253,7 +253,7 @@ export const Sidebar = () => {
           <TextField
             size="small"
             sx={{ m: 1, display: 'block' }}
-            label="More Than"
+            label="Min Degree"
             type="number"
             value={minVisible}
             onChange={ev => {
@@ -262,27 +262,36 @@ export const Sidebar = () => {
                 val = 0;
               }
 
-              // removes leading 0's in text
+              // removes leading 0's in user input text
               ev.target.value = `${val}`;
 
+              // change the max value to match the min if the min is increased to above the max 
+              if (maxVisible <= val - 1) {
+                actions.setMaxVisible(val);
+              }
               actions.setMinVisible(val);
             }}
           />
           <TextField
             size="small"
             sx={{ m: 1, display: 'block' }}
-            label="Less Than"
+            label="Max Degree"
             type="number"
             value={maxVisible}
             onChange={ev => {
               let val = parseInt(ev.target.value, 10);
-              if (Number.isNaN(val) || val < 0) {
-                val = 0;
+              if (Number.isNaN(val) || val < 1) {
+                val = 1;
               }
 
-              // removes leading 0's in text
+              // removes leading 0's in user input text
               ev.target.value = `${val}`;
               
+              // change the min value to match the max if the max is reduced to below the min
+              if (minVisible >= val + 1) {
+                actions.setMinVisible(val);
+              }
+
               actions.setMaxVisible(val);
             }}
           />
