@@ -190,7 +190,17 @@ const removePlotAction = registry.register('remove-plot',
 
 const replaceStateAction = registry.register('set-state',
   (_state: UpsetConfig, newState: UpsetConfig) => {
-    return newState;
+    const replacement = JSON.parse(JSON.stringify(newState));
+
+    Object.entries(defaultConfig).forEach((entry) => {
+      if (!Object.keys(replacement).includes(entry[0])) {
+        console.error(`${entry[0]} is missing. Adding default value`);
+        
+        replacement[entry[0]] = entry[1];
+      }
+    })
+
+    return replacement;
   },
 );
 
