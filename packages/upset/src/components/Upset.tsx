@@ -23,6 +23,10 @@ export type UpsetProps = {
     open: boolean;
     close: () => void;
   };
+  elementSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
 };
 
 export const Upset: FC<UpsetProps> = ({
@@ -33,6 +37,7 @@ export const Upset: FC<UpsetProps> = ({
   loadAttributes = 0,
   extProvenance,
   provVis,
+  elementSidebar,
 }) => {
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
@@ -66,6 +71,7 @@ export const Upset: FC<UpsetProps> = ({
             extProvenance={extProvenance}
             yOffset={yOffset}
             provVis={provVis}
+            elementSidebar={elementSidebar}
           />
         </RecoilRoot>
       </Box>

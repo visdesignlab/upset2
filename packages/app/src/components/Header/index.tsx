@@ -1,21 +1,22 @@
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import { AccountCircle } from '@mui/icons-material';
 import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { useContext, useState } from 'react';
+import { useRecoilValue, useRecoilState } from 'recoil';
+import React, { useContext, useState } from 'react';
 
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { queryParamAtom } from '../../atoms/queryParamAtom';
+import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
+import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../Root';
 import { ImportModal, exportStateGrammar } from '../ImportModal';
-import React from 'react';
-import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
-import { AccountCircle } from '@mui/icons-material';
 
 const Header = () => {
   const { workspace } = useRecoilValue(queryParamAtom);
-  const setIsProvVisOpen = useSetRecoilState(provenanceVisAtom);
+  const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
+  const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
 
   const [ showImportModal, setShowImportModal ] = useState(false);
@@ -75,10 +76,18 @@ const Header = () => {
                 Export
             </MenuItem>
             <MenuItem onClick={() => {
-                  setIsProvVisOpen(true); 
-                  handleMenuClose();
+                if (isElementSidebarOpen) setIsElementSidebarOpen(false);
+                setIsProvVisOpen(true); 
+                handleMenuClose();
               }}>
                 Show History
+            </MenuItem>
+            <MenuItem onClick={() => {
+                if (isProvVisOpen) setIsProvVisOpen(false);
+                setIsElementSidebarOpen(true); 
+                handleMenuClose();
+              }}>
+                Show Element View
             </MenuItem>
           </Menu>
           <Button

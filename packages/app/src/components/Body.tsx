@@ -8,6 +8,7 @@ import { ProvenanceContext } from './Root';
 import { useContext } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import React from 'react';
+import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
 type Props = {
   yOffset: number;
@@ -20,10 +21,16 @@ export const Body = ({ yOffset, data, config }: Props) => {
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
+  const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
 
   const provVisObj = {
     open: isProvVisOpen,
     close: () => { setIsProvVisOpen(false) }
+  }
+
+  const elementSidebarObj = {
+    open: isElementSidebarOpen,
+    close: () => { setIsElementSidebarOpen(false) }
   }
 
   if (data === null) return null;
@@ -44,6 +51,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
         extProvenance={provObject}
         config={config}
         provVis={provVisObj}
+        elementSidebar={elementSidebarObj}
         />
       }
     </div>

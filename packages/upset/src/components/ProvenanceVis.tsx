@@ -3,8 +3,6 @@ import { ProvenanceContext } from './Root';
 import { ProvVis } from '@trrack/vis-react';
 import { Divider, Drawer, IconButton, Typography, css } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useSetRecoilState } from 'recoil';
-import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
 type Props = {
   yOffset: number,
@@ -18,15 +16,9 @@ export const ProvenanceVis = ({ yOffset, open, close }: Props) => {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
 
-  const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
-
   useEffect(() => {
     provenance.currentChange(() => setCurrentNodeId(provenance.current.id));
   }, [provenance]);
-
-  if (open) {
-    setHideElementSidebar(true);
-  }
 
   return (
     <Drawer anchor={'right'} open={open} onClose={close} variant="persistent">

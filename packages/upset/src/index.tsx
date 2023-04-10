@@ -10,5 +10,3 @@ export {
 } from './provenance/index';
 
 export { upsetConfigAtom, defaultConfig } from './atoms/config/upsetConfigAtoms';
-
-export { elementSidebarAtom } from './atoms/elementSidebarAtom';
