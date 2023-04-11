@@ -192,11 +192,17 @@ const replaceStateAction = registry.register('set-state',
   (_state: UpsetConfig, newState: UpsetConfig) => {
     const replacement = JSON.parse(JSON.stringify(newState));
 
-    Object.entries(defaultConfig).forEach((entry) => {
-      if (!Object.keys(replacement).includes(entry[0])) {
-        console.error(`${entry[0]} is missing. Adding default value`);
+    Object.entries(defaultConfig).forEach(([entry, val]) => {
+      if (!Object.keys(replacement).includes(entry)) {
+        console.error(`${entry} is missing. Adding default value`);
         
-        replacement[entry[0]] = entry[1];
+        replacement[entry] = val;
+      } else if (typeof val === "object" && val !== null) {
+        Object.entries(val).forEach(([key, value]) => {
+          if (replacement[entry][key] === undefined) {
+            replacement[entry][key] = value;
+          }
+        })
       }
     })
 
