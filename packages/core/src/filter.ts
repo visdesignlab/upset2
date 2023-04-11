@@ -1,4 +1,4 @@
-import { Aggregates, Intersections, areRowsSubsets, Rows } from './types';
+import { Aggregates, Intersections, areRowsSubsets, Rows, getDegreeFromSetMembership } from './types';
 import { deepCopy } from './utils';
 
 function filterIntersections<T extends Intersections>(
@@ -8,10 +8,16 @@ function filterIntersections<T extends Intersections>(
   const { values, order } = rows;
 
   const newOrder = order.filter((id) => {
-    let shouldKeep = true;
+    let shouldKeep = false;
+    const subset = values[id];
+    const degree = getDegreeFromSetMembership(subset.setMembership);
 
-    if (filters.hideEmpty) {
-      shouldKeep = values[id].size > 0;
+    if (degree >= filters.minVisible && degree <= filters.maxVisible) {
+      if (filters.hideEmpty) {
+        shouldKeep = subset.size > 0;
+      } else {
+        shouldKeep = true;
+      }
     }
 
     return shouldKeep;
