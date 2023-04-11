@@ -5,6 +5,8 @@ import {
   areRowsSubsets,
   Rows,
   SortBy,
+  SortVisibleBy,
+  Sets,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -15,12 +17,40 @@ function sortByCardinality(rows: Intersections) {
   return { values, order: newOrder };
 }
 
-function sortByDegree(rows: Intersections) {
+function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVisibleBy) {
+  const aUnionSize = Object.entries(a.setMembership)
+    .filter(([_key, value]) => value === "Yes")
+    .map(([key, _value]) => visibleSets[key].size)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+
+  const bUnionSize = Object.entries(b.setMembership)
+    .filter(([_key, value]) => value === "Yes")
+    .map(([key, _value]) => visibleSets[key].size)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+
+  return (vSetSortBy === "Ascending") ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
+}
+
+function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets) {
   const { values, order } = rows;
   const newOrder = [...order].sort(
-    (a, b) =>
-      getDegreeFromSetMembership(values[a].setMembership) -
-      getDegreeFromSetMembership(values[b].setMembership),
+    (a, b) => {
+      const diff = getDegreeFromSetMembership(values[a].setMembership) -
+                  getDegreeFromSetMembership(values[b].setMembership);
+
+      if (diff !== 0) {
+        return diff;
+      }
+
+      switch (vSetSortBy) {
+        case "Alphabetical":
+          return values[a].elementName.localeCompare(values[b].elementName);
+        case "Ascending":
+          return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
+        case "Descending":
+          return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
+      }
+    },
   );
 
   return { values, order: newOrder };
@@ -38,12 +68,14 @@ function sortByDeviation(rows: Intersections) {
 function sortIntersections<T extends Intersections>(
   intersection: T,
   sortBy: SortBy,
+  vSetSortBy: SortVisibleBy,
+  visibleSets: Sets,
 ) {
   switch (sortBy) {
     case 'Cardinality':
       return sortByCardinality(intersection);
     case 'Degree':
-      return sortByDegree(intersection);
+      return sortByDegree(intersection, vSetSortBy, visibleSets);
     case 'Deviation':
       return sortByDeviation(intersection);
     default:
@@ -51,19 +83,19 @@ function sortIntersections<T extends Intersections>(
   }
 }
 
-export function sortRows(baseRows: Rows, sortBy: SortBy): Rows {
+export function sortRows(baseRows: Rows, sortBy: SortBy, vSetSortBy: SortVisibleBy, visibleSets: Sets): Rows {
   const rows = deepCopy(baseRows);
 
   if (areRowsSubsets(rows)) {
-    return sortIntersections(rows, sortBy);
+    return sortIntersections(rows, sortBy, vSetSortBy, visibleSets);
   }
 
-  const aggs: Aggregates = sortIntersections(rows as any, sortBy) as any;
+  const aggs: Aggregates = sortIntersections(rows as any, sortBy, vSetSortBy, visibleSets) as any;
 
   aggs.order.forEach((aggId) => {
     const { items } = aggs.values[aggId];
 
-    const newItems = sortRows(items, sortBy);
+    const newItems = sortRows(items, sortBy, vSetSortBy, visibleSets);
 
     aggs.values[aggId].items = newItems;
   });
