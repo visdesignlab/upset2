@@ -12,7 +12,7 @@ function filterIntersections<T extends Intersections>(
     const subset = values[id];
     const degree = getDegreeFromSetMembership(subset.setMembership);
 
-    if (degree >= filters.minVisible && degree <= filters.maxVisible) {
+    if ((degree >= filters.minVisible && degree <= filters.maxVisible) || subset.type === "Aggregate") {
       if (filters.hideEmpty) {
         shouldKeep = subset.size > 0;
       } else {
