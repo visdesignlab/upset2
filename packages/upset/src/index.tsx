@@ -6,4 +6,7 @@ export {
   Metadata,
   getActions,
   UpsetActions,
+  initializeProvenanceTracking
 } from './provenance/index';
+
+export { upsetConfigAtom, defaultConfig } from './atoms/config/upsetConfigAtoms';

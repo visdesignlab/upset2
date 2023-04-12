@@ -4,8 +4,8 @@ import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
-import { ThemeProvider } from '@mui/material';
-import React from 'react';
+import { Box, CircularProgress, ThemeProvider } from '@mui/material';
+import React, { Suspense } from 'react';
 import ReactDOM from 'react-dom';
 import { RecoilRoot } from 'recoil';
 
@@ -18,7 +18,23 @@ ReactDOM.render(
   <React.StrictMode>
     <ThemeProvider theme={DefaultTheme}>
       <RecoilRoot>
-        <App />
+        <Suspense
+          fallback={
+            <Box
+              sx={{
+                display: 'flex',
+                height: '100%',
+                width: '100%',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <CircularProgress />
+            </Box>
+          }
+        >
+          <App />
+        </Suspense>
       </RecoilRoot>
     </ThemeProvider>
   </React.StrictMode>,

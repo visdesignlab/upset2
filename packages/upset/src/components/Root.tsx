@@ -1,11 +1,10 @@
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import { createContext, FC, useEffect, useMemo } from 'react';
+import { createContext, FC, useEffect, useMemo, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
 import { columnsAtom } from '../atoms/columnAtom';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
@@ -16,6 +15,7 @@ import { Header } from './Header/Header';
 import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
+import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { ProvenanceVis } from './ProvenanceVis';
 
 /** @jsxImportSource @emotion/react */
@@ -38,11 +38,24 @@ type Props = {
     actions: UpsetActions;
   };
   yOffset: number;
+  provVis?: {
+    open: boolean;
+    close: () => void;
+  };
+  elementSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
 };
 
-export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
+export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis, elementSidebar }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
+
+  const [trrackPosition, setTrrackPosition] = useState({
+    isAtLatest: true,
+    isAtRoot: true
+})
 
   useEffect(() => {
     setState(config);
@@ -53,7 +66,9 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
     if (extProvenance) {
       const { provenance, actions } = extProvenance;
 
-      provenance.currentChange(() => setState(provenance.getState()));
+      provenance.currentChange(() => {
+        setState(provenance.getState());
+      });
 
       provenance.done();
       return { provenance, actions };
@@ -63,6 +78,16 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
     const actions = getActions(provenance);
     return { provenance, actions };
   }, [config]);
+
+
+  useEffect(()=>{
+      provenance.currentChange(() => {
+          setTrrackPosition({
+              isAtLatest: provenance.current.children.length === 0,
+              isAtRoot: provenance.current.id === provenance.root.id,
+          })
+      })
+  }, [provenance])
 
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
@@ -89,8 +114,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
       value={{
         provenance,
         actions,
-        isAtLatest: provenance.current.children.length === 0,
-        isAtRoot: provenance.current.id === provenance.root.id,
+        isAtLatest: trrackPosition.isAtLatest,
+        isAtRoot: trrackPosition.isAtRoot
       }}
     >
       <div
@@ -115,8 +140,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset }) => {
         </SvgBase>
       </div>
       <ContextMenu />
-      <ProvenanceVis yOffset={yOffset} />
-      <ElementSidebar yOffset={yOffset} />
+      {elementSidebar && <ElementSidebar yOffset={yOffset} open={elementSidebar.open} close={elementSidebar.close}/>}
+      {provVis && <ProvenanceVis yOffset={yOffset} open={provVis.open} close={provVis.close} />}
     </ProvenanceContext.Provider>
   );
 };

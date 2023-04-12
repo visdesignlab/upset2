@@ -1,18 +1,12 @@
 import { css } from '@emotion/react';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import RedoIcon from '@mui/icons-material/Redo';
-import UndoIcon from '@mui/icons-material/Undo';
 import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Box,
-  Button,
-  ButtonGroup,
   FormControl,
   FormControlLabel,
   FormGroup,
-  IconButton,
   Radio,
   RadioGroup,
   Switch,
@@ -21,7 +15,7 @@ import {
 } from '@mui/material';
 import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
 import { Fragment, useContext, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 import {
   firstAggregateSelector,
@@ -33,15 +27,13 @@ import { hideEmptySelector, maxVisibleSelector, minVisibleSelector } from '../at
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
-import { exportStateGrammar, ImportModal } from './ImportModal';
-import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
-import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
-  const { actions, provenance, isAtLatest, isAtRoot } = useContext(
+  const { actions } = useContext(
     ProvenanceContext,
   );
+
   const visibleSets = useRecoilValue(visibleSetSelector);
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
@@ -53,14 +45,9 @@ export const Sidebar = () => {
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
 
-  const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
-  const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
-
   const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
   );
-
-  const [ showImportModal, setShowImportModal ] = useState(false);
 
   useEffect(() => {
     if (firstAggregateBy === 'None') {
@@ -68,48 +55,12 @@ export const Sidebar = () => {
     }
   }, [firstAggregateBy]);
 
-  const handleImportModalClose = () => {
-    setShowImportModal(false);
-  }
-
   return (
     <div
       css={css`
         width: 250px;
       `}
     >
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <ButtonGroup>
-          <IconButton disabled={isAtRoot} onClick={() => provenance.undo()}>
-            <UndoIcon />
-          </IconButton>
-          <IconButton disabled={isAtLatest} onClick={() => provenance.redo()}>
-            <RedoIcon />
-          </IconButton>
-        </ButtonGroup>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '5px', }}>
-        <ButtonGroup>
-          <Button onClick={() => setShowImportModal(true) }>
-            Import
-          </Button>
-          <Button onClick={() => exportStateGrammar(provenance)}>
-            Export
-          </Button>
-        </ButtonGroup>
-        
-        <ImportModal open={showImportModal} close={handleImportModalClose} />
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', margin: '5px 0' }}>
-        <Button variant="outlined" onClick={() => {
-          if (provenanceVis === false) { 
-            setProvenanceVis(true); 
-            setHideElementSidebar(true); 
-          };
-        }}>
-          Provenance Vis
-        </Button>
-      </Box>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Sorting</Typography>

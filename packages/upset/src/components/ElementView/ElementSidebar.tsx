@@ -2,11 +2,10 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloseIcon from '@mui/icons-material/Close';
-import MenuIcon from '@mui/icons-material/Menu';
-import { Box, Divider, Drawer, Fab, IconButton, Tooltip, Typography, css } from '@mui/material';
+import { Box, Divider, Drawer, IconButton, Tooltip, Typography, css } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
-import React, { useCallback, useState } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
 import { currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
@@ -14,7 +13,12 @@ import { elementSelector, intersectionCountSelector } from '../../atoms/elements
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
-import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
+
+type Props = {
+  yOffset: number,
+  open: boolean,
+  close: () => void
+}
 
 const initialDrawerWidth = 450;
 const minDrawerWidth = 100;
@@ -56,9 +60,8 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 }
 
 /** @jsxImportSource @emotion/react */
-export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
+export const ElementSidebar = ({ yOffset, open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
-  const [ hideElementSidebar, setHideElementSidebar] = useRecoilState(elementSidebarAtom);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
   const intersectionCounter = useRecoilValue(
@@ -69,6 +72,12 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
   );
 
   const columns = useRecoilValue(columnsAtom);
+
+  const [ hideElementSidebar, setHideElementSidebar] = useState(!open);
+
+  useEffect(() => {
+    setHideElementSidebar(!open);
+  }, [open])
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -109,7 +118,8 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
             boxSizing: 'border-box',
           },
         }}
-        open={!hideElementSidebar}
+        open={open}
+        onClose={close}
         variant="persistent"
         anchor="right"
       >
@@ -155,6 +165,7 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
           <IconButton
             onClick={() => {
               setHideElementSidebar(true);
+              close();  
             }}
           >
             <CloseIcon />
@@ -203,15 +214,6 @@ export const ElementSidebar = ({ yOffset }: { yOffset: number }) => {
           </Typography>
         )}
       </Drawer>
-      {hideElementSidebar && (
-        <Fab
-          sx={{ position: 'absolute', right: 0, opacity: 0.5 }}
-          aria-label="add"
-          onClick={() => setHideElementSidebar(false)}
-        >
-          <MenuIcon />
-        </Fab>
-      )}
     </>
   );
 };

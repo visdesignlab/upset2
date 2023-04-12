@@ -1,6 +1,6 @@
 import { Box, ThemeProvider } from '@mui/material';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 
 import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
@@ -19,6 +19,14 @@ export type UpsetProps = {
     actions: UpsetActions;
   };
   yOffset?: number;
+  provVis?: {
+    open: boolean;
+    close: () => void;
+  };
+  elementSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
 };
 
 export const Upset: FC<UpsetProps> = ({
@@ -28,6 +36,8 @@ export const Upset: FC<UpsetProps> = ({
   config = {},
   loadAttributes = 0,
   extProvenance,
+  provVis,
+  elementSidebar,
 }) => {
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
@@ -60,6 +70,8 @@ export const Upset: FC<UpsetProps> = ({
             config={combinedConfig}
             extProvenance={extProvenance}
             yOffset={yOffset}
+            provVis={provVis}
+            elementSidebar={elementSidebar}
           />
         </RecoilRoot>
       </Box>
