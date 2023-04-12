@@ -6,6 +6,7 @@ import {
   Row,
   Rows,
   secondAggregation,
+  Sets,
   sortRows,
 } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';
@@ -23,6 +24,7 @@ import { dimensionsSelector } from './dimensionsAtom';
 import { itemsAtom } from './itemsAtoms';
 import { setsAtom } from './setsAtoms';
 import { subsetSelector } from './subsetAtoms';
+import { visibleSetSelector, visibleSortSelector } from './config/visibleSetsAtoms';
 
 const firstAggRRSelector = selector<Rows>({
   key: 'first-aggregate-render-row',
@@ -76,8 +78,13 @@ const sortByRRSelector = selector<Rows>({
   get: ({ get }) => {
     const sortBy = get(sortBySelector);
     const rr = get(secondAggRRSelector);
+    const vSetSortBy = get(visibleSortSelector);
+    const sets = get(setsAtom);
+    const visibleSetNames = get(visibleSetSelector);
 
-    return sortRows(rr, sortBy);
+    const visibleSets: Sets = Object.fromEntries(Object.entries(sets).filter(([name, _set]) => visibleSetNames.includes(name)));
+
+    return sortRows(rr, sortBy, vSetSortBy, visibleSets);
   },
 });
 
