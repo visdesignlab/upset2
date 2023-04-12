@@ -33,7 +33,7 @@ export const ProvenanceVis = ({ yOffset, open, close }: Props) => {
           `}
         >
           <Typography variant="button" fontSize="1em">
-            Provenance Tree
+            History
           </Typography>
           <IconButton onClick={close}>
             <CloseIcon />

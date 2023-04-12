@@ -62,39 +62,48 @@ const Header = () => {
           <Button
             color="inherit"
             onClick={() => {
-              if (window) window.location.href = getMultinetDataUrl(workspace);
+              if (window) {
+                window.location.href = getMultinetDataUrl(workspace);
+              }
             }}
           >
             Load Data
           </Button>
-          <MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon>
-          <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
-            <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
-                Import State
-            </MenuItem>
-            <MenuItem onClick={() => exportStateGrammar(provenance)} color="inherit">
-                Export
-            </MenuItem>
-            <MenuItem onClick={() => {
-                if (isElementSidebarOpen) setIsElementSidebarOpen(false);
-                setIsProvVisOpen(true); 
-                handleMenuClose();
-              }}>
-                Show History
-            </MenuItem>
-            <MenuItem onClick={() => {
-                if (isProvVisOpen) setIsProvVisOpen(false);
-                setIsElementSidebarOpen(true); 
-                handleMenuClose();
-              }}>
-                Show Element View
-            </MenuItem>
-          </Menu>
+          <Button sx={{ minWidth: "24px" }}><MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon></Button>
+            <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
+              <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
+                  Import State
+              </MenuItem>
+              <MenuItem onClick={() => exportStateGrammar(provenance)} color="inherit">
+                  Export
+              </MenuItem>
+              <MenuItem onClick={() => {
+                  if (isElementSidebarOpen) {
+                    setIsElementSidebarOpen(false);
+                  }
+                  setIsProvVisOpen(true); 
+                  handleMenuClose();
+                }}>
+                  Show History
+              </MenuItem>
+              <MenuItem onClick={() => {
+                  if (isProvVisOpen) {
+                    setIsProvVisOpen(false);
+                  }
+                  setIsElementSidebarOpen(true); 
+                  handleMenuClose();
+                }}>
+                  Show Element View
+              </MenuItem>
+            </Menu>
           <Button
             color="inherit"
+            sx={{ minWidth: "24px" }}
             onClick={() => {
               oAuth.logout();
-              if (window) window.location.href = getMultinetDataUrl(workspace);
+              if (window) {
+                window.location.href = getMultinetDataUrl(workspace);
+              }
             }}
           >
             <AccountCircle color="inherit"></AccountCircle>

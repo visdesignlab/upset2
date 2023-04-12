@@ -28,7 +28,7 @@ export const ProvenanceContext = createContext<{
   }>(undefined!);
 
 export const Root = ({provenance, actions, data, config}: Props) => {
-    const ref = useRef<HTMLDivElement>(null);
+    const headerDiv = useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = useState(-1);
   
     const [trrackPosition, setTrrackPosition] = useState({
@@ -47,13 +47,13 @@ export const Root = ({provenance, actions, data, config}: Props) => {
   
 
     useEffect(() => {
-      const { current } = ref;
+      const { current } = headerDiv;
       if (!current) return;
   
       if (headerHeight > 0) return;
   
       setHeaderHeight(current.clientHeight);
-    }, [headerHeight, ref]);
+    }, [headerHeight, headerDiv]);
 
     return (
         <ProvenanceContext.Provider
@@ -70,7 +70,7 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                         zIndex: theme => theme.zIndex.drawer + 1,
                         position: 'relative',
                     }}
-                    ref={ref}
+                    ref={headerDiv}
                 >
                     <Header />
                 </Box>

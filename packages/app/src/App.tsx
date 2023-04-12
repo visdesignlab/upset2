@@ -24,12 +24,12 @@ function App() {
 
   const conf = useMemo(() => {
     if (data !== null) {
-      const conf = {...config}
+      const conf = JSON.parse(JSON.stringify(config))
       if (config.visibleSets.length === 0) {
         const setList = Object.keys(data.sets);
         conf.visibleSets = setList.slice(0, 6);
       }
-
+      
       conf.visibleAttributes = data.attributeColumns.slice(0, 3);
 
       return conf;
