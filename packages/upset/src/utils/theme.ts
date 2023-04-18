@@ -27,6 +27,20 @@ const theme: ThemeOptions = {
       no: '#f0f0f0',
     },
   },
+  components: {
+    MuiTooltip: {
+      styleOverrides: {
+        tooltip: {
+          backgroundColor: "rgba(116, 173, 209, 0.85)",
+          color: "#ffffff",
+          fontSize: "0.9em",
+        },
+        arrow: {
+          color: "rgba(116, 173, 209, 0.85)"
+        }
+      }
+    }
+  }
 };
 
 const defaultTheme = createTheme(theme);
