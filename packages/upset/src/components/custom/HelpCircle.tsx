@@ -29,7 +29,7 @@ export const HelpCircle = ({ text, margin = {...defaultMargin}, size = 16 }: { t
           margin:`${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`,
           padding: '3px',
         }}
-        disableRipple
+        disableTouchRipple
       >
         <QuestionMark sx={{ height: size, width: size }}></QuestionMark>
       </IconButton>
