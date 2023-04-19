@@ -1,7 +1,7 @@
 import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Chip, Stack, Typography } from '@mui/material';
+import { Alert, Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
@@ -27,9 +27,9 @@ export const ElementQueries = () => {
   return (
     <>
       {!currentIntersection && bookmarked.length === 0 && (
-        <Typography color="gray" sx={{ padding: '0.5em' }}>
+        <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', margin: '0.5em 0' }}>
           Please click on intersections to select an intersection.
-        </Typography>
+        </Alert>
       )}
       <Stack direction="row" sx={{ flexFlow: 'row wrap' }}>
         {bookmarked.map((bookmark) => {

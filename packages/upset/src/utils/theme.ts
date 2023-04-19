@@ -31,12 +31,12 @@ const theme: ThemeOptions = {
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: "rgba(116, 173, 209, 0.85)",
+          backgroundColor: "rgba(116, 173, 209, 0.94)",
           color: "#ffffff",
-          fontSize: "0.9em",
+          fontSize: "0.92em",
         },
         arrow: {
-          color: "rgba(116, 173, 209, 0.85)"
+          color: "rgba(116, 173, 209, 0.94)"
         }
       }
     }

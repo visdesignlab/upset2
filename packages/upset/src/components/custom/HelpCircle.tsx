@@ -13,10 +13,10 @@ export const defaultMargin: Margin = {
     top: 0,
     bottom: 1,
     left: 0,
-    right: 1
+    right: 2.5
 }
 
-export const HelpCircle = ({ text, margin = {...defaultMargin}, size = 16 }: { text: string, margin?: Margin, size?: number }) => {
+export const HelpCircle = ({ text, margin = {...defaultMargin}, size = 13 }: { text: string, margin?: Margin, size?: number }) => {
   return (
     <Tooltip 
       title={text} 

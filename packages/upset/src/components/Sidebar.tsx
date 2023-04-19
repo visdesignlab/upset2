@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -83,7 +84,7 @@ export const Sidebar = () => {
               {sortByList.map(sort => {
                 return ( sort === "Deviation" ?
                 (
-                  <Typography key={sort}>Use column headers for custom sorting</Typography>
+                  <Alert severity="info" variant="outlined" key={sort} sx={{ alignItems: 'center', padding: "0.1em 0.4em", marginTop: "0.5em"}}>Use column headers for custom sorting</Alert>
                 ):
                 (
                   <div css={itemDivCSS} key={sort}>
