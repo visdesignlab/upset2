@@ -2,7 +2,7 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Divider, Drawer, IconButton, Tooltip, Typography, css } from '@mui/material';
+import { Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -209,9 +209,9 @@ export const ElementSidebar = ({ yOffset, open, close }: Props) => {
         {currentIntersection ? (
           <ElementTable id={currentIntersection.id} />
         ) : (
-          <Typography color="gray" sx={{ padding: '0.5em' }}>
+          <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', marginTop: "0.5em" }}>
             Please select an query to view the elements.
-          </Typography>
+          </Alert>
         )}
       </Drawer>
     </>

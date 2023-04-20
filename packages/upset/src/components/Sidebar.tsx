@@ -4,6 +4,7 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
+  Alert,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -27,6 +28,13 @@ import { hideEmptySelector, maxVisibleSelector, minVisibleSelector } from '../at
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
+import { HelpCircle, defaultMargin } from './custom/HelpCircle';
+import { helpText } from '../utils/helpText'; 
+
+const itemDivCSS = css`
+  display: flex;
+  justify-content: space-between;
+`;
 
 /** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
@@ -76,15 +84,18 @@ export const Sidebar = () => {
               {sortByList.map(sort => {
                 return ( sort === "Deviation" ?
                 (
-                  <Typography key={sort}>Use column headers for custom sorting</Typography>
+                  <Alert severity="info" variant="outlined" key={sort} sx={{ alignItems: 'center', padding: "0.1em 0.4em", marginTop: "0.5em"}}>Use column headers for custom sorting</Alert>
                 ):
                 (
-                  <FormControlLabel
-                    key={sort}
-                    value={sort}
-                    label={sort}
-                    control={<Radio size="small" />}
-                  />
+                  <div css={itemDivCSS} key={sort}>
+                    <FormControlLabel
+                      key={sort}
+                      value={sort}
+                      label={sort}
+                      control={<Radio size="small" />}
+                    />
+                    <HelpCircle text={helpText.sorting[sort]} />
+                  </div>
                 ))})}
             </RadioGroup>
           </FormControl>
@@ -95,7 +106,7 @@ export const Sidebar = () => {
           <Typography>Aggregation</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <FormControl>
+          <FormControl sx={{width: "100%"}}>
             <RadioGroup
               value={firstAggregateBy}
               onChange={ev => {
@@ -105,12 +116,15 @@ export const Sidebar = () => {
             >
               {aggregateByList.map(agg => (
                 <Fragment key={agg}>
-                  <FormControlLabel
-                    key={agg}
-                    value={agg}
-                    label={agg}
-                    control={<Radio size="small" />}
-                  />
+                  <div css={itemDivCSS}>
+                    <FormControlLabel
+                      key={agg}
+                      value={agg}
+                      label={agg}
+                      control={<Radio size="small" />}
+                    />
+                    {agg !== "None" && <HelpCircle text={helpText.aggregation[agg]} />}
+                  </div>
                   {agg === 'Overlaps' && firstAggregateBy === agg && (
                     <TextField
                       label="Degree"
@@ -143,7 +157,7 @@ export const Sidebar = () => {
           <Typography>Second Aggregation</Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <FormControl>
+          <FormControl sx={{width: "100%"}}>
             <RadioGroup
               value={secondAggregateBy}
               onChange={ev => {
@@ -155,11 +169,14 @@ export const Sidebar = () => {
                 .filter(agg => agg !== firstAggregateBy)
                 .map(agg => (
                   <Fragment key={agg}>
-                    <FormControlLabel
-                      value={agg}
-                      label={agg}
-                      control={<Radio size="small" />}
-                    />
+                    <div css={itemDivCSS}>
+                      <FormControlLabel
+                        value={agg}
+                        label={agg}
+                        control={<Radio size="small" />}
+                      />
+                      {agg !== "None" && <HelpCircle text={helpText.aggregation[agg]} />}
+                    </div>
                     {agg === 'Overlaps' && secondAggregateBy === agg && (
                       <TextField
                         label="Degree"
@@ -186,66 +203,75 @@ export const Sidebar = () => {
           <Typography>Filter Intersections</Typography>
         </AccordionSummary>
         <AccordionDetails>
-        <FormGroup sx={{ mb: 2.5, width: '90%' }}>
-            <FormControlLabel
-              label="Hide Empty Intersections"
-              control={
-                <Switch
-                  size="small"
-                  checked={hideEmpty}
-                  onChange={ev => {
-                    actions.setHideEmpty(ev.target.checked);
-                  }}
-                />
-              }
-              labelPlacement="start"
-            />
+          <FormGroup sx={{ mb: 2.5, width: '100%' }}>
+            <div css={itemDivCSS}>
+              <FormControlLabel
+                label="Hide Empty Intersections"
+                control={
+                  <Switch
+                    size="small"
+                    checked={hideEmpty}
+                    onChange={ev => {
+                      actions.setHideEmpty(ev.target.checked);
+                    }}
+                  />
+                }
+                labelPlacement="start"
+              />
+              <HelpCircle text={helpText.filter.HideEmptySets} margin={{...defaultMargin, left: 12}}/>
+            </div>
           </FormGroup>
-          <TextField
-            size="small"
-            sx={{ m: 1, display: 'block' }}
-            label="Min Degree"
-            type="number"
-            value={minVisible}
-            onChange={ev => {
-              let val = parseInt(ev.target.value, 10);
-              if (Number.isNaN(val) || val < 0) {
-                val = 0;
-              }
+          <div css={itemDivCSS}>
+            <TextField
+              size="small"
+              sx={{ m: 1, display: 'block' }}
+              label="Min Degree"
+              type="number"
+              value={minVisible}
+              onChange={ev => {
+                let val = parseInt(ev.target.value, 10);
+                if (Number.isNaN(val) || val < 0) {
+                  val = 0;
+                }
 
-              // removes leading 0's in user input text
-              ev.target.value = `${val}`;
+                // removes leading 0's in user input text
+                ev.target.value = `${val}`;
 
-              // change the max value to match the min if the min is increased to above the max 
-              if (maxVisible <= val - 1) {
-                actions.setMaxVisible(val);
-              }
-              actions.setMinVisible(val);
-            }}
-          />
-          <TextField
-            size="small"
-            sx={{ m: 1, display: 'block' }}
-            label="Max Degree"
-            type="number"
-            value={maxVisible}
-            onChange={ev => {
-              let val = parseInt(ev.target.value, 10);
-              if (Number.isNaN(val) || val < 1) {
-                val = 1;
-              }
-
-              // removes leading 0's in user input text
-              ev.target.value = `${val}`;
-              
-              // change the min value to match the max if the max is reduced to below the min
-              if (minVisible >= val + 1) {
+                // change the max value to match the min if the min is increased to above the max 
+                if (maxVisible <= val - 1) {
+                  actions.setMaxVisible(val);
+                }
                 actions.setMinVisible(val);
-              }
+              }}
+            />
+            <HelpCircle text={helpText.filter.MinDegree} />
+          </div>
+          <div css={itemDivCSS}>
+            <TextField
+              size="small"
+              sx={{ m: 1, display: 'block' }}
+              label="Max Degree"
+              type="number"
+              value={maxVisible}
+              onChange={ev => {
+                let val = parseInt(ev.target.value, 10);
+                if (Number.isNaN(val) || val < 1) {
+                  val = 1;
+                }
 
-              actions.setMaxVisible(val);
-            }}
-          />
+                // removes leading 0's in user input text
+                ev.target.value = `${val}`;
+                
+                // change the min value to match the max if the max is reduced to below the min
+                if (minVisible >= val + 1) {
+                  actions.setMinVisible(val);
+                }
+
+                actions.setMaxVisible(val);
+              }}
+            />
+            <HelpCircle text={helpText.filter.MaxDegree} />
+          </div>
         </AccordionDetails>
       </Accordion>
     </div>
