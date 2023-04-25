@@ -1,3 +1,5 @@
+import { exportState } from '@visdesignlab/upset2-react';
+import { getRows } from '@visdesignlab/upset2-core';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
@@ -12,7 +14,6 @@ import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../Root';
 import { ImportModal } from '../ImportModal';
-import { exportState } from '@visdesignlab/upset2-react';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
