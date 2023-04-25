@@ -1,4 +1,3 @@
-import { getRows } from '@visdesignlab/upset2-core';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
