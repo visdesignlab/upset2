@@ -4,12 +4,12 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { columnHoverAtom, rowHoverAtom } from '../atoms/hoverAtom';
-import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
+import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 
 export const ForegroundRects = () => {
-  const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
+  const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(flattenedRowsSelector);
   const setHoveredRow = useSetRecoilState(rowHoverAtom);
   const setHoveredColumn = useSetRecoilState(columnHoverAtom);

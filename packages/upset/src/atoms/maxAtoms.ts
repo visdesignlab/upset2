@@ -1,5 +1,4 @@
 import { selector } from 'recoil';
-
 import { flattenedRowsSelector } from './renderRowsAtom';
 
 export const maxDeviationSelector = selector({

@@ -11,17 +11,19 @@ import {
   currentIntersectionAtom,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
-import { flattenedOnlyRows } from '../../atoms/renderRowsAtom';
 import { ProvenanceContext } from '../Root';
+import { dataAtom } from '../../atoms/dataAtom';
+import { flattenedOnlyRows } from '@visdesignlab/upset2-core';
 
 export const ElementQueries = () => {
-  const { actions } = useContext(ProvenanceContext);
+  const { provenance, actions } = useContext(ProvenanceContext);
   const [currentIntersection, setCurrentIntersection] = useRecoilState(
     currentIntersectionAtom,
   );
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
-  const rows = useRecoilValue(flattenedOnlyRows);
+  const data = useRecoilValue(dataAtom);
+  const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
   
   return (

@@ -72,7 +72,7 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                     }}
                     ref={headerDiv}
                 >
-                    <Header />
+                    <Header data={data}/>
                 </Box>
                 {data === null && <div>Please click Load Data button to go to data interface.</div>}
                 <Body yOffset={headerHeight} data={data} config={config}/>

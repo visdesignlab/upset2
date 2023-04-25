@@ -1,9 +1,9 @@
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
 import { MatrixRows } from './MatrixRows';
+import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 
 export const Body = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
