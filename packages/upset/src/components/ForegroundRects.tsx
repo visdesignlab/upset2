@@ -1,20 +1,16 @@
 /** @jsxImportSource @emotion/react */
-import { flattenedRows } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { columnHoverAtom, rowHoverAtom } from '../atoms/hoverAtom';
 import translate from '../utils/transform';
-import { dataAtom } from '../atoms/dataAtom';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 
 export const ForegroundRects = () => {
   const visibleSets = useRecoilValue(visibleSetSelector);
-  const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const state = useRecoilValue(upsetConfigAtom);
-  const rows = flattenedRows(data, state);
+  const rows = useRecoilValue(flattenedRowsSelector);
   const setHoveredRow = useSetRecoilState(rowHoverAtom);
   const setHoveredColumn = useSetRecoilState(columnHoverAtom);
 
