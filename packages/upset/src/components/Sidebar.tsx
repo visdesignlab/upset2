@@ -14,9 +14,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { AggregateBy, aggregateByList, CoreUpsetData, SortBy, sortByList } from '@visdesignlab/upset2-core';
-import { FC, Fragment, useContext, useEffect, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { AggregateBy, aggregateByList, SortBy, sortByList } from '@visdesignlab/upset2-core';
+import { Fragment, useContext, useEffect, useState } from 'react';
+import { useRecoilValue } from 'recoil';
 
 import {
   firstAggregateSelector,
@@ -37,8 +37,8 @@ const itemDivCSS = css`
 `;
 
 /** @jsxImportSource @emotion/react */
-export const Sidebar: FC<Props> = ({ data }) => {
-  const { actions, provenance, isAtLatest, isAtRoot } = useContext(
+export const Sidebar = () => {
+  const { actions } = useContext(
     ProvenanceContext,
   );
 
@@ -47,16 +47,11 @@ export const Sidebar: FC<Props> = ({ data }) => {
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
   const secondAggregateBy = useRecoilValue(secondAggregateSelector);
   const secondOverlapDegree = useRecoilValue(secondOverlapDegreeSelector);
-  const rows = useRecoilValue(rowsSelector);
 
   const sortBy = useRecoilValue(sortBySelector);
   const maxVisible = useRecoilValue(maxVisibleSelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
-
-  const setHideElementSidebar = useSetRecoilState(elementSidebarAtom);
-  const [ provenanceVis, setProvenanceVis ] = useRecoilState(provenanceVisAtom);
-  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
@@ -68,75 +63,8 @@ export const Sidebar: FC<Props> = ({ data }) => {
     }
   }, [firstAggregateBy]);
 
-  const handleImportModalClose = () => {
-    setShowImportModal(false);
-  }
-
-  const openExportContextMenu = (e: React.MouseEvent) => {
-    setContextMenu(
-      {
-        mouseX: e.clientX,
-        mouseY: e.clientY,
-        id: `export-menu`,
-        items: [
-          {
-            label: `Export State`,
-            onClick: () => {
-              exportState(provenance);
-            }
-          },
-          {
-            label: `Export State + Data`,
-            onClick: () => {
-              exportState(provenance, data, rows);
-            }
-          },
-        ]
-      }
-    );
-  }
-
   return (
-    <div
-      css={css`
-        width: 250px;
-      `}
-    >
-      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-        <ButtonGroup>
-          <IconButton disabled={isAtRoot} onClick={() => provenance.undo()}>
-            <UndoIcon />
-          </IconButton>
-          <IconButton disabled={isAtLatest} onClick={() => provenance.redo()}>
-            <RedoIcon />
-          </IconButton>
-        </ButtonGroup>
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', marginBottom: '5px', }}>
-        <ButtonGroup>
-          <Button onClick={() => setShowImportModal(true) }>
-            Import
-          </Button>
-          <Button onClick={(e) => {
-            openExportContextMenu(e);
-          }
-          }>
-            Export
-          </Button>
-        </ButtonGroup>
-        
-        <ImportModal open={showImportModal} close={handleImportModalClose} />
-      </Box>
-      <Box sx={{ display: 'flex', justifyContent: 'center', margin: '5px 0' }}>
-        <Button variant="outlined" onClick={() => {
-          if (provenanceVis === false) { 
-            setProvenanceVis(true); 
-            setHideElementSidebar(true); 
-          };
-        }}>
-          Provenance Vis
-        </Button>
-      </Box>
+    <div>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography>Sorting</Typography>

@@ -12,7 +12,8 @@ import { queryParamAtom } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../Root';
-import { ImportModal, exportStateGrammar } from '../ImportModal';
+import { ImportModal } from '../ImportModal';
+import { exportState } from '@visdesignlab/upset2-react';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -76,8 +77,11 @@ const Header = ({ data }: { data: any }) => {
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
                   Import State
               </MenuItem>
-              <MenuItem onClick={() => exportStateGrammar(provenance)} color="inherit">
-                  Export
+              <MenuItem onClick={() => exportState(provenance)} color="inherit">
+                  Export State
+              </MenuItem>
+              <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))}>
+                Export State + Data
               </MenuItem>
               <MenuItem onClick={() => {
                   if (isElementSidebarOpen) {

@@ -123,7 +123,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
           ${baseStyle};
         `}
       >
-        <Sidebar data={data} />
+        <Sidebar />
       </div>
       <div
         css={css`
