@@ -2,8 +2,10 @@ import '@fortawesome/fontawesome-free/css/all.css';
 
 import { css } from '@emotion/react';
 import React, { FC } from 'react';
+import { useRecoilValue } from 'recoil';
 
 import translate from '../utils/transform';
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
 /** @jsxImportSource @emotion/react */
 type SvgBaseSettings = {
@@ -16,8 +18,8 @@ type Props = {
   defaultSettings?: SvgBaseSettings;
 };
 
-export const SvgBase: FC<Props> = ({ children, defaultSettings = {} }) => {
-  const { margin = 0, height = 0, width = 0 } = defaultSettings;
+export const SvgBase: FC<Props> = ({ children }) => {
+  const {height, width, margin } = useRecoilValue(dimensionsSelector);
 
   return (
     <div

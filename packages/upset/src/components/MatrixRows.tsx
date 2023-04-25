@@ -1,10 +1,9 @@
-import { isRowAggregate, Row } from '@visdesignlab/upset2-core';
+import { isRowAggregate, Row, RenderRow } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { RenderRow } from '../atoms/renderRowsAtom';
 import translate from '../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';

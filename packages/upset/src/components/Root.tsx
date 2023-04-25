@@ -1,13 +1,14 @@
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { createContext, FC, useEffect, useMemo, useState } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
 import { columnsAtom } from '../atoms/columnAtom';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
+import { dataAtom } from '../atoms/dataAtom';
+import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
@@ -15,7 +16,6 @@ import { Header } from './Header/Header';
 import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { ProvenanceVis } from './ProvenanceVis';
 
 /** @jsxImportSource @emotion/react */
@@ -59,6 +59,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
 
   useEffect(() => {
     setState(config);
+    setData(data);
   }, []);
 
   // Initialize Provenance and pass it setter to connect
@@ -79,7 +80,6 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
     return { provenance, actions };
   }, [config]);
 
-
   useEffect(()=>{
       provenance.currentChange(() => {
           setTrrackPosition({
@@ -93,6 +93,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
   const [items, setItems] = useRecoilState(itemsAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
+  const setData = useSetRecoilState(dataAtom);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
@@ -100,11 +101,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
     setItems(data.items);
     setAttributeColumns(data.attributeColumns);
     setAllColumns(data.columns);
+    setData(data)
   }, [data]);
-
-  const dimensions = useRecoilValue(dimensionsSelector);
-
-  const { height, width, margin } = dimensions;
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0)
     return null;
@@ -134,7 +132,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
           ${baseStyle};
         `}
       >
-        <SvgBase defaultSettings={{ height, width, margin }}>
+        <SvgBase>
           <Header />
           <Body />
         </SvgBase>
