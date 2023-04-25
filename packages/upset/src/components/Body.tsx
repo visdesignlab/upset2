@@ -1,17 +1,13 @@
-import { flattenedRows } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
 import { MatrixRows } from './MatrixRows';
-import { dataAtom } from '../atoms/dataAtom';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 
 export const Body = () => {
-  const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const state = useRecoilValue(upsetConfigAtom);
-  const rows = flattenedRows(data, state);
+  const rows = useRecoilValue(flattenedRowsSelector);
 
   return (
     <g transform={translate(0, dimensions.header.totalHeight + 5)}>
