@@ -178,6 +178,25 @@ export type UpsetConfig = {
   };
 };
 
+export type AccessibleDataEntry = {
+  type: RowType,
+  size: number,
+  deviation: number,
+  attributes: Attributes,
+  setMembership?: {
+      [set: string]: SetMembershipStatus
+  },
+  items?: {
+      [row: string]: AccessibleDataEntry
+  }
+}
+
+export type AccessibleData = {
+  values: {
+      [row: string]: AccessibleDataEntry
+  }
+}
+
 export function areRowsAggregates(rr: Rows): rr is Aggregates {
   const { order } = rr;
 

@@ -1,7 +1,7 @@
 import '@fortawesome/fontawesome-free/css/all.css';
 
 import { css } from '@emotion/react';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import translate from '../utils/transform';

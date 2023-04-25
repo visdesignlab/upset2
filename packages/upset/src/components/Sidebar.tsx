@@ -30,6 +30,7 @@ import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText'; 
+import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
 const itemDivCSS = css`
   display: flex;
@@ -52,6 +53,7 @@ export const Sidebar = () => {
   const maxVisible = useRecoilValue(maxVisibleSelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
+  const dimensions = useRecoilValue(dimensionsSelector);
 
   const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
@@ -66,7 +68,7 @@ export const Sidebar = () => {
   return (
     <div
       css={css`
-        width: 250px;
+        width: ${dimensions.sidebar.width}px
       `}
     >
       <Accordion disableGutters defaultExpanded>

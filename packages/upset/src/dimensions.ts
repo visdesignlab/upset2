@@ -62,6 +62,10 @@ export function calculateDimensions(
     gap: 10,
   }
 
+  const sidebar = {
+    width: 250,
+  }
+
   const header = {
     totalWidth:
       set.label.height + // Label Height === Label Width
@@ -103,5 +107,6 @@ export function calculateDimensions(
     attribute,
     set,
     header,
+    sidebar,
   };
 }

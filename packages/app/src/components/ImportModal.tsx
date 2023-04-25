@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Alert, Button, Dialog, DialogContent, DialogTitle, Snackbar } from '@mui/material';
 import { ProvenanceContext } from './Root';
 
@@ -44,19 +44,3 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
     </Dialog>
   );
 };
-
-export const exportStateGrammar = (provenance: any) => {
-    const fileName = `upset_state_${new Date().toJSON().slice(0,10)}`;
-    const json = JSON.stringify(provenance.getState(), null, 2);
-    const blob = new Blob([json], { type: "application/json" });
-    const href = URL.createObjectURL(blob);
-  
-    const link = document.createElement("a");
-    link.href = href;
-    link.download = fileName + ".json";
-    document.body.appendChild(link);
-    link.click();
-
-    document.body.removeChild(link);
-    URL.revokeObjectURL(href);
-  }
