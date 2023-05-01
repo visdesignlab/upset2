@@ -29,7 +29,7 @@ export const ElementQueries = () => {
   return (
     <>
       {!currentIntersection && bookmarked.length === 0 && (
-        <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', margin: '0.5em 0' }}>
+        <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', margin: '0.5em 0', border: "none", color: "#777777" }}>
           Please click on intersections to select an intersection.
         </Alert>
       )}

@@ -209,8 +209,8 @@ export const ElementSidebar = ({ yOffset, open, close }: Props) => {
         {currentIntersection ? (
           <ElementTable id={currentIntersection.id} />
         ) : (
-          <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', marginTop: "0.5em" }}>
-            Please select an query to view the elements.
+          <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', marginTop: "0.5em", border: "none", color: "#777777" }}>
+            Please select a query to view the elements.
           </Alert>
         )}
       </Drawer>
