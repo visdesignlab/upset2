@@ -80,9 +80,10 @@ const hideEmptyAction = registry.register('hide-empty',
 );
 
 const addToVisibleAction = registry.register('add-to-visible',
-  (state, newSet) => {
+  (state: UpsetConfig, newSet) => {
     const newSets = new Set([...state.visibleSets, newSet]);
     state.visibleSets = Array.from(newSets);
+    state.hiddenSets = state.hiddenSets.filter((s) => s !== newSet);
     return state;
   },
 );
@@ -90,6 +91,8 @@ const addToVisibleAction = registry.register('add-to-visible',
 const removeFromVisibleAction = registry.register('remove-from-visible',
   (state: UpsetConfig, newSet) => {
     state.visibleSets = state.visibleSets.filter((v) => v !== newSet);
+    state.hiddenSets = Array.from(new Set([...state.hiddenSets, newSet]));
+
     return state;
   },
 );
@@ -189,10 +192,10 @@ const removePlotAction = registry.register('remove-plot',
 );
 
 const replaceStateAction = registry.register('set-state',
-  (_state: UpsetConfig, newState: UpsetConfig) => {
+  (state: UpsetConfig, newState: UpsetConfig) => {
     const replacement = JSON.parse(JSON.stringify(newState));
 
-    Object.entries(defaultConfig).forEach(([entry, val]) => {
+    Object.entries(state).forEach(([entry, val]) => {
       if (!Object.keys(replacement).includes(entry)) {
         console.error(`${entry} is missing. Adding default value`);
         

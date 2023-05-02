@@ -14,6 +14,7 @@ export const defaultConfig: UpsetConfig = {
     hideEmpty: true,
   },
   visibleSets: [],
+  hiddenSets: [],
   visibleAttributes: [],
   bookmarkedIntersections: [],
   collapsed: [],
