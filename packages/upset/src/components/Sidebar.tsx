@@ -8,6 +8,7 @@ import {
   FormControl,
   FormControlLabel,
   FormGroup,
+  FormLabel,
   Radio,
   RadioGroup,
   Switch,
@@ -35,6 +36,10 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 const itemDivCSS = css`
   display: flex;
   justify-content: space-between;
+`;
+
+const sidebarHeaderCSS = css`
+  font-size: 0.95rem;
 `;
 
 /** @jsxImportSource @emotion/react */
@@ -73,7 +78,7 @@ export const Sidebar = () => {
     >
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Sorting</Typography>
+          <Typography css={sidebarHeaderCSS}>Sorting</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormControl>
@@ -86,7 +91,7 @@ export const Sidebar = () => {
               {sortByList.map(sort => {
                 return ( sort === "Deviation" ?
                 (
-                  <Alert severity="info" variant="outlined" key={sort} sx={{ alignItems: 'center', padding: "0.1em 0.4em", marginTop: "0.5em"}}>Use column headers for custom sorting</Alert>
+                  <Alert severity="info" variant="outlined" key={sort} sx={{ alignItems: 'center', padding: "0.1em 0.4em", marginTop: "0.5em"}}><Typography>Use column headers for custom sorting</Typography></Alert>
                 ):
                 (
                   <div css={itemDivCSS} key={sort}>
@@ -105,7 +110,7 @@ export const Sidebar = () => {
       </Accordion>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Aggregation</Typography>
+          <Typography css={sidebarHeaderCSS}>Aggregation</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormControl sx={{width: "100%"}}>
@@ -156,7 +161,7 @@ export const Sidebar = () => {
         disabled={firstAggregateBy === 'None'}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Second Aggregation</Typography>
+          <Typography css={sidebarHeaderCSS}>Second Aggregation</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormControl sx={{width: "100%"}}>
@@ -202,12 +207,13 @@ export const Sidebar = () => {
       </Accordion>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography>Filter Intersections</Typography>
+          <Typography css={sidebarHeaderCSS}>Filter Intersections</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormGroup sx={{ mb: 2.5, width: '100%' }}>
             <div css={itemDivCSS}>
               <FormControlLabel
+                sx={{ ml: 0, '& span': { fontSize: "0.8rem" } }}
                 label="Hide Empty Intersections"
                 control={
                   <Switch
@@ -220,9 +226,16 @@ export const Sidebar = () => {
                 }
                 labelPlacement="start"
               />
-              <HelpCircle text={helpText.filter.HideEmptySets} margin={{...defaultMargin, left: 12}}/>
+              <HelpCircle text={helpText.filter.HideEmptySets} margin={{...defaultMargin, left: 12}} />
             </div>
           </FormGroup>
+          <FormGroup>
+            <div css={itemDivCSS}>
+              <FormLabel>
+                <Typography>Filter by Degree</Typography>
+              </FormLabel>
+              <HelpCircle text={helpText.filter.degree} />
+            </div>
           <div css={itemDivCSS}>
             <TextField
               size="small"
@@ -246,7 +259,6 @@ export const Sidebar = () => {
                 actions.setMinVisible(val);
               }}
             />
-            <HelpCircle text={helpText.filter.MinDegree} />
           </div>
           <div css={itemDivCSS}>
             <TextField
@@ -272,8 +284,8 @@ export const Sidebar = () => {
                 actions.setMaxVisible(val);
               }}
             />
-            <HelpCircle text={helpText.filter.MaxDegree} />
           </div>
+          </FormGroup>
         </AccordionDetails>
       </Accordion>
     </div>
