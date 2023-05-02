@@ -84,7 +84,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
           fill: '#ccc',
           stroke: 'black',
           opacity: 0.5,
-          'stroke-width': ' 0.3px',
+          strokeWidth: '0.3px',
         }}
       />
       <text
