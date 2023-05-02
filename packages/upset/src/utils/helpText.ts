@@ -11,7 +11,6 @@ export const helpText = {
     },
     filter: {
         HideEmptySets: "Hide all subsets that contain no items",
-        MinDegree: "Filter out subsets below the minimum number of overlaps",
-        MaxDegree: "Filter out subsets above the maximum number of overlaps",
+        degree: "Show only intersections that have a degree higher than the \"Min Degree\" and lower than the \"Max Degree\" value."
     }
 }
