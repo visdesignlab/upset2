@@ -39,6 +39,13 @@ const theme: ThemeOptions = {
           color: "rgba(116, 173, 209, 0.94)"
         }
       }
+    },
+    MuiTypography: {
+      styleOverrides: {
+        body1: {
+          fontSize: "0.9rem"
+        }
+      }
     }
   }
 };
