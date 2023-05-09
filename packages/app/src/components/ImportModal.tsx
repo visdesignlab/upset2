@@ -1,12 +1,28 @@
 import { useContext, useState } from 'react';
 import { Alert, Button, Dialog, DialogContent, DialogTitle, Snackbar } from '@mui/material';
 import { ProvenanceContext } from './Root';
+import { useSetRecoilState } from 'recoil';
+import { importErrorAtom } from '../atoms/importErrorAtom';
 
 export const ImportModal = (props:{open: boolean, close: () => void}) => {
   const [ isError, setIsError ] = useState({isOpen: false, message: "An Error has occurred."});
   const { actions, provenance } = useContext(
     ProvenanceContext,
   );
+  const setImportError = useSetRecoilState(importErrorAtom);
+
+  const isMissingFields = (newState: any) => {
+    const state = provenance.getState();
+    let isMissing = false;
+
+    Object.keys(state).forEach((key) => {
+      if (!Object.keys(newState).includes(key)) { // if the newState is missing a field
+        isMissing = true;
+      }
+    })
+
+    return isMissing;
+  }
 
   async function readFile(file: File) {
     let data = await file.text();
@@ -19,20 +35,12 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
     }
     const state = provenance.getState();
 
-    // if hiddenSets or visibleSets is undefined, throw error
-    if (newState.hiddenSets === undefined) {
-      throw new Error("Error: hiddenSets attribute is missing from imported state");
-    }
-    if (newState.visibleSets === undefined) {
-      throw new Error("Error: visibleSets attribute is missing from imported state");
-    }
-
-    // if all sets in the imported state exist in the existing state, then the dataset is the same
-    const newStateSets = [...newState.visibleSets, ...newState.hiddenSets];
-    const stateSets = [...state.visibleSets, ...state.hiddenSets];
-
-    if (JSON.stringify(newStateSets) !== JSON.stringify(stateSets)) {
+    if (JSON.stringify(newState.allSets) !== JSON.stringify(state.allSets)) {
       throw new Error("Invalid uploaded state: Dataset mismatch")
+    }
+
+    if (isMissingFields(newState)) {
+      setImportError(true);
     }
 
     actions.replaceState(newState);

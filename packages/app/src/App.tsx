@@ -28,7 +28,7 @@ function App() {
       if (config.visibleSets.length === 0) {
         const setList = Object.keys(data.sets);
         conf.visibleSets = setList.slice(0, 6);
-        conf.hiddenSets = setList.slice(6);
+        conf.allSets = setList;
       }
       
       conf.visibleAttributes = data.attributeColumns.slice(0, 3);

@@ -83,7 +83,6 @@ const addToVisibleAction = registry.register('add-to-visible',
   (state: UpsetConfig, newSet) => {
     const newSets = new Set([...state.visibleSets, newSet]);
     state.visibleSets = Array.from(newSets);
-    state.hiddenSets = state.hiddenSets.filter((s) => s !== newSet);
     return state;
   },
 );
@@ -91,8 +90,6 @@ const addToVisibleAction = registry.register('add-to-visible',
 const removeFromVisibleAction = registry.register('remove-from-visible',
   (state: UpsetConfig, newSet) => {
     state.visibleSets = state.visibleSets.filter((v) => v !== newSet);
-    state.hiddenSets = Array.from(new Set([...state.hiddenSets, newSet]));
-
     return state;
   },
 );
@@ -201,11 +198,21 @@ const replaceStateAction = registry.register('set-state',
         
         replacement[entry] = val;
       } else if (typeof val === "object" && val !== null) {
-        Object.entries(val).forEach(([key, value]) => {
-          if (replacement[entry][key] === undefined) {
-            replacement[entry][key] = value;
-          }
-        })
+        /* 
+         * Remove the duplicate values in array fields
+         * Sometimes the deep copy will add a duplicate value in array fields for seemingly no reason..
+         */
+        if (Array.isArray(val)) { 
+          const repSet = new Set(replacement[entry]);
+
+          replacement[entry] = Array.from(repSet);
+        } else {
+          Object.entries(val).forEach(([key, value]) => {
+            if (replacement[entry][key] === undefined) {
+              replacement[entry][key] = value;
+            }
+          })
+        }
       }
     })
 

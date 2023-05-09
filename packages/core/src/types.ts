@@ -169,7 +169,6 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
-  hiddenSets: ColumnName[];
   bookmarkedIntersections: Bookmark[];
   collapsed: string[];
   plots: {
@@ -177,6 +176,7 @@ export type UpsetConfig = {
     histograms: Histogram[];
     wordClouds: WordCloud[];
   };
+  allSets: ColumnName[];
 };
 
 export type AccessibleDataEntry = {

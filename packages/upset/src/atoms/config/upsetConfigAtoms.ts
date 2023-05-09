@@ -15,7 +15,6 @@ export const defaultConfig: UpsetConfig = {
   },
   visibleSets: [],
   visibleAttributes: [],
-  hiddenSets: [],
   bookmarkedIntersections: [],
   collapsed: [],
   plots: {
@@ -23,6 +22,7 @@ export const defaultConfig: UpsetConfig = {
     histograms: [],
     wordClouds: [],
   },
+  allSets: [],
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({
