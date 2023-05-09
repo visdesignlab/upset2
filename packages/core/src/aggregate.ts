@@ -33,6 +33,20 @@ export function getItems(row: Row) {
   }
 }
 
+export const getAggSize = (row: Row) => {
+  if (isRowSubset(row)) {
+    return row.size;
+  } else {
+    let size = 0;
+
+    Object.values(row.items.values).forEach((r) => {
+      size += getAggSize(r);
+    });
+
+    return size;
+  }
+}
+
 function aggregateByDegree(
   subsets: Subsets,
   level: number,
