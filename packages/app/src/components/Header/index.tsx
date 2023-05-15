@@ -14,6 +14,7 @@ import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../Root';
 import { ImportModal } from '../ImportModal';
+import { AttributeDropdown } from '../AttributeDropdown';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -22,6 +23,7 @@ const Header = ({ data }: { data: any }) => {
   
   const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
 
+  const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
@@ -38,6 +40,14 @@ const Header = ({ data }: { data: any }) => {
     setAnchorEl(null);
     setIsMenuOpen(false);
   };
+  const handleAttributeClick = (event: React.MouseEvent<any>) => {
+    setAnchorEl(event.currentTarget);
+    setAttributeDialog(true);
+  }
+  const handleAttributeClose = () => {
+    setAnchorEl(null);
+    setAttributeDialog(false);
+  }
   
   return (
     <AppBar sx={{position:"static", boxShadow:"none"}}>
@@ -64,6 +74,15 @@ const Header = ({ data }: { data: any }) => {
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           <Button
             color="inherit"
+            onClick={(event) => { handleAttributeClick(event) }}
+          >
+            Attributes
+          </Button>
+          {attributeDialog &&
+            <AttributeDropdown anchorEl={anchorEl as HTMLElement} close={handleAttributeClose}></AttributeDropdown>
+          }
+          <Button
+            color="inherit"
             onClick={() => {
               if (window) {
                 window.location.href = getMultinetDataUrl(workspace);
@@ -75,10 +94,10 @@ const Header = ({ data }: { data: any }) => {
           <Button sx={{ minWidth: "24px" }}><MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon></Button>
             <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
-                  Import State
+                Import State
               </MenuItem>
               <MenuItem onClick={() => exportState(provenance)} color="inherit">
-                  Export State
+                Export State
               </MenuItem>
               <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))}>
                 Export State + Data
