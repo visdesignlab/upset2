@@ -5,7 +5,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { hiddenSetSortAtom } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
-import { AttributeDialog } from '../custom/AttributeDialog';
+// import { AttributeDialog } from '../custom/AttributeDialog';
 import Group from '../custom/Group';
 import { SvgRectButton } from '../custom/SvgRectButton';
 
@@ -15,7 +15,7 @@ export const SetManagement: FC<Props> = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const setHiddenSortBy = useSetRecoilState(hiddenSetSortAtom);
 
-  const [openAttributeSelector, setOpenAttributeSelector] = useState(false);
+  // const [openAttributeSelector, setOpenAttributeSelector] = useState(false);
 
   const [sortMode, setSortMode] = useState(false);
   const sortGroupTransition = useSpring({
@@ -37,7 +37,7 @@ export const SetManagement: FC<Props> = () => {
           rx="5"
           onClick={() => setSortMode(!sortMode)}
         />
-        <SvgRectButton
+        {/* <SvgRectButton
           tx={170}
           ty={0}
           label="Attributes"
@@ -45,7 +45,7 @@ export const SetManagement: FC<Props> = () => {
           width={100}
           rx="5"
           onClick={() => setOpenAttributeSelector(true)}
-        />
+        /> */}
         <a.g
           pointerEvents={sortMode ? 'all' : 'none'}
           transform={translate(
@@ -86,12 +86,12 @@ export const SetManagement: FC<Props> = () => {
           />
         </a.g>
       </Group>
-      {openAttributeSelector && (
+      {/* {openAttributeSelector && (
         <AttributeDialog
           open={openAttributeSelector}
           onClose={() => setOpenAttributeSelector(false)}
         />
-      )}
+      )} */}
     </>
   );
 };
