@@ -18,6 +18,9 @@ type Props = {
 
 export const SetLabel: FC<Props> = ({ setId, name }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+
+  const gap = 4;
+
   return (
     <Group tx={0} ty={dimensions.set.cardinality.height}>
       <rect
@@ -25,24 +28,28 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         css={css`
           ${matrixColumnBackgroundRect}
         `}
-        height={dimensions.set.label.height}
-        width={dimensions.set.width}
-        transform={`skewX(${dimensions.set.label.skew})`}
-      />
-      <text
-        css={css`
-          font-size: 12px;
-        `}
+        height={dimensions.set.label.height - gap}
+        width={dimensions.set.width - gap / 2}
         transform={`${translate(
-          dimensions.set.label.height + dimensions.set.width / 2,
-          dimensions.set.label.height,
-        )}rotate(${dimensions.set.label.skew})`}
-        textAnchor="end"
-        dominantBaseline="middle"
-        pointerEvents="none"
-      >
-        {name}
-      </text>
+          dimensions.set.label.height + gap/2,
+          gap
+        )}`}
+      />
+      <foreignObject
+          transform={`${translate(dimensions.set.label.height - dimensions.set.width / 2 - gap / 2, dimensions.set.label.height - 2)}rotate(-90)`}
+          height={dimensions.set.width * 2}
+          width={dimensions.set.label.height - dimensions.set.width}
+          z={100}
+        >
+          <p css={css`
+            color: #000000; 
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis; 
+            font-weight: bold;
+            height: 100%;
+          `}>{name}</p>
+        </foreignObject>
     </Group>
   );
 };

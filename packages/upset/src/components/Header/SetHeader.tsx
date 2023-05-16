@@ -106,6 +106,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
             size={sets[set.setName].size}
             setId={set.setName}
             label={sets[set.setName].elementName}
+            tx={dimensions.set.label.height}
           />
           <SetLabel setId={sets[set.setName].id} name={sets[set.setName].elementName} />
         </a.g>
