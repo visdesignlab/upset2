@@ -47,7 +47,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
                 }
               },
               {
-                label: `Sort matrix headers by Alphabetical`,
+                label: `Sort by Alphabetical`,
                 onClick: () => {
                   actions.sortVisibleBy('Alphabetical' as SortVisibleBy);
                   handleContextMenuClose();
@@ -55,7 +55,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
                 disabled: sortVisibleBy === 'Alphabetical',
               },
               {
-                label: `Sort matrix headers by Size - Ascending`,
+                label: `Sort by Size - Ascending`,
                 onClick: () => {
                   actions.sortVisibleBy('Ascending' as SortVisibleBy);
                   handleContextMenuClose();
@@ -63,7 +63,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
                 disabled: sortVisibleBy === 'Ascending',
               },
               {
-                label: `Sort matrix headers by Size - Descending`,
+                label: `Sort by Size - Descending`,
                 onClick: () => {
                   actions.sortVisibleBy('Descending' as SortVisibleBy);
                   handleContextMenuClose();
