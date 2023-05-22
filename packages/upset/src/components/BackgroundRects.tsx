@@ -20,7 +20,7 @@ export const BackgroundRects = () => {
     <>
       <g
         className="background-columns"
-        transform={translate(dimensions.set.label.height, 0)}
+        transform={translate(dimensions.xOffset, 0)}
       >
         {visibleSets.map((setName, idx) => (
           <g key={setName} transform={translate(idx * dimensions.set.width, 0)}>
@@ -38,7 +38,7 @@ export const BackgroundRects = () => {
       </g>
       <g
         className="background-rows"
-        transform={translate(dimensions.set.label.height, 0)}
+        transform={translate(dimensions.xOffset, 0)}
       >
         {subsets.order.map((subsetId, idx) => (
           <g

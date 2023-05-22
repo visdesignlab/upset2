@@ -31,12 +31,12 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         height={dimensions.set.label.height - gap}
         width={dimensions.set.width - gap / 2}
         transform={`${translate(
-          dimensions.set.label.height + gap/2,
+          dimensions.xOffset + gap/2,
           gap
         )}`}
       />
       <foreignObject
-          transform={`${translate(dimensions.set.label.height - dimensions.set.width / 2 - gap / 2, dimensions.set.label.height - 2)}rotate(-90)`}
+          transform={`${translate(dimensions.xOffset - dimensions.set.width / 2 - gap / 2, dimensions.set.label.height - 2)}rotate(-90)`}
           height={dimensions.set.width * 2}
           width={dimensions.set.label.height - dimensions.set.width}
           z={100}
