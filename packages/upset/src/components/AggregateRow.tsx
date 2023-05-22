@@ -57,7 +57,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     aggregateRow.elementName.length < 14 ||
     aggregateRow.aggregateBy !== 'Overlaps'
       ? aggregateRow.elementName
-      : `${aggregateRow.elementName.slice(0, 11)}...`;
+      : `${aggregateRow.elementName.slice(0, 14)}...`;
 
   return (
     <g
@@ -75,7 +75,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
             stroke: #555555;
             stroke-width: 1px;
           `}
-          height={dimensions.body.rowHeight - 4}
+          height={(['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? (dimensions.body.rowHeight - 4) * 2 : dimensions.body.rowHeight - 4}
           width={width}
           rx={5}
           ry={10}
@@ -94,29 +94,31 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         </g>
         <text
           css={css`
-            font-size: 12px;
+            font-size: 14px;
           `}
           transform={translate(20, dimensions.body.rowHeight / 2)}
           dominantBaseline="middle"
         >
           <title>{aggregateRow.elementName}</title>
           {desc}
-          {aggregateRow.aggregateBy === 'Degree' &&
-            `( ${aggregateRow.description} )`}
         </text>
       </g>
       {['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy) && (
-        <Matrix
-          sets={visibleSets}
-          subset={aggregateRow}
-          showConnectingBar={aggregateRow.aggregateBy !== 'Overlaps'}
-        />
+        <g transform={translate(0, dimensions.body.rowHeight - 4)}>
+          <Matrix
+            sets={visibleSets}
+            subset={aggregateRow}
+            showConnectingBar={aggregateRow.aggregateBy !== 'Overlaps'}
+          />
+        </g>
       )}
-      { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
-          <BookmarkStar row={aggregateRow} />
-      }
-      <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
-      <DeviationBar deviation={aggregateRow.deviation} />
+      <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
+        { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
+            <BookmarkStar row={aggregateRow} />
+        }
+        <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
+        <DeviationBar deviation={aggregateRow.deviation} />
+      </g>
     </g>
   );
 };

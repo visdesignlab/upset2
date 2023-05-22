@@ -8,7 +8,7 @@ export function calculateDimensions(
 
   const margin = 5;
 
-  const xOffset = 25;
+  const xOffset = 30;
 
   const attribute = {
     width: 200,

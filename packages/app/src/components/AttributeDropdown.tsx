@@ -1,18 +1,18 @@
 import { 
-    // Checkbox, 
-    // ListItemButton, 
-    // ListItemIcon, 
-    // ListItemText, 
     Button, 
     Box, 
     Menu,
-    // List,
-    // ListItem,
-    // Table,
-    // TableCell,
-    // TableHead,
-    // TableRow,
-    // TableBody
+    Checkbox,
+    FormControlLabel,
+    FormGroup,
+    Typography,
+    TableRow,
+    Table,
+    TableCell,
+    TableBody,
+    TableHead,
+    Container,
+    TextField,
 } from "@mui/material"
 import { useContext } from "react"
 import { ProvenanceContext } from "./Root"
@@ -20,7 +20,6 @@ import { dataSelector } from "../atoms/dataAtom";
 import { useRecoilValue } from "recoil";
 import { useState } from "react";
 import { CoreUpsetData } from "@visdesignlab/upset2-core";
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const getAttributeItemCount = (attribute: string, data: CoreUpsetData) => {
     let count = 0;
@@ -44,10 +43,12 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
     const [ checked, setChecked ] = useState<any[]>(
         (data) ?
             provenance.getState().visibleAttributes.map(
-                (attr) => data?.attributeColumns.indexOf(attr)
+                (attr) => attr
             ):
             []
     );
+
+    const [ searchTerm, setSearchTerm ] = useState<string>("");
 
     const attributeItemCount: { [attr: string]: number } = {};
 
@@ -55,18 +56,22 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
         attributeItemCount[attr] = getAttributeItemCount(attr,data);
     })
 
-    // const handleToggle = (attr: string) => {
-    //     const currentIndex = checked.indexOf(attr);
-    //     const newChecked = [...checked];
-    
-    //     if (currentIndex === -1) {
-    //         newChecked.push(attr);
-    //     } else {
-    //         newChecked.splice(currentIndex, 1);
-    //     }
-    
-    //     setChecked(newChecked);
-    // }
+    const handleToggle = (e: any) => {
+        const attr = e.labels[0].textContent;
+        let newChecked = [...checked];
+
+        if (checked.includes(attr)) {
+            newChecked = checked.filter((a) => a !== attr);
+        } else {
+            newChecked.push(attr);
+        }
+
+        setChecked(newChecked);
+    }
+
+    const handleSearchChange = (e: any) => {
+        setSearchTerm(e.target.value);
+    }
 
     const getRows = () => {
         if (data === undefined || data === null) {
@@ -78,102 +83,50 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
                 attribute: attr,
                 itemCount: getAttributeItemCount(attr,data)
             }
-        })
+        }).filter((row) => row.attribute.toLowerCase().includes(searchTerm.toLowerCase()))
     }
-
-    const columns: GridColDef[] = [
-        { field: 'attribute', headerName: 'Attribute', width: 150 },
-        { field: 'itemCount', headerName: '# of Items', width: 100 },
-    ]
 
     return (
         <Menu 
             open={true}
             onClose={props.close}
             anchorEl={props.anchorEl}
+            sx={{ height: "450px" }}
         >
-            {/* <List sx={{ width: '100%' }}>
-                {data?.attributeColumns.map((attr) => {
-                    const labelId = `checkbox-list-label-${attr}`;
-
-                    return (
-                        <ListItem
-                            key={attr}
-                            disablePadding
-                        >
-                            <ListItemButton dense onClick={() => handleToggle(attr)} disableRipple>
-                                <ListItemIcon>
-                                    <Checkbox
-                                    edge="start"
-                                    checked={checked.indexOf(attr) !== -1}
-                                    // onClick={() => handleToggle(attr)}
-                                    tabIndex={-1}
-                                    disableRipple
-                                    inputProps={{ 'aria-labelledby': labelId }}
-                                    />
-                                </ListItemIcon>
-                                <ListItemText id={labelId} primary={attr} />
-                                <Box>
-                                    <ListItemText primary={attributeItemCount[attr]} sx={{ margin: "0 0 0 20px", width: "0" }} />
-                                </Box>
-                            </ListItemButton>
-                        </ListItem>
-                    )
-                })}
-            </List> */}
-            {/* <Table>
-                <TableHead>
-                    <TableRow>
-                        <TableCell></TableCell>
-                        <TableCell>Attribute</TableCell>
-                        <TableCell align="right"># Items</TableCell>
-                    </TableRow>
+            <Container maxWidth="md" sx={{ height: "80%" }}>
+                <TextField
+                    id="search"
+                    type="search"
+                    label="Search"
+                    size="small"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                    sx={{ width: "100%" }}
+                />
+            </Container>
+            <FormGroup sx={{ overflow: "auto" }}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>Attribute</TableCell>
+                            <TableCell align="right"># Items</TableCell>
+                        </TableRow>
+                    </TableHead>
                     <TableBody>
-                        <List>
-                            <TableRow>
-                            {getRows()?.map((row) => {
-                                const labelId = `checkbox-list-label-${row.attribute}`;
-                                return (
-                                        <ListItemButton dense onClick={() => handleToggle(row.attribute)} disableRipple>
-                                            <TableCell>
-                                                <ListItemIcon>
-                                                    <Checkbox
-                                                    edge="start"
-                                                    checked={checked.indexOf(row.attribute) !== -1}
-                                                    tabIndex={-1}
-                                                    disableRipple
-                                                    inputProps={{ 'aria-labelledby': labelId }}
-                                                    />
-                                                </ListItemIcon>
-                                            </TableCell>
-                                            <TableCell>
-                                                <ListItemText id={labelId} primary={row.attribute} />
-                                            </TableCell>
-                                            <TableCell>
-                                                <ListItemText primary={row.itemCount} />
-                                            </TableCell>
-                                        </ListItemButton>
-                                    )
-                                })
-                            }
-                            </TableRow>
-                        </List>
-                    </TableBody>
-                </TableHead>
-            </Table> */}
-            <Box height={`${100 * getRows().length - 20}px`} width={"320px"}>
-            <DataGrid
-                sx={{height:"100%", width: "100%"}}
-                rowHeight={50}
-                rows={getRows()}
-                columns={columns}
-                checkboxSelection
-                selectionModel={checked}
-                onSelectionModelChange={(selections) => setChecked(selections)}
-                showCellRightBorder={false}
-                autoPageSize
-            />
-            </Box>
+                { getRows().map((row) => {
+                    return (
+                        <TableRow key={row.id}>
+                            <TableCell>
+                                <FormControlLabel checked={checked.includes(row.attribute)} control={<Checkbox />} label={row.attribute} onChange={(e) => handleToggle(e.target)}/>
+                            </TableCell>
+                            <TableCell><Typography>{row.itemCount}</Typography></TableCell>
+                        </TableRow>
+                    )
+                    })
+                }
+                </TableBody>
+                </Table>
+            </FormGroup>
             <Box sx={{display: 'flex', justifyContent: "space-between"}}>
                 <Button color="error" onClick={props.close}>
                     Cancel
@@ -182,7 +135,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
                     color="secondary" 
                     onClick={() => {
                         if (data) {
-                            const attrToAdd = checked.map((i) => data.attributeColumns[i])
+                            const attrToAdd = [...checked];
                             actions.addMultipleAttributes(attrToAdd);
                         }
                         props.close();
