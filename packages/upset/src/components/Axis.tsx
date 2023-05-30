@@ -21,6 +21,7 @@ type Props = {
   showLabel?: boolean;
   fontSize?: number;
   tickFormatter?: (value: number) => string | number;
+  hideLine?: boolean;
 };
 
 const defaultTickFormatter = (d: number) => {
@@ -42,6 +43,7 @@ export const Axis = ({
   fontSize = 1,
   pixelsPerTick = 50,
   showLabel = true,
+  hideLine = false,
   tickFormatter = defaultTickFormatter,
 }: Props) => {
   const tickLength = 6;
@@ -146,7 +148,9 @@ export const Axis = ({
             >
               {value}
             </text>
-            <line stroke="currentColor" y2={tickLength} />
+            { !hideLine &&
+              <line stroke="currentColor" y2={tickLength} />
+            }
             <text
               css={css`
                 ${shadow}
@@ -175,11 +179,13 @@ export const Axis = ({
             >
               {value}
             </text>
-            <line
-              stroke="currentColor"
-              transform={translate(-tickLength, 0)}
-              x1={tickLength}
-            />
+            { !hideLine &&
+              <line
+                stroke="currentColor"
+                transform={translate(-tickLength, 0)}
+                x1={tickLength}
+              />
+            }
             <text
               css={css`
                 ${shadow}
@@ -208,11 +214,13 @@ export const Axis = ({
             >
               {value}
             </text>
-            <line
-              stroke="currentColor"
-              transform={translate(0, -tickLength)}
-              y2={tickLength}
-            />
+            { !hideLine &&
+              <line
+                stroke="currentColor"
+                transform={translate(0, -tickLength)}
+                y2={tickLength}
+              />
+            }
             <text
               css={css`
                 ${shadow}
@@ -241,7 +249,9 @@ export const Axis = ({
             >
               {value}
             </text>
-            <line stroke="currentColor" x1={tickLength} />
+            { !hideLine &&
+              <line stroke="currentColor" x1={tickLength} />
+            }
             <text
               css={css`
                 ${shadow}
@@ -260,12 +270,12 @@ export const Axis = ({
 
   return (
     <g transform={transform}>
-      <path d={path(type)} fill="none" stroke="currentColor" />
-      {ticks.map(({ formattedValue, value, offset }) => (
-        <g key={value} transform={tickTransform(type, offset)}>
-          <TickLine type={type} value={formattedValue} />
-        </g>
-      ))}
+      {!hideLine && <path d={path(type)} fill="none" stroke="currentColor" />}
+        {ticks.map(({ formattedValue, value, offset }) => (
+          <g key={value} transform={tickTransform(type, offset)}>
+            <TickLine type={type} value={formattedValue} />
+          </g>
+        ))}
       {/* Axis Label */}
       {showLabel && (
         <text

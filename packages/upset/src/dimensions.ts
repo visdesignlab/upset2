@@ -8,6 +8,8 @@ export function calculateDimensions(
 
   const margin = 5;
 
+  const xOffset = 30;
+
   const attribute = {
     width: 200,
     labelHeight: 20,
@@ -36,14 +38,14 @@ export function calculateDimensions(
     visibleSetsWidth: set.width * nVisibleSets,
     setManagementWidth: 230,
     hiddenSetsWidth: (set.width + 2) * nHiddenSets,
-    width: set.label.height + set.width * nVisibleSets,
+    width: xOffset + set.width * nVisibleSets,
     get totalWidth() {
       return this.width + gap + this.setManagementWidth + gap;
     },
   };
 
   const cardinality = {
-    scaleHeight: 30,
+    scaleHeight: 26,
     buttonHeight: 25,
     gap: 3,
     textMargin: 30,
@@ -98,6 +100,7 @@ export function calculateDimensions(
   return {
     height: header.totalHeight + body.height,
     width: totalWidth,
+    xOffset,
     cardinality,
     bookmarkStar,
     body,

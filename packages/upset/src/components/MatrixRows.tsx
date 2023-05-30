@@ -24,7 +24,6 @@ export function rowRenderer(row: Row) {
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  let numRowsToRender = 0;
   
   const shouldRender = (row: Row) => {
     const parentId = row.parent;
@@ -43,12 +42,30 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     return true;
   }
 
+  let yTransform = 0;
+
+  // calculates the y-transform for a given row
+  const calculateYTransform = (row: Row) => {
+    if (shouldRender(row)) {
+      yTransform += dimensions.body.rowHeight;
+    }
+
+    return yTransform;
+  }
+
   const rowTransitions = useTransition(
-    rows.map(({ row, id }) => {
+    rows.map(({ row, id }, index) => {
+      if (index > 0) { // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
+        const prevRow = rows[index - 1].row;
+        if (isRowAggregate(prevRow) && ['Sets', 'Overlaps'].includes(prevRow.aggregateBy)) {
+          yTransform += dimensions.body.rowHeight;
+        }
+      }
+
       return {
         id,
         row,
-        y: (shouldRender(row) ? numRowsToRender++ : numRowsToRender) * dimensions.body.rowHeight,
+        y: (index > 0) ? calculateYTransform(row) : 0,
       }
     }),
     {

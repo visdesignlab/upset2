@@ -36,6 +36,7 @@ export const CardinalityHeader: FC = () => {
 
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
+  const [ advancedScale, setAdvancedScale ] = useState(false);
   const [maxC, setMaxCardinality] = useRecoilState(maxCardinality);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
@@ -56,14 +57,25 @@ export const CardinalityHeader: FC = () => {
   }
 
   const getMenuItems = () => {
-    return [{
-      label: "Sort by Cardinality",
-      onClick: () => {
-        sortByCardinality();
-        handleContextMenuClose();
+    return [
+      {
+        label: "Sort by Cardinality",
+        onClick: () => {
+          sortByCardinality();
+          handleContextMenuClose();
+        },
+        disabled: sortBy === "Cardinality"
       },
-      disabled: sortBy === "Cardinality"
-    }]
+      {
+        label: "Toggle Advanced Scale",
+        onClick: () => {
+          const advScale = advancedScale;
+          
+          setAdvancedScale(!advScale);
+          handleContextMenuClose();
+        },
+      }
+    ]
   }
 
   const sortByCardinality = () => {
@@ -130,6 +142,7 @@ export const CardinalityHeader: FC = () => {
         dimensions.header.totalHeight - dimensions.cardinality.height,
       )}
     >
+      {advancedScale &&
       <g className="sliding-scale" ref={sliderParentRef}>
         <Axis
           scale={globalScale}
@@ -138,6 +151,7 @@ export const CardinalityHeader: FC = () => {
           margin={0}
           showLabel={false}
           label=""
+          hideLine
         />
         <Axis
           transform={translate(0, dimensions.cardinality.scaleHeight)}
@@ -181,6 +195,7 @@ export const CardinalityHeader: FC = () => {
           />
         </g>
       </g>
+      }
       <g
         className="sliderInfluence"
         css={css`
@@ -247,6 +262,7 @@ export const CardinalityHeader: FC = () => {
         transform={translate(
           0,
           dimensions.cardinality.scaleHeight +
+          4 +
             dimensions.cardinality.gap +
             dimensions.cardinality.buttonHeight +
             dimensions.cardinality.gap,
@@ -259,6 +275,7 @@ export const CardinalityHeader: FC = () => {
           margin={0}
           showLabel={false}
           label=""
+          hideLine
         />
         <Axis
           transform={translate(0, dimensions.cardinality.scaleHeight)}

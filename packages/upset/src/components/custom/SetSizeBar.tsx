@@ -35,7 +35,7 @@ export const SetSizeBar: FC<Props> = ({
   setId,
   label,
   tx = 0,
-  ty = tx,
+  ty = 0,
   foregroundOpacity = 1,
   showLabel = false,
 }) => {
@@ -78,12 +78,19 @@ export const SetSizeBar: FC<Props> = ({
         )}
       />
       {showLabel && (
-        <text
-          dominantBaseline="middle"
-          transform={`${translate(dimensions.set.width / 2, 5)}rotate(90)`}
+        <foreignObject
+          transform={`${translate(-(dimensions.set.width - dimensions.set.width/3) , dimensions.set.label.height - 2)}rotate(-90)`}
+          height={dimensions.set.width * 2}
+          width={dimensions.set.label.height - (dimensions.set.width / 2)}
+          z={100}
         >
-          {label}
-        </text>
+          <p css={css`
+            color: #000000; 
+            font-size: 14px;
+            overflow: hidden;
+            text-overflow: ellipsis;  
+          `}>{label}</p>
+        </foreignObject>
       )}
     </Group>
   );
