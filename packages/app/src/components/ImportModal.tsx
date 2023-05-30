@@ -1,17 +1,48 @@
 import { useContext, useState } from 'react';
 import { Alert, Button, Dialog, DialogContent, DialogTitle, Snackbar } from '@mui/material';
 import { ProvenanceContext } from './Root';
+import { useSetRecoilState } from 'recoil';
+import { importErrorAtom } from '../atoms/importErrorAtom';
 
 export const ImportModal = (props:{open: boolean, close: () => void}) => {
-  const [ isError, setIsError ] = useState(false);
-  const { actions } = useContext(
+  const [ isError, setIsError ] = useState({isOpen: false, message: "An Error has occurred."});
+  const { actions, provenance } = useContext(
     ProvenanceContext,
   );
+  const setImportError = useSetRecoilState(importErrorAtom);
+
+  const isMissingFields = (newState: any) => {
+    const state = provenance.getState();
+    let isMissing = false;
+
+    Object.keys(state).forEach((key) => {
+      if (!Object.keys(newState).includes(key)) { // if the newState is missing a field
+        isMissing = true;
+      }
+    })
+
+    return isMissing;
+  }
 
   async function readFile(file: File) {
-    const data = await file.text();
+    let data = await file.text();
   
-    const newState = JSON.parse(data);
+    let newState;
+    try {
+      newState = JSON.parse(data);
+    } catch (e) {
+      throw new Error("Invalid File Upload. Please upload a .json UpSet state file.");
+    }
+    const state = provenance.getState();
+
+    if (JSON.stringify(newState.allSets) !== JSON.stringify(state.allSets)) {
+      throw new Error("Invalid uploaded state: Dataset mismatch")
+    }
+
+    if (isMissingFields(newState)) {
+      setImportError(true);
+    }
+
     actions.replaceState(newState);
     props.close();
   }
@@ -21,7 +52,7 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
         open={props.open}
         onClose={props.close}
     >
-        <DialogTitle>Upload Upset State</DialogTitle>
+        <DialogTitle>Upload Upset State (.json)</DialogTitle>
         <DialogContent>
               <input type="file" id="state-upload-file" />
               <Button 
@@ -32,14 +63,19 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
                   
                   input !== null && input.files !== null && 
                   readFile(input.files[0])
-                  .catch(() => setIsError(true))
+                  .catch((e) => { 
+                    setIsError({
+                      isOpen: true,
+                      message: e.message
+                    })
+                  })
                 }}>
                   Submit
               </Button>
         </DialogContent>
           <Snackbar
-            open={isError} autoHideDuration={6000} onClose={() => setIsError(false)}>
-            <Alert severity="error">Incompatible File Type! Please import a .json Upset State file.</Alert>
+            open={isError.isOpen} autoHideDuration={6000} onClose={() => setIsError({...isError, isOpen: false})}>
+            <Alert severity="error">{isError.message}</Alert>
           </Snackbar>
     </Dialog>
   );

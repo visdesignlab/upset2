@@ -22,9 +22,10 @@ export const defaultConfig: UpsetConfig = {
     histograms: [],
     wordClouds: [],
   },
+  allSets: [],
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({
-  key: 'upset-config',
+  key: 'app-config',
   default: defaultConfig,
 });

@@ -80,7 +80,7 @@ const hideEmptyAction = registry.register('hide-empty',
 );
 
 const addToVisibleAction = registry.register('add-to-visible',
-  (state, newSet) => {
+  (state: UpsetConfig, newSet) => {
     const newSets = new Set([...state.visibleSets, newSet]);
     state.visibleSets = Array.from(newSets);
     return state;
@@ -189,20 +189,30 @@ const removePlotAction = registry.register('remove-plot',
 );
 
 const replaceStateAction = registry.register('set-state',
-  (_state: UpsetConfig, newState: UpsetConfig) => {
+  (state: UpsetConfig, newState: UpsetConfig) => {
     const replacement = JSON.parse(JSON.stringify(newState));
 
-    Object.entries(defaultConfig).forEach(([entry, val]) => {
+    Object.entries(state).forEach(([entry, val]) => {
       if (!Object.keys(replacement).includes(entry)) {
         console.error(`${entry} is missing. Adding default value`);
         
         replacement[entry] = val;
       } else if (typeof val === "object" && val !== null) {
-        Object.entries(val).forEach(([key, value]) => {
-          if (replacement[entry][key] === undefined) {
-            replacement[entry][key] = value;
-          }
-        })
+        /* 
+         * Remove the duplicate values in array fields
+         * Sometimes the deep copy will add a duplicate value in array fields for seemingly no reason..
+         */
+        if (Array.isArray(val)) { 
+          const repSet = new Set(replacement[entry]);
+
+          replacement[entry] = Array.from(repSet);
+        } else {
+          Object.entries(val).forEach(([key, value]) => {
+            if (replacement[entry][key] === undefined) {
+              replacement[entry][key] = value;
+            }
+          })
+        }
       }
     })
 

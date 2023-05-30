@@ -33,7 +33,7 @@ export const SvgBase: FC<Props> = ({ children }) => {
         }
       `}
     >
-      <svg height={height + 2 * margin} width={width + 2 * margin}>
+      <svg height={height + 50 * margin} width={width + 2 * margin}>
         <g transform={translate(margin)}>
           <rect
             height={height}

@@ -176,6 +176,7 @@ export type UpsetConfig = {
     histograms: Histogram[];
     wordClouds: WordCloud[];
   };
+  allSets: ColumnName[];
 };
 
 export type AccessibleDataEntry = {

@@ -11,6 +11,7 @@ import {
   FormLabel,
   Radio,
   RadioGroup,
+  Slider,
   Switch,
   TextField,
   Typography,
@@ -63,6 +64,8 @@ export const Sidebar = () => {
   const [ secondaryAccordionOpen, setSecondaryAccordionOpen ] = useState(
     secondAggregateBy !== 'None',
   );
+
+  const [ degreeFilters, setDegreeFilters ] = useState([minVisible, maxVisible]);
 
   useEffect(() => {
     if (firstAggregateBy === 'None') {
@@ -236,55 +239,25 @@ export const Sidebar = () => {
               </FormLabel>
               <HelpCircle text={helpText.filter.degree} />
             </div>
-          <div css={itemDivCSS}>
-            <TextField
-              size="small"
-              sx={{ m: 1, display: 'block' }}
-              label="Min Degree"
-              type="number"
-              value={minVisible}
-              onChange={ev => {
-                let val = parseInt(ev.target.value, 10);
-                if (Number.isNaN(val) || val < 0) {
-                  val = 0;
-                }
-
-                // removes leading 0's in user input text
-                ev.target.value = `${val}`;
-
-                // change the max value to match the min if the min is increased to above the max 
-                if (maxVisible <= val - 1) {
-                  actions.setMaxVisible(val);
-                }
-                actions.setMinVisible(val);
-              }}
-            />
-          </div>
-          <div css={itemDivCSS}>
-            <TextField
-              size="small"
-              sx={{ m: 1, display: 'block' }}
-              label="Max Degree"
-              type="number"
-              value={maxVisible}
-              onChange={ev => {
-                let val = parseInt(ev.target.value, 10);
-                if (Number.isNaN(val) || val < 1) {
-                  val = 1;
-                }
-
-                // removes leading 0's in user input text
-                ev.target.value = `${val}`;
-                
-                // change the min value to match the max if the max is reduced to below the min
-                if (minVisible >= val + 1) {
-                  actions.setMinVisible(val);
-                }
-
-                actions.setMaxVisible(val);
-              }}
-            />
-          </div>
+            <div css={itemDivCSS}>
+              <Slider
+                value={degreeFilters}
+                min={0}
+                max={10}
+                valueLabelDisplay='auto'
+                onChange={(_, newVal: number | number[]) => {
+                  if (typeof newVal === 'number') { // if the sliders are set to the same value
+                    setDegreeFilters([newVal, newVal])
+                  } else {
+                    setDegreeFilters(newVal);
+                  }
+                }}
+                onChangeCommitted={() => {
+                  actions.setMinVisible(degreeFilters[0]);
+                  actions.setMaxVisible(degreeFilters[1]);
+                }}
+              />
+            </div>
           </FormGroup>
         </AccordionDetails>
       </Accordion>

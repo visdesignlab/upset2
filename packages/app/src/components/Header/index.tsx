@@ -3,8 +3,8 @@ import { getRows } from '@visdesignlab/upset2-core';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import { AccountCircle } from '@mui/icons-material';
-import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Typography } from '@mui/material';
+import { AccountCircle, ErrorOutline } from '@mui/icons-material';
+import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import React, { useContext, useState } from 'react';
 
@@ -14,11 +14,13 @@ import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../Root';
 import { ImportModal } from '../ImportModal';
+import { importErrorAtom } from '../../atoms/importErrorAtom';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
+  const importError = useRecoilValue(importErrorAtom);
   
   const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
 
@@ -62,6 +64,11 @@ const Header = ({ data }: { data: any }) => {
           </ButtonGroup>
         </Box>
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
+          {importError &&
+            <Tooltip title={"The imported state is missing fields. Default values have been used."} arrow={true}>
+              <ErrorOutline color="error" sx={{ mr: "10px" }} />
+            </Tooltip> 
+          }
           <Button
             color="inherit"
             onClick={() => {
