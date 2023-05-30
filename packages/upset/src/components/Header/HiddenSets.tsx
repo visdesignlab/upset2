@@ -6,7 +6,6 @@ import { dimensionsSelector } from "../../atoms/dimensionsAtom";
 import { contextMenuAtom } from "../../atoms/contextMenuAtom";
 import { FC, useContext } from "react";
 import { ProvenanceContext } from "../Root";
-import Group from "../custom/Group";
 import translate from "../../utils/transform";
 import { ScaleLinear } from "d3";
 import { setsAtom } from "../../atoms/setsAtoms";
@@ -82,15 +81,7 @@ export const HiddenSets: FC<Props> = ({hiddenSets, scale}) => {
     );
 
     return (
-        <Group
-            tx={
-                dimensions.matrixColumn.width +
-                dimensions.bookmarkStar.gap +
-                dimensions.bookmarkStar.width +
-                dimensions.bookmarkStar.gap
-            }
-            ty={0}
-        >
+        <g>
             {hiddenSetsTransition(({ transform }, item) => {
             return (
                 <a.g
@@ -112,6 +103,6 @@ export const HiddenSets: FC<Props> = ({hiddenSets, scale}) => {
                 </a.g>
             );
             })}
-        </Group>
+        </g>
     )
 }

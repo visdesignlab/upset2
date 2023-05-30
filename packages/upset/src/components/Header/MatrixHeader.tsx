@@ -7,6 +7,8 @@ import { maxSetSizeSelector } from '../../atoms/maxSetSizeSelector';
 import { useScale } from '../../hooks/useScale';
 import { SetHeader } from './SetHeader';
 import { HiddenSets } from './HiddenSets';
+import { css } from '@emotion/react';
+import translate from '../../utils/transform';
 
 export const MatrixHeader = () => {
   const visibleSets = useRecoilValue(visibleSetSelector);
@@ -21,7 +23,29 @@ export const MatrixHeader = () => {
   return (
     <>
       <SetHeader visibleSets={visibleSets} scale={scale} />
-      <HiddenSets hiddenSets={hiddenSets} scale={scale}/>
+      <foreignObject
+      transform={translate(dimensions.matrixColumn.width +
+        dimensions.bookmarkStar.gap +
+        dimensions.bookmarkStar.width +
+        dimensions.bookmarkStar.gap, 0)}
+      css={css`
+        width: ${
+          dimensions.cardinality.width +
+          dimensions.gap + 
+          dimensions.attribute.width}px;
+        height: ${dimensions.set.cardinality.height + 15}px;
+      `}>
+        <div id="hiddenSetDiv"
+        css={css`
+          overflow-x: auto;
+          overflow-y: hidden;
+          height: 100%;
+        `}>
+          <svg width={hiddenSets.length * (set.width + 1)}>
+            <HiddenSets hiddenSets={hiddenSets} scale={scale}/>
+          </svg>
+        </div>
+      </foreignObject>
     </>
   );
 };
