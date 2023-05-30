@@ -151,6 +151,7 @@ export const CardinalityHeader: FC = () => {
           margin={0}
           showLabel={false}
           label=""
+          hideLine
         />
         <Axis
           transform={translate(0, dimensions.cardinality.scaleHeight)}
@@ -261,6 +262,7 @@ export const CardinalityHeader: FC = () => {
         transform={translate(
           0,
           dimensions.cardinality.scaleHeight +
+          4 +
             dimensions.cardinality.gap +
             dimensions.cardinality.buttonHeight +
             dimensions.cardinality.gap,

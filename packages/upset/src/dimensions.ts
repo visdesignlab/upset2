@@ -45,7 +45,7 @@ export function calculateDimensions(
   };
 
   const cardinality = {
-    scaleHeight: 30,
+    scaleHeight: 26,
     buttonHeight: 25,
     gap: 3,
     textMargin: 30,
