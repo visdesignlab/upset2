@@ -1,3 +1,4 @@
+import { getAggSize } from './aggregate';
 import { Aggregates, Intersections, areRowsSubsets, Rows, getDegreeFromSetMembership } from './types';
 import { deepCopy } from './utils';
 
@@ -50,7 +51,14 @@ export function filterRows(
     const newItems = filterRows(items, filters);
 
     aggs.values[aggId].items = newItems;
-  });
 
+    aggs.values[aggId].size = getAggSize(aggs.values[aggId]);
+
+    if (aggs.values[aggId].size <= 0) {
+      delete aggs.values[aggId]
+      aggs.order = aggs.order.filter(agg => agg !== aggId)
+    }
+  });
+  
   return aggs;
 }
