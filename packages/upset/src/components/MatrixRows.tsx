@@ -55,10 +55,17 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   const rowTransitions = useTransition(
     rows.map(({ row, id }, index) => {
-      if (index > 0) { // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
+      // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
+      if (index > 0) {
         const prevRow = rows[index - 1].row;
-        if (isRowAggregate(prevRow) && ['Sets', 'Overlaps'].includes(prevRow.aggregateBy)) {
-          yTransform += dimensions.body.rowHeight;
+        /* 
+         * Only add an extra rowHeight to the transform if the previous row is 
+         * an aggregate containing set membership circles which is NOT contained in a collapsed parent aggregate
+         */
+        if (isRowAggregate(prevRow)   
+          && !(prevRow.parent && collapsedIds.includes(prevRow.parent))
+          && ['Sets', 'Overlaps'].includes(prevRow.aggregateBy)) {
+            yTransform += dimensions.body.rowHeight;
         }
       }
 
