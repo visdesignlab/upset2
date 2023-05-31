@@ -95,6 +95,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <text
           css={css`
             font-size: 14px;
+            font-weight: 450;
           `}
           transform={translate(20, dimensions.body.rowHeight / 2)}
           dominantBaseline="middle"
