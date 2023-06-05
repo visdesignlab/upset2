@@ -46,7 +46,7 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
             font-size: 14px;
             overflow: hidden;
             text-overflow: ellipsis; 
-            font-weight: bold;
+            font-weight: 500;
             height: 100%;
           `}>{name}</p>
         </foreignObject>
