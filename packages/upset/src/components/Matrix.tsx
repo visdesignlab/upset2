@@ -1,4 +1,4 @@
-import { Aggregate, Subset } from '@visdesignlab/upset2-core';
+import { Aggregate, Subset, isRowAggregate } from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -51,6 +51,7 @@ export const Matrix: FC<Props> = ({
               onMouseLeave={() => {
                 setHoveredColumn(null);
               }}
+              showOutline={isRowAggregate(subset)}
             />
           );
         })}
