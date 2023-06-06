@@ -13,6 +13,7 @@ import translate from '../../utils/transform';
 import { Axis } from '../Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -38,6 +39,7 @@ export const CardinalityHeader: FC = () => {
   const [sliding, setSliding] = useState(false);
   const [ advancedScale, setAdvancedScale ] = useState(false);
   const [maxC, setMaxCardinality] = useRecoilState(maxCardinality);
+  const visibleSets = useRecoilValue(visibleSetSelector);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -82,15 +84,19 @@ export const CardinalityHeader: FC = () => {
     actions.sortBy('Cardinality');
   }
 
-  useEffect(() => {
-    if (maxC !== -1) return;
+  const calculateMaxCardinality = () => {
     const subs = Object.values(subsets.values);
-    if (subs.length === 0) return;
+    if (subs.length === 0) return -1;
 
     const cardinalities = subs.map(s => s.size);
-    const maxCard = Math.max(...cardinalities);
+    return Math.max(...cardinalities);
+  }
+  
+  const maxCard = calculateMaxCardinality();
+
+  useEffect(() => {
     setMaxCardinality(maxCard);
-  }, [subsets, maxCardinality]);
+  }, [visibleSets])
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
 
