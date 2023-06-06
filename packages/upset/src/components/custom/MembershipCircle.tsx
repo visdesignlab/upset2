@@ -7,11 +7,13 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 
 type Props = SVGProps<SVGCircleElement> & {
   membershipStatus: SetMembershipStatus;
-  showOutline?: boolean
+  showOutline?: boolean;
+  tooltip?: string
 };
 
 const MemberShipCircle: FC<Props> = (props) => {
   const { membershipStatus, ...base } = props;
+  console.log(membershipStatus);
   const theme = useTheme();
   const dimensions = useRecoilValue(dimensionsSelector);
 
@@ -30,17 +32,19 @@ const MemberShipCircle: FC<Props> = (props) => {
             : theme.matrix.member.yes
         }
         r={(dimensions.set.width - 5) / 2}
-      />
+      >
+        {props.tooltip && <title>{props.tooltip}</title>}
+      </circle>
       { membershipStatus === 'May' &&
-        <circle
-          {...base}
-          fill={
-            theme.matrix.member.yes
-          }
-          r={3}
-        />
-      }
-  </>
+          <circle
+            {...base}
+            fill={
+              theme.matrix.member.yes
+            }
+            r={3}
+          />
+        }
+    </>
   );
 };
 

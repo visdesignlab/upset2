@@ -7,6 +7,7 @@ import { columnHoverAtom } from '../atoms/hoverAtom';
 import ConnectingLine from './custom/ConnectingLine';
 import Group from './custom/Group';
 import MemberShipCircle from './custom/MembershipCircle';
+import { setsAtom } from '../atoms/setsAtoms';
 
 type Props = {
   subset: Subset | Aggregate;
@@ -20,6 +21,7 @@ export const Matrix: FC<Props> = ({
   sets = [],
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const allSets = useRecoilValue(setsAtom);
   const setHoveredColumn = useSetRecoilState(columnHoverAtom);
 
   const membership = sets.map((s) => subset.setMembership[s]);
@@ -37,7 +39,6 @@ export const Matrix: FC<Props> = ({
       <Group tx={dimensions.set.width / 2} ty={0}>
         {sets.map((set, idx) => {
           const membershipStatus = subset.setMembership[set];
-
           return (
             <MemberShipCircle
               key={set}
@@ -51,8 +52,9 @@ export const Matrix: FC<Props> = ({
               onMouseLeave={() => {
                 setHoveredColumn(null);
               }}
-              showOutline={isRowAggregate(subset)}
-            />
+              showOutline={isRowAggregate(subset) ? true : undefined}
+              tooltip={allSets[set].elementName}
+          />
           );
         })}
         {showConnectingBar && memberCount > 1 && (
