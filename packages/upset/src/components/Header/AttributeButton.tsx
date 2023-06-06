@@ -76,6 +76,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
           e.preventDefault();
           openContextMenu(e);
       }}
+      transform={translate(0, 6)}
     >
       <rect
         height={dimensions.attribute.buttonHeight}

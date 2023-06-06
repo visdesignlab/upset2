@@ -269,6 +269,7 @@ export const CardinalityHeader: FC = () => {
         )}
       >
         <Axis
+          transform={translate(0, -8)}
           scale={detailScale}
           fontSize={0.8}
           type="bottom"
@@ -278,7 +279,7 @@ export const CardinalityHeader: FC = () => {
           hideLine
         />
         <Axis
-          transform={translate(0, dimensions.cardinality.scaleHeight)}
+          transform={translate(0, dimensions.cardinality.scaleHeight - 4)}
           scale={detailScale}
           type="top"
           margin={0}
