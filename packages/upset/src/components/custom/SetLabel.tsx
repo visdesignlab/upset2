@@ -5,19 +5,22 @@ import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import Group from './Group';
-
-/** @jsxImportSource @emotion/react */
-const matrixColumnBackgroundRect = css`
-  fill: #f0f0f0;
-`;
+import { columnHoverAtom } from '../../atoms/hoverAtom';
+import { hoverHighlight } from '../../utils/styles';
 
 type Props = {
   setId: string;
   name: string;
 };
 
+/** @jsxImportSource @emotion/react */
+const matrixColumnBackgroundRect = css`
+  fill: #f0f0f0;
+`;
+
 export const SetLabel: FC<Props> = ({ setId, name }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const columnHover = useRecoilValue(columnHoverAtom);
 
   const gap = 4;
 
@@ -25,9 +28,7 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
     <Group tx={0} ty={dimensions.set.cardinality.height}>
       <rect
         className={setId}
-        css={css`
-          ${matrixColumnBackgroundRect}
-        `}
+        css={columnHover === setId ? hoverHighlight : matrixColumnBackgroundRect}
         height={dimensions.set.label.height - gap}
         width={dimensions.set.width - gap / 2}
         transform={`${translate(

@@ -7,6 +7,8 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import Group from './Group';
+import { columnHoverAtom } from '../../atoms/hoverAtom';
+import { hoverHighlight } from '../../utils/styles';
 
 /** @jsxImportSource @emotion/react */
 const matrixColumnBackgroundRect = css`
@@ -41,6 +43,7 @@ export const SetSizeBar: FC<Props> = ({
 }) => {
   const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
+  const columnHover = useRecoilValue(columnHoverAtom);
 
   return (
     <Group
@@ -55,9 +58,7 @@ export const SetSizeBar: FC<Props> = ({
       </title>
 
       <rect
-        css={css`
-          ${matrixColumnBackgroundRect}
-        `}
+        css={columnHover === setId ? hoverHighlight : matrixColumnBackgroundRect}
         height={dimensions.set.cardinality.height}
         width={dimensions.set.width}
         stroke="none"
