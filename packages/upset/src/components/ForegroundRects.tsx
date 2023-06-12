@@ -3,7 +3,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { columnHoverAtom, rowHoverAtom } from '../atoms/hoverAtom';
+import { columnHoverAtom, rowHoverAtom } from '../atoms/highlightAtom';
 import translate from '../utils/transform';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 

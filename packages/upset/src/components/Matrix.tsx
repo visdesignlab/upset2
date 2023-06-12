@@ -1,9 +1,9 @@
 import { Aggregate, Subset, isRowAggregate } from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { columnHoverAtom } from '../atoms/hoverAtom';
+import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 import ConnectingLine from './custom/ConnectingLine';
 import Group from './custom/Group';
 import MemberShipCircle from './custom/MembershipCircle';
@@ -22,9 +22,8 @@ export const Matrix: FC<Props> = ({
   sets = [],
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const setHoveredColumn = useSetRecoilState(columnHoverAtom);
-
-  const [ hover, setHover ] = useRecoilState(columnHoverAtom);
+  const [ columnHover, setColumnHover ] = useRecoilState(columnHoverAtom);
+  const [ columnSelect, setColumnSelect ] = useRecoilState(columnSelectAtom);
 
   const membership = sets.map((s) => subset.setMembership[s]);
   const memberCount = membership.filter((v) => v === 'Yes').length;
@@ -47,21 +46,33 @@ export const Matrix: FC<Props> = ({
               key={set}
               height={dimensions.body.rowHeight}
               width={dimensions.set.width}
-              onMouseEnter={() => setHover(set)}
-              onMouseLeave={() => setHover(null)}
+              onMouseEnter={() => setColumnHover(set)}
+              onMouseLeave={() => setColumnHover(null)}
+              onClick={() => {
+                if (columnSelect === set) {
+                  setColumnSelect(null);
+                } else {
+                  setColumnSelect(set)
+                }
+              }}
             >
-              <rect transform={translate(idx * dimensions.set.width - dimensions.set.width/2, 0)} height={dimensions.body.rowHeight} width={dimensions.set.width} css={hover === set ? hoverHighlight : defaultBackground}></rect>
+              <rect 
+                transform={translate(idx * dimensions.set.width - dimensions.set.width/2, 0)} 
+                height={dimensions.body.rowHeight} 
+                width={dimensions.set.width} 
+                css={
+                  columnSelect === set
+                    ? hoverHighlight
+                    : columnHover === set
+                      ? hoverHighlight
+                      : defaultBackground
+                }>
+              </rect>
               <MemberShipCircle
                 membershipStatus={membershipStatus}
                 cx={idx * dimensions.set.width}
                 cy={dimensions.body.rowHeight / 2}
                 pointerEvents="all"
-                onMouseEnter={() => {
-                  setHoveredColumn(set);
-                }}
-                onMouseLeave={() => {
-                  setHoveredColumn(null);
-                }}
                 showOutline={isRowAggregate(subset)}
               />
             </Group>

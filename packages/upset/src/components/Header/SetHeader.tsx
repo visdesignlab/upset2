@@ -1,6 +1,6 @@
 import { ScaleLinear } from 'd3';
 import { FC, useContext } from 'react';
-import { useSetRecoilState, useRecoilValue } from 'recoil';
+import { useSetRecoilState, useRecoilValue, useRecoilState } from 'recoil';
 import { a, useTransition } from 'react-spring';
 import { css } from '@mui/material';
 
@@ -13,6 +13,7 @@ import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { SortVisibleBy } from '@visdesignlab/upset2-core';
 import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
 import translate from '../../utils/transform';
+import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 
 type Props = {
   visibleSets: string[];
@@ -23,6 +24,10 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
   const sortVisibleBy = useRecoilValue(visibleSortSelector);
+
+  const [ columnSelect, setColumnSelect ] = useRecoilState(columnSelectAtom);
+  const setColumnHover = useSetRecoilState(columnHoverAtom);
+
   const { actions } = useContext(
     ProvenanceContext,
   );
@@ -43,6 +48,9 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
                 label: `Remove ${setName.replace('_', ': ')}`,
                 onClick: () => {
                   actions.removeVisibleSet(setName);
+                  if (columnSelect === setName) {
+                    setColumnSelect(null);
+                  }
                   handleContextMenuClose();
                 }
               },
@@ -79,7 +87,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     visibleSets.map((setName, idx) => {
       return {
         setName,
-        x: idx * dimensions.set.width,
+        x: dimensions.xOffset + idx * dimensions.set.width,
       }
     }),
     {
@@ -100,13 +108,21 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
             openContextMenu(e, set.setName);
           }}
           css={css`cursor: context-menu;`}
+          onClick={() => {
+            if (columnSelect === set.setName) {
+              setColumnSelect(null);
+            } else {
+              setColumnSelect(set.setName);
+            }
+          }}
+          onMouseEnter={() => setColumnHover(set.setName)}
+          onMouseLeave={() => setColumnHover(null)}
         >
           <SetSizeBar
             scale={scale}
             size={sets[set.setName].size}
             setId={set.setName}
             label={sets[set.setName].elementName}
-            tx={dimensions.xOffset}
           />
           <SetLabel setId={sets[set.setName].id} name={sets[set.setName].elementName} />
         </a.g>
