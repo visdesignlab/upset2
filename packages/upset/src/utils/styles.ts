@@ -8,6 +8,14 @@ export const highlight = css`
   stroke-opacity: 0.8;
 `;
 
+export const columnHighlight = css`
+  fill: #fed9a6;
+`;
+
+export const hoverHighlight = css`
+  fill: #fed9a6;
+`;
+
 // transparent default
 export const defaultBackground = css`
   fill-opacity: 0.0;
