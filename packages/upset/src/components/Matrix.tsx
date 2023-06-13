@@ -73,7 +73,7 @@ export const Matrix: FC<Props> = ({
                 cx={idx * dimensions.set.width}
                 cy={dimensions.body.rowHeight / 2}
                 pointerEvents="all"
-                showOutline={isRowAggregate(subset)}
+                showoutline={isRowAggregate(subset) ? true : undefined}
               />
             </Group>
           );
