@@ -51,9 +51,9 @@ export const CollapseAllButton = () => {
     
     const getTransform = () => {
         if (!allCollapsed) {
-            return `rotate(-90deg) translate(-${iconSize}px, -${iconSize}px)`;
+            return `rotate(-90) translate(-${iconSize}, -${iconSize})`;
         } else {
-            return `rotate(90deg)`;
+            return `rotate(90)`;
         }
     }
 
@@ -63,15 +63,17 @@ export const CollapseAllButton = () => {
                 <Tooltip title={`${allCollapsed ? "Expand All" : "Collapse All"}`}>
                     <g>
                         <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0}></rect>
-                        <SvgIcon
-                            sx={{ transform: getTransform }} 
-                            height={iconSize} 
-                            width={iconSize}
+                        <g 
+                            transform={getTransform()}
                             css={mousePointer}
                             onClick={toggleCollapseAll}
-                            >
-                            <DoubleArrow></DoubleArrow>
-                        </SvgIcon>
+                        >
+                            <SvgIcon
+                                height={iconSize} 
+                                width={iconSize}>
+                                <DoubleArrow></DoubleArrow>
+                            </SvgIcon>
+                        </g>
                     </g>
                 </Tooltip>
             </Group>

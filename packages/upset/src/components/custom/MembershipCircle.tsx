@@ -7,7 +7,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 
 type Props = SVGProps<SVGCircleElement> & {
   membershipStatus: SetMembershipStatus;
-  showOutline?: boolean
+  showoutline?: boolean
 };
 
 const MemberShipCircle: FC<Props> = (props) => {
@@ -20,7 +20,7 @@ const MemberShipCircle: FC<Props> = (props) => {
       <circle
         {...base}
         stroke={
-          props.showOutline && membershipStatus === 'No' 
+          props.showoutline && membershipStatus === 'No' 
             ? theme.matrix.member.yes 
             : theme.matrix.member.no
         }
