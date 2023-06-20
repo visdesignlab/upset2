@@ -9,6 +9,7 @@ import Group from './custom/Group';
 import MemberShipCircle from './custom/MembershipCircle';
 import { defaultBackground, hoverHighlight } from '../utils/styles';
 import translate from '../utils/transform';
+import { setsAtom } from '../atoms/setsAtoms';
 
 type Props = {
   subset: Subset | Aggregate;
@@ -22,6 +23,7 @@ export const Matrix: FC<Props> = ({
   sets = [],
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const setList = useRecoilValue(setsAtom);
   const [ columnHover, setColumnHover ] = useRecoilState(columnHoverAtom);
   const [ columnSelect, setColumnSelect ] = useRecoilState(columnSelectAtom);
 
@@ -56,6 +58,9 @@ export const Matrix: FC<Props> = ({
                 }
               }}
             >
+              <title>
+                {setList[set].elementName}
+              </title>
               <rect 
                 transform={translate(idx * dimensions.set.width - dimensions.set.width/2, 0)} 
                 height={dimensions.body.rowHeight} 
