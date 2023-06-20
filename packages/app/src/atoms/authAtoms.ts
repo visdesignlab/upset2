@@ -8,9 +8,8 @@ export const oauthApiRoot: string =
   process.env.REACT_APP_OAUTH_API_ROOT || `${host}/oauth/`;
 
 const login_url = `${host}/oauth/`;
-const client_id =
-  process.env.REACT_APP_OAUTH_CLIENT_ID ||
-  '7K4fAnTtGGjCKEI6RpXxCFAM5nHG9jhTmBGsSw5x';
+
+const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
 
 export const multinetDatasets =
   process.env.REACT_APP_UPLOAD_URL || 'http://localhost:8080';
