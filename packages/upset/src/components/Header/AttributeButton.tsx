@@ -74,6 +74,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
       }}
       onContextMenu={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           openContextMenu(e);
       }}
       transform={translate(0, 6)}

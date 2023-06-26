@@ -5,12 +5,7 @@ export const rowHoverAtom = atom<string | null>({
   default: null,
 });
 
-export const columnHoverAtom = atom<string | null>({
+export const columnHoverAtom = atom<string[]>({
   key: 'column-hover',
-  default: null,
-});
-
-export const columnSelectAtom = atom<string | null>({
-  key: 'column-select',
-  default: null
+  default: [],
 });

@@ -105,7 +105,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         </text>
       </g>
       {['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy) && (
-        <g transform={translate(0, dimensions.body.rowHeight - 4)}>
+        <g transform={translate(0, dimensions.body.rowHeight - 5)}>
           <Matrix
             sets={visibleSets}
             subset={aggregateRow}

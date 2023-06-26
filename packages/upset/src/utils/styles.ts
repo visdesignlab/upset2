@@ -14,6 +14,7 @@ export const columnHighlight = css`
 
 export const hoverHighlight = css`
   fill: #fed9a6;
+  fill-opacity: 0.7;
 `;
 
 // transparent default

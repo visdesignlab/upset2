@@ -1,4 +1,4 @@
-import { Subset } from '@visdesignlab/upset2-core';
+import { Subset, getBelongingSetsFromSetMembership } from '@visdesignlab/upset2-core';
 import React, { FC, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -11,6 +11,7 @@ import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atom
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { highlight, defaultBackground, mousePointer, hoverHighlight } from '../utils/styles';
 import { BookmarkStar } from './BookmarkStar';
+import { columnHoverAtom } from '../atoms/highlightAtom';
 
 type Props = {
   subset: Subset;
@@ -19,16 +20,34 @@ type Props = {
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
-  const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
+  const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+
+  const setColumnHighlight = useSetRecoilState(columnHoverAtom);
 
   const [ hover, setHover ] = useState<string | null>(null);
 
   return (
     <g
-      onClick={() => subset && (setCurrentIntersectionAtom(subset))}
-      onMouseEnter={() => setHover(subset.id)}
+      onClick={
+        () => {
+          if (currentIntersection !== null && currentIntersection.id === subset.id) { // if the row is already selected, deselect it
+            setCurrentIntersection(null);
+            setHover(subset.id);
+          } else {
+            setCurrentIntersection(subset);
+          }
+        }
+      }
+      onMouseEnter={
+        () => {
+          if (!(currentIntersection !== null && currentIntersection.id === subset.id)) {
+            setHover(subset.id);
+            setColumnHighlight(getBelongingSetsFromSetMembership(subset.setMembership));
+          }
+        }
+      }
       onMouseLeave={() => setHover(null)}
       css={mousePointer}
     >

@@ -6,8 +6,8 @@ import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import Group from './Group';
-import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
-import { highlight, hoverHighlight } from '../../utils/styles';
+import { columnHoverAtom } from '../../atoms/highlightAtom';
+import { hoverHighlight } from '../../utils/styles';
 
 /** @jsxImportSource @emotion/react */
 const matrixColumnBackgroundRect = css`
@@ -42,7 +42,6 @@ export const SetSizeBar: FC<Props> = ({
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const columnHover = useRecoilValue(columnHoverAtom);
-  const columnSelect = useRecoilValue(columnSelectAtom);
 
   return (
     <Group
@@ -55,11 +54,9 @@ export const SetSizeBar: FC<Props> = ({
 
       <rect
         css={
-          columnSelect === setId ? // if the column is selected, highlight
-            highlight :
-            columnHover === setId ?  // if the column isn't select, but is hovered, highlight with hover
-              hoverHighlight : 
-              matrixColumnBackgroundRect
+          columnHover.includes(setId) ?
+            hoverHighlight : 
+            matrixColumnBackgroundRect
         }
         height={dimensions.set.cardinality.height}
         width={dimensions.set.width}

@@ -8,7 +8,10 @@ import { columnsAtom } from '../atoms/columnAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
 import { dataAtom } from '../atoms/dataAtom';
+import { columnHoverAtom } from '../atoms/highlightAtom';
+import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
@@ -94,6 +97,9 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
+  const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
+  const setColumnHover = useSetRecoilState(columnHoverAtom);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
@@ -103,6 +109,27 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
     setAllColumns(data.columns);
     setData(data)
   }, [data]);
+
+  // remove all current selections and highlight states
+  const removeSelections = () => {
+    setCurrentIntersection(null);
+    setColumnHover([]);
+  }
+
+  // close all open context menus
+  const removeContextMenu = () => {
+    setContextMenu(null);
+  }
+
+  useEffect(() => {
+    document.addEventListener('click', removeSelections, false);
+    document.addEventListener('contextmenu', removeContextMenu, false);
+
+    return function removeListeners() {
+      document.removeEventListener('click', removeSelections, false);
+      document.removeEventListener('contextmenu', removeContextMenu, false);
+    }
+  }, []);
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0)
     return null;
