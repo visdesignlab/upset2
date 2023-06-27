@@ -10,6 +10,7 @@ export const highlight = css`
 
 export const columnHighlight = css`
   fill: #fed9a6;
+  fill-opacity: 0.7;
 `;
 
 export const hoverHighlight = css`

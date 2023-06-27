@@ -3,7 +3,7 @@ import React, { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { columnHoverAtom } from '../atoms/highlightAtom';
+import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 import ConnectingLine from './custom/ConnectingLine';
 import Group from './custom/Group';
 import MemberShipCircle from './custom/MembershipCircle';
@@ -25,6 +25,7 @@ export const Matrix: FC<Props> = ({
   const dimensions = useRecoilValue(dimensionsSelector);
   const setList = useRecoilValue(setsAtom);
   const [ columnHover, setColumnHover ] = useRecoilState(columnHoverAtom);
+  const columnSelect = useRecoilValue(columnSelectAtom);
 
   const membership = sets.map((s) => subset.setMembership[s]);
   const memberCount = membership.filter((v) => v === 'Yes').length;
@@ -48,7 +49,8 @@ export const Matrix: FC<Props> = ({
               height={dimensions.body.rowHeight}
               width={dimensions.set.width}
               onMouseEnter={
-                () => {
+                (e) => {
+                  e.stopPropagation();
                   const memberSets = getBelongingSetsFromSetMembership(subset.setMembership);
                   setColumnHover([...memberSets, set])
                 }
@@ -63,7 +65,7 @@ export const Matrix: FC<Props> = ({
                 height={dimensions.body.rowHeight} 
                 width={dimensions.set.width} 
                 css={
-                  columnHover?.includes(set)
+                  columnHover.includes(set) || columnSelect.includes(set)
                       ? hoverHighlight
                       : defaultBackground
                 }>

@@ -8,7 +8,7 @@ import { columnsAtom } from '../atoms/columnAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
 import { dataAtom } from '../atoms/dataAtom';
-import { columnHoverAtom } from '../atoms/highlightAtom';
+import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
@@ -99,6 +99,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
   const setData = useSetRecoilState(dataAtom);
   const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
   const setColumnHover = useSetRecoilState(columnHoverAtom);
+  const setColumnSelect = useSetRecoilState(columnSelectAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   // This hook will populate initial sets, items, attributes
@@ -113,6 +114,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
   // remove all current selections and highlight states
   const removeSelections = () => {
     setCurrentIntersection(null);
+    setColumnSelect([]);
     setColumnHover([]);
   }
 

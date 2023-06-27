@@ -11,7 +11,7 @@ import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atom
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { highlight, defaultBackground, mousePointer, hoverHighlight } from '../utils/styles';
 import { BookmarkStar } from './BookmarkStar';
-import { columnHoverAtom } from '../atoms/highlightAtom';
+import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 
 type Props = {
   subset: Subset;
@@ -25,6 +25,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
 
   const setColumnHighlight = useSetRecoilState(columnHoverAtom);
+  const setColumnSelect = useSetRecoilState(columnSelectAtom);
 
   const [ hover, setHover ] = useState<string | null>(null);
 
@@ -34,18 +35,19 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         () => {
           if (currentIntersection !== null && currentIntersection.id === subset.id) { // if the row is already selected, deselect it
             setCurrentIntersection(null);
+            setColumnSelect([]);
             setHover(subset.id);
+            setColumnHighlight(getBelongingSetsFromSetMembership(subset.setMembership));
           } else {
             setCurrentIntersection(subset);
+            setColumnSelect(getBelongingSetsFromSetMembership(subset.setMembership));
           }
         }
       }
       onMouseEnter={
         () => {
-          if (!(currentIntersection !== null && currentIntersection.id === subset.id)) {
-            setHover(subset.id);
-            setColumnHighlight(getBelongingSetsFromSetMembership(subset.setMembership));
-          }
+          setHover(subset.id);
+          setColumnHighlight(getBelongingSetsFromSetMembership(subset.setMembership));
         }
       }
       onMouseLeave={() => setHover(null)}
@@ -53,10 +55,11 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
     >
       <rect height={dimensions.body.rowHeight} width={dimensions.body.rowWidth} 
         css={
-          (hover === subset.id) ? hoverHighlight
-          : (currentIntersection !== null && currentIntersection.id === subset.id)
+          currentIntersection !== null && currentIntersection.id === subset.id
             ? highlight
-            : defaultBackground
+            : (hover === subset.id)
+              ? hoverHighlight
+              : defaultBackground
         }
         rx="5" ry="10"></rect>
       <Matrix sets={visibleSets} subset={subset} />

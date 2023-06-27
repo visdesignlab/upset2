@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import Group from './Group';
-import { columnHoverAtom } from '../../atoms/highlightAtom';
+import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { hoverHighlight } from '../../utils/styles';
 
 type Props = {
@@ -21,6 +21,7 @@ const matrixColumnBackgroundRect = css`
 export const SetLabel: FC<Props> = ({ setId, name }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const columnHover = useRecoilValue(columnHoverAtom);
+  const columnSelect = useRecoilValue(columnSelectAtom);
 
   const gap = 4;
 
@@ -29,7 +30,7 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
       <rect
         className={setId}
         css={
-          columnHover.includes(setId)
+          columnHover.includes(setId) || columnSelect.includes(setId)
             ? hoverHighlight
             : matrixColumnBackgroundRect
         }
