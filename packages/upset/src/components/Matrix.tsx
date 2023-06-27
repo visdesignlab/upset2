@@ -1,4 +1,4 @@
-import { Aggregate, Subset, isRowAggregate } from '@visdesignlab/upset2-core';
+import { Aggregate, Subset, getBelongingSetsFromSetMembership, isRowAggregate } from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
@@ -25,7 +25,7 @@ export const Matrix: FC<Props> = ({
   const dimensions = useRecoilValue(dimensionsSelector);
   const setList = useRecoilValue(setsAtom);
   const [ columnHover, setColumnHover ] = useRecoilState(columnHoverAtom);
-  const [ columnSelect, setColumnSelect ] = useRecoilState(columnSelectAtom);
+  const columnSelect = useRecoilValue(columnSelectAtom);
 
   const membership = sets.map((s) => subset.setMembership[s]);
   const memberCount = membership.filter((v) => v === 'Yes').length;
@@ -48,15 +48,14 @@ export const Matrix: FC<Props> = ({
               key={set}
               height={dimensions.body.rowHeight}
               width={dimensions.set.width}
-              onMouseEnter={() => setColumnHover(set)}
-              onMouseLeave={() => setColumnHover(null)}
-              onClick={() => {
-                if (columnSelect === set) {
-                  setColumnSelect(null);
-                } else {
-                  setColumnSelect(set)
+              onMouseEnter={
+                (e) => {
+                  e.stopPropagation();
+                  const memberSets = getBelongingSetsFromSetMembership(subset.setMembership);
+                  setColumnHover([...memberSets, set])
                 }
-              }}
+              }
+              onMouseLeave={() => setColumnHover([])}
             >
               <title>
                 {setList[set].elementName}
@@ -66,9 +65,7 @@ export const Matrix: FC<Props> = ({
                 height={dimensions.body.rowHeight} 
                 width={dimensions.set.width} 
                 css={
-                  columnSelect === set
-                    ? hoverHighlight
-                    : columnHover === set
+                  columnHover.includes(set) || columnSelect.includes(set)
                       ? hoverHighlight
                       : defaultBackground
                 }>

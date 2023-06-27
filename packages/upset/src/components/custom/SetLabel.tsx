@@ -6,7 +6,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import Group from './Group';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
-import { highlight, hoverHighlight } from '../../utils/styles';
+import { hoverHighlight } from '../../utils/styles';
 
 type Props = {
   setId: string;
@@ -30,9 +30,7 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
       <rect
         className={setId}
         css={
-          columnSelect === setId // if the column is selected, highlight
-          ? highlight 
-          : columnHover === setId // if the column isn't select, but is hovered, highlight with hover
+          columnHover.includes(setId) || columnSelect.includes(setId)
             ? hoverHighlight
             : matrixColumnBackgroundRect
         }

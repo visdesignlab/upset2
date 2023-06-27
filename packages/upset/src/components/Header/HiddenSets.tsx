@@ -88,6 +88,7 @@ export const HiddenSets: FC<Props> = ({hiddenSets, scale}) => {
                 transform={transform}
                 onContextMenu={(e) => {
                     e.preventDefault();
+                    e.stopPropagation();
                     openContextMenu(e, item.id);
                 }}
                 css={css`cursor: context-menu;`}
