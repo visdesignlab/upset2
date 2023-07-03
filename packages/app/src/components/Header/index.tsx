@@ -16,6 +16,7 @@ import { ProvenanceContext } from '../Root';
 import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
+import { DataTable } from '../DataTable';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -27,6 +28,7 @@ const Header = ({ data }: { data: any }) => {
 
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
+  const [ showDataTable, setShowDataTable ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
 
@@ -49,6 +51,12 @@ const Header = ({ data }: { data: any }) => {
   const handleAttributeClose = () => {
     setAnchorEl(null);
     setAttributeDialog(false);
+  }
+  const handleDataTableClick = (event: React.MouseEvent<any>) => {
+    setShowDataTable(true);
+  }
+  const handleDataTableClose = () => {
+    setShowDataTable(false);
   }
   
   return (
@@ -76,7 +84,16 @@ const Header = ({ data }: { data: any }) => {
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           <Button
             color="inherit"
-            onClick={(event) => { handleAttributeClick(event) }}
+            onClick={(e) => {handleDataTableClick(e)}}
+          >
+            Data Table
+          </Button>
+          {showDataTable && 
+            <DataTable close={handleDataTableClose}></DataTable>
+          }
+          <Button
+            color="inherit"
+            onClick={(e) => { handleAttributeClick(e) }}
           >
             Attributes
           </Button>
