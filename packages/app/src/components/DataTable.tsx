@@ -10,6 +10,20 @@ const getRowData = (row: Row) => {
     return {id: row.id, elementName: `${(isRowAggregate(row)) ? "Aggregate: " : ""}${row.elementName}`, cardinality: row.size}
 }
 
+const getAggRows = (row: Row) => {
+    const retVal: ReturnType<typeof getRowData>[] = [];
+
+    Object.values(row.items.values).forEach((r: Row) => {
+        retVal.push(getRowData(r));
+
+        if (isRowAggregate(r)) {
+            retVal.push(...getAggRows(r));
+        }
+    });
+
+    return retVal;
+}
+
 export const DataTable = (props: {close: () => void}) => {
     const { provenance } = useContext(ProvenanceContext);
 
@@ -22,10 +36,9 @@ export const DataTable = (props: {close: () => void}) => {
         
         Object.values(processedRows.values).forEach((r: Row) => {
             retVal.push(getRowData(r));
+
             if (isRowAggregate(r)) {
-                Object.values(r.items.values).forEach((row: Row) => {
-                    retVal.push(getRowData(row));
-                });
+                retVal.push(...getAggRows(r));
             }
         });
 
