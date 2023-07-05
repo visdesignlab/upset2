@@ -63,11 +63,11 @@ export const DataTable = (props: {close: () => void}) => {
                 initialState={{
                     pagination: {
                         page: 0,
-                        pageSize: 5,
+                        pageSize: 10,
                     },
                   }}
                 paginationMode="client"
-                rowsPerPageOptions={[5]}
+                rowsPerPageOptions={[5, 10, 20]}
             ></DataGrid>
             <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
                 <Button color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button>

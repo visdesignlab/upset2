@@ -82,12 +82,14 @@ const Header = ({ data }: { data: any }) => {
           </ButtonGroup>
         </Box>
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
-          <Button
-            color="inherit"
-            onClick={(e) => {handleDataTableClick(e)}}
-          >
-            Data Table
-          </Button>
+          {data !== null &&
+            <Button
+              color="inherit"
+              onClick={(e) => {handleDataTableClick(e)}}
+            >
+              Data Table
+            </Button>
+          }
           {showDataTable && 
             <DataTable close={handleDataTableClose}></DataTable>
           }
