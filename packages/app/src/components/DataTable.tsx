@@ -1,7 +1,7 @@
 import { Button, Dialog } from "@mui/material"
 import { useRecoilValue } from "recoil";
 import { dataSelector } from "../atoms/dataAtom";
-import { Row, getRows, isRowAggregate } from "@visdesignlab/upset2-core";
+import { Item, Row, getRows, isRowAggregate } from "@visdesignlab/upset2-core";
 import { useContext, useMemo } from "react";
 import { ProvenanceContext } from "./Root";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -23,6 +23,42 @@ const getAggRows = (row: Row) => {
 
     return retVal;
 }
+
+function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
+    if (items.length < 1 || columns.length < 1) return;
+  
+    console.group(name);
+    console.log(columns);
+    console.table(items.filter((_, idx) => idx < 10));
+  
+    const saveText: string[] = [];
+  
+    saveText.push(columns.map(h => (h.includes(',') ? `"${h}"` : h)).join(','));
+  
+    items.forEach(item => {
+      const row: string[] = [];
+  
+      columns.forEach(col => {
+        row.push(item[col]?.toString() || '-');
+      });
+  
+      saveText.push(row.map(r => (r.includes(',') ? `"${r}"` : r)).join(','));
+    });
+  
+    console.log(saveText);
+    console.groupEnd();
+  
+    const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
+    const blobUrl = URL.createObjectURL(blob);
+  
+    const anchor: any = document.createElement('a');
+    anchor.style = 'display: none';
+    document.body.appendChild(anchor);
+    anchor.href = blobUrl;
+    anchor.download = `${name}_${Date.now()}.csv`;
+    anchor.click();
+    anchor.remove();
+  }
 
 export const DataTable = (props: {close: () => void}) => {
     const { provenance } = useContext(ProvenanceContext);
@@ -83,7 +119,8 @@ export const DataTable = (props: {close: () => void}) => {
                 rowsPerPageOptions={[5, 10, 20]}
             ></DataGrid>
             <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
-                <Button color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button>
+                <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "cardinality"], "upset2_datatable")}>Download</Button>
+                <Button sx={{ margin: "4px" }} color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button>
             </div>
         </Dialog>
     )   
