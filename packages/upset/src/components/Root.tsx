@@ -51,7 +51,7 @@ type Props = {
   };
 };
 
-export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis, elementSidebar }) => {
+export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementSidebar }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
 
@@ -167,8 +167,8 @@ export const Root: FC<Props> = ({ data, config, extProvenance, yOffset, provVis,
         </SvgBase>
       </div>
       <ContextMenu />
-      {elementSidebar && <ElementSidebar yOffset={yOffset} open={elementSidebar.open} close={elementSidebar.close}/>}
-      {provVis && <ProvenanceVis yOffset={yOffset} open={provVis.open} close={provVis.close} />}
+      {elementSidebar && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close}/>}
+      {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
     </ProvenanceContext.Provider>
   );
 };

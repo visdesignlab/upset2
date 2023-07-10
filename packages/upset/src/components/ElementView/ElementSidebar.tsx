@@ -15,7 +15,6 @@ import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 
 type Props = {
-  yOffset: number,
   open: boolean,
   close: () => void
 }
@@ -60,7 +59,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 }
 
 /** @jsxImportSource @emotion/react */
-export const ElementSidebar = ({ yOffset, open, close }: Props) => {
+export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
@@ -113,9 +112,10 @@ export const ElementSidebar = ({ yOffset, open, close }: Props) => {
           flexShrink: 0,
           '& .MuiDrawer-paper': {
             padding: '1em',
-            paddingTop: `${yOffset}px`,
             width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
             boxSizing: 'border-box',
+            position: 'inherit',
+            zIndex: -1,
           },
         }}
         open={open}

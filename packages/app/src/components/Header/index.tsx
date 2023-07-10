@@ -37,7 +37,15 @@ const Header = ({ data }: { data: any }) => {
   }
 
   const handleMenuClick = (event: React.MouseEvent<any>) => {
-    setAnchorEl(event.currentTarget);
+    handleMenuOpen(event.currentTarget);
+  };
+  const handleMenuKeypress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleMenuOpen(event.currentTarget);
+    }
+  };
+  const handleMenuOpen = (target: EventTarget) => {
+    setAnchorEl(target as HTMLElement);
     setIsMenuOpen(true);
   };
   const handleMenuClose = () => {
@@ -102,6 +110,21 @@ const Header = ({ data }: { data: any }) => {
           {attributeDialog &&
             <AttributeDropdown anchorEl={anchorEl as HTMLElement} close={handleAttributeClose}></AttributeDropdown>
           }
+          <Button onClick={() => {
+            if (isProvVisOpen) {
+              setIsProvVisOpen(false);
+            }
+            
+            if (isElementSidebarOpen) {
+              setIsElementSidebarOpen(false);
+            } else {
+              setIsElementSidebarOpen(true);
+            }
+
+            handleMenuClose();
+          }}>
+            Element View
+          </Button>
           {importError &&
             <Tooltip title={"The imported state is missing fields. Default values have been used."} arrow={true}>
               <ErrorOutline color="error" sx={{ mr: "10px" }} />
@@ -117,7 +140,7 @@ const Header = ({ data }: { data: any }) => {
           >
             Load Data
           </Button>
-          <Button sx={{ minWidth: "24px" }}><MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon></Button>
+          <Button sx={{ minWidth: "24px" }} onKeyDown={(e) => handleMenuKeypress(e)} ><MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon></Button>
             <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
                 Import State
@@ -136,15 +159,6 @@ const Header = ({ data }: { data: any }) => {
                   handleMenuClose();
                 }}>
                   Show History
-              </MenuItem>
-              <MenuItem onClick={() => {
-                  if (isProvVisOpen) {
-                    setIsProvVisOpen(false);
-                  }
-                  setIsElementSidebarOpen(true); 
-                  handleMenuClose();
-                }}>
-                  Show Element View
               </MenuItem>
             </Menu>
           <Button
