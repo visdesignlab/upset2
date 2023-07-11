@@ -1,7 +1,7 @@
 import { Button, Dialog } from "@mui/material"
 import { useRecoilValue } from "recoil";
 import { dataSelector } from "../atoms/dataAtom";
-import { Item, Row, getRows, isRowAggregate } from "@visdesignlab/upset2-core";
+import { Row, getRows, isRowAggregate } from "@visdesignlab/upset2-core";
 import { useContext, useMemo } from "react";
 import { ProvenanceContext } from "./Root";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -119,7 +119,9 @@ export const DataTable = (props: {close: () => void}) => {
                 rowsPerPageOptions={[5, 10, 20]}
             ></DataGrid>
             <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
-                <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "cardinality"], "upset2_datatable")}>Download</Button>
+                <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "cardinality"], "upset2_datatable")}>
+                    Download
+                </Button>
                 <Button sx={{ margin: "4px" }} color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button>
             </div>
         </Dialog>

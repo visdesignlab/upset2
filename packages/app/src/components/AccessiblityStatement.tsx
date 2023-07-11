@@ -46,7 +46,7 @@ export const AccessibilityStatement = ({open, close}: Props) => {
                     Please be assured that we have plans in place to address these accessibility limitations and make UpSet2 fully inclusive.
                 </p>
                 <p>
-                    To report any accessibility issues you may encounter or to provide suggestions for improvement, please contact us at <a type="email" href="vdl-faculty@sci.utah.edu">vdl-faculty@sci.utah.edu</a>. 
+                    To report any accessibility issues you may encounter or to provide suggestions for improvement, please contact us at <a type="email" href="mailto:vdl-faculty@sci.utah.edu">vdl-faculty@sci.utah.edu</a>. 
                     We value your feedback and are committed to continuously enhancing the accessibility and usability of our software.
                 </p>
                 <p>

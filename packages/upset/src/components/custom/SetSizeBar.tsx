@@ -80,8 +80,8 @@ export const SetSizeBar: FC<Props> = ({
       />
       {showLabel && (
         <foreignObject
-          transform={`${translate(-(dimensions.set.width - dimensions.set.width/3) , dimensions.set.label.height - 2)}rotate(-90)`}
-          height={dimensions.set.width * 2}
+          transform={`${translate(0 , dimensions.set.label.height - 2)}rotate(-90)`}
+          height={dimensions.set.width}
           width={dimensions.set.label.height - (dimensions.set.width / 2)}
           z={100}
         >
@@ -89,7 +89,9 @@ export const SetSizeBar: FC<Props> = ({
             color: #000000; 
             font-size: 14px;
             overflow: hidden;
-            text-overflow: ellipsis;  
+            text-overflow: ellipsis;
+            padding: 0;
+            margin: 0; 
           `}>{label}</p>
         </foreignObject>
       )}

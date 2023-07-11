@@ -98,7 +98,7 @@ export function calculateDimensions(
       : header.totalWidth;
 
   return {
-    height: header.totalHeight + body.height,
+    height: header.totalHeight / 4 + body.height,
     width: totalWidth,
     xOffset,
     cardinality,

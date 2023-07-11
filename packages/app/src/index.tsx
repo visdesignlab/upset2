@@ -33,7 +33,9 @@ ReactDOM.render(
             </Box>
           }
         >
-          <App />
+          <Box sx={{overflow: 'hidden'}}>
+            <App />
+          </Box>
         </Suspense>
       </RecoilRoot>
     </ThemeProvider>
