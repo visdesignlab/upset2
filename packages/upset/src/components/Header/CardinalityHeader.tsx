@@ -227,6 +227,7 @@ export const CardinalityHeader: FC = () => {
         )}
         onContextMenu={(e) => {
           e.preventDefault();
+          e.stopPropagation();
           openContextMenu(e);
       }}
       >
