@@ -1,9 +1,6 @@
-import { Button, Dialog } from "@mui/material"
-import { useRecoilValue } from "recoil";
-import { dataSelector } from "../atoms/dataAtom";
-import { Row, getRows, isRowAggregate } from "@visdesignlab/upset2-core";
-import { useContext, useMemo } from "react";
-import { ProvenanceContext } from "./Root";
+import { Button } from "@mui/material"
+import { CoreUpsetData, Row, Rows, isRowAggregate } from "@visdesignlab/upset2-core";
+import { useMemo } from "react";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const getRowData = (row: Row) => {
@@ -60,17 +57,22 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
     anchor.remove();
   }
 
-export const DataTable = (props: {close: () => void}) => {
-    const { provenance } = useContext(ProvenanceContext);
+export const DataTable = () => {
+    const storedData = localStorage.getItem("data");
+    const storedRows = localStorage.getItem("rows");
 
-    const data = useRecoilValue(dataSelector);
-    const processedRows = getRows(data, provenance.getState());
-    
+    const data = storedData ? JSON.parse(storedData) as CoreUpsetData : null;
+    const rows = storedRows ? JSON.parse(storedRows) as Rows : null;
+
     // fetch subset data and create row objects with subset name and cardinality
     const tableRows: ReturnType<typeof getRowData>[] = useMemo(() => {
+        if (rows === null) {
+            return [];
+        }
+
         const retVal: ReturnType<typeof getRowData>[] = [];
         
-        Object.values(processedRows.values).forEach((r: Row) => {
+        Object.values(rows.values).forEach((r: Row) => {
             retVal.push(getRowData(r));
 
             if (isRowAggregate(r)) {
@@ -80,7 +82,7 @@ export const DataTable = (props: {close: () => void}) => {
 
         return retVal;
     
-    }, [processedRows]);
+    }, [rows]);
 
     const columns: GridColDef[] = [
         {
@@ -97,13 +99,12 @@ export const DataTable = (props: {close: () => void}) => {
         },
     ]
 
+    if (data === null) {
+        return null;
+    }
+
     return (
-        <Dialog
-            open={true}
-            onClose={props.close}
-            fullWidth
-            sx={{height: "100%", width: "100%"}}
-        >
+        <>
             <DataGrid
                 columns={columns}
                 rows={tableRows}
@@ -114,7 +115,7 @@ export const DataTable = (props: {close: () => void}) => {
                         page: 0,
                         pageSize: 10,
                     },
-                  }}
+                    }}
                 paginationMode="client"
                 rowsPerPageOptions={[5, 10, 20]}
             ></DataGrid>
@@ -122,8 +123,8 @@ export const DataTable = (props: {close: () => void}) => {
                 <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "cardinality"], "upset2_datatable")}>
                     Download
                 </Button>
-                <Button sx={{ margin: "4px" }} color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button>
+                {/* <Button sx={{ margin: "4px" }} color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button> */}
             </div>
-        </Dialog>
+        </>
     )   
 }

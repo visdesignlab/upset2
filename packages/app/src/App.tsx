@@ -5,7 +5,8 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
 import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
-import React from 'react';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { DataTable } from './components/DataTable';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -45,7 +46,13 @@ function App() {
   }, [conf]);
 
   return (
-    <Root provenance={provenance} actions={actions} data={data} config={conf} />
+    <BrowserRouter>
+      <Routes>
+        <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
+        <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
+        <Route path="/datatable" element={<DataTable />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

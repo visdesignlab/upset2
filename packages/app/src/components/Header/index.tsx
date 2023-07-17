@@ -3,11 +3,11 @@ import { getRows } from '@visdesignlab/upset2-core';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
 import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import React, { useContext, useState } from 'react';
-
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { queryParamAtom } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
@@ -16,7 +16,7 @@ import { ProvenanceContext } from '../Root';
 import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
-import { DataTable } from '../DataTable';
+import { Link } from 'react-router-dom';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -28,7 +28,6 @@ const Header = ({ data }: { data: any }) => {
 
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
-  const [ showDataTable, setShowDataTable ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
 
@@ -60,12 +59,11 @@ const Header = ({ data }: { data: any }) => {
     setAnchorEl(null);
     setAttributeDialog(false);
   }
-  const handleDataTableClick = (event: React.MouseEvent<any>) => {
-    setShowDataTable(true);
-  }
-  const handleDataTableClose = () => {
-    setShowDataTable(false);
-  }
+
+  const dispatchState = () => {
+    localStorage.setItem('data', JSON.stringify(data));
+    localStorage.setItem('rows', JSON.stringify(getRows(data, provenance.getState())));
+  };
   
   return (
     <AppBar sx={{position:"static", boxShadow:"none"}}>
@@ -93,13 +91,10 @@ const Header = ({ data }: { data: any }) => {
           {data !== null &&
             <Button
               color="inherit"
-              onClick={(e) => {handleDataTableClick(e)}}
             >
-              Data Table
+              <Link to="/datatable" target="_blank" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}}>Data Table</Link>
+              <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
             </Button>
-          }
-          {showDataTable && 
-            <DataTable close={handleDataTableClose}></DataTable>
           }
           <Button
             color="inherit"
@@ -114,7 +109,7 @@ const Header = ({ data }: { data: any }) => {
             if (isProvVisOpen) {
               setIsProvVisOpen(false);
             }
-            
+
             if (isElementSidebarOpen) {
               setIsElementSidebarOpen(false);
             } else {
