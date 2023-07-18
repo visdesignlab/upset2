@@ -1,10 +1,10 @@
-import { Button } from "@mui/material"
+import { Box, Button } from "@mui/material"
 import { CoreUpsetData, Row, Rows, isRowAggregate } from "@visdesignlab/upset2-core";
 import { useMemo } from "react";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 
 const getRowData = (row: Row) => {
-    return {id: row.id, elementName: `${(isRowAggregate(row)) ? "Aggregate: " : ""}${row.elementName}`, cardinality: row.size}
+    return {id: row.id, elementName: `${(isRowAggregate(row)) ? "Aggregate: " : ""}${row.elementName}`, size: row.size}
 }
 
 const getAggRows = (row: Row) => {
@@ -60,9 +60,13 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
 export const DataTable = () => {
     const storedData = localStorage.getItem("data");
     const storedRows = localStorage.getItem("rows");
+    const storedVisibleSets = localStorage.getItem("visibleSets");
+    const storedHiddenSets = localStorage.getItem("hiddenSets");
 
     const data = storedData ? JSON.parse(storedData) as CoreUpsetData : null;
     const rows = storedRows ? JSON.parse(storedRows) as Rows : null;
+    const visibleSets = storedVisibleSets ? JSON.parse(storedVisibleSets) as string[] : null;
+    const hiddenSets = storedHiddenSets ? JSON.parse(storedHiddenSets) as string[] : null;
 
     // fetch subset data and create row objects with subset name and cardinality
     const tableRows: ReturnType<typeof getRowData>[] = useMemo(() => {
@@ -84,19 +88,63 @@ export const DataTable = () => {
     
     }, [rows]);
 
-    const columns: GridColDef[] = [
+    const getSetRows = (sets: string[], data: CoreUpsetData) => {
+        const retVal: {setName: string, size: number}[] = [];
+        retVal.push(...sets.map((s: string) => {
+            return {id: s, setName: s, size: data.sets[s].size};
+        }));
+
+        return retVal;
+    }
+
+    const visibleSetRows: {setName: string, size: number}[] = useMemo(() => {
+        if (visibleSets === null || data === null) {
+            return [];
+        }
+
+        return getSetRows(visibleSets, data);
+    }, [visibleSets, data]);
+
+    const hiddenSetRows: {setName: string, size: number}[] = useMemo(() => {
+        if (hiddenSets === null || data === null) {
+            return [];
+        }
+
+        return getSetRows(hiddenSets, data);
+    }, [hiddenSets, data]);
+
+    const dataColumns: GridColDef[] = [
         {
           field: 'elementName',
-          headerName: 'Subset',
+          headerName: 'Intersection',
           width: 250,
           editable: false,
+          description: 'The name of the intersection of sets.',
         },
         {
-          field: 'cardinality',
-          headerName: 'Cardinality',
+          field: 'size',
+          headerName: 'Size',
           width: 250,
           editable: false,
+          description: 'The number of intersections within the subset or aggregate.'
         },
+    ]
+
+    const setColumns: GridColDef[] = [
+        {
+            field: 'setName',
+            headerName: 'Set',
+            width: 250,
+            editable: false,
+            description: 'The name of the set.'
+        },
+        {
+            field: 'size',
+            headerName: 'Size',
+            width: 250,
+            editable: false,
+            description: 'The number of elements within the set.'
+        }
     ]
 
     if (data === null) {
@@ -105,26 +153,74 @@ export const DataTable = () => {
 
     return (
         <>
-            <DataGrid
-                columns={columns}
-                rows={tableRows}
-                autoHeight
-                disableSelectionOnClick
-                initialState={{
-                    pagination: {
-                        page: 0,
-                        pageSize: 10,
-                    },
-                    }}
-                paginationMode="client"
-                rowsPerPageOptions={[5, 10, 20]}
-            ></DataGrid>
-            <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
-                <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "cardinality"], "upset2_datatable")}>
-                    Download
-                </Button>
-                {/* <Button sx={{ margin: "4px" }} color="inherit" size="medium" variant="outlined" onClick={props.close}>Close</Button> */}
-            </div>
+            <Box sx={{display: "flex", justifyContent: "space-between"}}>
+                <Box sx={{width: "50%", margin: "20px"}}>
+                    <h2>UpSet Data Table</h2>
+                    <DataGrid
+                        columns={dataColumns}
+                        rows={tableRows}
+                        autoHeight
+                        disableSelectionOnClick
+                        initialState={{
+                            pagination: {
+                                page: 0,
+                                pageSize: 10,
+                            },
+                        }}
+                        paginationMode="client"
+                        rowsPerPageOptions={[5, 10, 20]}
+                    ></DataGrid>
+                    <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
+                        <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")}>
+                            Download
+                        </Button>
+                    </div>
+                </Box>
+                <Box sx={{width: "30%", margin: "20px"}}>
+                    <h2>Visible Sets</h2>
+                    <DataGrid
+                        columns={setColumns}
+                        rows={visibleSetRows}
+                        autoHeight
+                        disableSelectionOnClick
+                        initialState={{
+                            pagination: {
+                                page: 0,
+                                pageSize: 10,
+                            },
+                        }}
+                        paginationMode="client"
+                        rowsPerPageOptions={[5, 10, 20]}
+                    ></DataGrid>
+                    <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
+                        <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")}>
+                            Download
+                        </Button>
+                    </div>
+                </Box>
+                <Box sx={{width: "30%", margin: "20px"}}>
+                    <h2>Hidden Sets</h2>
+                    <DataGrid
+                        columns={setColumns}
+                        rows={hiddenSetRows}
+                        autoHeight
+                        disableSelectionOnClick
+                        initialState={{
+                            pagination: {
+                                page: 0,
+                                pageSize: 10,
+                            },
+                        }}
+                        paginationMode="client"
+                        rowsPerPageOptions={[5, 10, 20]}
+                    ></DataGrid>
+                    <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
+                        <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")}>
+                            Download
+                        </Button>
+                    </div>
+                </Box>
+            </Box>
         </>
     )   
 }

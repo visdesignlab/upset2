@@ -7,7 +7,7 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
 import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useMemo, useState } from 'react';
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { queryParamAtom } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
@@ -25,11 +25,14 @@ const Header = ({ data }: { data: any }) => {
   const importError = useRecoilValue(importErrorAtom);
   
   const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
-
+  
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
+  
+  const visibleSets = provenance.getState().visibleSets;
+  const hiddenSets = provenance.getState().allSets.filter((set: string) => !visibleSets.includes(set));
 
   const handleImportModalClose = () => {
     setShowImportModal(false);
@@ -63,6 +66,8 @@ const Header = ({ data }: { data: any }) => {
   const dispatchState = () => {
     localStorage.setItem('data', JSON.stringify(data));
     localStorage.setItem('rows', JSON.stringify(getRows(data, provenance.getState())));
+    localStorage.setItem('visibleSets', JSON.stringify(visibleSets));
+    localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets));
   };
   
   return (
