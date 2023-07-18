@@ -180,10 +180,12 @@ export type UpsetConfig = {
 };
 
 export type AccessibleDataEntry = {
+  elementName: string,
   type: RowType,
   size: number,
   deviation: number,
   attributes: Attributes,
+  id?: string,
   setMembership?: {
       [set: string]: SetMembershipStatus
   },

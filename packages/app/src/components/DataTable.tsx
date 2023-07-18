@@ -1,19 +1,21 @@
 import { Box, Button } from "@mui/material"
-import { CoreUpsetData, Row, Rows, isRowAggregate } from "@visdesignlab/upset2-core";
+import { AccessibleDataEntry, CoreUpsetData, isRowAggregate } from "@visdesignlab/upset2-core";
 import { useMemo } from "react";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { getAccessibleData } from "@visdesignlab/upset2-react";
 
-const getRowData = (row: Row) => {
-    return {id: row.id, elementName: `${(isRowAggregate(row)) ? "Aggregate: " : ""}${row.elementName}`, size: row.size}
+const getRowData = (row: AccessibleDataEntry) => {
+    return {id: row.id, elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName}`, size: row.size}
 }
 
-const getAggRows = (row: Row) => {
+const getAggRows = (row: AccessibleDataEntry) => {
     const retVal: ReturnType<typeof getRowData>[] = [];
+    if (row.items === undefined) return retVal;
 
-    Object.values(row.items.values).forEach((r: Row) => {
+    Object.values(row.items).forEach((r: AccessibleDataEntry) => {
         retVal.push(getRowData(r));
 
-        if (isRowAggregate(r)) {
+        if (r.type === "Aggregate") {
             retVal.push(...getAggRows(r));
         }
     });
@@ -64,7 +66,7 @@ export const DataTable = () => {
     const storedHiddenSets = localStorage.getItem("hiddenSets");
 
     const data = storedData ? JSON.parse(storedData) as CoreUpsetData : null;
-    const rows = storedRows ? JSON.parse(storedRows) as Rows : null;
+    const rows = storedRows ? JSON.parse(storedRows) as ReturnType<typeof getAccessibleData> : null;
     const visibleSets = storedVisibleSets ? JSON.parse(storedVisibleSets) as string[] : null;
     const hiddenSets = storedHiddenSets ? JSON.parse(storedHiddenSets) as string[] : null;
 
@@ -76,10 +78,10 @@ export const DataTable = () => {
 
         const retVal: ReturnType<typeof getRowData>[] = [];
         
-        Object.values(rows.values).forEach((r: Row) => {
+        Object.values(rows.values).forEach((r: AccessibleDataEntry) => {
             retVal.push(getRowData(r));
 
-            if (isRowAggregate(r)) {
+            if (r.type === "Aggregate") {
                 retVal.push(...getAggRows(r));
             }
         });

@@ -46,14 +46,20 @@ const downloadJSON = (filename: string, json: string) => {
     URL.revokeObjectURL(href);
 }
 
-const getAccessibleData = (rows: Rows) => {
+export const getAccessibleData = (rows: Rows) => {
     const data = {values:{}} as AccessibleData;
     Object.values(rows.values).forEach((r: Row) => {
+        // if the key is ONLY one set, the name should be "Just {set name}"
+        // any key with more than one set should include "&" between the set names
+        // aggregate children should have "{agg name}: {subset name}"
+        console.log(r)
         data['values'][r['id']] = {
+            elementName: r['elementName'],
             type: r['type'],
             size: r['size'],
             deviation: r['deviation'],
-            attributes: r['attributes']
+            attributes: r['attributes'],
+            id: r['id'],
         }
         if (isRowAggregate(r)) {
             data['values'][r['id']]['items'] = getAccessibleData(r['items']).values;
