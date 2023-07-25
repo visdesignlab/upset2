@@ -14,7 +14,7 @@ export const AccessibilityStatement = ({open, close}: Props) => {
                 <Typography variant="h4" component="h4">UpSet 2 Accessibility Statement</Typography>
                 <p>
                     The Visualization Design Lab at the University of Utah is committed to ensuring accessibility for all individuals, including those with disabilities. 
-                    We strive to make our software user-friendly, accessible, and compliant with the <a href="https://www.w3.org/TR/WCAG21/" target="_blank">Web Content Accessibility Guidelines (WCAG)</a> 2.1 Level AA.
+                    We strive to make our software user-friendly, accessible, and compliant with the <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noreferrer">Web Content Accessibility Guidelines (WCAG)</a> 2.1 Level AA.
                 </p>
                 <p>
                     Despite our ongoing efforts to provide an inclusive experience, we would like to acknowledge that certain aspects of our software may currently pose accessibility challenges. 
@@ -54,7 +54,7 @@ export const AccessibilityStatement = ({open, close}: Props) => {
                 </p>
             </Box>
             <Box sx={{ display: "flex", justifyContent: "flex-end", margin: "8px" }}>
-                <Button color="inherit" variant="outlined" onClick={close}>Close</Button>
+                <Button color="info" variant="contained" disableElevation onClick={close}>Close</Button>
             </Box>
         </Dialog>
     )
