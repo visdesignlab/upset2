@@ -4,6 +4,12 @@ type Props = {
     open: boolean;
     close: () => void;
 }
+import { Dialog, Box, Typography, Button } from "@mui/material";
+
+type Props = {
+    open: boolean;
+    close: () => void;
+}
 
 export const About = ({open, close}: Props) => {
     return (
@@ -33,6 +39,8 @@ export const About = ({open, close}: Props) => {
                     </p>
                     <p>
                         To make contributions and/or report a bug, please visit our <a href="https://github.com/visdesignlab/upset2" target="_blank" rel="noreferrer">GitHub repository</a>.
+                    </p> 
+                    <p>
                         Development of UpSet is supported by the <a href="https://vdl.sci.utah.edu/projects/2022-czi-upset/" target="_blank" rel="noreferrer">Chan Zuckerberg Initiative</a>.
                     </p>
                 </Box>
