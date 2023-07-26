@@ -1,8 +1,9 @@
 import { Box, Button } from "@mui/material"
-import { AccessibleDataEntry, CoreUpsetData, isRowAggregate } from "@visdesignlab/upset2-core";
+import { AccessibleDataEntry, CoreUpsetData } from "@visdesignlab/upset2-core";
 import { useMemo } from "react";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { getAccessibleData } from "@visdesignlab/upset2-react";
+import DownloadIcon from '@mui/icons-material/Download';
 
 const getRowData = (row: AccessibleDataEntry) => {
     return {id: row.id, elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName}`, size: row.size}
@@ -16,11 +17,24 @@ const getAggRows = (row: AccessibleDataEntry) => {
         retVal.push(getRowData(r));
 
         if (r.type === "Aggregate") {
+            console.log("is agg")
             retVal.push(...getAggRows(r));
         }
     });
 
     return retVal;
+}
+
+const downloadCSS = {
+    margin: "4px",
+    height: "40%",
+}
+
+const headerCSS = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    margin: "2px"
 }
 
 function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
@@ -57,7 +71,27 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
     anchor.download = `${name}_${Date.now()}.csv`;
     anchor.click();
     anchor.remove();
-  }
+}
+
+type DownloadButtonProps = {
+    onClick: () => void;
+}
+
+const DownloadButton = ({onClick}: DownloadButtonProps) => {
+    return (
+        <Button 
+            sx={downloadCSS}
+            color="info"
+            size="medium"
+            variant="contained"
+            disableElevation
+            onClick={onClick}
+            endIcon={<DownloadIcon />}
+        >
+            Download
+        </Button>
+    )
+}
 
 export const DataTable = () => {
     const storedData = localStorage.getItem("data");
@@ -157,7 +191,13 @@ export const DataTable = () => {
         <>
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
                 <Box sx={{width: "50%", margin: "20px"}}>
-                    <h2>UpSet Data Table</h2>
+                    <div style={headerCSS}>
+                        <h2>UpSet Data Table</h2>
+                        {/* <Button sx={downloadCSS} color="info" size="medium" variant="contained" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")}>
+                            Download
+                        </Button> */}
+                        <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")} />
+                    </div>
                     <DataGrid
                         columns={dataColumns}
                         rows={tableRows}
@@ -172,14 +212,15 @@ export const DataTable = () => {
                         paginationMode="client"
                         rowsPerPageOptions={[5, 10, 20]}
                     ></DataGrid>
-                    <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
-                        <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")}>
-                            Download
-                        </Button>
-                    </div>
                 </Box>
                 <Box sx={{width: "30%", margin: "20px"}}>
-                    <h2>Visible Sets</h2>
+                    <div style={headerCSS}>
+                        <h2>Visible Sets</h2>
+                        {/* <Button sx={downloadCSS} color="info" size="medium" variant="contained" onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")}>
+                            Download
+                        </Button> */}
+                        <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")} />
+                    </div>
                     <DataGrid
                         columns={setColumns}
                         rows={visibleSetRows}
@@ -194,14 +235,15 @@ export const DataTable = () => {
                         paginationMode="client"
                         rowsPerPageOptions={[5, 10, 20]}
                     ></DataGrid>
-                    <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
-                        <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")}>
-                            Download
-                        </Button>
-                    </div>
                 </Box>
                 <Box sx={{width: "30%", margin: "20px"}}>
-                    <h2>Hidden Sets</h2>
+                    <div style={headerCSS}>
+                        <h2>Hidden Sets</h2>
+                        {/* <Button sx={downloadCSS} color="info" size="medium" variant="contained" onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")}>
+                                Download
+                        </Button> */}
+                        <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")} />
+                    </div>
                     <DataGrid
                         columns={setColumns}
                         rows={hiddenSetRows}
@@ -216,11 +258,6 @@ export const DataTable = () => {
                         paginationMode="client"
                         rowsPerPageOptions={[5, 10, 20]}
                     ></DataGrid>
-                    <div style={{display: "flex", justifyContent: "flex-end", margin: "10px"}}>
-                        <Button sx={{ margin: "4px", marginRight: "12px" }} color="primary" size="medium" variant="outlined" onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")}>
-                            Download
-                        </Button>
-                    </div>
                 </Box>
             </Box>
         </>
