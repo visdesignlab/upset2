@@ -9,7 +9,7 @@ export const oauthApiRoot: string =
 
 const login_url = `${host}/oauth/`;
 
-const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
+export const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
 
 export const multinetDatasets =
   process.env.REACT_APP_UPLOAD_URL || 'http://localhost:8080';
