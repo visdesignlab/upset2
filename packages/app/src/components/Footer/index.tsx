@@ -43,26 +43,22 @@ const Footer = () => {
     }
     const FooterButton = ({ href, onClick, label, icon, tabIndex }: FooterButtonProps) => {
         return (
-            <Button
-                sx={categoryCSS}
-                variant="contained"
-                color="inherit"
-                size="medium"
-                disableElevation
-                onClick={onClick ? onClick 
-                    : () => { 
-                        const x = window.open(href, "_blank");
-                        if (href && x && href.includes("mailto")) {
-                            x.close();
-                        }
-                    }}
-                startIcon={icon}
-                tabIndex={tabIndex ? tabIndex : 0}
-            >
-                { label &&
-                    <Typography variant="button" align="center">{label}</Typography>
-                }
-            </Button>
+            <a href={href} target="_blank" rel="noreferrer" style={{textDecoration: "none", color: "inherit"}}>
+                <Button
+                    sx={categoryCSS}
+                    variant="contained"
+                    color="inherit"
+                    size="medium"
+                    disableElevation
+                    startIcon={icon}
+                    tabIndex={tabIndex ? tabIndex : 0}
+                    onClick={onClick}
+                >
+                    { label &&
+                        <Typography variant="button" align="center">{label}</Typography>
+                    }
+                </Button>
+            </a>
         )
     }
 

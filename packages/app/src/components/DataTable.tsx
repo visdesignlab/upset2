@@ -193,9 +193,6 @@ export const DataTable = () => {
                 <Box sx={{width: "50%", margin: "20px"}}>
                     <div style={headerCSS}>
                         <h2>UpSet Data Table</h2>
-                        {/* <Button sx={downloadCSS} color="info" size="medium" variant="contained" onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")}>
-                            Download
-                        </Button> */}
                         <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")} />
                     </div>
                     <DataGrid
@@ -216,9 +213,6 @@ export const DataTable = () => {
                 <Box sx={{width: "30%", margin: "20px"}}>
                     <div style={headerCSS}>
                         <h2>Visible Sets</h2>
-                        {/* <Button sx={downloadCSS} color="info" size="medium" variant="contained" onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")}>
-                            Download
-                        </Button> */}
                         <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")} />
                     </div>
                     <DataGrid
@@ -239,9 +233,6 @@ export const DataTable = () => {
                 <Box sx={{width: "30%", margin: "20px"}}>
                     <div style={headerCSS}>
                         <h2>Hidden Sets</h2>
-                        {/* <Button sx={downloadCSS} color="info" size="medium" variant="contained" onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")}>
-                                Download
-                        </Button> */}
                         <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")} />
                     </div>
                     <DataGrid
