@@ -124,12 +124,14 @@ const Header = ({ data }: { data: any }) => {
         </Box>
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           {data !== null &&
-            <Button
-              color="inherit"
-            >
-              <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}}>Data Table</Link>
-              <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
-            </Button>
+            <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+              <Button
+                color="inherit"
+              >
+                Data Table
+                <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
+              </Button>
+            </Link>
           }
           <Button
             color="inherit"
