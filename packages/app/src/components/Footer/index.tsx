@@ -66,10 +66,6 @@ const Footer = () => {
         <Box sx={{ position: "absolute", bottom: 0, width: "100%" }}>
             <footer>
                 <Box sx={{backgroundColor: "#e0e0e0", width: "100%", display: "flex", justifyContent: "space-around", padding: "5px 0"}}>
-                    {/* <FooterButton href={"https://visdesignlab.github.io/"} label={"VDL"} icon={<img src={vdl_logo} alt="VDL Logo" height="24px" width="24px" />} />
-                    <FooterButton href={"https://github.com/visdesignlab/upset2"} label={"GitHub"} icon={<GitHub />} />
-                    <FooterButton href={"https://upset.app/"} label={"UpSet Info"} icon={<img src={upset_logo} alt="UpSet Logo" height="24px" width="24px" />} />
-                    <FooterButton href={"mailto:vdl-faculty@sci.utah.edu"} label={"Contact Us"} icon={<Mail />} /> */}
                     <FooterButton onClick={openAboutModal} icon={<img src={vdl_logo} alt="About Us" height="32px" width="100%" />} />
                     <FooterButton href={"https://github.com/visdesignlab/upset2/issues"} label={"Report a Bug"} icon={<BugReport />} />
                     <FooterButton onClick={openAccessibilityStatement} label={"Accessibility"} icon={<AccessibilityNew />} tabIndex={1} />
