@@ -14,6 +14,7 @@ import { Matrix } from './Matrix';
 import { BookmarkStar } from './BookmarkStar';
 import { collapsedSelector } from '../atoms/collapsedAtom';
 import { ProvenanceContext } from './Root';
+import { AttributeBars } from './AttributeBars';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -119,6 +120,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         }
         <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
         <DeviationBar deviation={aggregateRow.deviation} />
+        <AttributeBars attributes={aggregateRow.attributes} />
       </g>
     </g>
   );
