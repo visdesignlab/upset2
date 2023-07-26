@@ -1,13 +1,14 @@
 import { exportState, getAccessibleData } from '@visdesignlab/upset2-react';
 import { getRows } from '@visdesignlab/upset2-core';
+import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
-import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { queryParamAtom } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
@@ -17,6 +18,8 @@ import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
 import { Link } from 'react-router-dom';
+import { getUserInfo } from '../../getUserInfo';
+import { restoreQueryParam } from '../../atoms/queryParamAtom';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -29,6 +32,7 @@ const Header = ({ data }: { data: any }) => {
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
+  const [ loginMenuOpen, setLoginMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
   
   const visibleSets = provenance.getState().visibleSets;
@@ -41,34 +45,60 @@ const Header = ({ data }: { data: any }) => {
   const handleMenuClick = (event: React.MouseEvent<any>) => {
     handleMenuOpen(event.currentTarget);
   };
+
   const handleMenuKeypress = (event: React.KeyboardEvent) => {
     if (event.key === 'Enter') {
       handleMenuOpen(event.currentTarget);
     }
   };
+
   const handleMenuOpen = (target: EventTarget) => {
     setAnchorEl(target as HTMLElement);
     setIsMenuOpen(true);
   };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
     setIsMenuOpen(false);
   };
+
+  const handleLoginOpen = (event: React.MouseEvent<any>) => {
+    setAnchorEl(event.currentTarget);
+    setLoginMenuOpen(true);
+  }
+
+  const handleLoginClose = () => {
+    setAnchorEl(null);
+    setLoginMenuOpen(false);
+  }
+
   const handleAttributeClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
     setAttributeDialog(true);
-  }
+  };
+
   const handleAttributeClose = () => {
     setAnchorEl(null);
     setAttributeDialog(false);
-  }
+  };
 
   const dispatchState = () => {
     localStorage.setItem('data', JSON.stringify(data));
-    localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()))));
+    localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()), true)));
     localStorage.setItem('visibleSets', JSON.stringify(visibleSets));
     localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets));
   };
+
+  const [ userInfo, setUserInfo ] = useState<UserSpec | null>(null);
+  
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const userInfo = await getUserInfo();
+      setUserInfo(userInfo);
+    }
+
+    fetchInfo();
+  }, [])
   
   return (
     <AppBar sx={{position:"static", boxShadow:"none"}}>
@@ -97,7 +127,7 @@ const Header = ({ data }: { data: any }) => {
             <Button
               color="inherit"
             >
-              <Link to="/datatable" target="_blank" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}}>Data Table</Link>
+              <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}}>Data Table</Link>
               <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
             </Button>
           }
@@ -161,18 +191,36 @@ const Header = ({ data }: { data: any }) => {
                   Show History
               </MenuItem>
             </Menu>
-          <Button
+          <IconButton
             color="inherit"
-            sx={{ minWidth: "24px" }}
-            onClick={() => {
-              oAuth.logout();
-              if (window) {
-                window.location.href = getMultinetDataUrl(workspace);
-              }
+            sx={{ width: "32px", height: "32px" }}
+            onClick={(e) => {
+              handleLoginOpen(e);
             }}
           >
-            <AccountCircle color="inherit"></AccountCircle>
-          </Button>
+            <Avatar sx={{ width: "32px", height: "32px" }} alt="User login status icon" variant="circular">
+              {userInfo !== null ?
+                `${userInfo.first_name.charAt(0)}${userInfo.last_name.charAt(0)}`
+                : <AccountCircle sx={{ height: "90%", width: "90%"}} color="inherit" />
+              }
+            </Avatar>
+          </IconButton>
+          <Menu
+            open={loginMenuOpen}
+            onClose={handleLoginClose}
+            anchorEl={anchorEl}
+          >
+          {userInfo === null ?
+            <MenuItem onClick={() => {
+              restoreQueryParam();
+              oAuth.redirectToLogin();
+            }}>Login</MenuItem>
+            : <MenuItem onClick={() => {
+              oAuth.logout();
+              window.location.reload();
+            }}>Log out</MenuItem>
+          }
+          </Menu>
         </Box>
         <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Toolbar>

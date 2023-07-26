@@ -75,7 +75,7 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                 >
                     <Header data={data}/>
                 </Box>
-                {data === null && <div>Please click Load Data button to go to data interface.</div>}
+                {data === null && <div>Please either log in via Multinet or click Load Data button to go to data interface.</div>}
                 <Body yOffset={headerHeight} data={data} config={config}/>
                 <Footer />
             </div>
