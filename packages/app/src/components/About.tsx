@@ -4,12 +4,6 @@ type Props = {
     open: boolean;
     close: () => void;
 }
-import { Dialog, Box, Typography, Button } from "@mui/material";
-
-type Props = {
-    open: boolean;
-    close: () => void;
-}
 
 export const About = ({open, close}: Props) => {
     return (
