@@ -1,4 +1,4 @@
-import { AccessibleData, Row, Rows, isRowAggregate } from "@visdesignlab/upset2-core";
+import { AccessibleData, Row, Rows, getDegreeFromSetMembership, isRowAggregate } from "@visdesignlab/upset2-core";
 
 export const exportState = (provenance: any, data?: any, rows?: Rows) => {
   let filename = `upset_state_${new Date().toJSON().slice(0,10)}`;
@@ -46,23 +46,34 @@ const downloadJSON = (filename: string, json: string) => {
     URL.revokeObjectURL(href);
 }
 
-export const getAccessibleData = (rows: Rows) => {
+export const getAccessibleData = (rows: Rows, includeId: boolean = false) => {
     const data = {values:{}} as AccessibleData;
     Object.values(rows.values).forEach((r: Row) => {
         // if the key is ONLY one set, the name should be "Just {set name}"
         // any key with more than one set should include "&" between the set names
         // aggregate children should have "{agg name}: {subset name}"
-        console.log(r)
+        let elName = r['elementName'];
+        if (elName.includes(" ") && r['type'] !== "Aggregate") { // replace spaces with &
+            elName = elName.split(" ").join(" & ");
+        } else {
+            elName = "Just " + elName;
+        }
+
         data['values'][r['id']] = {
-            elementName: r['elementName'],
+            elementName: elName,
             type: r['type'],
             size: r['size'],
             deviation: r['deviation'],
             attributes: r['attributes'],
-            id: r['id'],
+            degree: getDegreeFromSetMembership(r['setMembership']),
         }
+
+        if (includeId) {
+            data['values'][r['id']].id = r['id'];
+        }
+
         if (isRowAggregate(r)) {
-            data['values'][r['id']]['items'] = getAccessibleData(r['items']).values;
+            data['values'][r['id']]['items'] = getAccessibleData(r['items'], includeId).values;
         } else {
             data['values'][r['id']]['setMembership'] = r['setMembership'];
         }
