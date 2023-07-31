@@ -26,7 +26,7 @@ const getAggRows = (row: AccessibleDataEntry) => {
 }
 
 const downloadCSS = {
-    margin: "4px",
+    m: "4px",
     height: "40%",
 }
 
@@ -34,15 +34,11 @@ const headerCSS = {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    margin: "2px"
+    m: "2px"
 }
 
 function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
     if (items.length < 1 || columns.length < 1) return;
-  
-    console.group(name);
-    console.log(columns);
-    console.table(items.filter((_, idx) => idx < 10));
   
     const saveText: string[] = [];
   
@@ -57,9 +53,6 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
   
       saveText.push(row.map(r => (r.includes(',') ? `"${r}"` : r)).join(','));
     });
-  
-    console.log(saveText);
-    console.groupEnd();
   
     const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
     const blobUrl = URL.createObjectURL(blob);
@@ -153,14 +146,14 @@ export const DataTable = () => {
         {
           field: 'elementName',
           headerName: 'Intersection',
-          width: 250,
+          width: 350,
           editable: false,
           description: 'The name of the intersection of sets.',
         },
         {
           field: 'size',
           headerName: 'Size',
-          width: 250,
+          width: 150,
           editable: false,
           description: 'The number of intersections within the subset or aggregate.'
         },
@@ -210,7 +203,7 @@ export const DataTable = () => {
                         rowsPerPageOptions={[5, 10, 20]}
                     ></DataGrid>
                 </Box>
-                <Box sx={{width: "30%", margin: "20px"}}>
+                <Box sx={{width: "25%", margin: "20px"}}>
                     <div style={headerCSS}>
                         <h2>Visible Sets</h2>
                         <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")} />
@@ -230,7 +223,7 @@ export const DataTable = () => {
                         rowsPerPageOptions={[5, 10, 20]}
                     ></DataGrid>
                 </Box>
-                <Box sx={{width: "30%", margin: "20px"}}>
+                <Box sx={{width: "25%", margin: "20px"}}>
                     <div style={headerCSS}>
                         <h2>Hidden Sets</h2>
                         <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")} />

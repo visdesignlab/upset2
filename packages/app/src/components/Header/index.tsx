@@ -42,8 +42,8 @@ const Header = ({ data }: { data: any }) => {
     setShowImportModal(false);
   }
 
-  const handleMenuClick = (event: React.MouseEvent<any>) => {
-    handleMenuOpen(event.currentTarget);
+  const handleMenuClick = (target: EventTarget) => {
+    handleMenuOpen(target);
   };
 
   const handleMenuKeypress = (event: React.KeyboardEvent) => {
@@ -124,39 +124,41 @@ const Header = ({ data }: { data: any }) => {
         </Box>
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           {data !== null &&
-            <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+            <>
+              <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+                <Button
+                  color="inherit"
+                >
+                  Data Table
+                  <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
+                </Button>
+              </Link>
               <Button
                 color="inherit"
+                onClick={(e) => { handleAttributeClick(e) }}
               >
-                Data Table
-                <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
+                Attributes
               </Button>
-            </Link>
+              <Button onClick={() => {
+                if (isProvVisOpen) {
+                  setIsProvVisOpen(false);
+                }
+
+                if (isElementSidebarOpen) {
+                  setIsElementSidebarOpen(false);
+                } else {
+                  setIsElementSidebarOpen(true);
+                }
+
+                handleMenuClose();
+              }}>
+                Element View
+              </Button>
+            </>
           }
-          <Button
-            color="inherit"
-            onClick={(e) => { handleAttributeClick(e) }}
-          >
-            Attributes
-          </Button>
           {attributeDialog &&
             <AttributeDropdown anchorEl={anchorEl as HTMLElement} close={handleAttributeClose}></AttributeDropdown>
           }
-          <Button onClick={() => {
-            if (isProvVisOpen) {
-              setIsProvVisOpen(false);
-            }
-
-            if (isElementSidebarOpen) {
-              setIsElementSidebarOpen(false);
-            } else {
-              setIsElementSidebarOpen(true);
-            }
-
-            handleMenuClose();
-          }}>
-            Element View
-          </Button>
           {importError &&
             <Tooltip title={"The imported state is missing fields. Default values have been used."} arrow={true}>
               <ErrorOutline color="error" sx={{ mr: "10px" }} />
@@ -172,7 +174,7 @@ const Header = ({ data }: { data: any }) => {
           >
             Load Data
           </Button>
-          <Button sx={{ minWidth: "24px" }} onKeyDown={(e) => handleMenuKeypress(e)} ><MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon></Button>
+          <Button sx={{ minWidth: "24px" }} onKeyDown={(e) => handleMenuKeypress(e)} ><MoreVertIcon onClick={(e) => handleMenuClick(e.currentTarget)}></MoreVertIcon></Button>
             <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
                 Import State
