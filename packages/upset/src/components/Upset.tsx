@@ -69,7 +69,7 @@ export const Upset: FC<UpsetProps> = ({
       >
         <RecoilRoot>
           <Root
-            yOffset={0}
+            yOffset={yOffset}
             data={data}
             config={combinedConfig}
             extProvenance={extProvenance}

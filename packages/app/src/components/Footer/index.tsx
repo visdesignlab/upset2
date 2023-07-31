@@ -18,22 +18,6 @@ const Footer = () => {
     const [ accessibilityStatement, setAccessibilityStatement ] = useRecoilState(accessibilityStatementAtom);
     const [ aboutModal, setAboutModal ] = useRecoilState(aboutAtom);
 
-    const openAccessibilityStatement = () => {
-        setAccessibilityStatement(true);
-    }
-
-    const closeAccessibilityStatement = () => {
-        setAccessibilityStatement(false);
-    }
-
-    const openAboutModal = () => {
-        setAboutModal(true);
-    }
-
-    const closeAboutModal = () => {
-        setAboutModal(false);
-    }
-
     type FooterButtonProps = {
         icon: JSX.Element,
         label?: string,
@@ -41,6 +25,7 @@ const Footer = () => {
         onClick?: () => void,
         tabIndex?: number,
     }
+    
     const FooterButton = ({ href, onClick, label, icon, tabIndex }: FooterButtonProps) => {
         return (
             <a href={href} target="_blank" rel="noreferrer" style={{textDecoration: "none", color: "inherit"}}>
@@ -66,14 +51,14 @@ const Footer = () => {
         <Box sx={{ position: "absolute", bottom: 0, width: "100%" }}>
             <footer>
                 <Box sx={{backgroundColor: "#e0e0e0", width: "100%", display: "flex", justifyContent: "space-around", padding: "5px 0"}}>
-                    <FooterButton onClick={openAboutModal} icon={<img src={vdl_logo} alt="About Us" height="32px" width="100%" />} />
+                    <FooterButton onClick={() => setAboutModal(true)} icon={<img src={vdl_logo} alt="About Us" height="32px" width="100%" />} />
                     <FooterButton href={"https://github.com/visdesignlab/upset2/issues"} label={"Report a Bug"} icon={<BugReport />} />
-                    <FooterButton onClick={openAccessibilityStatement} label={"Accessibility"} icon={<AccessibilityNew />} tabIndex={1} />
+                    <FooterButton onClick={() => setAccessibilityStatement(true)} label={"Accessibility"} icon={<AccessibilityNew />} tabIndex={1} />
 
                     {/* Accessibility Statement dialog */}
-                    <AccessibilityStatement open={accessibilityStatement} close={closeAccessibilityStatement} />
+                    <AccessibilityStatement open={accessibilityStatement} close={() => setAccessibilityStatement(false)} />
                     {/* "About" dialog */}
-                    <About open={aboutModal} close={closeAboutModal} />
+                    <About open={aboutModal} close={() => setAboutModal(false)} />
                 </Box>
             </footer>
         </Box>

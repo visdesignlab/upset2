@@ -12,13 +12,7 @@ export const About = ({open, close}: Props) => {
                 <Typography variant="h5" component="h5">About Visualiation Design Lab</Typography>
                 <Box>
                     <p>
-                        The Visualization Design Lab (VDL) is a team of visualization researchers at the <a href="https://www.utah.edu/" target="_blank" rel="noreferrer">University of Utah</a>. 
-                        Our interests include the process of designing and developing visualizations, visualization for biology, visualization frameworks, and, more generally, visualization of big, heterogeneous, and complex datasets.
-                    </p>
-                    <p>
-                        VDL is part of the <a href="https://www.sci.utah.edu/" target="_blank" rel="noreferrer">Scientific Computing and Imaging Institute</a> and the <a href="https://www.cs.utah.edu/" target="_blank" rel="noreferrer">School of Computing</a>.
-                        <br />
-                        For more information about VDL, please visit our <a href="https://vdl.sci.utah.edu/" target="_blank" rel="noreferrer">website</a>.
+                        For information about VDL, please visit our <a href="https://vdl.sci.utah.edu/" target="_blank" rel="noreferrer">website</a>.
                     </p>
                     <p>
                         To contact us, please email <a href="mailto:vdl-faculty@sci.utah.edu">vdl-faculty@sci.utah.edu</a>.

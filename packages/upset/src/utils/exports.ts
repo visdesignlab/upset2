@@ -1,4 +1,4 @@
-import { AccessibleData, Row, Rows, getDegreeFromSetMembership, isRowAggregate } from "@visdesignlab/upset2-core";
+import { AccessibleData, Aggregate, Row, Rows, getDegreeFromSetMembership, isRowAggregate } from "@visdesignlab/upset2-core";
 
 export const exportState = (provenance: any, data?: any, rows?: Rows) => {
   let filename = `upset_state_${new Date().toJSON().slice(0,10)}`;
@@ -51,10 +51,17 @@ export const getAccessibleData = (rows: Rows, includeId: boolean = false) => {
     Object.values(rows.values).forEach((r: Row) => {
         // if the key is ONLY one set, the name should be "Just {set name}"
         // any key with more than one set should include "&" between the set names
-        // aggregate children should have "{agg name}: {subset name}"
         let elName = r['elementName'];
-        if (elName.includes(" ") && r['type'] !== "Aggregate") { // replace spaces with &
-            elName = elName.split(" ").join(" & ");
+        let degree = getDegreeFromSetMembership(r['setMembership']);
+        if (degree !== 1) {
+            if (r.type === "Aggregate") {
+                const r2 = r as Aggregate;
+                if (r2.aggregateBy === "Overlaps") {
+                    elName = elName.split(" - ").join(" & "); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
+                }
+            } else {
+                elName = elName.split(" ").join(" & ");
+            }
         } else {
             elName = "Just " + elName;
         }
@@ -65,7 +72,7 @@ export const getAccessibleData = (rows: Rows, includeId: boolean = false) => {
             size: r['size'],
             deviation: r['deviation'],
             attributes: r['attributes'],
-            degree: getDegreeFromSetMembership(r['setMembership']),
+            degree: degree,
         }
 
         if (includeId) {
