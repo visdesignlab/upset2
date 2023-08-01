@@ -2,13 +2,14 @@ import { Upset } from '@visdesignlab/upset2-react';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
-import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
+import { doesHaveSavedQueryParam, getUrlVars, queryParamAtom } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from './Root';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
+import { api } from '../atoms/authAtoms';
 
 type Props = {
   yOffset: number;
@@ -32,6 +33,14 @@ export const Body = ({ yOffset, data, config }: Props) => {
     open: isElementSidebarOpen,
     close: () => { setIsElementSidebarOpen(false) }
   }
+
+  const { sessionId } = getUrlVars();
+
+  useEffect(() => {
+    provObject.provenance.currentChange(() => {
+      api.updateSession(workspace || '', parseInt(sessionId || '0'), 'table', provObject.provenance.export());
+    })
+  }, [provObject.provenance, sessionId, workspace]);
 
   if (data === null) return null;
 

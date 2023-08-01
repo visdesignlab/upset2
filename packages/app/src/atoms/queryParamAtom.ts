@@ -14,6 +14,17 @@ export const queryParamAtom = selector({
   },
 });
 
+export function getUrlVars() {
+  const url = new URL(window.location.href);
+  const vars: { [key: string]: string | undefined } = {};
+
+  url.searchParams.forEach((value: string, key: string) => {
+    vars[key] = value;
+  });
+
+  return vars;
+}
+
 export function saveQueryParam() {
   const { search } = window.location;
 

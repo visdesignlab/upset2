@@ -7,6 +7,8 @@ import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
+import { getUrlVars, queryParamAtom } from './atoms/queryParamAtom';
+import { api } from './atoms/authAtoms';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -44,6 +46,30 @@ function App() {
     const actions: UpsetActions = getActions(provenance);
     return { provenance, actions };
   }, [conf]);
+
+  const { sessionId } = getUrlVars();
+  const { workspace } = useRecoilValue(queryParamAtom);
+  
+  async function restoreSession() {
+    if (sessionId) {
+      console.log("Restoring session");
+      const session = await api.getSession(workspace || '', parseInt(sessionId), 'table');
+
+      // If the session is empty, the API will be an empty object
+      // Only attempt to import if we have a string
+      if (typeof session.state === 'string') {
+        provenance.import(session.state);
+        console.log("Session restored");
+      }
+    } else {
+      console.log("No session to restore");
+    }
+  }
+
+  useEffect(() => {
+    restoreSession();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <BrowserRouter>
