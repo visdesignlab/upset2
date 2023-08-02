@@ -112,7 +112,8 @@ const Header = ({ data }: { data: any }) => {
         isAtRoot: provenance.current.id === provenance.root.id
       })
     })
-  })
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   
   return (
     <AppBar sx={{position:"static", boxShadow:"none"}}>
