@@ -260,11 +260,7 @@ export function initializeProvenanceTracking(
   );
 
   if (setter) {
-    provenance.currentChange(() => {
-      setter(provenance.getState())
-
-      // api.updateSession(workspaceName.value, sessionId || '', 'network', provenance.export());
-    });
+    provenance.currentChange(() => setter(provenance.getState()));
   }
 
   provenance.done();

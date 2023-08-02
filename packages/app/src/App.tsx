@@ -7,7 +7,7 @@ import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
-import { getUrlVars, queryParamAtom } from './atoms/queryParamAtom';
+import { queryParamAtom } from './atoms/queryParamAtom';
 import { api } from './atoms/authAtoms';
 
 /** @jsxImportSource @emotion/react */
@@ -47,22 +47,17 @@ function App() {
     return { provenance, actions };
   }, [conf]);
 
-  const { sessionId } = getUrlVars();
-  const { workspace } = useRecoilValue(queryParamAtom);
+  const { workspace, sessionId } = useRecoilValue(queryParamAtom);
   
   async function restoreSession() {
     if (sessionId) {
-      console.log("Restoring session");
       const session = await api.getSession(workspace || '', parseInt(sessionId), 'table');
 
       // If the session is empty, the API will be an empty object
       // Only attempt to import if we have a string
       if (typeof session.state === 'string') {
         provenance.import(session.state);
-        console.log("Session restored");
       }
-    } else {
-      console.log("No session to restore");
     }
   }
 

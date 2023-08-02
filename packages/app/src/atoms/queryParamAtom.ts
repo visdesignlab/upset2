@@ -9,21 +9,11 @@ export const queryParamAtom = selector({
     const searchParams = new URLSearchParams(search);
     const workspace = searchParams.get('workspace');
     const table = searchParams.get('table');
+    const sessionId = searchParams.get('sessionId');
 
-    return { workspace, table };
+    return { workspace, table, sessionId };
   },
 });
-
-export function getUrlVars() {
-  const url = new URL(window.location.href);
-  const vars: { [key: string]: string | undefined } = {};
-
-  url.searchParams.forEach((value: string, key: string) => {
-    vars[key] = value;
-  });
-
-  return vars;
-}
 
 export function saveQueryParam() {
   const { search } = window.location;

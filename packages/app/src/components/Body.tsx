@@ -2,7 +2,7 @@ import { Upset } from '@visdesignlab/upset2-react';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
-import { doesHaveSavedQueryParam, getUrlVars, queryParamAtom } from '../atoms/queryParamAtom';
+import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from './Root';
 import { useContext, useEffect } from 'react';
@@ -18,7 +18,7 @@ type Props = {
 };
 
 export const Body = ({ yOffset, data, config }: Props) => {
-  const { workspace, table } = useRecoilValue(queryParamAtom);
+  const { workspace, table, sessionId } = useRecoilValue(queryParamAtom);
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
@@ -33,8 +33,6 @@ export const Body = ({ yOffset, data, config }: Props) => {
     open: isElementSidebarOpen,
     close: () => { setIsElementSidebarOpen(false) }
   }
-
-  const { sessionId } = getUrlVars();
 
   useEffect(() => {
     provObject.provenance.currentChange(() => {
