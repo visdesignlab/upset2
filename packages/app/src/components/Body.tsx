@@ -5,10 +5,11 @@ import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from './Root';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
+import { api } from '../atoms/authAtoms';
 
 type Props = {
   yOffset: number;
@@ -17,7 +18,7 @@ type Props = {
 };
 
 export const Body = ({ yOffset, data, config }: Props) => {
-  const { workspace, table } = useRecoilValue(queryParamAtom);
+  const { workspace, table, sessionId } = useRecoilValue(queryParamAtom);
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
@@ -32,6 +33,12 @@ export const Body = ({ yOffset, data, config }: Props) => {
     open: isElementSidebarOpen,
     close: () => { setIsElementSidebarOpen(false) }
   }
+
+  useEffect(() => {
+    provObject.provenance.currentChange(() => {
+      api.updateSession(workspace || '', parseInt(sessionId || '0'), 'table', provObject.provenance.export());
+    })
+  }, [provObject.provenance, sessionId, workspace]);
 
   if (data === null) return null;
 

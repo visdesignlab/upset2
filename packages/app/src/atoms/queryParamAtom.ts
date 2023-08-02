@@ -9,8 +9,9 @@ export const queryParamAtom = selector({
     const searchParams = new URLSearchParams(search);
     const workspace = searchParams.get('workspace');
     const table = searchParams.get('table');
+    const sessionId = searchParams.get('sessionId');
 
-    return { workspace, table };
+    return { workspace, table, sessionId };
   },
 });
 

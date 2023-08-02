@@ -14854,19 +14854,10 @@ multimatch@^5.0.0:
     arrify "^2.0.1"
     minimatch "^3.0.4"
 
-multinet@^0.21.12:
-  version "0.21.12"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.12.tgz#3f8f2975e36bde9305e52cddbd214970a164cb3e"
-  integrity sha512-J8bp0nvAhWSDhrZHQOXP+wLC/wKgqCnqpbg4u1X04VMbnubIYsKsLK4q20Wwtfkhw0Z5m5KrFqLtW8/M/Z9EaQ==
-  dependencies:
-    axios "^0.21.1"
-    django-s3-file-field "^0.1.2"
-    ts-jest "^26.5.4"
-
-multinet@^0.21.6:
-  version "0.21.8"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.8.tgz#a8f6d08480c64a1c38e4874922e82f5e707f1518"
-  integrity sha512-9rXHDUa0B6XKjcwJnAijNTPyvxmm3ZaMgdRxYmSt9fMOKboVBG85JGX65sCpSNA64mJ/6ocplIJhcqOgdHRv1Q==
+multinet@0.21.13, multinet@^0.21.13:
+  version "0.21.13"
+  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.13.tgz#a4c440b05369bcb2001a728c9ecf9cc2b86a298c"
+  integrity sha512-UI++fPe3nr1ueEO5VSqGtL1rb6iV8Qt7ACE2Srw2HqcHt+jdhXmaf439XZtrRHl/TqcBE6xlnsObDSnbyiHbgQ==
   dependencies:
     axios "^0.21.1"
     django-s3-file-field "^0.1.2"
