@@ -1,7 +1,7 @@
 export const helpText = {
     sorting: {
         Degree: "Sort all intersections by the ascending number of overlaps",
-        Cardinality: "Sort all intersections by the ascending size (cardinality) of the intersection",
+        Size: "Sort all intersections by the ascending size of the intersection",
     },
     aggregation: {
         Degree: "Aggregate all subsets by the number of overlaps",

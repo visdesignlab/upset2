@@ -97,7 +97,7 @@ export const DataTable = () => {
     const visibleSets = storedVisibleSets ? JSON.parse(storedVisibleSets) as string[] : null;
     const hiddenSets = storedHiddenSets ? JSON.parse(storedHiddenSets) as string[] : null;
 
-    // fetch subset data and create row objects with subset name and cardinality
+    // fetch subset data and create row objects with subset name and size
     const tableRows: ReturnType<typeof getRowData>[] = useMemo(() => {
         if (rows === null) {
             return [];

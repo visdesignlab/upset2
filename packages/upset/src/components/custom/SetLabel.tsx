@@ -26,7 +26,7 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
   const gap = 4;
 
   return (
-    <Group tx={0} ty={dimensions.set.cardinality.height}>
+    <Group tx={0} ty={dimensions.set.size.height}>
       <rect
         className={setId}
         css={

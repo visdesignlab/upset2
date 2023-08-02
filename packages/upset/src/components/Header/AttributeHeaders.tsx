@@ -14,7 +14,7 @@ export const AttributeHeaders = () => {
       transform={translate(
         dimensions.matrixColumn.width +
           dimensions.gap +
-          dimensions.cardinality.width +
+          dimensions.size.width +
           dimensions.bookmarkStar.gap +
           dimensions.bookmarkStar.width +
           dimensions.bookmarkStar.gap +

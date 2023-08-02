@@ -25,7 +25,7 @@ export function calculateDimensions(
 
   const set = {
     width: 20,
-    cardinality: {
+    size: {
       height: 100,
     },
     label: {
@@ -44,7 +44,7 @@ export function calculateDimensions(
     },
   };
 
-  const cardinality = {
+  const size = {
     scaleHeight: 26,
     buttonHeight: 25,
     gap: 3,
@@ -73,14 +73,14 @@ export function calculateDimensions(
       set.label.height + // Label Height === Label Width
       set.width * nVisibleSets + // Offset for total sets
       gap + // Add margin
-      cardinality.width + // Cardinality
+      size.width + // Size
       bookmarkStar.gap +
       bookmarkStar.width + // Bookmark Star
       bookmarkStar.gap +
       attribute.width + // Deviation
       attribute.vGap +
       (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
-    totalHeight: set.cardinality.height + set.label.height,
+    totalHeight: set.size.height + set.label.height,
   };
 
   const body = {
@@ -101,7 +101,7 @@ export function calculateDimensions(
     height: header.totalHeight / 4 + body.height,
     width: totalWidth,
     xOffset,
-    cardinality,
+    size,
     bookmarkStar,
     body,
     matrixColumn,
