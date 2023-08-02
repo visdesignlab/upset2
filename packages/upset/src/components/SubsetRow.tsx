@@ -4,7 +4,7 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from './AttributeBars';
-import { CardinalityBar } from './CardinalityBar';
+import { SizeBar } from './SizeBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
@@ -66,7 +66,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />
       }
-      <CardinalityBar size={subset.size} row={subset} />
+      <SizeBar size={subset.size} row={subset} />
       <DeviationBar deviation={subset.deviation} />
       <AttributeBars attributes={subset.attributes} />
     </g>

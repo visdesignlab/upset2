@@ -18,7 +18,7 @@ export const DeviationHeader = () => {
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap +
-        dimensions.cardinality.width +
+        dimensions.size.width +
         dimensions.gap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}

@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 
 import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { maxCardinality } from '../atoms/maxCardinalityAtom';
+import { maxSize } from '../atoms/maxSizeAtom';
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
 
@@ -39,24 +39,24 @@ const color6 = css`
   fill: rgb(29, 41, 71);
 `;
 
-export const CardinalityBar: FC<Props> = ({ row, size }) => {
+export const SizeBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const cardinalityDomain = useRecoilValue(maxCardinality);
+  const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
 
   const scale = useScale(
-    [0, cardinalityDomain],
+    [0, sizeDomain],
     [0, dimensions.attribute.width],
   );
 
-  let fullBars = size > 0 ? Math.floor(size / cardinalityDomain) : size;
-  const rem = size % cardinalityDomain;
+  let fullBars = size > 0 ? Math.floor(size / sizeDomain) : size;
+  const rem = size % sizeDomain;
 
   const colors = [color1, color2, color3, color4, color5, color6];
 
   const highlightOffset = 3;
 
-  if (size < 0 || cardinalityDomain < 0) return null;
+  if (size < 0 || sizeDomain < 0) return null;
 
   if (fullBars >= 3) {
     fullBars = 3;
@@ -76,14 +76,14 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap,
-        (dimensions.body.rowHeight - dimensions.cardinality.plotHeight) / 2,
+        (dimensions.body.rowHeight - dimensions.size.plotHeight) / 2,
       )}
     >
       {rectArray.map(arr => (
         <rect
           transform={translate(0, (arr * offset) / 2)}
           key={arr}
-          height={dimensions.cardinality.plotHeight - arr * offset}
+          height={dimensions.size.plotHeight - arr * offset}
           width={dimensions.attribute.width}
           css={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[arr + highlightOffset] : colors[arr]}
         />
@@ -91,7 +91,7 @@ export const CardinalityBar: FC<Props> = ({ row, size }) => {
       {fullBars < 3 && (
         <rect
           transform={translate(0, (fullBars * offset) / 2)}
-          height={dimensions.cardinality.plotHeight - fullBars * offset}
+          height={dimensions.size.plotHeight - fullBars * offset}
           width={scale(rem)}
           css={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[fullBars + highlightOffset] : colors[fullBars]}
         />

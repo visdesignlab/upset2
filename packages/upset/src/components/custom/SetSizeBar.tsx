@@ -59,7 +59,7 @@ export const SetSizeBar: FC<Props> = ({
             ? hoverHighlight
             : matrixColumnBackgroundRect
         }
-        height={dimensions.set.cardinality.height}
+        height={dimensions.set.size.height}
         width={dimensions.set.width}
         stroke="none"
         fill="gray"
@@ -75,7 +75,7 @@ export const SetSizeBar: FC<Props> = ({
         opacity={foregroundOpacity}
         transform={translate(
           0,
-          dimensions.set.cardinality.height - scale(size),
+          dimensions.set.size.height - scale(size),
         )}
       />
       {showLabel && (

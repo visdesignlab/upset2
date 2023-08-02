@@ -6,7 +6,7 @@ import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
-import { maxCardinality } from '../../atoms/maxCardinalityAtom';
+import { maxSize } from '../../atoms/maxSizeAtom';
 import { subsetSelector } from '../../atoms/subsetAtoms';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
@@ -25,7 +25,7 @@ const show = css`
   transition: opacity 0.5s;
 `;
 
-export const CardinalityHeader: FC = () => {
+export const SizeHeader: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
@@ -37,7 +37,7 @@ export const CardinalityHeader: FC = () => {
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
   const [ advancedScale, setAdvancedScale ] = useState(false);
-  const [maxC, setMaxCardinality] = useRecoilState(maxCardinality);
+  const [maxC, setMaxSize] = useRecoilState(maxSize);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -50,7 +50,7 @@ export const CardinalityHeader: FC = () => {
       {
         mouseX: e.clientX,
         mouseY: e.clientY,
-        id: `header-menu-Cardinality`,
+        id: `header-menu-Size`,
         items: getMenuItems()
       }
     );
@@ -59,12 +59,12 @@ export const CardinalityHeader: FC = () => {
   const getMenuItems = () => {
     return [
       {
-        label: "Sort by Cardinality",
+        label: "Sort by Size",
         onClick: () => {
-          sortByCardinality();
+          sortBySize();
           handleContextMenuClose();
         },
-        disabled: sortBy === "Cardinality"
+        disabled: sortBy === "Size"
       },
       {
         label: "Toggle Advanced Scale",
@@ -78,8 +78,8 @@ export const CardinalityHeader: FC = () => {
     ]
   }
 
-  const sortByCardinality = () => {
-    actions.sortBy('Cardinality');
+  const sortBySize = () => {
+    actions.sortBy('Size');
   }
 
   useEffect(() => {
@@ -87,10 +87,10 @@ export const CardinalityHeader: FC = () => {
     const subs = Object.values(subsets.values);
     if (subs.length === 0) return;
 
-    const cardinalities = subs.map(s => s.size);
-    const maxCard = Math.max(...cardinalities);
-    setMaxCardinality(maxCard);
-  }, [subsets, maxCardinality]);
+    const sizes = subs.map(s => s.size);
+    const maxS = Math.max(...sizes);
+    setMaxSize(maxS);
+  }, [subsets, maxSize]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
 
@@ -114,9 +114,9 @@ export const CardinalityHeader: FC = () => {
           newPosition = dimensions.attribute.width;
         }
 
-        const cardinality = globalScale.invert(newPosition);
+        const size = globalScale.invert(newPosition);
 
-        if (cardinality > 0.1 * itemCount) setMaxCardinality(cardinality);
+        if (size > 0.1 * itemCount) setMaxSize(size);
       })
       .on('end', () => {
         setSliding(false);
@@ -139,7 +139,7 @@ export const CardinalityHeader: FC = () => {
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap,
-        dimensions.header.totalHeight - dimensions.cardinality.height,
+        dimensions.header.totalHeight - dimensions.size.height,
       )}
     >
       {advancedScale &&
@@ -154,7 +154,7 @@ export const CardinalityHeader: FC = () => {
           hideLine
         />
         <Axis
-          transform={translate(0, dimensions.cardinality.scaleHeight)}
+          transform={translate(0, dimensions.size.scaleHeight)}
           scale={globalScale}
           type="top"
           margin={0}
@@ -163,7 +163,7 @@ export const CardinalityHeader: FC = () => {
           tickFormatter={() => ''}
         />
         <rect
-          height={dimensions.cardinality.scaleHeight}
+          height={dimensions.size.scaleHeight}
           width={globalScale(maxC)}
           css={css`
             fill: #aaa;
@@ -176,7 +176,7 @@ export const CardinalityHeader: FC = () => {
           className="slider-knob"
           transform={translate(
             globalScale(maxC),
-            dimensions.cardinality.scaleHeight / 2 - Math.sqrt(200) / 2,
+            dimensions.size.scaleHeight / 2 - Math.sqrt(200) / 2,
           )}
         >
           <rect
@@ -201,18 +201,18 @@ export const CardinalityHeader: FC = () => {
         css={css`
           ${!sliding ? hide : show}
         `}
-        transform={translate(0, dimensions.cardinality.scaleHeight)}
+        transform={translate(0, dimensions.size.scaleHeight)}
       >
         <path
           opacity="0.3"
           fill="#ccc"
-          d={`M ${globalScale(maxC)} 0 H 0 V ${dimensions.cardinality
+          d={`M ${globalScale(maxC)} 0 H 0 V ${dimensions.size
             .buttonHeight +
-            2 * dimensions.cardinality.gap} H ${dimensions.attribute.width} z`}
+            2 * dimensions.size.gap} H ${dimensions.attribute.width} z`}
         />
       </g>
       <g
-        className="cardinality-button"
+        className="size-button"
         css={css`
           ${sliding ? hide : show};
           cursor: context-menu;
@@ -223,7 +223,7 @@ export const CardinalityHeader: FC = () => {
         `}
         transform={translate(
           0,
-          dimensions.cardinality.scaleHeight + dimensions.cardinality.gap,
+          dimensions.size.scaleHeight + dimensions.size.gap,
         )}
         onContextMenu={(e) => {
           e.preventDefault();
@@ -238,10 +238,10 @@ export const CardinalityHeader: FC = () => {
             opacity: 0.5;
             stroke-width: 0.3px;
           `}
-          height={dimensions.cardinality.buttonHeight}
+          height={dimensions.size.buttonHeight}
           width={dimensions.attribute.width}
           onClick={() => {
-            if (sortBy !== 'Cardinality') actions.sortBy('Cardinality');
+            if (sortBy !== 'Size') actions.sortBy('Size');
           }}
         />
         <text
@@ -251,22 +251,22 @@ export const CardinalityHeader: FC = () => {
           dominantBaseline="middle"
           transform={translate(
             dimensions.attribute.width / 2,
-            dimensions.cardinality.buttonHeight / 2,
+            dimensions.size.buttonHeight / 2,
           )}
           textAnchor="middle"
         >
-          Cardinality
+          Size
         </text>
       </g>
       <g
         className="details-scale"
         transform={translate(
           0,
-          dimensions.cardinality.scaleHeight +
+          dimensions.size.scaleHeight +
           4 +
-            dimensions.cardinality.gap +
-            dimensions.cardinality.buttonHeight +
-            dimensions.cardinality.gap,
+            dimensions.size.gap +
+            dimensions.size.buttonHeight +
+            dimensions.size.gap,
         )}
       >
         <Axis
@@ -280,7 +280,7 @@ export const CardinalityHeader: FC = () => {
           hideLine
         />
         <Axis
-          transform={translate(0, dimensions.cardinality.scaleHeight - 4)}
+          transform={translate(0, dimensions.size.scaleHeight - 4)}
           scale={detailScale}
           type="top"
           margin={0}

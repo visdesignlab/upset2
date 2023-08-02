@@ -8,7 +8,7 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import translate from '../utils/transform';
 import { highlight, mousePointer } from '../utils/styles';
-import { CardinalityBar } from './CardinalityBar';
+import { SizeBar } from './SizeBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 import { BookmarkStar } from './BookmarkStar';
@@ -118,7 +118,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
             <BookmarkStar row={aggregateRow} />
         }
-        <CardinalityBar row={aggregateRow} size={aggregateRow.size} />
+        <SizeBar row={aggregateRow} size={aggregateRow.size} />
         <DeviationBar deviation={aggregateRow.deviation} />
         <AttributeBars attributes={aggregateRow.attributes} />
       </g>

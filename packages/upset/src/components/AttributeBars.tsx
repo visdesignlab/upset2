@@ -22,7 +22,7 @@ export const AttributeBars: FC<Props> = ({ attributes }) => {
           dimensions.bookmarkStar.gap +
           dimensions.bookmarkStar.width +
           dimensions.bookmarkStar.gap +
-          dimensions.cardinality.width +
+          dimensions.size.width +
           dimensions.gap +
           dimensions.attribute.width +
           dimensions.attribute.vGap,

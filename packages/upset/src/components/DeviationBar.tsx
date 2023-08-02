@@ -24,14 +24,14 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
   const deviationScale = useRecoilValue(deviationScaleAtom);
   deviationScale.range([0, dimensions.attribute.width / 2]);
 
-  return (
+  return ( 
     <g
       transform={translate(
         dimensions.matrixColumn.width +
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap +
-        dimensions.cardinality.width +
+        dimensions.size.width +
         dimensions.gap +
         dimensions.attribute.width / 2,
         (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,

@@ -10,7 +10,7 @@ import {
 } from './types';
 import { deepCopy } from './utils';
 
-function sortByCardinality(rows: Intersections) {
+function sortBySize(rows: Intersections) {
   const { values, order } = rows;
   const newOrder = [...order].sort((b, a) => values[a].size - values[b].size);
 
@@ -72,8 +72,8 @@ function sortIntersections<T extends Intersections>(
   visibleSets: Sets,
 ) {
   switch (sortBy) {
-    case 'Cardinality':
-      return sortByCardinality(intersection);
+    case 'Size':
+      return sortBySize(intersection);
     case 'Degree':
       return sortByDegree(intersection, vSetSortBy, visibleSets);
     case 'Deviation':
