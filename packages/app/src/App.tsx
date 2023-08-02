@@ -7,8 +7,6 @@ import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
-import { queryParamAtom } from './atoms/queryParamAtom';
-import { api } from './atoms/authAtoms';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
