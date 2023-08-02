@@ -3,9 +3,12 @@ import { UpsetConfig } from "@visdesignlab/upset2-core"
 import { Box, css } from "@mui/material"
 import { Body } from "./Body"
 import Header from "./Header"
-import { useRef, useState, useEffect, createContext } from "react"
+import { useRef, useState, useEffect, createContext, useMemo } from "react"
 import React from "react"
 import Footer from "./Footer"
+import { useRecoilValue } from "recoil"
+import { api } from "../atoms/authAtoms"
+import { queryParamAtom } from "../atoms/queryParamAtom"
 
 type Props = {
     provenance: UpsetProvenance,
@@ -31,21 +34,15 @@ export const ProvenanceContext = createContext<{
 export const Root = ({provenance, actions, data, config}: Props) => {
     const headerDiv = useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = useState(-1);
-  
-    const [trrackPosition, setTrrackPosition] = useState({
-        isAtLatest: true,
-        isAtRoot: true
-    })
 
-    useEffect(()=>{
-        provenance.currentChange(() => {
-            setTrrackPosition({
-                isAtLatest: provenance.current.children.length === 0,
-                isAtRoot: provenance.current.id === provenance.root.id,
-            })
-        })
-    }, [provenance])
-  
+    const isAtLatest = useMemo(() => {
+        return provenance.current.children.length === 0
+    }, [provenance]);
+
+    const isAtRoot = useMemo(() => {
+        return provenance.current.id === provenance.root.id
+    }, [provenance]);
+
 
     useEffect(() => {
       const { current } = headerDiv;
@@ -56,13 +53,32 @@ export const Root = ({provenance, actions, data, config}: Props) => {
       setHeaderHeight(current.clientHeight);
     }, [headerHeight, headerDiv]);
 
+    const { workspace, sessionId } = useRecoilValue(queryParamAtom);
+  
+    async function restoreSession() {
+      if (sessionId) {
+        const session = await api.getSession(workspace || '', parseInt(sessionId), 'table');
+  
+        // If the session is empty, the API will be an empty object
+        // Only attempt to import if we have a string
+        if (typeof session.state === 'string') {
+          provenance.import(session.state);
+        }
+      }
+    }
+  
+    useEffect(() => {
+      restoreSession();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
     return (
         <ProvenanceContext.Provider
             value={{
                 provenance,
                 actions,
-                isAtLatest: trrackPosition.isAtLatest,
-                isAtRoot: trrackPosition.isAtRoot
+                isAtLatest: isAtLatest,
+                isAtRoot: isAtRoot
             }}
         >
             <div css={AppCss}>

@@ -47,25 +47,6 @@ function App() {
     return { provenance, actions };
   }, [conf]);
 
-  const { workspace, sessionId } = useRecoilValue(queryParamAtom);
-  
-  async function restoreSession() {
-    if (sessionId) {
-      const session = await api.getSession(workspace || '', parseInt(sessionId), 'table');
-
-      // If the session is empty, the API will be an empty object
-      // Only attempt to import if we have a string
-      if (typeof session.state === 'string') {
-        provenance.import(session.state);
-      }
-    }
-  }
-
-  useEffect(() => {
-    restoreSession();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   return (
     <BrowserRouter>
       <Routes>
