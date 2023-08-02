@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import { createContext, FC, useEffect, useMemo, useState } from 'react';
+import { createContext, FC, useEffect, useMemo } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
@@ -25,8 +25,6 @@ import { ProvenanceVis } from './ProvenanceVis';
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
-  isAtLatest: boolean;
-  isAtRoot: boolean;
 }>(undefined!);
 
 const baseStyle = css`
@@ -55,11 +53,6 @@ export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementS
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
 
-  const [trrackPosition, setTrrackPosition] = useState({
-    isAtLatest: true,
-    isAtRoot: true
-})
-
   useEffect(() => {
     setState(config);
     setData(data);
@@ -82,15 +75,6 @@ export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementS
     const actions = getActions(provenance);
     return { provenance, actions };
   }, [config]);
-
-  useEffect(()=>{
-      provenance.currentChange(() => {
-          setTrrackPosition({
-              isAtLatest: provenance.current.children.length === 0,
-              isAtRoot: provenance.current.id === provenance.root.id,
-          })
-      })
-  }, [provenance])
 
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
@@ -141,8 +125,6 @@ export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementS
       value={{
         provenance,
         actions,
-        isAtLatest: trrackPosition.isAtLatest,
-        isAtRoot: trrackPosition.isAtRoot
       }}
     >
       <div
