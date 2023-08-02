@@ -45,13 +45,13 @@ export const Body = ({ yOffset, data, config }: Props) => {
       { data.setColumns.length === 0 ?
         <ErrorModal />:
         <Upset
-        data={data}
-        loadAttributes={3}
-        yOffset={yOffset === -1 ? 0 : yOffset}
-        extProvenance={provObject}
-        config={config}
-        provVis={provVisObj}
-        elementSidebar={elementSidebarObj}
+          data={data}
+          loadAttributes={3}
+          yOffset={yOffset === -1 ? 0 : yOffset}
+          extProvenance={provObject}
+          config={config}
+          provVis={provVisObj}
+          elementSidebar={elementSidebarObj}
         />
       }
     </div>

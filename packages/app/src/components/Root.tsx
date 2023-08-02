@@ -5,6 +5,7 @@ import { Body } from "./Body"
 import Header from "./Header"
 import { useRef, useState, useEffect, createContext } from "react"
 import React from "react"
+import Footer from "./Footer"
 
 type Props = {
     provenance: UpsetProvenance,
@@ -74,8 +75,9 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                 >
                     <Header data={data}/>
                 </Box>
-                {data === null && <div>Please click Load Data button to go to data interface.</div>}
+                {data === null && <div>Please either log in or click the "Load Data" button to go to data interface.</div>}
                 <Body yOffset={headerHeight} data={data} config={config}/>
+                <Footer />
             </div>
         </ProvenanceContext.Provider>
     )

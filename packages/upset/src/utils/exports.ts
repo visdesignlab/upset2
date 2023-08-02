@@ -1,4 +1,4 @@
-import { AccessibleData, Row, Rows, isRowAggregate } from "@visdesignlab/upset2-core";
+import { AccessibleData, Aggregate, Row, Rows, getDegreeFromSetMembership, isRowAggregate } from "@visdesignlab/upset2-core";
 
 export const exportState = (provenance: any, data?: any, rows?: Rows) => {
   let filename = `upset_state_${new Date().toJSON().slice(0,10)}`;
@@ -46,17 +46,41 @@ const downloadJSON = (filename: string, json: string) => {
     URL.revokeObjectURL(href);
 }
 
-const getAccessibleData = (rows: Rows) => {
+export const getAccessibleData = (rows: Rows, includeId: boolean = false) => {
     const data = {values:{}} as AccessibleData;
     Object.values(rows.values).forEach((r: Row) => {
+        // if the key is ONLY one set, the name should be "Just {set name}"
+        // any key with more than one set should include "&" between the set names
+        let elName = r['elementName'];
+        let degree = getDegreeFromSetMembership(r['setMembership']);
+        if (degree !== 1) {
+            if (r.type === "Aggregate") {
+                const r2 = r as Aggregate;
+                if (r2.aggregateBy === "Overlaps") {
+                    elName = elName.split(" - ").join(" & "); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
+                }
+            } else {
+                elName = elName.split(" ").join(" & ");
+            }
+        } else {
+            elName = "Just " + elName;
+        }
+
         data['values'][r['id']] = {
+            elementName: elName,
             type: r['type'],
             size: r['size'],
             deviation: r['deviation'],
-            attributes: r['attributes']
+            attributes: r['attributes'],
+            degree: degree,
         }
+
+        if (includeId) {
+            data['values'][r['id']].id = r['id'];
+        }
+
         if (isRowAggregate(r)) {
-            data['values'][r['id']]['items'] = getAccessibleData(r['items']).values;
+            data['values'][r['id']]['items'] = getAccessibleData(r['items'], includeId).values;
         } else {
             data['values'][r['id']]['setMembership'] = r['setMembership'];
         }

@@ -1,13 +1,14 @@
-import { exportState } from '@visdesignlab/upset2-react';
+import { exportState, getAccessibleData } from '@visdesignlab/upset2-react';
 import { getRows } from '@visdesignlab/upset2-core';
+import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
-import { AppBar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
+import { AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import React, { useContext, useState } from 'react';
-
+import React, { useContext, useEffect, useState } from 'react';
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { queryParamAtom } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
@@ -16,7 +17,9 @@ import { ProvenanceContext } from '../Root';
 import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
-import { DataTable } from '../DataTable';
+import { Link } from 'react-router-dom';
+import { getUserInfo } from '../../getUserInfo';
+import { restoreQueryParam } from '../../atoms/queryParamAtom';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -25,39 +28,77 @@ const Header = ({ data }: { data: any }) => {
   const importError = useRecoilValue(importErrorAtom);
   
   const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
-
+  
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
-  const [ showDataTable, setShowDataTable ] = useState(false);
   const [ isMenuOpen, setIsMenuOpen ] = useState(false);
+  const [ loginMenuOpen, setLoginMenuOpen ] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
+  
+  const visibleSets = provenance.getState().visibleSets;
+  const hiddenSets = provenance.getState().allSets.filter((set: string) => !visibleSets.includes(set));
 
   const handleImportModalClose = () => {
     setShowImportModal(false);
   }
 
-  const handleMenuClick = (event: React.MouseEvent<any>) => {
-    setAnchorEl(event.currentTarget);
+  const handleMenuClick = (target: EventTarget) => {
+    handleMenuOpen(target);
+  };
+
+  const handleMenuKeypress = (event: React.KeyboardEvent) => {
+    if (event.key === 'Enter') {
+      handleMenuOpen(event.currentTarget);
+    }
+  };
+
+  const handleMenuOpen = (target: EventTarget) => {
+    setAnchorEl(target as HTMLElement);
     setIsMenuOpen(true);
   };
+
   const handleMenuClose = () => {
     setAnchorEl(null);
     setIsMenuOpen(false);
   };
+
+  const handleLoginOpen = (event: React.MouseEvent<any>) => {
+    setAnchorEl(event.currentTarget);
+    setLoginMenuOpen(true);
+  }
+
+  const handleLoginClose = () => {
+    setAnchorEl(null);
+    setLoginMenuOpen(false);
+  }
+
   const handleAttributeClick = (event: React.MouseEvent<any>) => {
     setAnchorEl(event.currentTarget);
     setAttributeDialog(true);
-  }
+  };
+
   const handleAttributeClose = () => {
     setAnchorEl(null);
     setAttributeDialog(false);
-  }
-  const handleDataTableClick = (event: React.MouseEvent<any>) => {
-    setShowDataTable(true);
-  }
-  const handleDataTableClose = () => {
-    setShowDataTable(false);
-  }
+  };
+
+  const dispatchState = () => {
+    localStorage.setItem('data', JSON.stringify(data));
+    localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()), true)));
+    localStorage.setItem('visibleSets', JSON.stringify(visibleSets));
+    localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets));
+  };
+
+  const [ userInfo, setUserInfo ] = useState<UserSpec | null>(null);
+  
+  useEffect(() => {
+    const fetchInfo = async () => {
+      const userInfo = await getUserInfo();
+      setUserInfo(userInfo);
+    }
+
+    fetchInfo();
+  }, [])
   
   return (
     <AppBar sx={{position:"static", boxShadow:"none"}}>
@@ -83,22 +124,38 @@ const Header = ({ data }: { data: any }) => {
         </Box>
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           {data !== null &&
-            <Button
-              color="inherit"
-              onClick={(e) => {handleDataTableClick(e)}}
-            >
-              Data Table
-            </Button>
+            <>
+              <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+                <Button
+                  color="inherit"
+                >
+                  Data Table
+                  <OpenInNewIcon sx={{height: "14px", opacity: 0.8}}></OpenInNewIcon>
+                </Button>
+              </Link>
+              <Button
+                color="inherit"
+                onClick={(e) => { handleAttributeClick(e) }}
+              >
+                Attributes
+              </Button>
+              <Button onClick={() => {
+                if (isProvVisOpen) {
+                  setIsProvVisOpen(false);
+                }
+
+                if (isElementSidebarOpen) {
+                  setIsElementSidebarOpen(false);
+                } else {
+                  setIsElementSidebarOpen(true);
+                }
+
+                handleMenuClose();
+              }}>
+                Element View
+              </Button>
+            </>
           }
-          {showDataTable && 
-            <DataTable close={handleDataTableClose}></DataTable>
-          }
-          <Button
-            color="inherit"
-            onClick={(e) => { handleAttributeClick(e) }}
-          >
-            Attributes
-          </Button>
           {attributeDialog &&
             <AttributeDropdown anchorEl={anchorEl as HTMLElement} close={handleAttributeClose}></AttributeDropdown>
           }
@@ -117,7 +174,7 @@ const Header = ({ data }: { data: any }) => {
           >
             Load Data
           </Button>
-          <Button sx={{ minWidth: "24px" }}><MoreVertIcon onClick={(e) => handleMenuClick(e)}></MoreVertIcon></Button>
+          <Button sx={{ minWidth: "24px" }} onKeyDown={(e) => handleMenuKeypress(e)} ><MoreVertIcon onClick={(e) => handleMenuClick(e.currentTarget)}></MoreVertIcon></Button>
             <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
                 Import State
@@ -137,28 +194,37 @@ const Header = ({ data }: { data: any }) => {
                 }}>
                   Show History
               </MenuItem>
-              <MenuItem onClick={() => {
-                  if (isProvVisOpen) {
-                    setIsProvVisOpen(false);
-                  }
-                  setIsElementSidebarOpen(true); 
-                  handleMenuClose();
-                }}>
-                  Show Element View
-              </MenuItem>
             </Menu>
-          <Button
+          <IconButton
             color="inherit"
-            sx={{ minWidth: "24px" }}
-            onClick={() => {
-              oAuth.logout();
-              if (window) {
-                window.location.href = getMultinetDataUrl(workspace);
-              }
+            sx={{ width: "32px", height: "32px" }}
+            onClick={(e) => {
+              handleLoginOpen(e);
             }}
           >
-            <AccountCircle color="inherit"></AccountCircle>
-          </Button>
+            <Avatar sx={{ width: "32px", height: "32px" }} alt="User login status icon" variant="circular">
+              {userInfo !== null ?
+                `${userInfo.first_name.charAt(0)}${userInfo.last_name.charAt(0)}`
+                : <AccountCircle sx={{ height: "90%", width: "90%"}} color="inherit" />
+              }
+            </Avatar>
+          </IconButton>
+          <Menu
+            open={loginMenuOpen}
+            onClose={handleLoginClose}
+            anchorEl={anchorEl}
+          >
+          {userInfo === null ?
+            <MenuItem onClick={() => {
+              restoreQueryParam();
+              oAuth.redirectToLogin();
+            }}>Login</MenuItem>
+            : <MenuItem onClick={() => {
+              oAuth.logout();
+              window.location.reload();
+            }}>Log out</MenuItem>
+          }
+          </Menu>
         </Box>
         <ImportModal open={showImportModal} close={handleImportModalClose} />
       </Toolbar>
