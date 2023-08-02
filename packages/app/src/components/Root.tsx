@@ -3,7 +3,7 @@ import { UpsetConfig } from "@visdesignlab/upset2-core"
 import { Box, css } from "@mui/material"
 import { Body } from "./Body"
 import Header from "./Header"
-import { useRef, useState, useEffect, createContext, useMemo } from "react"
+import { useRef, useState, useEffect, createContext } from "react"
 import React from "react"
 import Footer from "./Footer"
 import { useRecoilValue } from "recoil"
@@ -27,22 +27,11 @@ const AppCss = css`
 export const ProvenanceContext = createContext<{
     provenance: UpsetProvenance;
     actions: UpsetActions;
-    isAtLatest: boolean;
-    isAtRoot: boolean;
   }>(undefined!);
 
 export const Root = ({provenance, actions, data, config}: Props) => {
     const headerDiv = useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = useState(-1);
-
-    const isAtLatest = useMemo(() => {
-        return provenance.current.children.length === 0
-    }, [provenance]);
-
-    const isAtRoot = useMemo(() => {
-        return provenance.current.id === provenance.root.id
-    }, [provenance]);
-
 
     useEffect(() => {
       const { current } = headerDiv;
@@ -77,8 +66,6 @@ export const Root = ({provenance, actions, data, config}: Props) => {
             value={{
                 provenance,
                 actions,
-                isAtLatest: isAtLatest,
-                isAtRoot: isAtRoot
             }}
         >
             <div css={AppCss}>

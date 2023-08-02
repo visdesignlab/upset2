@@ -27,7 +27,7 @@ const Header = ({ data }: { data: any }) => {
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const importError = useRecoilValue(importErrorAtom);
   
-  const { provenance, isAtRoot, isAtLatest } = useContext(ProvenanceContext);
+  const { provenance } = useContext(ProvenanceContext);
   
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
@@ -99,6 +99,20 @@ const Header = ({ data }: { data: any }) => {
 
     fetchInfo();
   }, [])
+
+  const [ trrackPosition, setTrrackPosition ] = useState({
+    isAtLatest: true,
+    isAtRoot: true
+  });
+
+  useEffect(() => {
+    provenance.currentChange(() => {
+      setTrrackPosition({
+        isAtLatest: provenance.current.children.length === 0,
+        isAtRoot: provenance.current.id === provenance.root.id
+      })
+    })
+  })
   
   return (
     <AppBar sx={{position:"static", boxShadow:"none"}}>
@@ -114,10 +128,10 @@ const Header = ({ data }: { data: any }) => {
             Upset - Visualizing Intersecting Sets
           </Typography>
           <ButtonGroup>
-            <IconButton color="inherit" onClick={() => provenance.undo()} disabled={isAtRoot}>
+            <IconButton color="inherit" onClick={() => provenance.undo()} disabled={trrackPosition.isAtRoot}>
               <UndoIcon />
             </IconButton>
-            <IconButton color="inherit" onClick={() => provenance.redo()} disabled={isAtLatest}>
+            <IconButton color="inherit" onClick={() => provenance.redo()} disabled={trrackPosition.isAtLatest}>
               <RedoIcon />
             </IconButton>
           </ButtonGroup>
