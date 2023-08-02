@@ -4821,10 +4821,10 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trrack/core@1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.1.0.tgz#44a75de7ac5d1c4451f7a01873a90b21d69dd8c1"
-  integrity sha512-OvWMDsVWhFr8cS4g972Uea1L9RE63TG5VgrWIvToL8eC30+tOpw08Ks/GzHs21IrdrMARafsp3YC/HoXPr+HNg==
+"@trrack/core@1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.2.0.tgz#8bdc6abf1690e410a75f136e770e01c98b2393b6"
+  integrity sha512-sVj/V8qHil//prpvcZfAmeuFYwVWTOeo071Xv0wgW42owMRlxMnaK+esYMmPVZr+1NVVujm0aIU1TOOLLBOQ+Q==
   dependencies:
     "@reduxjs/toolkit" "^1.9.1"
     fast-json-patch "^3.1.1"
@@ -4839,10 +4839,10 @@
     fast-json-patch "^3.1.1"
     uuid "^9.0.0"
 
-"@trrack/vis-react@1.2.2":
-  version "1.2.2"
-  resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.2.2.tgz#c9bef9d18feb122528cdbd05403f971179ce4121"
-  integrity sha512-TVin4BxaKW6B6BH6GNXYLflNTpmBv17jro0g3FwYLOcf56TdLA5pBmuNvi7Yuhu9UxPKEWWRN79mPSXs/jI8sQ==
+"@trrack/vis-react@^1.2.2":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.3.0.tgz#3c859b4b678954a9afa3cfece6703cde89999a6c"
+  integrity sha512-key0OTDybA5kvb2DlBS4sIJGDXj/muphTAwalau19xllZqARbsThwIVWKJACcJDz8gbBDMWabtLG9G0WPHnMoQ==
   dependencies:
     "@fortawesome/free-solid-svg-icons" "^6.2.1"
     "@fortawesome/react-fontawesome" "^0.2.0"
