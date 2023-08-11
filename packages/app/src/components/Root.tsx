@@ -48,10 +48,9 @@ export const Root = ({provenance, actions, data, config}: Props) => {
       if (sessionId) {
         const session = await api.getSession(workspace || '', parseInt(sessionId), 'table');
   
-        // If the session is empty, the API will be an empty object
-        // Only attempt to import if we have a string
-        if (typeof session.state === 'string') {
-          provenance.import(session.state);
+        // Load the session if the object is not empty
+        if (typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
+          provenance.importObject(session.state);
         }
       }
     }

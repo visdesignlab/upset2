@@ -4821,15 +4821,6 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-1.1.2.tgz#ccb91445360179a04e7fe6aff78c00ffc1eeaf82"
   integrity sha512-RbzJvlNzmRq5c3O09UipeuXno4tA1FE6ikOjxZK0tuxVv3412l64l5t1W5pj4+rJq9vpkm/kwiR07aZXnsKPxw==
 
-"@trrack/core@1.2.0":
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.2.0.tgz#8bdc6abf1690e410a75f136e770e01c98b2393b6"
-  integrity sha512-sVj/V8qHil//prpvcZfAmeuFYwVWTOeo071Xv0wgW42owMRlxMnaK+esYMmPVZr+1NVVujm0aIU1TOOLLBOQ+Q==
-  dependencies:
-    "@reduxjs/toolkit" "^1.9.1"
-    fast-json-patch "^3.1.1"
-    uuid "^9.0.0"
-
 "@trrack/core@^1.0.0":
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.0.1.tgz#47c292a530b3022cd296389b9504d8f8f91ae2b0"
@@ -4839,7 +4830,16 @@
     fast-json-patch "^3.1.1"
     uuid "^9.0.0"
 
-"@trrack/vis-react@^1.2.2":
+"@trrack/core@^1.3.0-beta.1":
+  version "1.3.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.3.0-beta.1.tgz#9088c2f589a7f6966ba9afd17699123b2a597b42"
+  integrity sha512-HURGadgeBZMOgvWgBLiX/5ywojrUBnnp0RbK80FNeNSpVP42a2QL6mUQLGeU9or1gUdxlGHjd/wdmBTvKTCwzg==
+  dependencies:
+    "@reduxjs/toolkit" "^1.9.1"
+    fast-json-patch "^3.1.1"
+    uuid "^9.0.0"
+
+"@trrack/vis-react@^1.3.0":
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.3.0.tgz#3c859b4b678954a9afa3cfece6703cde89999a6c"
   integrity sha512-key0OTDybA5kvb2DlBS4sIJGDXj/muphTAwalau19xllZqARbsThwIVWKJACcJDz8gbBDMWabtLG9G0WPHnMoQ==
@@ -14854,10 +14854,10 @@ multimatch@^5.0.0:
     arrify "^2.0.1"
     minimatch "^3.0.4"
 
-multinet@0.21.13, multinet@^0.21.13:
-  version "0.21.13"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.13.tgz#a4c440b05369bcb2001a728c9ecf9cc2b86a298c"
-  integrity sha512-UI++fPe3nr1ueEO5VSqGtL1rb6iV8Qt7ACE2Srw2HqcHt+jdhXmaf439XZtrRHl/TqcBE6xlnsObDSnbyiHbgQ==
+multinet@^0.21.16:
+  version "0.21.16"
+  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.21.16.tgz#678cd0ec068469586937d1f55cc64573c432997c"
+  integrity sha512-IbmGrgVY82Dx6mxpO0YRFxvdAAeiclaz1nLOBHhSUnihjM2mZCbbUdOn9YbAilFQrEDq9BB5nTRsnT1WJ9b76Q==
   dependencies:
     axios "^0.21.1"
     django-s3-file-field "^0.1.2"

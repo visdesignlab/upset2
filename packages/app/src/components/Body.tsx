@@ -36,7 +36,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
 
   useEffect(() => {
     provObject.provenance.currentChange(() => {
-      api.updateSession(workspace || '', parseInt(sessionId || '0'), 'table', provObject.provenance.export());
+      api.updateSession(workspace || '', parseInt(sessionId || ''), 'table', provObject.provenance.exportObject());
     })
   }, [provObject.provenance, sessionId, workspace]);
 
