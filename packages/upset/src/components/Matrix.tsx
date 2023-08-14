@@ -40,7 +40,7 @@ export const Matrix: FC<Props> = ({
   if (memberCount > 1) lastMember = membership.lastIndexOf('Yes');
 
   return (
-    <Group tx={dimensions.xOffset} ty={20}>
+    <Group tx={dimensions.xOffset} ty={0}>
       <Group tx={dimensions.set.width / 2} ty={0}>
         {sets.map((set, idx) => {
           const membershipStatus = subset.setMembership[set];

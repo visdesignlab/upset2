@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect } from 'react';
-// import { ProvVis } from '@trrack/vis-react';
+import { ProvVis } from '@trrack/vis-react';
 import {
   Divider, Drawer, IconButton, Typography, css,
 } from '@mui/material';
@@ -61,14 +61,14 @@ export const ProvenanceVis = ({ open, close }: Props) => {
             margin: auto;
           `}
         />
-        {/* <ProvVis
+        <ProvVis
           root={provenance.root.id}
           config={{
-            changeCurrent: node => provenance.to(node),
+            changeCurrent: (node) => provenance.to(node),
           }}
           nodeMap={provenance.graph.backend.nodes}
           currentNode={currentNodeId}
-        /> */}
+        />
       </div>
     </Drawer>
   );

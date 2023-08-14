@@ -2,6 +2,8 @@ import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC, useContext } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
@@ -21,21 +23,22 @@ type Props = {
   aggregateRow: Aggregate;
 };
 
+const iconSize = '20px';
+
 const expanded = (
-  <text dominantBaseline="middle" className="icon" textAnchor="middle">
-    &#xf107;
-  </text>
+  <g className="icon" textAnchor="middle" dominantBaseline="middle">
+    <SvgIcon height={iconSize} width={iconSize}>
+      <KeyboardArrowDownIcon />
+    </SvgIcon>
+  </g>
 );
 
 export const collapsed = (
-  <text
-    transform="rotate(-90)"
-    dominantBaseline="middle"
-    className="icon"
-    textAnchor="middle"
-  >
-    &#xf107;
-  </text>
+  <g transform={`rotate(180) translate(-${iconSize.replace('px', '')}, -${iconSize.replace('px', '')})`} className="icon" textAnchor="middle" dominantBaseline="middle">
+    <SvgIcon height={iconSize} width={iconSize}>
+      <KeyboardArrowDownIcon />
+    </SvgIcon>
+  </g>
 );
 
 const secondLevelXOffset = 15;
@@ -82,7 +85,6 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           ry={10}
         />
         <g
-          transform={translate(10, dimensions.body.rowHeight / 2)}
           onClick={() => {
             if (collapsedIds.includes(aggregateRow.id)) {
               actions.removeCollapsed(aggregateRow.id);
