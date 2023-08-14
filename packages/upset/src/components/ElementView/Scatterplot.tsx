@@ -9,21 +9,19 @@ type Props = {
   data: PlainObject;
 };
 
-export const ScatterplotPlot: FC<Props> = ({ spec, data }) => {
-  return (
-    <VegaLite
-      spec={createScatterplotSpec(
-        {
-          attribute: spec.x,
-          logScale: spec.xScaleLog || false,
-        },
-        {
-          attribute: spec.y,
-          logScale: spec.yScaleLog || false,
-        },
-      )}
-      data={data}
-      actions={false}
-    />
-  );
-};
+export const ScatterplotPlot: FC<Props> = ({ spec, data }) => (
+  <VegaLite
+    spec={createScatterplotSpec(
+      {
+        attribute: spec.x,
+        logScale: spec.xScaleLog || false,
+      },
+      {
+        attribute: spec.y,
+        logScale: spec.yScaleLog || false,
+      },
+    )}
+    data={data}
+    actions={false}
+  />
+);

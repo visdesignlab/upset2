@@ -1,7 +1,7 @@
-import { flattenedRows, rowsCount } from "@visdesignlab/upset2-core";
-import { upsetConfigAtom } from "./config/upsetConfigAtoms";
-import { dataAtom } from "./dataAtom";
-import { selector } from "recoil";
+import { flattenedRows, rowsCount } from '@visdesignlab/upset2-core';
+import { selector } from 'recoil';
+import { upsetConfigAtom } from './config/upsetConfigAtoms';
+import { dataAtom } from './dataAtom';
 
 export type RowConfig = {
   position: number;
@@ -17,8 +17,8 @@ export const rowCountSelector = selector({
     const state = get(upsetConfigAtom);
 
     return rowsCount(data, state);
-  }
-})
+  },
+});
 
 export const flattenedRowsSelector = selector({
   key: 'flattened-rows',
@@ -27,5 +27,5 @@ export const flattenedRowsSelector = selector({
     const state = get(upsetConfigAtom);
 
     return flattenedRows(data, state);
-  }
-})
+  },
+});

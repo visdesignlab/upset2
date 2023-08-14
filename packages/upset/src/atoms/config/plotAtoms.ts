@@ -24,11 +24,9 @@ export const wordCloudSelector = selector({
 
 export const plotsSelector = selector({
   key: 'all-plots',
-  get: ({ get }) => {
-    return [
-      ...get(scatterplotsSelector),
-      ...get(histogramSelector),
-      ...get(wordCloudSelector),
-    ];
-  },
+  get: ({ get }) => [
+    ...get(scatterplotsSelector),
+    ...get(histogramSelector),
+    ...get(wordCloudSelector),
+  ],
 });

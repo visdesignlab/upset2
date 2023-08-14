@@ -23,19 +23,17 @@ export const AttributeHeaders = () => {
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >
-      {visibleAttribute.map((attribute, idx) => {
-        return (
-          <g
-            key={attribute}
-            transform={translate(
-              idx * (dimensions.attribute.width + dimensions.attribute.vGap),
-              0,
-            )}
-          >
-            <AttributeHeader attribute={attribute} />
-          </g>
-        );
-      })}
+      {visibleAttribute.map((attribute, idx) => (
+        <g
+          key={attribute}
+          transform={translate(
+            idx * (dimensions.attribute.width + dimensions.attribute.vGap),
+            0,
+          )}
+        >
+          <AttributeHeader attribute={attribute} />
+        </g>
+      ))}
     </g>
   );
 };

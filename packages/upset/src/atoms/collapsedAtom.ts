@@ -4,7 +4,7 @@ import { upsetConfigAtom } from './config/upsetConfigAtoms';
 export const collapsedSelector = selector<string[]>({
   key: 'collapsed-selector',
   get: ({ get }) => {
-    const collapsed = get(upsetConfigAtom).collapsed;
+    const { collapsed } = get(upsetConfigAtom);
     return collapsed;
-  }
+  },
 });

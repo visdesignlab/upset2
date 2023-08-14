@@ -1,5 +1,7 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogTitle, IconButton, Tab, Tabs } from '@mui/material';
+import {
+  Box, Dialog, DialogTitle, IconButton, Tab, Tabs,
+} from '@mui/material';
 import { FC, ReactNode, useState } from 'react';
 
 import { AddHistogram, AddScatterplot, AddWordCloud } from './AddPlot';
@@ -12,7 +14,9 @@ type TabProps = {
   value: PlotType;
 };
 
-function TabPanel({ children, index, value, ...others }: TabProps) {
+function TabPanel({
+  children, index, value, ...others
+}: TabProps) {
   return (
     <Box
       sx={{

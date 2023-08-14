@@ -9,12 +9,10 @@ type Props = {
   data: PlainObject;
 };
 
-export const HistogramPlot: FC<Props> = ({ spec, data }) => {
-  return (
-    <VegaLite
-      spec={createHistogramSpec(spec.attribute, spec.bins, spec.frequency)}
-      data={data}
-      actions={false}
-    />
-  );
-};
+export const HistogramPlot: FC<Props> = ({ spec, data }) => (
+  <VegaLite
+    spec={createHistogramSpec(spec.attribute, spec.bins, spec.frequency)}
+    data={data}
+    actions={false}
+  />
+);

@@ -16,7 +16,7 @@ export const elementSelector = selectorFamily<
     const items = get(itemsAtom);
     const data = get(dataAtom);
     const state = get(upsetConfigAtom);
-    const intersections = flattenedOnlyRows(data, state)
+    const intersections = flattenedOnlyRows(data, state);
     const row = intersections[id];
     const palette = get(bookmarkedColorPalette);
     const currentIntersection = get(currentIntersectionAtom);
@@ -25,14 +25,14 @@ export const elementSelector = selectorFamily<
 
     const memberElements = getItems(row);
 
-    return memberElements.map(el => ({
+    return memberElements.map((el) => ({
       ...items[el],
       subset: id,
       subsetName: row.elementName,
       color: palette[id] || get(nextColorSelector),
-      isCurrentSelected: currentIntersection ? true : false,
+      isCurrentSelected: !!currentIntersection,
       isCurrent:
-        currentIntersection && currentIntersection.id === id ? true : false,
+        !!(currentIntersection && currentIntersection.id === id),
     }));
   },
 });
@@ -41,16 +41,16 @@ export const intersectionCountSelector = selectorFamily<
   number,
   string | null | undefined
 >({
-  key: `intersection-count`,
+  key: 'intersection-count',
   get: (id: string | null | undefined) => ({ get }) => {
     if (!id) return 0;
 
     const data = get(dataAtom);
     const state = get(upsetConfigAtom);
     const intersections = flattenedOnlyRows(data, state);
-  
+
     if (intersections[id] === undefined) { return 0; }
-    
+
     const row = intersections[id];
     return row.size;
   },
@@ -65,13 +65,13 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
     if (currentIntersection === null) return [];
 
     if (!ids.includes(currentIntersection.id)) {
-        items.push(...get(elementSelector(currentIntersection.id)));
-      }
+      items.push(...get(elementSelector(currentIntersection.id)));
+    }
 
-      ids.forEach(id => {
-        items.push(...get(elementSelector(id)));
-      });
-    
+    ids.forEach((id) => {
+      items.push(...get(elementSelector(id)));
+    });
+
     return items;
   },
 });

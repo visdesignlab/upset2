@@ -2,38 +2,38 @@
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
 import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogContentText,
-    DialogTitle,
-    Divider,
-    Grid,
-    IconButton,
-    List,
-    ListItem,
-    ListItemText,
-    Paper,
-    Slide,
-    Typography,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Divider,
+  Grid,
+  IconButton,
+  List,
+  ListItem,
+  ListItemText,
+  Paper,
+  Slide,
+  Typography,
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
-import { FC, forwardRef, ReactElement, Ref, useContext, useState } from 'react';
+import {
+  FC, forwardRef, ReactElement, Ref, useContext, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { attributeAtom } from '../../atoms/attributeAtom';
 import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes';
 import { ProvenanceContext } from '../Root';
 
-const Transition = forwardRef(function Transition(
+const Transition = forwardRef((
   props: TransitionProps & {
     children: ReactElement<any, any>;
   },
   ref: Ref<unknown>,
-) {
-  return <Slide direction="down" ref={ref} {...props} />;
-});
+) => <Slide direction="down" ref={ref} {...props} />);
 
 type Props = {
   open: boolean;

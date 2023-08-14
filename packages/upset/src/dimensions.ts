@@ -57,16 +57,16 @@ export function calculateDimensions(
       return attribute.width + this.textMargin;
     },
   };
-  
+
   const bookmarkStar = {
     width: 20,
     height: 24,
     gap: 10,
-  }
+  };
 
   const sidebar = {
     width: 250,
-  }
+  };
 
   const header = {
     totalWidth:

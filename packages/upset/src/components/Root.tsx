@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import { createContext, FC, useEffect, useMemo } from 'react';
+import {
+  createContext, FC, useEffect, useMemo,
+} from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
@@ -12,7 +14,9 @@ import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
-import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
+import {
+  getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
+} from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
@@ -49,7 +53,9 @@ type Props = {
   };
 };
 
-export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementSidebar }) => {
+export const Root: FC<Props> = ({
+  data, config, extProvenance, provVis, elementSidebar,
+}) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
 
@@ -92,7 +98,7 @@ export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementS
     setItems(data.items);
     setAttributeColumns(data.attributeColumns);
     setAllColumns(data.columns);
-    setData(data)
+    setData(data);
   }, [data]);
 
   // remove all current selections and highlight states
@@ -100,12 +106,12 @@ export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementS
     setCurrentIntersection(null);
     setColumnSelect([]);
     setColumnHover([]);
-  }
+  };
 
   // close all open context menus
   const removeContextMenu = () => {
     setContextMenu(null);
-  }
+  };
 
   useEffect(() => {
     document.addEventListener('click', removeSelections, false);
@@ -114,11 +120,10 @@ export const Root: FC<Props> = ({ data, config, extProvenance, provVis, elementS
     return function removeListeners() {
       document.removeEventListener('click', removeSelections, false);
       document.removeEventListener('contextmenu', removeContextMenu, false);
-    }
+    };
   }, []);
 
-  if (Object.keys(sets).length === 0 || Object.keys(items).length === 0)
-    return null;
+  if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 
   return (
     <ProvenanceContext.Provider

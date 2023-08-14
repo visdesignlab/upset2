@@ -10,8 +10,7 @@ export const attributeAtom = atom<string[]>({
 export const attributeValuesSelector = selectorFamily<number[], string>({
   key: 'attribute-values',
   get:
-    (attribute: string) =>
-    ({ get }) => {
+    (attribute: string) => ({ get }) => {
       const items = get(itemsAtom);
       const values = Object.values(items).map(
         (val) => val[attribute] as number,
@@ -26,8 +25,7 @@ export const attributeMinMaxSelector = selectorFamily<
 >({
   key: 'attribute-min-max',
   get:
-    (attribute: string) =>
-    ({ get }) => {
+    (attribute: string) => ({ get }) => {
       const values = get(attributeValuesSelector(attribute));
       return {
         min: Math.min(...values),

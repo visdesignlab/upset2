@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/upset2-core.esm.js",
+  "module": "dist/index.mjs",
   "files": [
     "dist",
     "src"
@@ -13,22 +13,18 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch --noClean",
+    "start": "vite build --watch",
     "dev": "yarn run start",
-    "build": "tsdx build",
-    "test": "tsdx test",
-    "lint": "tsdx lint",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why"
+    "build": "vite build",
+    "lint": "eslint src --fix"
   },
   "peerDependencies": {},
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "eslint src"
     }
   },
-  "author": "Kiran Gadhave (kirangadhave2@gmail.com)",
+  "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner",
   "size-limit": [
     {
       "path": "dist/packagescore.cjs.production.min.js",

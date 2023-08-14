@@ -24,7 +24,7 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
   const deviationScale = useRecoilValue(deviationScaleAtom);
   deviationScale.range([0, dimensions.attribute.width / 2]);
 
-  return ( 
+  return (
     <g
       transform={translate(
         dimensions.matrixColumn.width +

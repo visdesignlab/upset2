@@ -14,10 +14,11 @@ export const dataSelector = selector<CoreUpsetData | null>({
     let rows;
     try {
       rows = (
-      await api.table(workspace, table, {
-        limit: Number.MAX_SAFE_INTEGER,
-      })
-    ).results;
+        await api.table(workspace, table, {
+          limit: Number.MAX_SAFE_INTEGER,
+        })
+      ).results;
+      console.log("await completed");
     } catch (e) {
       return null;
     }

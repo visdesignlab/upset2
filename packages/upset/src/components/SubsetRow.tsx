@@ -9,7 +9,9 @@ import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
 import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { highlight, defaultBackground, mousePointer, hoverHighlight } from '../utils/styles';
+import {
+  highlight, defaultBackground, mousePointer, hoverHighlight,
+} from '../utils/styles';
 import { BookmarkStar } from './BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 
@@ -27,7 +29,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const setColumnHighlight = useSetRecoilState(columnHoverAtom);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
 
-  const [ hover, setHover ] = useState<string | null>(null);
+  const [hover, setHover] = useState<string | null>(null);
 
   return (
     <g
@@ -53,7 +55,9 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       onMouseLeave={() => setHover(null)}
       css={mousePointer}
     >
-      <rect height={dimensions.body.rowHeight} width={dimensions.body.rowWidth} 
+      <rect
+        height={dimensions.body.rowHeight}
+        width={dimensions.body.rowWidth}
         css={
           currentIntersection !== null && currentIntersection.id === subset.id
             ? highlight
@@ -61,11 +65,12 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
               ? hoverHighlight
               : defaultBackground
         }
-        rx="5" ry="10"></rect>
+        rx="5"
+        ry="10"
+      />
       <Matrix sets={visibleSets} subset={subset} />
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&
-        <BookmarkStar row={subset} />
-      }
+        <BookmarkStar row={subset} />}
       <SizeBar size={subset.size} row={subset} />
       <DeviationBar deviation={subset.deviation} />
       <AttributeBars attributes={subset.attributes} />

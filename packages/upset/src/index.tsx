@@ -1,13 +1,13 @@
 export { Upset } from './components/Upset';
 
 export {
-  UpsetProvenance,
-  Events,
-  Metadata,
+  type UpsetProvenance,
+  type Events,
+  type Metadata,
+  type UpsetActions,
   getActions,
-  UpsetActions,
-  initializeProvenanceTracking
-} from './provenance/index';
+  initializeProvenanceTracking,
+} from './provenance';
 
 export { upsetConfigAtom, defaultConfig } from './atoms/config/upsetConfigAtoms';
 

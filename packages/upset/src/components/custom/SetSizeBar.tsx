@@ -50,7 +50,10 @@ export const SetSizeBar: FC<Props> = ({
       ty={ty}
     >
       <title>
-        {label} - {size}
+        {label}
+        {' '}
+        -
+        {size}
       </title>
 
       <rect
@@ -80,7 +83,7 @@ export const SetSizeBar: FC<Props> = ({
       />
       {showLabel && (
         <foreignObject
-          transform={`${translate(0 , dimensions.set.label.height - 2)}rotate(-90)`}
+          transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
           height={dimensions.set.width}
           width={dimensions.set.label.height - (dimensions.set.width / 2)}
           z={100}
@@ -92,7 +95,10 @@ export const SetSizeBar: FC<Props> = ({
             text-overflow: ellipsis;
             padding: 0;
             margin: 0; 
-          `}>{label}</p>
+          `}
+          >
+            {label}
+          </p>
         </foreignObject>
       )}
     </Group>

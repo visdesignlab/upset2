@@ -79,7 +79,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
         (dimensions.body.rowHeight - dimensions.size.plotHeight) / 2,
       )}
     >
-      {rectArray.map(arr => (
+      {rectArray.map((arr) => (
         <rect
           transform={translate(0, (arr * offset) / 2)}
           key={arr}

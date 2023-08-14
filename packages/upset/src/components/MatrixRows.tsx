@@ -20,18 +20,17 @@ export function rowRenderer(row: Row) {
   return <SubsetRow subset={row} />;
 }
 
-
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  
+
   const shouldRender = (row: Row) => {
     const parentId = row.parent;
-    
+
     if (parentId === undefined) return true;
 
     if (parentId.includes('-')) {
-      const topLevelAggId = parentId.substring(0,parentId.indexOf('-'));
+      const topLevelAggId = parentId.substring(0, parentId.indexOf('-'));
       if (collapsedIds.includes(topLevelAggId)) {
         return false;
       }
@@ -40,7 +39,7 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     if (collapsedIds.includes(parentId)) return false;
 
     return true;
-  }
+  };
 
   let yTransform = 0;
 
@@ -51,21 +50,21 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     }
 
     return yTransform;
-  }
+  };
 
   const rowTransitions = useTransition(
     rows.map(({ row, id }, index) => {
       // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
       if (index > 0) {
         const prevRow = rows[index - 1].row;
-        /* 
-         * Only add an extra rowHeight to the transform if the previous row is 
+        /*
+         * Only add an extra rowHeight to the transform if the previous row is
          * an aggregate containing set membership circles which is NOT contained in a collapsed parent aggregate
          */
-        if (isRowAggregate(prevRow)   
+        if (isRowAggregate(prevRow)
           && !(prevRow.parent && collapsedIds.includes(prevRow.parent))
           && ['Sets', 'Overlaps'].includes(prevRow.aggregateBy)) {
-            yTransform += dimensions.body.rowHeight;
+          yTransform += dimensions.body.rowHeight;
         }
       }
 
@@ -73,7 +72,7 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
         id,
         row,
         y: (index > 0) ? calculateYTransform(row) : 0,
-      }
+      };
     }),
     {
       keys: (d) => d.id,
@@ -84,12 +83,10 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   return (
     <g onClick={(e) => e.stopPropagation()}>
-      {rowTransitions((props, item) =>
-        (
-          shouldRender(item.row) &&
+      {rowTransitions((props, item) => (
+        shouldRender(item.row) &&
           <a.g transform={props.transform}>{rowRenderer(item.row)}</a.g>
-        )
-      )}
+      ))}
     </g>
   );
 };

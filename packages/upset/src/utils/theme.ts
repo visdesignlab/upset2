@@ -31,23 +31,23 @@ const theme: ThemeOptions = {
     MuiTooltip: {
       styleOverrides: {
         tooltip: {
-          backgroundColor: "rgba(116, 173, 209, 0.94)",
-          color: "#ffffff",
-          fontSize: "0.92em",
+          backgroundColor: 'rgba(116, 173, 209, 0.94)',
+          color: '#ffffff',
+          fontSize: '0.92em',
         },
         arrow: {
-          color: "rgba(116, 173, 209, 0.94)"
-        }
-      }
+          color: 'rgba(116, 173, 209, 0.94)',
+        },
+      },
     },
     MuiTypography: {
       styleOverrides: {
         body1: {
-          fontSize: "0.9rem"
-        }
-      }
-    }
-  }
+          fontSize: '0.9rem',
+        },
+      },
+    },
+  },
 };
 
 const defaultTheme = createTheme(theme);

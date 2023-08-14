@@ -2,17 +2,17 @@ import OauthClient from '@girder/oauth-client';
 import { multinetApi } from 'multinet';
 
 export const host: string =
-  process.env.REACT_APP_MULTINET_HOST || 'http://localhost:8000';
+  import.meta.env.REACT_APP_MULTINET_HOST || 'http://localhost:8000';
 
 export const oauthApiRoot: string =
-  process.env.REACT_APP_OAUTH_API_ROOT || `${host}/oauth/`;
+import.meta.env.REACT_APP_OAUTH_API_ROOT || `${host}/oauth/`;
 
 const login_url = `${host}/oauth/`;
 
-export const client_id = process.env.REACT_APP_OAUTH_CLIENT_ID || '';
+export const client_id = import.meta.env.REACT_APP_OAUTH_CLIENT_ID || '';
 
 export const multinetDatasets =
-  process.env.REACT_APP_UPLOAD_URL || 'http://localhost:8080';
+import.meta.env.REACT_APP_UPLOAD_URL || 'http://localhost:8080';
 
 export function getMultinetDataUrl(workspace?: string | null) {
   if (workspace) return `${multinetDatasets}/#/workspaces/${workspace}`;

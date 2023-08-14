@@ -47,7 +47,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  const { actions } = useContext(ProvenanceContext)
+  const { actions } = useContext(ProvenanceContext);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -68,8 +68,8 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
         <rect
           transform={translate(0, 2)}
-          css={currentIntersection !== null && currentIntersection.id === aggregateRow.id ? 
-            highlight : 
+          css={currentIntersection !== null && currentIntersection.id === aggregateRow.id ?
+            highlight :
             css`
             fill: #cccccc;
             opacity: 0.3;
@@ -81,7 +81,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           rx={5}
           ry={10}
         />
-        <g 
+        <g
           transform={translate(10, dimensions.body.rowHeight / 2)}
           onClick={() => {
             if (collapsedIds.includes(aggregateRow.id)) {
@@ -116,8 +116,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       )}
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
         { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
-            <BookmarkStar row={aggregateRow} />
-        }
+        <BookmarkStar row={aggregateRow} />}
         <SizeBar row={aggregateRow} size={aggregateRow.size} />
         <DeviationBar deviation={aggregateRow.deviation} />
         <AttributeBars attributes={aggregateRow.attributes} />

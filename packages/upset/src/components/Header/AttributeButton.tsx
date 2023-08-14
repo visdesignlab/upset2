@@ -24,7 +24,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
-  }
+  };
 
   const openContextMenu = (e: React.MouseEvent) => {
     setContextMenu(
@@ -32,14 +32,14 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         mouseX: e.clientX,
         mouseY: e.clientY,
         id: `header-menu-${label}`,
-        items: getMenuItems()
-      }
+        items: getMenuItems(),
+      },
     );
-  }
+  };
 
   const sortByHeader = () => {
     actions.sortBy(label as SortBy);
-  }
+  };
 
   const getMenuItems = () => {
     const items = [];
@@ -51,7 +51,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
           handleContextMenuClose();
         },
         disabled: sortBy === label,
-      })
+      });
     }
     items.push({
       label: `Remove ${label}`,
@@ -59,10 +59,10 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         actions.removeAttribute(label);
         handleContextMenuClose();
       },
-    })
+    });
 
     return items;
-  }
+  };
 
   return (
     <g
@@ -73,9 +73,9 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         cursor: (sort ? 'context-menu' : 'default'),
       }}
       onContextMenu={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          openContextMenu(e);
+        e.preventDefault();
+        e.stopPropagation();
+        openContextMenu(e);
       }}
       transform={translate(0, 6)}
     >

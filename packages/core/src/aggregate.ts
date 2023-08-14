@@ -20,32 +20,30 @@ import {
 export function getItems(row: Row) {
   if (isRowSubset(row)) {
     return row.items;
-  } else {
-    const items: string[] = [];
-
-    row.items.order.forEach((subsetId) => {
-      const element = row.items.values[subsetId];
-
-      items.push(...getItems(element));
-    });
-
-    return Array.from(new Set(items));
   }
+  const items: string[] = [];
+
+  row.items.order.forEach((subsetId) => {
+    const element = row.items.values[subsetId];
+
+    items.push(...getItems(element));
+  });
+
+  return Array.from(new Set(items));
 }
 
 export const getAggSize = (row: Row) => {
   if (isRowSubset(row)) {
     return row.size;
-  } else {
-    let size = 0;
-
-    Object.values(row.items.values).forEach((r) => {
-      size += getAggSize(r);
-    });
-
-    return size;
   }
-}
+  let size = 0;
+
+  Object.values(row.items.values).forEach((r) => {
+    size += getAggSize(r);
+  });
+
+  return size;
+};
 
 function aggregateByDegree(
   subsets: Subsets,
@@ -85,7 +83,7 @@ function aggregateByDegree(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-','');
+      agg.parent = parentPrefix.replace('-', '');
     }
 
     degreeMap[i] = id;
@@ -99,7 +97,7 @@ function aggregateByDegree(
 
     const relevantAggregate = aggs.values[degreeMap[degree]];
 
-    subset = {...subset, parent: relevantAggregate.id}
+    subset = { ...subset, parent: relevantAggregate.id };
 
     relevantAggregate.items.values[subsetId] = subset;
     relevantAggregate.items.order.push(subsetId);
@@ -171,7 +169,7 @@ function aggregateBySets(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-','');
+      agg.parent = parentPrefix.replace('-', '');
     }
 
     setMap[set] = id;
@@ -189,7 +187,7 @@ function aggregateBySets(
     if (belongingSets.length === 0) {
       const relevantAggregate = aggs.values[setMap[UNINCLUDED]];
 
-      subset = {...subset, parent: relevantAggregate.id}
+      subset = { ...subset, parent: relevantAggregate.id };
 
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
@@ -200,7 +198,7 @@ function aggregateBySets(
     belongingSets.forEach((set) => {
       const relevantAggregate = aggs.values[setMap[set]];
 
-      subset = {...subset, parent: relevantAggregate.id}
+      subset = { ...subset, parent: relevantAggregate.id };
 
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
@@ -269,7 +267,7 @@ function aggregateByDeviation(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-','');
+      agg.parent = parentPrefix.replace('-', '');
     }
 
     deviationMap[type] = id;
@@ -283,7 +281,7 @@ function aggregateByDeviation(
 
     const relevantAggregate = aggs.values[deviationMap[deviationType]];
 
-    subset = {...subset, parent: relevantAggregate.id}
+    subset = { ...subset, parent: relevantAggregate.id };
 
     relevantAggregate.items.values[subsetId] = subset;
     relevantAggregate.items.order.push(subsetId);
@@ -360,7 +358,7 @@ function aggregateByOverlaps(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-','');
+      agg.parent = parentPrefix.replace('-', '');
     }
 
     overlapAggMap[combo] = id;
@@ -380,7 +378,7 @@ function aggregateByOverlaps(
     overlaps.forEach((over) => {
       const relevantAggregate = aggs.values[overlapAggMap[over]];
 
-      subset = {...subset, parent: relevantAggregate.id}
+      subset = { ...subset, parent: relevantAggregate.id };
 
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
@@ -408,15 +406,12 @@ function aggregateSubsets(
   items: Items,
   attributeColumns: string[],
   level: number = 1,
-  parentPrefix : string = ""
+  parentPrefix : string = '',
 ) {
-  if (aggregateBy === 'Degree')
-    return aggregateByDegree(subsets, level, items, attributeColumns, parentPrefix);
-  if (aggregateBy === 'Sets')
-    return aggregateBySets(subsets, sets, level, items, attributeColumns, parentPrefix);
-  if (aggregateBy === 'Deviations')
-    return aggregateByDeviation(subsets, level, items, attributeColumns, parentPrefix);
-  if (aggregateBy === 'Overlaps')
+  if (aggregateBy === 'Degree') return aggregateByDegree(subsets, level, items, attributeColumns, parentPrefix);
+  if (aggregateBy === 'Sets') return aggregateBySets(subsets, sets, level, items, attributeColumns, parentPrefix);
+  if (aggregateBy === 'Deviations') return aggregateByDeviation(subsets, level, items, attributeColumns, parentPrefix);
+  if (aggregateBy === 'Overlaps') {
     return aggregateByOverlaps(
       subsets,
       sets,
@@ -424,8 +419,9 @@ function aggregateSubsets(
       level,
       items,
       attributeColumns,
-      parentPrefix
+      parentPrefix,
     );
+  }
   return subsets;
 }
 
@@ -471,7 +467,7 @@ export function secondAggregation(
         items,
         attributeColumns,
         2,
-        agg.id + '-'
+        `${agg.id}-`,
       );
       // To add parent to nested aggs
       const newAgg = { ...agg, items: itms };
