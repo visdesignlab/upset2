@@ -64,13 +64,13 @@ const flattenRows = (
 ): RenderRow[] => {
   rows.order.forEach((rowId) => {
     const row = rows.values[rowId];
-    idPrefix += row.id;
+    const prefix = idPrefix + row.id;
     flattenedRows.push({
-      id: idPrefix,
+      id: prefix,
       row,
     });
     if (isRowAggregate(row)) {
-      flattenRows(row.items, flattenedRows, idPrefix);
+      flattenRows(row.items, flattenedRows, prefix);
     }
   });
 

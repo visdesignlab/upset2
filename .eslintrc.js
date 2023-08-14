@@ -58,6 +58,7 @@ module.exports = {
         caughtErrorsIgnorePattern: '^_',
       },
     ],
+    '@typescript-eslint/no-explicit-any': 'off',
     'no-unused-vars': 'off',
     'max-len': 'off',
   },

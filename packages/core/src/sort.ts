@@ -49,6 +49,8 @@ function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSet
           return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
         case 'Descending':
           return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
+        default:
+          return 0;
       }
     },
   );
