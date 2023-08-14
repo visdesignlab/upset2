@@ -1,10 +1,10 @@
 export { Upset } from './components/Upset';
 
 export {
-  UpsetProvenance,
-  Events,
-  Metadata,
-  UpsetActions,
+  type UpsetProvenance,
+  type Events,
+  type Metadata,
+  type UpsetActions,
   getActions,
   initializeProvenanceTracking,
 } from './provenance';
