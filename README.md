@@ -47,7 +47,7 @@ To deploy UpSet 2.0 locally it is necessary to install the Multinet infrastructu
 6. In the OAUTH application created during the [OAUTH API setup](https://github.com/multinet-app/multinet-api#api) of Multinet API, add `http://localhost:3000/` to the redirect uris field.
 7. Copy the `Client id` field in the application but do not modify the value
 8. Navigate to the `.env` file created in step 5.
-9. Paste the `Client id` to the field `REACT_APP_OAUTH_CLIENT_ID`
+9. Paste the `Client id` to the field `VITE_OAUTH_CLIENT_ID`
 
 ## Running the application
 
