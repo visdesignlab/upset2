@@ -1,8 +1,10 @@
 import { useContext, useState, useEffect } from 'react';
-import { ProvenanceContext } from './Root';
-import { ProvVis } from '@trrack/vis-react';
-import { Divider, Drawer, IconButton, Typography, css } from '@mui/material';
+// import { ProvVis } from '@trrack/vis-react';
+import {
+  Divider, Drawer, IconButton, Typography, css,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
+import { ProvenanceContext } from './Root';
 
 type Props = {
   open: boolean,
@@ -20,17 +22,21 @@ export const ProvenanceVis = ({ open, close }: Props) => {
   }, [provenance]);
 
   return (
-    <Drawer anchor={'right'} open={open} onClose={close} variant="persistent"
+    <Drawer
+      anchor="right"
+      open={open}
+      onClose={close}
+      variant="persistent"
       sx={{
         width: (open) ? initialDrawerWidth : 0,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            padding: '1em',
-            width: (open) ? initialDrawerWidth : 0,
-            boxSizing: 'border-box',
-            position: 'inherit',
-            zIndex: -1,
-          },
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          padding: '1em',
+          width: (open) ? initialDrawerWidth : 0,
+          boxSizing: 'border-box',
+          position: 'inherit',
+          zIndex: -1,
+        },
       }}
     >
       <div css={css`width:${initialDrawerWidth}`}>
@@ -55,14 +61,14 @@ export const ProvenanceVis = ({ open, close }: Props) => {
             margin: auto;
           `}
         />
-        <ProvVis
+        {/* <ProvVis
           root={provenance.root.id}
           config={{
             changeCurrent: node => provenance.to(node),
           }}
           nodeMap={provenance.graph.backend.nodes}
           currentNode={currentNodeId}
-        />
+        /> */}
       </div>
     </Drawer>
   );

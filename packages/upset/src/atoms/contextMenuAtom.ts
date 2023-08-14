@@ -1,9 +1,9 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 type Props = {
-    mouseX: number, 
-    mouseY: number, 
-    id: string, 
+    mouseX: number,
+    mouseY: number,
+    id: string,
     items: {
         label: string,
         onClick: () => any,
@@ -12,6 +12,6 @@ type Props = {
 }
 
 export const contextMenuAtom = atom<Props | null>({
-    key: 'context-menu-display-state',
-    default: null,
+  key: 'context-menu-display-state',
+  default: null,
 });

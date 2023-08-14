@@ -6,7 +6,7 @@ module.exports = {
   extends: [
     'plugin:react/recommended',
     'plugin:import/recommended',
-    "plugin:@typescript-eslint/recommended ",
+    'plugin:@typescript-eslint/recommended',
     'airbnb',
     'plugin:import/typescript',
   ],
@@ -19,6 +19,7 @@ module.exports = {
     sourceType: 'module',
   },
   plugins: ['react', '@typescript-eslint'],
+  root: true,
   rules: {
     'react/jsx-filename-extension': [
       2,
@@ -49,5 +50,15 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/jsx-wrap-multilines': 'off',
     'operator-linebreak': 'off',
+    '@typescript-eslint/no-unused-vars': [
+      'warn', // or "error"
+      {
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_',
+      },
+    ],
+    'no-unused-vars': 'off',
+    'max-len': 'off',
   },
 };

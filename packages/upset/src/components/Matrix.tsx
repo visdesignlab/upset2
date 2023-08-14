@@ -1,4 +1,6 @@
-import { Aggregate, Subset, getBelongingSetsFromSetMembership, isRowAggregate } from '@visdesignlab/upset2-core';
+import {
+  Aggregate, Subset, getBelongingSetsFromSetMembership, isRowAggregate,
+} from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
@@ -24,7 +26,7 @@ export const Matrix: FC<Props> = ({
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const setList = useRecoilValue(setsAtom);
-  const [ columnHover, setColumnHover ] = useRecoilState(columnHoverAtom);
+  const [columnHover, setColumnHover] = useRecoilState(columnHoverAtom);
   const columnSelect = useRecoilValue(columnSelectAtom);
 
   const membership = sets.map((s) => subset.setMembership[s]);
@@ -38,7 +40,7 @@ export const Matrix: FC<Props> = ({
   if (memberCount > 1) lastMember = membership.lastIndexOf('Yes');
 
   return (
-    <Group tx={dimensions.xOffset} ty={0}>
+    <Group tx={dimensions.xOffset} ty={20}>
       <Group tx={dimensions.set.width / 2} ty={0}>
         {sets.map((set, idx) => {
           const membershipStatus = subset.setMembership[set];
@@ -52,7 +54,7 @@ export const Matrix: FC<Props> = ({
                 (e) => {
                   e.stopPropagation();
                   const memberSets = getBelongingSetsFromSetMembership(subset.setMembership);
-                  setColumnHover([...memberSets, set])
+                  setColumnHover([...memberSets, set]);
                 }
               }
               onMouseLeave={() => setColumnHover([])}
@@ -60,16 +62,16 @@ export const Matrix: FC<Props> = ({
               <title>
                 {setList[set].elementName}
               </title>
-              <rect 
-                transform={translate(idx * dimensions.set.width - dimensions.set.width/2, 0)} 
-                height={dimensions.body.rowHeight} 
-                width={dimensions.set.width} 
+              <rect
+                transform={translate(idx * dimensions.set.width - dimensions.set.width / 2, 0)}
+                height={dimensions.body.rowHeight}
+                width={dimensions.set.width}
                 css={
                   columnHover.includes(set) || columnSelect.includes(set)
-                      ? hoverHighlight
-                      : defaultBackground
-                }>
-              </rect>
+                    ? hoverHighlight
+                    : defaultBackground
+                }
+              />
               <MemberShipCircle
                 membershipStatus={membershipStatus}
                 cx={idx * dimensions.set.width}

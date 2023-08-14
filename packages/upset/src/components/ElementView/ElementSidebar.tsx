@@ -2,7 +2,9 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloseIcon from '@mui/icons-material/Close';
-import { Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css } from '@mui/material';
+import {
+  Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
+} from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -31,16 +33,16 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 
   const saveText: string[] = [];
 
-  saveText.push(columns.map(h => (h.includes(',') ? `"${h}"` : h)).join(','));
+  saveText.push(columns.map((h) => (h.includes(',') ? `"${h}"` : h)).join(','));
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const row: string[] = [];
 
-    columns.forEach(col => {
+    columns.forEach((col) => {
       row.push(item[col]?.toString() || '-');
     });
 
-    saveText.push(row.map(r => (r.includes(',') ? `"${r}"` : r)).join(','));
+    saveText.push(row.map((r) => (r.includes(',') ? `"${r}"` : r)).join(','));
   });
 
   console.log(saveText);
@@ -72,11 +74,11 @@ export const ElementSidebar = ({ open, close }: Props) => {
 
   const columns = useRecoilValue(columnsAtom);
 
-  const [ hideElementSidebar, setHideElementSidebar] = useState(!open);
+  const [hideElementSidebar, setHideElementSidebar] = useState(!open);
 
   useEffect(() => {
     setHideElementSidebar(!open);
-  }, [open])
+  }, [open]);
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -105,44 +107,44 @@ export const ElementSidebar = ({ open, close }: Props) => {
   );
 
   return (
-    <>
-      <Drawer
-        sx={{
+    <Drawer
+      sx={{
+        width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
+        flexShrink: 0,
+        '& .MuiDrawer-paper': {
+          padding: '1em',
           width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            padding: '1em',
-            width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-            boxSizing: 'border-box',
-            position: 'inherit',
-            zIndex: -1,
-          },
+          boxSizing: 'border-box',
+          position: 'inherit',
+          zIndex: -1,
+        },
+      }}
+      open={open}
+      onClose={close}
+      variant="persistent"
+      anchor="right"
+    >
+      <Box
+        sx={{
+          width: '5px',
+          cursor: 'ew-resize',
+          padding: '4px 0 0',
+          borderTop: '1px solid #ddd',
+          position: 'absolute',
+          top: 0,
+          bottom: 0,
+          left: 0,
+          zIndex: 100,
+          backgroundColor: '#f4f7f9',
         }}
-        open={open}
-        onClose={close}
-        variant="persistent"
-        anchor="right"
-      >
-        <Box
-          sx={{
-            width: '5px',
-            cursor: 'ew-resize',
-            padding: '4px 0 0',
-            borderTop: '1px solid #ddd',
-            position: 'absolute',
-            top: 0,
-            bottom: 0,
-            left: 0,
-            zIndex: 100,
-            backgroundColor: '#f4f7f9',
-          }}
-          onMouseDown={e => handleMouseDown(e)}
-        />
-        <div css={css`
+        onMouseDown={(e) => handleMouseDown(e)}
+      />
+      <div css={css`
           display: flex;
           justify-content: space-between;
-        `}>
-          { !fullWidth ?
+        `}
+      >
+        { !fullWidth ?
           <IconButton
             onClick={() => {
               setFullWidth(true);
@@ -151,69 +153,74 @@ export const ElementSidebar = ({ open, close }: Props) => {
             <OpenInFullIcon />
           </IconButton>
           : <IconButton
-            onClick={() => {
-              if (fullWidth) {
-                setFullWidth(false);
-              } else {
-                setHideElementSidebar(true);
-              }
-            }}
+              onClick={() => {
+                if (fullWidth) {
+                  setFullWidth(false);
+                } else {
+                  setHideElementSidebar(true);
+                }
+              }}
           >
             <CloseFullscreen />
-          </IconButton>
-          }
-          <IconButton
-            onClick={() => {
-              setHideElementSidebar(true);
-              close();  
-            }}
-          >
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Typography variant="button" fontSize="1em">
-          Element Queries
-        </Typography>
-        <Divider />
-        <ElementQueries />
-        <Typography variant="button" fontSize="1em">
-          Element Visualization
-        </Typography>
-        <Divider />
-        <ElementVisualization />
-        <Typography variant="button" fontSize="1em">
-          Query Result
-          <Tooltip
-            title={
+            </IconButton>}
+        <IconButton
+          onClick={() => {
+            setHideElementSidebar(true);
+            close();
+          }}
+        >
+          <CloseIcon />
+        </IconButton>
+      </div>
+      <Typography variant="button" fontSize="1em">
+        Element Queries
+      </Typography>
+      <Divider />
+      <ElementQueries />
+      <Typography variant="button" fontSize="1em">
+        Element Visualization
+      </Typography>
+      <Divider />
+      <ElementVisualization />
+      <Typography variant="button" fontSize="1em">
+        Query Result
+        <Tooltip
+          title={
               currentIntersection
                 ? `Download ${intersectionCounter} elements`
                 : ''
             }
+        >
+          <IconButton
+            disabled={!currentIntersection}
+            onClick={() => {
+              if (currentIntersection) {
+                downloadElementsAsCSV(
+                  currentIntersectionElements,
+                  columns,
+                  currentIntersection.elementName,
+                );
+              }
+            }}
           >
-            <IconButton
-              disabled={!currentIntersection}
-              onClick={() => {
-                if (currentIntersection)
-                  downloadElementsAsCSV(
-                    currentIntersectionElements,
-                    columns,
-                    currentIntersection.elementName,
-                  );
-              }}
-            >
-              <DownloadIcon />
-            </IconButton>
-          </Tooltip>
-        </Typography>
-        <Divider />
-        {currentIntersection ? (
-          <ElementTable id={currentIntersection.id} />
-        ) : (
-          <Alert severity="info" variant="outlined" sx={{ alignItems: 'center', marginTop: "0.5em", border: "none", color: "#777777" }}>
-            Please select a query to view the elements.
-          </Alert>
-        )}
-      </Drawer>
-    </>
+            <DownloadIcon />
+          </IconButton>
+        </Tooltip>
+      </Typography>
+      <Divider />
+      {currentIntersection ? (
+        <ElementTable id={currentIntersection.id} />
+      ) : (
+        <Alert
+          severity="info"
+          variant="outlined"
+          sx={{
+            alignItems: 'center', marginTop: '0.5em', border: 'none', color: '#777777',
+          }}
+        >
+          Please select a query to view the elements.
+        </Alert>
+      )}
+    </Drawer>
   );
 };

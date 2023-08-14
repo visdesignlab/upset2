@@ -8,7 +8,9 @@ type Props = SVGProps<SVGGElement> & {
 };
 
 const Group: FC<Props> = (props) => {
-  const { tx = 0, ty = tx, children, ...base } = props;
+  const {
+    tx = 0, ty = tx, children, ...base
+  } = props;
 
   return (
     <g {...base} transform={translate(tx, ty)}>

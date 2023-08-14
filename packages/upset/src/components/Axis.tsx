@@ -58,7 +58,7 @@ export const Axis = ({
     const numberOfTicksTarget = Math.max(1, Math.floor(width / pixelsPerTick));
 
     return {
-      ticks: scale.ticks(numberOfTicksTarget).map(value => ({
+      ticks: scale.ticks(numberOfTicksTarget).map((value) => ({
         value,
         formattedValue: tickFormatter(value),
         offset: scale(value),
@@ -149,8 +149,7 @@ export const Axis = ({
               {value}
             </text>
             { !hideLine &&
-              <line stroke="currentColor" y2={tickLength} />
-            }
+              <line stroke="currentColor" y2={tickLength} />}
             <text
               css={css`
                 ${shadow}
@@ -184,8 +183,7 @@ export const Axis = ({
                 stroke="currentColor"
                 transform={translate(-tickLength, 0)}
                 x1={tickLength}
-              />
-            }
+              />}
             <text
               css={css`
                 ${shadow}
@@ -219,8 +217,7 @@ export const Axis = ({
                 stroke="currentColor"
                 transform={translate(0, -tickLength)}
                 y2={tickLength}
-              />
-            }
+              />}
             <text
               css={css`
                 ${shadow}
@@ -250,8 +247,7 @@ export const Axis = ({
               {value}
             </text>
             { !hideLine &&
-              <line stroke="currentColor" x1={tickLength} />
-            }
+              <line stroke="currentColor" x1={tickLength} />}
             <text
               css={css`
                 ${shadow}
@@ -271,11 +267,11 @@ export const Axis = ({
   return (
     <g transform={transform}>
       {!hideLine && <path d={path(type)} fill="none" stroke="currentColor" />}
-        {ticks.map(({ formattedValue, value, offset }) => (
-          <g key={value} transform={tickTransform(type, offset)}>
-            <TickLine type={type} value={formattedValue} />
-          </g>
-        ))}
+      {ticks.map(({ formattedValue, value, offset }) => (
+        <g key={value} transform={tickTransform(type, offset)}>
+          <TickLine type={type} value={formattedValue} />
+        </g>
+      ))}
       {/* Axis Label */}
       {showLabel && (
         <text

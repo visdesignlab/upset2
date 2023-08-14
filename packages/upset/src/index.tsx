@@ -4,10 +4,10 @@ export {
   UpsetProvenance,
   Events,
   Metadata,
-  getActions,
   UpsetActions,
-  initializeProvenanceTracking
-} from './provenance/index';
+  getActions,
+  initializeProvenanceTracking,
+} from './provenance';
 
 export { upsetConfigAtom, defaultConfig } from './atoms/config/upsetConfigAtoms';
 

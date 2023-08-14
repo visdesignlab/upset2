@@ -1,5 +1,7 @@
 import { getAggSize } from './aggregate';
-import { Aggregates, Intersections, areRowsSubsets, Rows, getDegreeFromSetMembership } from './types';
+import {
+  Aggregates, Intersections, areRowsSubsets, Rows, getDegreeFromSetMembership,
+} from './types';
 import { deepCopy } from './utils';
 
 function filterIntersections<T extends Intersections>(
@@ -13,7 +15,7 @@ function filterIntersections<T extends Intersections>(
     const subset = values[id];
     const degree = getDegreeFromSetMembership(subset.setMembership);
 
-    if ((degree >= filters.minVisible && degree <= filters.maxVisible) || subset.type === "Aggregate") {
+    if ((degree >= filters.minVisible && degree <= filters.maxVisible) || subset.type === 'Aggregate') {
       if (filters.hideEmpty) {
         shouldKeep = subset.size > 0;
       } else {
@@ -55,10 +57,10 @@ export function filterRows(
     aggs.values[aggId].size = getAggSize(aggs.values[aggId]);
 
     if (aggs.values[aggId].size <= 0) {
-      delete aggs.values[aggId]
-      aggs.order = aggs.order.filter(agg => agg !== aggId)
+      delete aggs.values[aggId];
+      aggs.order = aggs.order.filter((agg) => agg !== aggId);
     }
   });
-  
+
   return aggs;
 }

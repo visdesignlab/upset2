@@ -19,7 +19,7 @@ type Props = {
 };
 
 export const SvgBase: FC<Props> = ({ children }) => {
-  const {height, width, margin } = useRecoilValue(dimensionsSelector);
+  const { height, width, margin } = useRecoilValue(dimensionsSelector);
 
   return (
     <div

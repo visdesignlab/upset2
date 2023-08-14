@@ -19,16 +19,16 @@ function sortBySize(rows: Intersections) {
 
 function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVisibleBy) {
   const aUnionSize = Object.entries(a.setMembership)
-    .filter(([_key, value]) => value === "Yes")
+    .filter(([_key, value]) => value === 'Yes')
     .map(([key, _value]) => visibleSets[key].size)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
   const bUnionSize = Object.entries(b.setMembership)
-    .filter(([_key, value]) => value === "Yes")
+    .filter(([_key, value]) => value === 'Yes')
     .map(([key, _value]) => visibleSets[key].size)
-    .reduce((accumulator, currentValue) => accumulator + currentValue, 0)
+    .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  return (vSetSortBy === "Ascending") ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
+  return (vSetSortBy === 'Ascending') ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
 }
 
 function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets) {
@@ -43,11 +43,11 @@ function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSet
       }
 
       switch (vSetSortBy) {
-        case "Alphabetical":
+        case 'Alphabetical':
           return values[a].elementName.localeCompare(values[b].elementName);
-        case "Ascending":
+        case 'Ascending':
           return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
-        case "Descending":
+        case 'Descending':
           return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
       }
     },

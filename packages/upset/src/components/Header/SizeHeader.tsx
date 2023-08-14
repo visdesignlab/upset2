@@ -1,6 +1,8 @@
 import { css } from '@emotion/react';
 import { drag, select } from 'd3';
-import { FC, useContext, useEffect, useRef, useState } from 'react';
+import {
+  FC, useContext, useEffect, useRef, useState,
+} from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { sortBySelector } from '../../atoms/config/sortByAtom';
@@ -36,58 +38,56 @@ export const SizeHeader: FC = () => {
 
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
-  const [ advancedScale, setAdvancedScale ] = useState(false);
+  const [advancedScale, setAdvancedScale] = useState(false);
   const [maxC, setMaxSize] = useRecoilState(maxSize);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
-  }
+  };
 
   const openContextMenu = (e: React.MouseEvent) => {
     setContextMenu(
       {
         mouseX: e.clientX,
         mouseY: e.clientY,
-        id: `header-menu-Size`,
-        items: getMenuItems()
-      }
-    );
-  }
-
-  const getMenuItems = () => {
-    return [
-      {
-        label: "Sort by Size",
-        onClick: () => {
-          sortBySize();
-          handleContextMenuClose();
-        },
-        disabled: sortBy === "Size"
+        id: 'header-menu-Size',
+        items: getMenuItems(),
       },
-      {
-        label: "Toggle Advanced Scale",
-        onClick: () => {
-          const advScale = advancedScale;
-          
-          setAdvancedScale(!advScale);
-          handleContextMenuClose();
-        },
-      }
-    ]
-  }
+    );
+  };
+
+  const getMenuItems = () => [
+    {
+      label: 'Sort by Size',
+      onClick: () => {
+        sortBySize();
+        handleContextMenuClose();
+      },
+      disabled: sortBy === 'Size',
+    },
+    {
+      label: 'Toggle Advanced Scale',
+      onClick: () => {
+        const advScale = advancedScale;
+
+        setAdvancedScale(!advScale);
+        handleContextMenuClose();
+      },
+    },
+  ];
 
   const sortBySize = () => {
     actions.sortBy('Size');
-  }
+  };
 
   useEffect(() => {
     if (maxC !== -1) return;
     const subs = Object.values(subsets.values);
     if (subs.length === 0) return;
 
-    const sizes = subs.map(s => s.size);
+    const sizes = subs.map((s) => s.size);
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
   }, [subsets, maxSize]);
@@ -106,7 +106,7 @@ export const SizeHeader: FC = () => {
       .on('start', () => {
         setSliding(true);
       })
-      .on('drag', event => {
+      .on('drag', (event) => {
         let newPosition = event.x;
 
         if (newPosition < 0) newPosition = 0;
@@ -194,8 +194,7 @@ export const SizeHeader: FC = () => {
             width="10"
           />
         </g>
-      </g>
-      }
+      </g>}
       <g
         className="sliderInfluence"
         css={css`
@@ -229,7 +228,7 @@ export const SizeHeader: FC = () => {
           e.preventDefault();
           e.stopPropagation();
           openContextMenu(e);
-      }}
+        }}
       >
         <rect
           css={css`

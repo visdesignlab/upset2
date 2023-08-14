@@ -38,16 +38,16 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         width={dimensions.set.width - gap / 2}
         transform={`${translate(
           gap / 4,
-          gap
+          gap,
         )}`}
       />
       <foreignObject
-          transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
-          height={dimensions.set.width}
-          width={dimensions.set.label.height}
-          z={100}
-        >
-          <p css={css`
+        transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
+        height={dimensions.set.width}
+        width={dimensions.set.label.height}
+        z={100}
+      >
+        <p css={css`
             color: #000000; 
             font-size: 14px;
             overflow: hidden;
@@ -56,8 +56,11 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
             height: 100%;
             padding: 0;
             margin: 2px 0 0 0;
-          `}>{name}</p>
-        </foreignObject>
+          `}
+        >
+          {name}
+        </p>
+      </foreignObject>
     </Group>
   );
 };

@@ -1,18 +1,18 @@
 import { atom, selector } from 'recoil';
 
+import { SortVisibleBy } from '@visdesignlab/upset2-core';
 import { setsAtom } from '../setsAtoms';
 import { upsetConfigAtom } from './upsetConfigAtoms';
-import { SortVisibleBy } from '@visdesignlab/upset2-core';
 
 export const visibleSetSelector = selector<string[]>({
   key: 'visible-sets',
   get: ({ get }) => {
     const sets = get(setsAtom);
-    const visibleSets = get(upsetConfigAtom).visibleSets;
-    const sortVisibleBy = get(upsetConfigAtom).sortVisibleBy;
+    const { visibleSets } = get(upsetConfigAtom);
+    const { sortVisibleBy } = get(upsetConfigAtom);
     const visibleSetList = [...visibleSets];
 
-    switch(sortVisibleBy) {
+    switch (sortVisibleBy) {
       case 'Alphabetical':
         visibleSetList.sort();
         break;
@@ -23,7 +23,7 @@ export const visibleSetSelector = selector<string[]>({
         visibleSetList.sort((a, b) => sets[b].size - sets[a].size);
     }
     return visibleSetList;
-  }
+  },
 });
 
 export const visibleSortSelector = selector<SortVisibleBy>({
@@ -41,9 +41,7 @@ export const hiddenSetSelector = selector<string[]>({
 
     switch (sortOrder) {
       case 'Name':
-        setList.sort((a, b) =>
-          sets[a].elementName > sets[b].elementName ? 1 : -1,
-        );
+        setList.sort((a, b) => (sets[a].elementName > sets[b].elementName ? 1 : -1));
         break;
       case 'Size - Asc':
         setList.sort((a, b) => sets[a].size - sets[b].size);

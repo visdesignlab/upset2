@@ -31,18 +31,16 @@ export const SvgRectButton: FC<Props> = ({
   ty = tx,
   autoWidth = false,
   ...props
-}) => {
-  return (
-    <g transform={translate(tx - width / 2, ty)}>
-      <ButtonRect height={height} width={width} {...props} />
-      <text
-        transform={translate(width / 2, height / 2)}
-        dominantBaseline="middle"
-        textAnchor="middle"
-        pointerEvents="none"
-      >
-        {label}
-      </text>
-    </g>
-  );
-};
+}) => (
+  <g transform={translate(tx - width / 2, ty)}>
+    <ButtonRect height={height} width={width} {...props} />
+    <text
+      transform={translate(width / 2, height / 2)}
+      dominantBaseline="middle"
+      textAnchor="middle"
+      pointerEvents="none"
+    >
+      {label}
+    </text>
+  </g>
+);

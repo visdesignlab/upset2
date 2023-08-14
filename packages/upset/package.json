@@ -4,7 +4,7 @@
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/upset2-react.esm.js",
+  "module": "dist/index.mjs",
   "files": [
     "dist",
     "src"
@@ -13,11 +13,11 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "tsdx watch --noClean",
+    "start": "vite build --watch",
     "dev": "yarn run start",
-    "build": "tsdx build",
+    "build": "vite build",
     "test": "tsdx test --passWithNoTests",
-    "lint": "tsdx lint",
+    "lint": "eslint src --fix",
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
@@ -29,10 +29,10 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "tsdx lint"
+      "pre-commit": "eslint src"
     }
   },
-  "author": "Kiran Gadhave",
+  "author": "Kiran Gadhave, Jake Wagoner",
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-react": "^7.16.7",

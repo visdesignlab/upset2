@@ -231,12 +231,11 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
   );
 };
 
-export const AddWordCloud = () => {
-  return (
-    <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
-      <Grid container item xs={12}>
-        Coming Soon...
-        {/* {Object.values(items).length && (
+export const AddWordCloud = () => (
+  <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
+    <Grid container item xs={12}>
+      Coming Soon...
+      {/* {Object.values(items).length && (
           <VegaLite
             spec={createWordCloudSpec()}
             data={{
@@ -245,7 +244,6 @@ export const AddWordCloud = () => {
             actions={false}
           />
         )} */}
-      </Grid>
     </Grid>
-  );
-};
+  </Grid>
+);

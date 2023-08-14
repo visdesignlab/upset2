@@ -1,4 +1,6 @@
-import { DSVRowArray, max, mean, median, min, quantile } from 'd3';
+import {
+  DSVRowArray, max, mean, median, min, quantile,
+} from 'd3';
 
 import {
   Attributes,
@@ -173,7 +175,9 @@ function getSets(
 export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
   const { columns } = meta;
 
-  const { items, setMembership, labelColumn, setColumns, attributeColumns } =
+  const {
+    items, setMembership, labelColumn, setColumns, attributeColumns,
+  } =
     processRawData(data, columns);
   const sets = getSets(setMembership, setColumns, items, attributeColumns);
 

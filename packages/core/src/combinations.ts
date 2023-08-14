@@ -1,16 +1,16 @@
 export function combinationsFromArray<T>(collection: T[], n: number) {
-  let array: T[] = Object.values(collection);
+  const array: T[] = Object.values(collection);
   if (array.length < n) {
     return [];
   }
-  let recur = (array: T[], n: number) => {
+  const recur = (array: T[], n: number) => {
     if (--n < 0) {
       return [[]];
     }
-    let combinations: T[][] = [];
+    const combinations: T[][] = [];
     array = array.slice();
     while (array.length - n) {
-      let value = array.shift() as T;
+      const value = array.shift() as T;
       recur(array, n).forEach((combination) => {
         combination.unshift(value);
         combinations.push(combination);
