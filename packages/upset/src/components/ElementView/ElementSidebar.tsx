@@ -113,10 +113,10 @@ export const ElementSidebar = ({ open, close }: Props) => {
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           padding: '1em',
+          marginTop: '2em',
           width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
           boxSizing: 'border-box',
-          position: 'inherit',
-          zIndex: -1,
+          zIndex: 0,
         },
       }}
       open={open}
