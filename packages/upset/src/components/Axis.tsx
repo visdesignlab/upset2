@@ -1,21 +1,14 @@
-import { css } from '@emotion/react';
 import { ScaleLinear } from 'd3';
 import React, { useMemo } from 'react';
 
 import translate from '../utils/transform';
-
-/** @jsxImportSource @emotion/react */
-const shadow = css`
-  textshadow: 0 0 5px white;
-`;
-
-type AxisType = 'left' | 'right' | 'top' | 'bottom';
+import { TickLine, AxisType } from './custom/AxisTickLine';
 
 type Props = {
   scale: ScaleLinear<number, number>;
   transform?: string;
   type: AxisType;
-  label: string | JSX.Element;
+  label: string | Element;
   margin: number;
   pixelsPerTick?: number;
   showLabel?: boolean;
@@ -67,8 +60,8 @@ export const Axis = ({
     };
   }, [scale, tickFormatter, pixelsPerTick]);
 
-  const labelTransform = (type: AxisType) => {
-    switch (type) {
+  const labelTransform = (axisType: AxisType) => {
+    switch (axisType) {
       case 'bottom':
         return translate(Math.max(...scale.range()) / 2, margin - 3);
       case 'top':
@@ -83,11 +76,13 @@ export const Axis = ({
           margin - 3,
           Math.max(...scale.range()) / 2,
         )}rotate(90)`;
+      default:
+        return translate(0, 0);
     }
   };
 
-  const labelAnchor = (type: AxisType) => {
-    switch (type) {
+  const labelAnchor = (axisType: AxisType) => {
+    switch (axisType) {
       case 'bottom':
         return 'auto';
       case 'left':
@@ -96,11 +91,13 @@ export const Axis = ({
         return 'hanging';
       case 'right':
         return 'hanging';
+      default:
+        return 'auto';
     }
   };
 
-  const path = (type: AxisType) => {
-    switch (type) {
+  const path = (axisType: AxisType) => {
+    switch (axisType) {
       case 'bottom':
         return `M 0 ${tickLength} v -${tickLength} H ${extent} v ${tickLength}`;
       case 'left':
@@ -109,11 +106,13 @@ export const Axis = ({
         return `M 0 -${tickLength} v ${tickLength} H ${extent} v -${tickLength}`;
       case 'right':
         return `M ${tickLength} 0 h -${tickLength} V ${extent} h ${tickLength}`;
+      default:
+        return '';
     }
   };
 
-  const tickTransform = (type: AxisType, offset: number) => {
-    switch (type) {
+  const tickTransform = (axisType: AxisType, offset: number) => {
+    switch (axisType) {
       case 'bottom':
         return translate(offset, 0);
       case 'left':
@@ -122,145 +121,8 @@ export const Axis = ({
         return translate(offset, 0);
       case 'right':
         return translate(0, offset);
-    }
-  };
-
-  const TickLine = ({
-    type,
-    value,
-  }: {
-    type: AxisType;
-    value: string | number;
-  }) => {
-    switch (type) {
-      case 'bottom':
-        return (
-          <>
-            <text
-              dominantBaseline="middle"
-              fill="none"
-              fontSize={`${fontSize}rem`}
-              stroke="white"
-              strokeLinejoin="round"
-              strokeWidth="4"
-              textAnchor="end"
-              transform={translate(0, tickLength + tickFontHeight / 1.5)}
-            >
-              {value}
-            </text>
-            { !hideLine &&
-              <line stroke="currentColor" y2={tickLength} />}
-            <text
-              css={css`
-                ${shadow}
-              `}
-              dominantBaseline="middle"
-              fontSize={`${fontSize}rem`}
-              textAnchor="middle"
-              transform={translate(0, tickLength + tickFontHeight / 1.5)}
-            >
-              {value}
-            </text>
-          </>
-        );
-      case 'left':
-        return (
-          <>
-            <text
-              dominantBaseline="middle"
-              fill="none"
-              fontSize={`${fontSize}rem`}
-              stroke="white"
-              strokeLinejoin="round"
-              strokeWidth="4"
-              textAnchor="end"
-              transform={translate(-10, 0)}
-            >
-              {value}
-            </text>
-            { !hideLine &&
-              <line
-                stroke="currentColor"
-                transform={translate(-tickLength, 0)}
-                x1={tickLength}
-              />}
-            <text
-              css={css`
-                ${shadow}
-              `}
-              dominantBaseline="middle"
-              fontSize={`${fontSize}rem`}
-              textAnchor="end"
-              transform={translate(-10, 0)}
-            >
-              {value}
-            </text>
-          </>
-        );
-      case 'top':
-        return (
-          <>
-            <text
-              dominantBaseline="middle"
-              fill="none"
-              fontSize={`${fontSize}rem`}
-              stroke="white"
-              strokeLinejoin="round"
-              strokeWidth="4"
-              textAnchor="end"
-              transform={translate(0, -(tickLength + tickFontHeight / 1.5))}
-            >
-              {value}
-            </text>
-            { !hideLine &&
-              <line
-                stroke="currentColor"
-                transform={translate(0, -tickLength)}
-                y2={tickLength}
-              />}
-            <text
-              css={css`
-                ${shadow}
-              `}
-              dominantBaseline="middle"
-              fontSize={`${fontSize}rem`}
-              textAnchor="middle"
-              transform={translate(0, -(tickLength + tickFontHeight / 1.5))}
-            >
-              {value}
-            </text>
-          </>
-        );
-      case 'right':
-        return (
-          <>
-            <text
-              dominantBaseline="middle"
-              fill="none"
-              fontSize={`${fontSize}rem`}
-              stroke="white"
-              strokeLinejoin="round"
-              strokeWidth="4"
-              textAnchor="end"
-              transform={translate(10, 0)}
-            >
-              {value}
-            </text>
-            { !hideLine &&
-              <line stroke="currentColor" x1={tickLength} />}
-            <text
-              css={css`
-                ${shadow}
-              `}
-              dominantBaseline="middle"
-              fontSize={`${fontSize}rem`}
-              textAnchor="start"
-              transform={translate(10, 0)}
-            >
-              {value}
-            </text>
-          </>
-        );
+      default:
+        return translate(0, 0);
     }
   };
 
@@ -269,7 +131,14 @@ export const Axis = ({
       {!hideLine && <path d={path(type)} fill="none" stroke="currentColor" />}
       {ticks.map(({ formattedValue, value, offset }) => (
         <g key={value} transform={tickTransform(type, offset)}>
-          <TickLine type={type} value={formattedValue} />
+          <TickLine
+            type={type}
+            value={formattedValue}
+            fontSize={fontSize}
+            tickLength={tickLength}
+            tickFontHeight={tickFontHeight}
+            hideLine={hideLine}
+          />
         </g>
       ))}
       {/* Axis Label */}

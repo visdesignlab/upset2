@@ -27,10 +27,6 @@ const minDrawerWidth = 100;
 function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
-  console.group(name);
-  console.log(columns);
-  console.table(items.filter((_, idx) => idx < 10));
-
   const saveText: string[] = [];
 
   saveText.push(columns.map((h) => (h.includes(',') ? `"${h}"` : h)).join(','));
@@ -44,9 +40,6 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 
     saveText.push(row.map((r) => (r.includes(',') ? `"${r}"` : r)).join(','));
   });
-
-  console.log(saveText);
-  console.groupEnd();
 
   const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
   const blobUrl = URL.createObjectURL(blob);
@@ -85,7 +78,6 @@ export const ElementSidebar = ({ open, close }: Props) => {
     e.preventDefault();
     const newWidth = document.body.clientWidth - e.clientX;
 
-    console.log(document.body.clientWidth, document.body.offsetWidth);
     if (newWidth > minDrawerWidth) {
       setDrawerWidth(newWidth);
     }
@@ -152,17 +144,18 @@ export const ElementSidebar = ({ open, close }: Props) => {
           >
             <OpenInFullIcon />
           </IconButton>
-          : <IconButton
-              onClick={() => {
-                if (fullWidth) {
-                  setFullWidth(false);
-                } else {
-                  setHideElementSidebar(true);
-                }
-              }}
+          :
+          <IconButton
+            onClick={() => {
+              if (fullWidth) {
+                setFullWidth(false);
+              } else {
+                setHideElementSidebar(true);
+              }
+            }}
           >
             <CloseFullscreen />
-            </IconButton>}
+          </IconButton>}
         <IconButton
           onClick={() => {
             setHideElementSidebar(true);

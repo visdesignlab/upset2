@@ -22,7 +22,6 @@ function TabPanel({
       sx={{
         width: 600,
       }}
-      role="tablpanel"
     >
       {value === index && (
         <Box

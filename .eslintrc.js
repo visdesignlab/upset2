@@ -49,6 +49,7 @@ module.exports = {
     'react/require-default-props': 'off',
     'react/react-in-jsx-scope': 'off',
     'react/jsx-wrap-multilines': 'off',
+    'react/no-unknown-property': 'off',
     'operator-linebreak': 'off',
     '@typescript-eslint/no-unused-vars': [
       'warn', // or "error"
@@ -59,7 +60,11 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-explicit-any': 'off',
-    'no-unused-vars': 'off',
     'max-len': 'off',
+    'no-unused-vars': 'off',
+    'no-param-reassign': 'off',
+    'import/no-cycle': 'off',
+    'no-underscore-dangle': 'off',
+    'no-nested-ternary': 'off',
   },
 };

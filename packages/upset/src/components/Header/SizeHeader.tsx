@@ -47,15 +47,8 @@ export const SizeHeader: FC = () => {
     setContextMenu(null);
   };
 
-  const openContextMenu = (e: React.MouseEvent) => {
-    setContextMenu(
-      {
-        mouseX: e.clientX,
-        mouseY: e.clientY,
-        id: 'header-menu-Size',
-        items: getMenuItems(),
-      },
-    );
+  const sortBySize = () => {
+    actions.sortBy('Size');
   };
 
   const getMenuItems = () => [
@@ -78,8 +71,15 @@ export const SizeHeader: FC = () => {
     },
   ];
 
-  const sortBySize = () => {
-    actions.sortBy('Size');
+  const openContextMenu = (e: MouseEvent) => {
+    setContextMenu(
+      {
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        id: 'header-menu-Size',
+        items: getMenuItems(),
+      },
+    );
   };
 
   useEffect(() => {

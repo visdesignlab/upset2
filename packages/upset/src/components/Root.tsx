@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import {
@@ -42,7 +43,6 @@ type Props = {
     provenance: UpsetProvenance;
     actions: UpsetActions;
   };
-  yOffset: number;
   provVis?: {
     open: boolean;
     close: () => void;
@@ -58,6 +58,16 @@ export const Root: FC<Props> = ({
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
+
+  const [sets, setSets] = useRecoilState(setsAtom);
+  const [items, setItems] = useRecoilState(itemsAtom);
+  const setAttributeColumns = useSetRecoilState(attributeAtom);
+  const setAllColumns = useSetRecoilState(columnsAtom);
+  const setData = useSetRecoilState(dataAtom);
+  const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
+  const setColumnHover = useSetRecoilState(columnHoverAtom);
+  const setColumnSelect = useSetRecoilState(columnSelectAtom);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   useEffect(() => {
     setState(config);
@@ -81,16 +91,6 @@ export const Root: FC<Props> = ({
     const actions = getActions(provenance);
     return { provenance, actions };
   }, [config]);
-
-  const [sets, setSets] = useRecoilState(setsAtom);
-  const [items, setItems] = useRecoilState(itemsAtom);
-  const setAttributeColumns = useSetRecoilState(attributeAtom);
-  const setAllColumns = useSetRecoilState(columnsAtom);
-  const setData = useSetRecoilState(dataAtom);
-  const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
-  const setColumnHover = useSetRecoilState(columnHoverAtom);
-  const setColumnSelect = useSetRecoilState(columnSelectAtom);
-  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
@@ -127,6 +127,7 @@ export const Root: FC<Props> = ({
 
   return (
     <ProvenanceContext.Provider
+      // eslint-disable-next-line react/jsx-no-constructed-context-values
       value={{
         provenance,
         actions,

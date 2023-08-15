@@ -5,8 +5,6 @@ import {
 import { Registry, initializeTrrack } from '@trrack/core';
 import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
 
-export type Events = 'Test';
-
 export type Metadata = {
   [key: string]: unknown;
 };
@@ -182,6 +180,8 @@ const addPlotAction = registry.register(
       case 'Word Cloud':
         state.plots.wordClouds = [...state.plots.wordClouds, plot];
         break;
+      default:
+        throw new Error(`Unknown plot type: ${plot.type}`);
     }
 
     return state;
@@ -207,6 +207,8 @@ const removePlotAction = registry.register(
           (d) => d.id !== plot.id,
         );
         break;
+      default:
+        throw new Error(`Unknown plot type: ${plot.type}`);
     }
 
     return state;
@@ -220,8 +222,6 @@ const replaceStateAction = registry.register(
 
     Object.entries(state).forEach(([entry, val]) => {
       if (!Object.keys(replacement).includes(entry)) {
-        console.error(`${entry} is missing. Adding default value`);
-
         replacement[entry] = val;
       } else if (typeof val === 'object' && val !== null) {
         /*
@@ -280,6 +280,7 @@ const expandAllAction = registry.register(
 );
 
 export function initializeProvenanceTracking(
+  // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
   setter?: (state: UpsetConfig) => void,
 ) {
