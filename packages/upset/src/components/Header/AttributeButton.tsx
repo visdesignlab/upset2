@@ -26,17 +26,6 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
     setContextMenu(null);
   };
 
-  const openContextMenu = (e: React.MouseEvent) => {
-    setContextMenu(
-      {
-        mouseX: e.clientX,
-        mouseY: e.clientY,
-        id: `header-menu-${label}`,
-        items: getMenuItems(),
-      },
-    );
-  };
-
   const sortByHeader = () => {
     actions.sortBy(label as SortBy);
   };
@@ -62,6 +51,17 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
     });
 
     return items;
+  };
+
+  const openContextMenu = (e: MouseEvent) => {
+    setContextMenu(
+      {
+        mouseX: e.clientX,
+        mouseY: e.clientY,
+        id: `header-menu-${label}`,
+        items: getMenuItems(),
+      },
+    );
   };
 
   return (

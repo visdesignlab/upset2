@@ -37,7 +37,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     setContextMenu(null);
   };
 
-  const openContextMenu = (e: React.MouseEvent, setName: string) => {
+  const openContextMenu = (e: MouseEvent, setName: string) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -92,10 +92,10 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
 
   return (
     <g>
-      {columnTransitions((props, set) => (
+      {columnTransitions(({ transform }, set) => (
         <a.g
           key={set.setName}
-          transform={props.transform}
+          transform={transform}
           onContextMenu={(e) => {
             e.preventDefault();
             e.stopPropagation();

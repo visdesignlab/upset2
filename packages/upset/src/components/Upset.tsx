@@ -12,7 +12,6 @@ export type UpsetProps = {
   parentHasHeight?: boolean;
   data: CoreUpsetData;
   config?: Partial<UpsetConfig>;
-  elementViewWidth?: number;
   loadAttributes?: number;
   extProvenance?: {
     provenance: UpsetProvenance;
@@ -69,7 +68,6 @@ export const Upset: FC<UpsetProps> = ({
       >
         <RecoilRoot>
           <Root
-            yOffset={yOffset}
             data={data}
             config={combinedConfig}
             extProvenance={extProvenance}

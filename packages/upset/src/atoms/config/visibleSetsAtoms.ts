@@ -21,6 +21,9 @@ export const visibleSetSelector = selector<string[]>({
         break;
       case 'Descending':
         visibleSetList.sort((a, b) => sets[b].size - sets[a].size);
+        break;
+      default:
+        break;
     }
     return visibleSetList;
   },
@@ -29,6 +32,11 @@ export const visibleSetSelector = selector<string[]>({
 export const visibleSortSelector = selector<SortVisibleBy>({
   key: 'visible-sort-by',
   get: ({ get }) => get(upsetConfigAtom).sortVisibleBy,
+});
+
+export const hiddenSetSortAtom = atom<'Name' | 'Size - Asc' | 'Size - Desc'>({
+  key: 'hidden-sets-sort',
+  default: 'Size - Desc',
 });
 
 export const hiddenSetSelector = selector<string[]>({
@@ -55,9 +63,4 @@ export const hiddenSetSelector = selector<string[]>({
 
     return setList.filter((set) => !visibleSets.includes(set));
   },
-});
-
-export const hiddenSetSortAtom = atom<'Name' | 'Size - Asc' | 'Size - Desc'>({
-  key: 'hidden-sets-sort',
-  default: 'Size - Desc',
 });

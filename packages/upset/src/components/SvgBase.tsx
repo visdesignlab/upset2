@@ -9,17 +9,17 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
 /** @jsxImportSource @emotion/react */
 type SvgBaseSettings = {
-  margin?: number;
-  height?: number;
-  width?: number;
+  margin: number;
+  height: number;
+  width: number;
 };
 
 type Props = {
   defaultSettings?: SvgBaseSettings;
 };
 
-export const SvgBase: FC<Props> = ({ children }) => {
-  const { height, width, margin } = useRecoilValue(dimensionsSelector);
+export const SvgBase: FC<Props> = ({ children, defaultSettings }) => {
+  const { height, width, margin } = defaultSettings || useRecoilValue(dimensionsSelector);
 
   return (
     <div

@@ -18,7 +18,6 @@ type Props = ComponentProps<typeof ButtonRect> & {
   label: string;
   height: number;
   width: number;
-  autoWidth?: boolean;
   tx?: number;
   ty?: number;
 };
@@ -29,7 +28,6 @@ export const SvgRectButton: FC<Props> = ({
   width,
   tx = 0,
   ty = tx,
-  autoWidth = false,
   ...props
 }) => (
   <g transform={translate(tx - width / 2, ty)}>

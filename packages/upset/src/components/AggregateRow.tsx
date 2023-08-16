@@ -13,7 +13,7 @@ import { highlight, mousePointer } from '../utils/styles';
 import { SizeBar } from './SizeBar';
 import { DeviationBar } from './DeviationBar';
 import { Matrix } from './Matrix';
-import { BookmarkStar } from './BookmarkStar';
+import { BookmarkStar } from './custom/BookmarkStar';
 import { collapsedSelector } from '../atoms/collapsedAtom';
 import { ProvenanceContext } from './Root';
 import { AttributeBars } from './AttributeBars';

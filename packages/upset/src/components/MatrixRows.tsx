@@ -83,9 +83,9 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   return (
     <g onClick={(e) => e.stopPropagation()}>
-      {rowTransitions((props, item) => (
+      {rowTransitions(({ transform }, item) => (
         shouldRender(item.row) &&
-          <a.g transform={props.transform}>{rowRenderer(item.row)}</a.g>
+          <a.g transform={transform}>{rowRenderer(item.row)}</a.g>
       ))}
     </g>
   );

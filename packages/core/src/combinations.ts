@@ -1,9 +1,12 @@
+/* eslint-disable no-param-reassign */
+/* eslint-disable no-shadow */
 export function combinationsFromArray<T>(collection: T[], n: number) {
   const array: T[] = Object.values(collection);
   if (array.length < n) {
     return [];
   }
   const recur = (array: T[], n: number) => {
+    // eslint-disable-next-line no-plusplus
     if (--n < 0) {
       return [[]];
     }

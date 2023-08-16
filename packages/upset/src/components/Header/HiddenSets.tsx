@@ -29,7 +29,7 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
     setContextMenu(null);
   };
 
-  const openContextMenu = (e: React.MouseEvent, setName: string) => {
+  const openContextMenu = (e: MouseEvent, setName: string) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,

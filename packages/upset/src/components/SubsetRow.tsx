@@ -12,7 +12,7 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
 } from '../utils/styles';
-import { BookmarkStar } from './BookmarkStar';
+import { BookmarkStar } from './custom/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
 
 type Props = {
