@@ -9,6 +9,7 @@ import Footer from "./Footer"
 import { useRecoilValue } from "recoil"
 import { api } from "../atoms/authAtoms"
 import { queryParamAtom } from "../atoms/queryParamAtom"
+import { Home } from "./Home"
 
 type Props = {
     provenance: UpsetProvenance,
@@ -77,7 +78,7 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                 >
                     <Header data={data}/>
                 </Box>
-                {data === null && <div>Please either log in or click the "Load Data" button to go to data interface.</div>}
+                {data === null && <Home />}
                 <Body yOffset={headerHeight} data={data} config={config}/>
                 <Footer />
             </div>
