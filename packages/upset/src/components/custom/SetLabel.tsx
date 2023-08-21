@@ -47,21 +47,25 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         height={dimensions.set.width}
         width={dimensions.set.label.height}
         z={100}
-      >
-        <p style={{
+        style={{
           color: '#000000',
           fontSize: '14px',
           overflow: 'hidden',
           textOverflow: 'ellipsis',
-          fontWeight: '500',
-          height: '100%',
-          padding: '0',
-          margin: '2px 0 0 0',
-          textAlign: 'start',
         }}
-        >
-          {name}
-        </p>
+
+      >
+        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
+          <p style={{
+            height: '100%',
+            padding: '0',
+            margin: '2px 0 0 0',
+            fontWeight: '500',
+            textAlign: 'start',
+          }}>
+            {name}
+          </p>
+        </body>
       </foreignObject>
     </Group>
   );

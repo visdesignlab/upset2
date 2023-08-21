@@ -29,24 +29,25 @@ export const MatrixHeader = () => {
           dimensions.attribute.width
         }
         height={dimensions.set.size.height + 15}
+        transform={translate(dimensions.matrixColumn.width +
+                dimensions.bookmarkStar.gap +
+                dimensions.bookmarkStar.width +
+                dimensions.bookmarkStar.gap, 0)}
       >
-        <div
-          id="hiddenSetDiv"
-          style={{
-            overflowX: 'auto',
-            overflowY: 'hidden',
-            position: 'absolute',
-            left: dimensions.matrixColumn.width +
-                  dimensions.bookmarkStar.gap +
-                  dimensions.bookmarkStar.width +
-                  dimensions.bookmarkStar.gap,
-            height: '100%',
-          }}
-        >
-          <svg width={hiddenSets.length * (set.width + 1)}>
-            <HiddenSets hiddenSets={hiddenSets} scale={scale} />
-          </svg>
-        </div>
+        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
+          <div
+            id="hiddenSetDiv"
+            style={{
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              height: '100%',
+            }}
+          >
+            <svg width={hiddenSets.length * (set.width + 1)} xmlns="http://www.w3.org/2000/svg">
+              <HiddenSets hiddenSets={hiddenSets} scale={scale} />
+            </svg>
+          </div>
+        </body>
       </foreignObject>
     </>
   );

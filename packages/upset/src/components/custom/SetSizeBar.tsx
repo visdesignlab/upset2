@@ -75,19 +75,23 @@ export const SetSizeBar: FC<Props> = ({
           height={dimensions.set.width}
           width={dimensions.set.label.height - (dimensions.set.width / 2)}
           z={100}
-        >
-          <p style={{
+          style={{
             color: '#000000',
             fontSize: '14px',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
-            padding: '0',
-            margin: '0',
             textAlign: 'start',
           }}
-          >
-            {label}
-          </p>
+        >
+          <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
+            <p style={{
+              padding: '0',
+              margin: '0',
+            }}
+            >
+              {label}
+            </p>
+          </body>
         </foreignObject>
       )}
     </Group>
