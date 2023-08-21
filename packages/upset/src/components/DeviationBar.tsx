@@ -11,12 +11,9 @@ type Props = {
   deviation: number;
 };
 
-const negativeDeviation = css`
-  fill: #f46d43;
-`;
-const positiveDeviation = css`
-  fill: #74add1;
-`;
+const negativeDeviation = '#f46d43';
+
+const positiveDeviation = '#74add1';
 
 export const DeviationBar: FC<Props> = ({ deviation }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -38,9 +35,7 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
       )}
     >
       <rect
-        css={css`
-          ${deviation > 0 ? positiveDeviation : negativeDeviation}
-        `}
+        fill={(deviation > 0) ? positiveDeviation : negativeDeviation}
         transform={translate(
           deviation > 0 ? 0 : -deviationScale(Math.abs(deviation)),
           0,

@@ -82,12 +82,10 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
       <rect
         height={dimensions.attribute.buttonHeight}
         width={dimensions.attribute.width}
-        css={{
-          fill: '#ccc',
-          stroke: 'black',
-          opacity: 0.5,
-          strokeWidth: '0.3px',
-        }}
+        fill="#ccc"
+        stroke="#000"
+        opacity="0.5"
+        strokeWidth="0.3px"
       />
       <text
         pointerEvents={sort ? 'default' : 'none'}

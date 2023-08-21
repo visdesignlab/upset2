@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -15,29 +14,12 @@ type Props = {
   row?: Row;
 };
 
-const color1 = css`
-  fill: rgb(189, 189, 189);
-`;
-
-const color2 = css`
-  fill: rgb(136, 136, 136);
-`;
-
-const color3 = css`
-  fill: rgb(37, 37, 37);
-`;
-
-const color4 = css`
-  fill: rgb(116, 173, 209);
-`;
-
-const color5 = css`
-  fill: rgb(94, 102, 171);
-`;
-
-const color6 = css`
-  fill: rgb(29, 41, 71);
-`;
+const color1 = 'rgb(189, 189, 189)';
+const color2 = 'rgb(136, 136, 136)';
+const color3 = 'rgb(37, 37, 37)';
+const color4 = 'rgb(116, 173, 209)';
+const color5 = 'rgb(94, 102, 171)';
+const color6 = 'rgb(29, 41, 71)';
 
 export const SizeBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -85,7 +67,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
           key={arr}
           height={dimensions.size.plotHeight - arr * offset}
           width={dimensions.attribute.width}
-          css={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[arr + highlightOffset] : colors[arr]}
+          fill={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[arr + highlightOffset] : colors[arr]}
         />
       ))}
       {fullBars < 3 && (
@@ -93,7 +75,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
           transform={translate(0, (fullBars * offset) / 2)}
           height={dimensions.size.plotHeight - fullBars * offset}
           width={scale(rem)}
-          css={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[fullBars + highlightOffset] : colors[fullBars]}
+          fill={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[fullBars + highlightOffset] : colors[fullBars]}
         />
       )}
       {fullBars === 3 && (

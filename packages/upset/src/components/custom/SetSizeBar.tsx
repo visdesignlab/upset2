@@ -9,16 +9,6 @@ import Group from './Group';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { hoverHighlight } from '../../utils/styles';
 
-/** @jsxImportSource @emotion/react */
-const matrixColumnBackgroundRect = css`
-  fill: #f0f0f0;
-`;
-const matrixColumnForegroundRect = css`
-  fill: #636363;
-  stroke: #fff;
-  stroke-width: 1px;
-`;
-
 type Props = {
   scale: ScaleLinear<number, number>;
   setId: string;
@@ -58,23 +48,21 @@ export const SetSizeBar: FC<Props> = ({
 
       <rect
         css={
-          columnHover.includes(setId) || columnSelect.includes(setId)
-            ? hoverHighlight
-            : matrixColumnBackgroundRect
+          (columnHover.includes(setId) || columnSelect.includes(setId)) &&
+            hoverHighlight
         }
         height={dimensions.set.size.height}
         width={dimensions.set.width}
         stroke="none"
-        fill="gray"
+        fill="#f0f0f0"
+        fillOpacity={1.0}
       />
       <rect
-        css={css`
-          ${matrixColumnForegroundRect}
-        `}
+        fill="#636363"
+        stroke="#fff"
+        strokeWidth="1px"
         height={scale(size)}
         width={dimensions.set.width}
-        stroke="none"
-        fill="gray"
         opacity={foregroundOpacity}
         transform={translate(
           0,
@@ -88,14 +76,15 @@ export const SetSizeBar: FC<Props> = ({
           width={dimensions.set.label.height - (dimensions.set.width / 2)}
           z={100}
         >
-          <p css={css`
-            color: #000000; 
-            font-size: 14px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            padding: 0;
-            margin: 0; 
-          `}
+          <p style={{
+            color: '#000000',
+            fontSize: '14px',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            padding: '0',
+            margin: '0',
+            textAlign: 'start',
+          }}
           >
             {label}
           </p>

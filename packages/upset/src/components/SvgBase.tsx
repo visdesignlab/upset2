@@ -33,7 +33,7 @@ export const SvgBase: FC<Props> = ({ children, defaultSettings }) => {
         }
       `}
     >
-      <svg height={height + 50 * margin} width={width + 2 * margin}>
+      <svg id="upset-svg" height={height + 50 * margin} width={width + 2 * margin}>
         <g transform={translate(margin)}>
           <rect
             height={height}
