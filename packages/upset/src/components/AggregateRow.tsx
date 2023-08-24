@@ -71,18 +71,18 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
         <rect
           transform={translate(0, 2)}
-          css={currentIntersection !== null && currentIntersection.id === aggregateRow.id ?
-            highlight :
-            css`
-            fill: #cccccc;
-            opacity: 0.3;
-            stroke: #555555;
-            stroke-width: 1px;
-          `}
+          css={
+            (currentIntersection !== null && currentIntersection.id === aggregateRow.id) &&
+              highlight
+          }
           height={(['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? (dimensions.body.rowHeight - 4) * 2 : dimensions.body.rowHeight - 4}
           width={width}
           rx={5}
           ry={10}
+          fill="#cccccc"
+          opacity="0.3"
+          stroke="#555555"
+          strokeWidth="1px"
         />
         <g
           onClick={() => {

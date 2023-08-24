@@ -71,6 +71,7 @@ export const Matrix: FC<Props> = ({
                     ? hoverHighlight
                     : defaultBackground
                 }
+                fillOpacity="0.0"
               />
               <MemberShipCircle
                 membershipStatus={membershipStatus}
@@ -78,6 +79,7 @@ export const Matrix: FC<Props> = ({
                 cy={dimensions.body.rowHeight / 2}
                 pointerEvents="all"
                 showoutline={isRowAggregate(subset)}
+                fillOpacity="1.0"
               />
             </Group>
           );
@@ -88,6 +90,7 @@ export const Matrix: FC<Props> = ({
             x2={lastMember * dimensions.set.width}
             y1={dimensions.body.rowHeight / 2}
             y2={dimensions.body.rowHeight / 2}
+            fillOpacity="0.0"
           />
         )}
       </Group>

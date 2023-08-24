@@ -13,7 +13,7 @@ import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
 import translate from '../../utils/transform';
-import { columnHoverAtom } from '../../atoms/highlightAtom';
+import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 
 type Props = {
   visibleSets: string[];
@@ -26,6 +26,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
   const sortVisibleBy = useRecoilValue(visibleSortSelector);
 
   const setColumnHover = useSetRecoilState(columnHoverAtom);
+  const setColumnSelect = useSetRecoilState(columnSelectAtom);
 
   const { actions } = useContext(
     ProvenanceContext,
@@ -104,6 +105,10 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
           css={css`cursor: context-menu;`}
           onMouseEnter={() => setColumnHover([set.setName])}
           onMouseLeave={() => setColumnHover([])}
+          onClick={(e) => {
+            e.stopPropagation();
+            setColumnSelect([set.setName]);
+          }}
         >
           <SetSizeBar
             scale={scale}

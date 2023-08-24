@@ -165,11 +165,9 @@ export const SizeHeader: FC = () => {
         <rect
           height={dimensions.size.scaleHeight}
           width={globalScale(maxC)}
-          css={css`
-            fill: #aaa;
-            opacity: 0.2;
-            pointer-events: none;
-          `}
+          fill="#aaa"
+          opacity="0.2"
+          pointerEvents="none"
           stroke="none"
         />
         <g
@@ -181,14 +179,12 @@ export const SizeHeader: FC = () => {
         >
           <rect
             ref={sliderRef}
-            css={css`
-              fill: #ccc;
-              opacity: 0.5;
-              pointer-events: all;
-              cursor: col-resize;
-              stroke: black;
-              stroke-width: 1px;
-            `}
+            fill="#ccc"
+            opacity="0.5"
+            pointerEvents="all"
+            cursor="col-resize"
+            stroke="black"
+            strokeWidth="1px"
             transform="rotate(45)"
             height="10"
             width="10"
@@ -197,13 +193,10 @@ export const SizeHeader: FC = () => {
       </g>}
       <g
         className="sliderInfluence"
-        css={css`
-          ${!sliding ? hide : show}
-        `}
         transform={translate(0, dimensions.size.scaleHeight)}
       >
         <path
-          opacity="0.3"
+          opacity={(!sliding) ? 0.0 : 0.3}
           fill="#ccc"
           d={`M ${globalScale(maxC)} 0 H 0 V ${dimensions.size
             .buttonHeight +
@@ -231,12 +224,10 @@ export const SizeHeader: FC = () => {
         }}
       >
         <rect
-          css={css`
-            fill: #ccc;
-            stroke: black;
-            opacity: 0.5;
-            stroke-width: 0.3px;
-          `}
+          fill="#ccc"
+          stroke="#000"
+          opacity="0.5"
+          strokeWidth="0.3px"
           height={dimensions.size.buttonHeight}
           width={dimensions.attribute.width}
           onClick={() => {

@@ -1,4 +1,4 @@
-import { exportState, getAccessibleData } from '@visdesignlab/upset2-react';
+import { exportState, getAccessibleData, downloadSVG } from '@visdesignlab/upset2-react';
 import { getRows } from '@visdesignlab/upset2-core';
 import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
@@ -199,6 +199,9 @@ const Header = ({ data }: { data: any }) => {
               </MenuItem>
               <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))}>
                 Export State + Data
+              </MenuItem>
+              <MenuItem onClick={() => downloadSVG()}>
+                Download SVG
               </MenuItem>
               <MenuItem onClick={() => {
                   if (isElementSidebarOpen) {

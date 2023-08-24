@@ -12,9 +12,7 @@ import { dataAtom } from '../../atoms/dataAtom';
 
 const iconSize = 16;
 
-const hidden = css`
-    display: none;
-`;
+const hidden = 'none';
 
 const collapseAllStyle = css`
     cursor: pointer;
@@ -56,7 +54,7 @@ export const CollapseAllButton = () => {
   };
 
   return (
-    <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} css={firstAggregateBy === 'None' && hidden}>
+    <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
       <Tooltip title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
         <g>
           <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0} />
