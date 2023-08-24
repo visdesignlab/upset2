@@ -29,10 +29,10 @@ const Tick: FC<{ x1: number; x2: number; y1?: number; y2?: number }> = ({
   />
 );
 
+// this is recomputing every hover event?
 export const AttributeBar: FC<Props> = ({ attribute, summary }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
-
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
 
   return (

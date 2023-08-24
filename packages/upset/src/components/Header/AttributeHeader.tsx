@@ -2,10 +2,10 @@ import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { itemsAtom } from '../../atoms/itemsAtoms';
 import translate from '../../utils/transform';
 import { AttributeButton } from './AttributeButton';
 import { AttributeScale } from './AttributeScale';
+import { attributeMinMaxSelector } from '../../atoms/attributeAtom';
 
 type Props = {
   attribute: string;
@@ -13,11 +13,7 @@ type Props = {
 
 export const AttributeHeader: FC<Props> = ({ attribute }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const items = useRecoilValue(itemsAtom);
-  const attributes = Object.values(items).map(
-    (item) => item[attribute],
-  ) as number[];
-  const [min, max] = [Math.min(...attributes), Math.max(...attributes)];
+  const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
 
   return (
     <>
