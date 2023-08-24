@@ -12,12 +12,9 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
   get:
     (attribute: string) => ({ get }) => {
       const items = get(itemsAtom);
-      const values = Object.values(items).map(
-        (val) => {
-          const retVal = val[attribute] as number;
-          return Number.isNaN(retVal) ? 0 : retVal;
-        },
-      );
+      const values = Object.values(items)
+        .map((item) => item[attribute] as number)
+        .filter((val) => !Number.isNaN(val));
 
       return values;
     },
@@ -31,12 +28,6 @@ export const attributeMinMaxSelector = selectorFamily<
   get:
     (attribute: string) => ({ get }) => {
       const values = get(attributeValuesSelector(attribute));
-      if (values.includes(NaN)) {
-        return {
-          min: 0,
-          max: 0,
-        };
-      }
 
       return {
         min: Math.min(...values),

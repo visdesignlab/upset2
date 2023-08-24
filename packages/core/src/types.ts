@@ -30,12 +30,12 @@ export type Item = {
 export type Items = { [k: string]: Item };
 
 export type FiveNumberSummary = {
-  min: number;
-  max: number;
-  median: number;
-  mean: number;
-  first: number;
-  third: number;
+  min?: number;
+  max?: number;
+  median?: number;
+  mean?: number;
+  first?: number;
+  third?: number;
 };
 
 export type Attributes = {

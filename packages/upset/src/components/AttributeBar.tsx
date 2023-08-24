@@ -35,6 +35,10 @@ export const AttributeBar: FC<Props> = ({ attribute, summary }) => {
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
 
+  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
+    return null;
+  }
+
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
       <Tick // Min Tick
