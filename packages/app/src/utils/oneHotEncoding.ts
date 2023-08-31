@@ -13,7 +13,7 @@ export const oneHotEncode = (encodeList: string[], data: CoreUpsetData, empty?: 
     //    ex: group1_a, group1_b, group2_a, group2_b, group3_c, ....
     encodeList.forEach((s) => Object.entries(data.items).forEach(([id, row]) => {
         const names = `${row[s]}`
-          .split(',');
+          .split(',')
           .filter((n) => n !== "")
           .map((val) => `${s}_${val}`);
         newColNames.push(...names)
