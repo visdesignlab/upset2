@@ -74,7 +74,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         <BookmarkStar row={subset} />}
       <SizeBar size={subset.size} row={subset} />
       <DeviationBar deviation={subset.deviation} />
-      <AttributeBars attributes={subset.attributes} />
+      <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );
 };

@@ -1,4 +1,4 @@
-import { Attributes } from '@visdesignlab/upset2-core';
+import { Aggregate, Attributes, Subset } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -9,9 +9,10 @@ import { AttributeBar } from './AttributeBar';
 
 type Props = {
   attributes: Attributes;
+  row: Subset | Aggregate;
 };
 
-export const AttributeBars: FC<Props> = ({ attributes }) => {
+export const AttributeBars: FC<Props> = ({ attributes, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleAttribute = useRecoilValue(visibleAttributesSelector);
 
@@ -37,7 +38,7 @@ export const AttributeBars: FC<Props> = ({ attributes }) => {
             0,
           )}
         >
-          <AttributeBar summary={attributes[attr]} attribute={attr} />
+          <AttributeBar summary={attributes[attr]} attribute={attr} row={row} />
         </g>
       ))}
     </g>
