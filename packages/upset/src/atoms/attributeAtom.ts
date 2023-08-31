@@ -12,9 +12,10 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
   get:
     (attribute: string) => ({ get }) => {
       const items = get(itemsAtom);
-      const values = Object.values(items).map(
-        (val) => val[attribute] as number,
-      );
+      const values = Object.values(items)
+        .map((item) => item[attribute] as number)
+        .filter((val) => !Number.isNaN(val));
+
       return values;
     },
 });
@@ -27,6 +28,7 @@ export const attributeMinMaxSelector = selectorFamily<
   get:
     (attribute: string) => ({ get }) => {
       const values = get(attributeValuesSelector(attribute));
+
       return {
         min: Math.min(...values),
         max: Math.max(...values),

@@ -29,11 +29,15 @@ const Tick: FC<{ x1: number; x2: number; y1?: number; y2?: number }> = ({
   />
 );
 
+// this is recomputing every hover event?
 export const AttributeBar: FC<Props> = ({ attribute, summary }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
-
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
+
+  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
+    return null;
+  }
 
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>

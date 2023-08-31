@@ -123,15 +123,17 @@ export function getFiveNumberSummary(
   const attributes: Attributes = {};
 
   attributeColumns.forEach((attribute) => {
-    const values = memberItems.map((d) => items[d][attribute] as number);
+    const values = memberItems
+      .map((d) => items[d][attribute] as number)
+      .filter((val) => !Number.isNaN(val));
 
     attributes[attribute] = {
-      min: min(values) || 0,
-      max: max(values) || 0,
-      median: median(values) || 0,
-      mean: mean(values) || 0,
-      first: quantile(values, 0.25) || 0,
-      third: quantile(values, 0.75) || 0,
+      min: min(values),
+      max: max(values),
+      median: median(values),
+      mean: mean(values),
+      first: quantile(values, 0.25),
+      third: quantile(values, 0.75),
     };
   });
 

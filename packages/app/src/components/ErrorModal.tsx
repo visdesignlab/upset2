@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Dialog, DialogTitle, DialogContent, DialogContentText, FormControl, InputLabel, Checkbox, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, Button } from "@mui/material"
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { dataSelector, encodedDataAtom } from "../atoms/dataAtom";
-import { CoreUpsetData, process } from "@visdesignlab/upset2-core";
+import { oneHotEncode } from "../utils/oneHotEncoding";
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -33,39 +33,8 @@ export const ErrorModal = () => {
         setEncodeList(typeof value === 'string' ? value.split(',') : value)
     }
 
-    const oneHotEncode = (empty?: boolean) => {
-        const newColNames: string[] = []
-        const encodedData: CoreUpsetData = structuredClone(data);
-
-        // close the error window
-        if (empty) {
-            setEncodedDataAtom(encodedData);
-            return;
-        }
-
-        // get the unique names of every new column to be added. 
-        //    ex: group1_a, group1_b, group2_a, group2_b, group3_c, ....
-        encodeList.forEach((s) => Object.entries(data.items).forEach(([id, row]) => {
-            let names = `${row[s]}`.split(',');
-            names = names.filter((n) => n !== "")
-            newColNames.push(...names.map((val) => `${s}_${val}`))
-        }))
-        const uniqueColNames: Set<string> = new Set(newColNames);
-
-        // populate the data items group membership
-        Object.entries(encodedData.items).forEach(([id, row]) => {
-            Array.from(uniqueColNames).forEach((col) => {
-                let splitCol = col.split('_');
-                row[col] = `${row[splitCol[0]]}`.includes(splitCol[1])
-            })
-        })
-
-        // create the new annotations to pass into process, these are needed to ensure that the columns are added to columnTypes
-        const newAnnotations = Array.from(uniqueColNames).map((col) => {return {[col]: "boolean"}})
-            .reduce((obj, item) => Object.assign(obj, item), {})
-        const annotations = {...encodedData.columnTypes, ...newAnnotations}
-        
-        setEncodedDataAtom(process(Object.values(encodedData.items) as any, { columns: annotations } as any));
+    const handleSubmit = (empty = false) => {
+        setEncodedDataAtom(oneHotEncode(encodeList, data, empty));
     }
     
     return (
@@ -102,8 +71,8 @@ export const ErrorModal = () => {
                             </Select>
                         </FormControl>
 
-                        <Button style={{ height: "60%" }} color="error" onClick={() => { encodeList.length = 0; oneHotEncode(true) }}>Cancel</Button>
-                        <Button style={{ height: "60%" }} color="secondary" variant="contained" onClick={() => oneHotEncode()}>Submit</Button>
+                        <Button style={{ height: "60%" }} color="error" onClick={() => { encodeList.length = 0; handleSubmit(true) }}>Cancel</Button>
+                        <Button style={{ height: "60%" }} color="secondary" variant="contained" onClick={() => handleSubmit()}>Submit</Button>
                     </div>
                 </div>
                 }
