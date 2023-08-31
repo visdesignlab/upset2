@@ -6,6 +6,7 @@ export const highlight = css`
   stroke: #feca82;
   stroke-width: 2;
   stroke-opacity: 0.8;
+  fill-opacity: 1.0;
 `;
 
 export const columnHighlight = css`

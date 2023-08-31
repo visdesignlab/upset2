@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { useRecoilValue } from 'recoil';
 
-import { css } from '@emotion/react';
 import { hiddenSetSelector, visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSetSizeSelector } from '../../atoms/maxSetSizeSelector';
@@ -24,30 +23,31 @@ export const MatrixHeader = () => {
     <>
       <SetHeader visibleSets={visibleSets} scale={scale} />
       <foreignObject
-        transform={translate(dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap, 0)}
-        css={css`
-        width: ${
+        width={
           dimensions.size.width +
           dimensions.gap +
-          dimensions.attribute.width}px;
-        height: ${dimensions.set.size.height + 15}px;
-      `}
+          dimensions.attribute.width
+        }
+        height={dimensions.set.size.height + 15}
+        transform={translate(dimensions.matrixColumn.width +
+                dimensions.bookmarkStar.gap +
+                dimensions.bookmarkStar.width +
+                dimensions.bookmarkStar.gap, 0)}
       >
-        <div
-          id="hiddenSetDiv"
-          css={css`
-          overflow-x: auto;
-          overflow-y: hidden;
-          height: 100%;
-        `}
-        >
-          <svg width={hiddenSets.length * (set.width + 1)}>
-            <HiddenSets hiddenSets={hiddenSets} scale={scale} />
-          </svg>
-        </div>
+        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
+          <div
+            id="hiddenSetDiv"
+            style={{
+              overflowX: 'auto',
+              overflowY: 'hidden',
+              height: '100%',
+            }}
+          >
+            <svg width={hiddenSets.length * (set.width + 1)} xmlns="http://www.w3.org/2000/svg">
+              <HiddenSets hiddenSets={hiddenSets} scale={scale} />
+            </svg>
+          </div>
+        </body>
       </foreignObject>
     </>
   );

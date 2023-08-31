@@ -8,6 +8,11 @@ export {
   initializeProvenanceTracking,
 } from './provenance';
 
-export { upsetConfigAtom, defaultConfig } from './atoms/config/upsetConfigAtoms';
+export {
+  upsetConfigAtom,
+  defaultConfig,
+} from './atoms/config/upsetConfigAtoms';
+
+export * from './utils/downloads';
 
 export * from './utils/exports';

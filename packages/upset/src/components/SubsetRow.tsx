@@ -67,6 +67,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         }
         rx="5"
         ry="10"
+        fillOpacity="0.0"
       />
       <Matrix sets={visibleSets} subset={subset} />
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&

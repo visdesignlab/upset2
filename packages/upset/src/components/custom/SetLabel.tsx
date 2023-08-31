@@ -30,12 +30,13 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
       <rect
         className={setId}
         css={
-          columnHover.includes(setId) || columnSelect.includes(setId)
-            ? hoverHighlight
-            : matrixColumnBackgroundRect
+          (columnHover.includes(setId) || columnSelect.includes(setId)) &&
+            hoverHighlight
         }
         height={dimensions.set.label.height - gap}
         width={dimensions.set.width - gap / 2}
+        fill="#f0f0f0"
+        fillOpacity="1.0"
         transform={`${translate(
           gap / 4,
           gap,
@@ -46,20 +47,25 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         height={dimensions.set.width}
         width={dimensions.set.label.height}
         z={100}
+        style={{
+          color: '#000000',
+          fontSize: '14px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+        }}
+
       >
-        <p css={css`
-            color: #000000; 
-            font-size: 14px;
-            overflow: hidden;
-            text-overflow: ellipsis; 
-            font-weight: 500;
-            height: 100%;
-            padding: 0;
-            margin: 2px 0 0 0;
-          `}
-        >
-          {name}
-        </p>
+        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
+          <p style={{
+            height: '100%',
+            padding: '0',
+            margin: '2px 0 0 0',
+            fontWeight: '500',
+            textAlign: 'start',
+          }}>
+            {name}
+          </p>
+        </body>
       </foreignObject>
     </Group>
   );
