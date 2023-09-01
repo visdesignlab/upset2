@@ -18,6 +18,7 @@ export function calculateDimensions(
     scaleHeight: 30,
     buttonHeight: 25,
     plotHeight: 18,
+    dotSize: 5,
     get height() {
       return this.scaleHeight + this.gap + this.buttonHeight;
     },

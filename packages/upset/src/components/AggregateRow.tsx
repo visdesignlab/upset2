@@ -121,7 +121,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <BookmarkStar row={aggregateRow} />}
         <SizeBar row={aggregateRow} size={aggregateRow.size} />
         <DeviationBar deviation={aggregateRow.deviation} />
-        <AttributeBars attributes={aggregateRow.attributes} />
+        <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>
   );
