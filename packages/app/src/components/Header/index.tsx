@@ -10,7 +10,7 @@ import { AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, T
 import { useRecoilValue, useRecoilState } from 'recoil';
 import React, { useContext, useEffect, useState } from 'react';
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
-import { queryParamAtom } from '../../atoms/queryParamAtom';
+import { getQueryParam, queryParamAtom, saveQueryParam } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../Root';
@@ -87,6 +87,7 @@ const Header = ({ data }: { data: any }) => {
     localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()), true)));
     localStorage.setItem('visibleSets', JSON.stringify(visibleSets));
     localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets));
+    saveQueryParam();
   };
 
   const [ userInfo, setUserInfo ] = useState<UserSpec | null>(null);
@@ -140,7 +141,7 @@ const Header = ({ data }: { data: any }) => {
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           {data !== null &&
             <>
-              <Link to="/datatable" target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+              <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
                 <Button
                   color="inherit"
                 >

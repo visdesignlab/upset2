@@ -15,6 +15,10 @@ export const queryParamAtom = selector({
   },
 });
 
+export function getQueryParam() {
+  return window.localStorage.getItem(QUERY_PARAM_KEY);
+}
+
 export function saveQueryParam() {
   const { search } = window.location;
 

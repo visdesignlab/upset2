@@ -2,7 +2,7 @@ import { Upset } from '@visdesignlab/upset2-react';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
-import { doesHaveSavedQueryParam, queryParamAtom } from '../atoms/queryParamAtom';
+import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from './Root';
 import { useContext, useEffect } from 'react';
@@ -45,6 +45,10 @@ export const Body = ({ yOffset, data, config }: Props) => {
   // if no data has been loaded or if the error/one-hot modal has been closed by the user
   if (((!workspace || !table) && !doesHaveSavedQueryParam()) || (encodedData !== null && data.setColumns.length === 0)) {
     return <div>Please click Load Data button to go to data interface.</div>;
+  }
+
+  if (data.setColumns.length > 0) {
+    saveQueryParam();
   }
 
   return (
