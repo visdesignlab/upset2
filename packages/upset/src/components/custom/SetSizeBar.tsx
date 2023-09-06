@@ -40,10 +40,7 @@ export const SetSizeBar: FC<Props> = ({
       ty={ty}
     >
       <title>
-        {label}
-        {' '}
-        -
-        {size}
+        {`${label} - ${size}`}
       </title>
 
       <rect
