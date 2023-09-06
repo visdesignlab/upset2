@@ -13,7 +13,6 @@ import App from './App';
 import DefaultTheme from './components/theme';
 import { api, client_id, oAuth } from './atoms/authAtoms';
 import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
-import { restoreQueryParam } from './atoms/queryParamAtom';
 
 // import reportWebVitals from './reportWebVitals';
 
@@ -26,8 +25,6 @@ if (sharedLoginCookie !== null) {
 oAuth.maybeRestoreLogin().then(() => {
 
   Object.assign(api.axios.defaults.headers.common, oAuth.authHeaders);
-
-  restoreQueryParam();
   
   // If logged out, remove the local storage item
   if (!Object.keys(oAuth.authHeaders).includes('Authorization')) {
