@@ -30,7 +30,7 @@ import {
   secondAggregateSelector,
   secondOverlapDegreeSelector,
 } from '../atoms/config/aggregateAtoms';
-import { hideEmptySelector, maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
+import { hideEmptySelector, hideNoSetSelector, maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
@@ -63,6 +63,7 @@ export const Sidebar = () => {
   const maxVisible = useRecoilValue(maxVisibleSelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
+  const hideNoSet = useRecoilValue(hideNoSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const [secondaryAccordionOpen, setSecondaryAccordionOpen] = useState(
@@ -233,13 +234,30 @@ export const Sidebar = () => {
               />
               <HelpCircle text={helpText.filter.HideEmptySets} margin={{ ...defaultMargin, left: 12 }} />
             </div>
+            <div css={itemDivCSS}>
+              <FormControlLabel
+                sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+                label="Hide No-Set Intersection"
+                control={
+                  <Switch
+                    size="small"
+                    checked={hideNoSet}
+                    onChange={(ev) => {
+                      actions.setHideNoSet(ev.target.checked);
+                    }}
+                  />
+                }
+                labelPlacement="start"
+              />
+              <HelpCircle text={helpText.filter.HideNoSet} margin={{ ...defaultMargin, left: 12 }} />
+            </div>
           </FormGroup>
           <FormGroup>
             <div css={itemDivCSS}>
               <FormLabel>
                 <Typography>Filter by Degree</Typography>
               </FormLabel>
-              <HelpCircle text={helpText.filter.degree} />
+              <HelpCircle text={helpText.filter.Degree} />
             </div>
             <div css={itemDivCSS}>
               <Slider

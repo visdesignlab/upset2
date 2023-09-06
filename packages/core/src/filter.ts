@@ -6,24 +6,28 @@ import { deepCopy } from './utils';
 
 function filterIntersections<T extends Intersections>(
   rows: T,
-  filters: { maxVisible: number; minVisible: number; hideEmpty: boolean },
+  filters: { maxVisible: number; minVisible: number; hideEmpty: boolean, hideNoSet: boolean },
 ) {
   const { values, order } = rows;
 
   const newOrder = order.filter((id) => {
-    let shouldKeep = false;
     const subset = values[id];
     const degree = getDegreeFromSetMembership(subset.setMembership);
 
+    // determine if the subset is within the filter range and meets the hide conditions
     if ((degree >= filters.minVisible && degree <= filters.maxVisible) || subset.type === 'Aggregate') {
-      if (filters.hideEmpty) {
-        shouldKeep = subset.size > 0;
-      } else {
-        shouldKeep = true;
+      if (degree === 0 && filters.hideNoSet) {
+        return false;
       }
+
+      if (subset.size === 0 && filters.hideEmpty) {
+        return false;
+      }
+
+      return true;
     }
 
-    return shouldKeep;
+    return false;
   });
 
   const newValues: typeof values = {};
@@ -37,7 +41,7 @@ function filterIntersections<T extends Intersections>(
 
 export function filterRows(
   baseRows: Rows,
-  filters: { maxVisible: number; minVisible: number; hideEmpty: boolean },
+  filters: { maxVisible: number; minVisible: number; hideEmpty: boolean, hideNoSet: boolean },
 ): Rows {
   const rows = deepCopy(baseRows);
 
