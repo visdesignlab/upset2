@@ -1,5 +1,5 @@
-import { Upset } from '@visdesignlab/upset2-react';
-import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
+import { UpsetConfig, getRows } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
@@ -10,6 +10,7 @@ import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { api } from '../atoms/authAtoms';
+import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
 
 type Props = {
   yOffset: number;
@@ -23,15 +24,29 @@ export const Body = ({ yOffset, data, config }: Props) => {
   const encodedData = useRecoilValue(encodedDataAtom);
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
+  const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
 
-  const provVisObj = {
+  const provVis = {
     open: isProvVisOpen,
     close: () => { setIsProvVisOpen(false) }
   }
 
-  const elementSidebarObj = {
+  const elementSidebar = {
     open: isElementSidebarOpen,
     close: () => { setIsElementSidebarOpen(false) }
+  }
+
+  const altTextSidebar = {
+    open: isAltTextSidebarOpen,
+    close: () => { setIsAltTextSidebarOpen(false) }
+  }
+
+  const generateAltText = async () => {
+    const state = provObject.provenance.getState();
+    const config = getAltTextConfig(provObject.provenance, data, getRows(data, state));
+
+    const response = await api.generateAltText('medium', 2, 'full', config);
+    return response.alttxt;
   }
 
   useEffect(() => {
@@ -61,8 +76,10 @@ export const Body = ({ yOffset, data, config }: Props) => {
           yOffset={yOffset === -1 ? 0 : yOffset}
           extProvenance={provObject}
           config={config}
-          provVis={provVisObj}
-          elementSidebar={elementSidebarObj}
+          provVis={provVis}
+          elementSidebar={elementSidebar}
+          altTextSidebar={altTextSidebar}
+          generateAltText={generateAltText}
         />
       }
     </div>

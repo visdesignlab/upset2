@@ -26,6 +26,11 @@ export type UpsetProps = {
     open: boolean;
     close: () => void;
   };
+  altTextSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
+  generateAltText?: () => Promise<string>;
 };
 
 const defaultVisibleSets = 6;
@@ -39,6 +44,8 @@ export const Upset: FC<UpsetProps> = ({
   extProvenance,
   provVis,
   elementSidebar,
+  altTextSidebar,
+  generateAltText,
 }) => {
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
@@ -73,6 +80,8 @@ export const Upset: FC<UpsetProps> = ({
             extProvenance={extProvenance}
             provVis={provVis}
             elementSidebar={elementSidebar}
+            altTextSidebar={altTextSidebar}
+            generateAltText={generateAltText}
           />
         </RecoilRoot>
       </Box>

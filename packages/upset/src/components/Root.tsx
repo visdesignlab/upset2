@@ -25,6 +25,7 @@ import { Sidebar } from './Sidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
+import { AltTextSidebar } from './AltTextSidebar';
 
 /** @jsxImportSource @emotion/react */
 export const ProvenanceContext = createContext<{
@@ -51,10 +52,15 @@ type Props = {
     open: boolean;
     close: () => void;
   };
+  altTextSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
+  generateAltText?: () => Promise<string>;
 };
 
 export const Root: FC<Props> = ({
-  data, config, extProvenance, provVis, elementSidebar,
+  data, config, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
@@ -157,6 +163,7 @@ export const Root: FC<Props> = ({
       <ContextMenu />
       {elementSidebar && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
+      {(altTextSidebar && generateAltText) && <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />}
     </ProvenanceContext.Provider>
   );
 };

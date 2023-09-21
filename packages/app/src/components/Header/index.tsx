@@ -20,11 +20,13 @@ import { importErrorAtom } from '../../atoms/importErrorAtom';
 import { Link } from 'react-router-dom';
 import { getUserInfo } from '../../getUserInfo';
 import { restoreQueryParam } from '../../atoms/queryParamAtom';
+import { altTextSidebarAtom } from '../../atoms/altTextSidebarAtom';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
+  const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
   const importError = useRecoilValue(importErrorAtom);
   
   const { provenance } = useContext(ProvenanceContext);
@@ -81,6 +83,18 @@ const Header = ({ data }: { data: any }) => {
     setAnchorEl(null);
     setAttributeDialog(false);
   };
+
+  const closeAnySidebar = () => {
+    if (isProvVisOpen) {
+      setIsProvVisOpen(false);
+    }
+    if (isElementSidebarOpen) {
+      setIsElementSidebarOpen(false);
+    }
+    if (isAltTextSidebarOpen) {
+      setIsAltTextSidebarOpen(false);
+    }
+  }
 
   const dispatchState = () => {
     localStorage.setItem('data', JSON.stringify(data));
@@ -156,9 +170,7 @@ const Header = ({ data }: { data: any }) => {
                 Attributes
               </Button>
               <Button onClick={() => {
-                if (isProvVisOpen) {
-                  setIsProvVisOpen(false);
-                }
+                closeAnySidebar();
 
                 if (isElementSidebarOpen) {
                   setIsElementSidebarOpen(false);
@@ -205,13 +217,19 @@ const Header = ({ data }: { data: any }) => {
                 Download SVG
               </MenuItem>
               <MenuItem onClick={() => {
-                  if (isElementSidebarOpen) {
-                    setIsElementSidebarOpen(false);
-                  }
+                  closeAnySidebar();
+
                   setIsProvVisOpen(true); 
                   handleMenuClose();
                 }}>
                   Show History
+              </MenuItem>
+              <MenuItem onClick={() => {
+                closeAnySidebar();
+
+                setIsAltTextSidebarOpen(true);
+              }}>
+                Show Alt-Text
               </MenuItem>
             </Menu>
           <IconButton

@@ -60,6 +60,16 @@ const downloadJSON = (filename: string, json: string) => {
   URL.revokeObjectURL(href);
 };
 
+export const getAltTextConfig = (provenance: UpsetProvenance, data: CoreUpsetData, rows: Rows) => {
+  let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
+
+  dataObj = {
+    ...dataObj, rawData: data, processedData: rows, accessibleProcessedData: getAccessibleData(rows),
+  };
+
+  return dataObj;
+};
+
 export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows) => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
