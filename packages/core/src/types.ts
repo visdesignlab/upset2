@@ -166,6 +166,7 @@ export type UpsetConfig = {
     maxVisible: number;
     minVisible: number;
     hideEmpty: boolean;
+    hideNoSet: boolean;
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];

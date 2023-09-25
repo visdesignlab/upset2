@@ -16,3 +16,8 @@ export const hideEmptySelector = selector({
   key: 'hide-empty',
   get: ({ get }) => get(upsetConfigAtom).filters.hideEmpty,
 });
+
+export const hideNoSetSelector = selector({
+  key: 'hide-no-set',
+  get: ({ get }) => get(upsetConfigAtom).filters.hideNoSet,
+});

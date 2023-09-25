@@ -88,6 +88,14 @@ const hideEmptyAction = registry.register(
   },
 );
 
+const hideNoSetAction = registry.register(
+  'hide-no-set',
+  (state, hide) => {
+    state.filters.hideNoSet = hide;
+    return state;
+  },
+);
+
 const addToVisibleAction = registry.register(
   'add-to-visible',
   (state: UpsetConfig, newSet) => {
@@ -312,6 +320,7 @@ export function getActions(provenance: UpsetProvenance) {
     setMaxVisible: (val: number) => provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
     setMinVisible: (val: number) => provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
     setHideEmpty: (val: boolean) => provenance.apply(val ? 'Hide empty intersections' : 'Show empty intersections', hideEmptyAction(val)),
+    setHideNoSet: (val: boolean) => provenance.apply(val ? 'Hide no-set intersection' : 'Show no-set intersection', hideNoSetAction(val)),
     addVisibleSet: (set: string) => provenance.apply(`Add set ${set}`, addToVisibleAction(set)),
     removeVisibleSet: (set: string) => provenance.apply(`Remove set ${set}`, removeFromVisibleAction(set)),
     addAttribute: (attr: string) => provenance.apply(`Show ${attr}`, addToVisibleAttributeAction(attr)),

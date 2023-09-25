@@ -12,6 +12,7 @@ export const defaultConfig: UpsetConfig = {
     maxVisible: 3,
     minVisible: 0,
     hideEmpty: true,
+    hideNoSet: false,
   },
   visibleSets: [],
   visibleAttributes: [],
