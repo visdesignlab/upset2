@@ -11,6 +11,7 @@ export const helpText = {
   },
   filter: {
     HideEmptySets: 'Hide all subsets that contain no items',
-    degree: 'Show only intersections that have a degree higher than the "Min Degree" and lower than the "Max Degree" value.',
+    HideNoSet: 'Hide the row that contains the items that are in no set.',
+    Degree: 'Show only intersections that have a degree higher than the "Min Degree" and lower than the "Max Degree" value.',
   },
 };
