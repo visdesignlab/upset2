@@ -56,7 +56,7 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  generateAltText?: () => Promise<string>;
+  generateAltText?: (verbosity: string, level: number, explain: string) => Promise<string>;
 };
 
 export const Root: FC<Props> = ({

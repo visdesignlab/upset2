@@ -11,6 +11,7 @@ import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { api } from '../atoms/authAtoms';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
+import { generateAltText } from '../utils/generateAltText';
 
 type Props = {
   yOffset: number;
@@ -41,19 +42,16 @@ export const Body = ({ yOffset, data, config }: Props) => {
     close: () => { setIsAltTextSidebarOpen(false) }
   }
 
-  const generateAltText = async () => {
-    const state = provObject.provenance.getState();
-    const config = getAltTextConfig(provObject.provenance, data, getRows(data, state));
-
-    const response = await api.generateAltText('medium', 2, 'full', config);
-    return response.alttxt;
-  }
-
   useEffect(() => {
     provObject.provenance.currentChange(() => {
       api.updateSession(workspace || '', parseInt(sessionId || ''), 'table', provObject.provenance.exportObject());
     })
   }, [provObject.provenance, sessionId, workspace]);
+
+  const genAltText = async (verbosity: string, level: number, explain: string) => {
+    const resp = await generateAltText(provObject.provenance.getState(), data, verbosity, level, explain);
+    return resp;
+  }
 
   if (data === null) return null;
 
@@ -79,7 +77,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
           provVis={provVis}
           elementSidebar={elementSidebar}
           altTextSidebar={altTextSidebar}
-          generateAltText={generateAltText}
+          generateAltText={genAltText}
         />
       }
     </div>

@@ -181,26 +181,32 @@ export type UpsetConfig = {
 };
 
 export type AccessibleDataEntry = {
-  elementName: string,
-  type: RowType,
-  size: number,
-  deviation: number,
-  attributes: Attributes,
-  degree: number,
-  id?: string,
+  elementName: string;
+  type: RowType;
+  size: number;
+  deviation: number;
+  attributes: Attributes;
+  degree: number;
+  id?: string;
   setMembership?: {
-      [set: string]: SetMembershipStatus
-  },
+      [set: string]: SetMembershipStatus;
+  };
   items?: {
-      [row: string]: AccessibleDataEntry
-  }
+      [row: string]: AccessibleDataEntry;
+  };
 }
 
 export type AccessibleData = {
   values: {
       [row: string]: AccessibleDataEntry
-  }
+  };
 }
+
+export type AltTextConfig = UpsetConfig & {
+  rawData?: CoreUpsetData;
+  processedData?: Rows;
+  accessibleProcessedData?: AccessibleData
+};
 
 export function areRowsAggregates(rr: Rows): rr is Aggregates {
   const { order } = rr;
