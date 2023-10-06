@@ -30,7 +30,7 @@ export type UpsetProps = {
     open: boolean;
     close: () => void;
   };
-  generateAltText?: (verbosity: string, level: number, explain: string) => Promise<string>;
+  generateAltText?: (verbosity: string, explain: string) => Promise<string>;
 };
 
 const defaultVisibleSets = 6;

@@ -3,12 +3,13 @@ import {
   Divider, Drawer, FormControlLabel, IconButton, Radio, RadioGroup, TextField, Typography, css,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useContext } from 'react';
+import { ProvenanceContext } from './Root';
 
 type Props = {
   open: boolean;
   close: () => void;
-  generateAltText: (verbosity: string, level: number, explain: string) => Promise<string>;
+  generateAltText: (verbosity: string, explain: string) => Promise<string>;
 }
 
 const initialDrawerWidth = 450;
@@ -16,26 +17,31 @@ const initialDrawerWidth = 450;
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const [altText, setAltText] = useState<string>('');
   const [verbosity, setVerbosity] = useState<string>('low');
-  const [level, setLevel] = useState<number>(1);
   const [explain, setExplain] = useState<string>('full');
 
-  useEffect((): void => {
+  const { provenance } = useContext(ProvenanceContext);
+
+  function genAltText(): void {
     async function generate(): Promise<void> {
-      const resp = await generateAltText(verbosity, level, explain);
+      const resp = await generateAltText(verbosity, explain);
       setAltText(resp);
     }
 
     if (open) {
       generate();
     }
-  }, [open, verbosity, level, explain]);
+  }
+
+  useEffect(() => {
+    genAltText();
+  }, [open, verbosity, explain]);
+
+  provenance.currentChange(() => {
+    genAltText();
+  });
 
   const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
     setVerbosity(e.value);
-  };
-
-  const handleLevelChange = (e: EventTarget & HTMLInputElement): void => {
-    setLevel(parseInt(e.value, 10));
   };
 
   const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
@@ -97,21 +103,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             <FormControlLabel value="low" control={<Radio />} label="Low" />
             <FormControlLabel value="medium" control={<Radio />} label="Medium" />
             <FormControlLabel value="high" control={<Radio />} label="High" />
-          </RadioGroup>
-        </Box>
-        <Box>
-          <Typography variant="caption" fontSize="1em">
-            Level
-          </Typography>
-          <RadioGroup
-            row
-            defaultValue="2"
-            value={level}
-            onChange={(e): void => handleLevelChange(e.target)}
-          >
-            <FormControlLabel value="0" control={<Radio />} label="0" />
-            <FormControlLabel value="1" control={<Radio />} label="1" />
-            <FormControlLabel value="2" control={<Radio />} label="2" />
           </RadioGroup>
         </Box>
         <Box>

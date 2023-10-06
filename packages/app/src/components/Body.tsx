@@ -48,8 +48,8 @@ export const Body = ({ yOffset, data, config }: Props) => {
     })
   }, [provObject.provenance, sessionId, workspace]);
 
-  const genAltText = async (verbosity: string, level: number, explain: string) => {
-    const resp = await generateAltText(provObject.provenance.getState(), data, verbosity, level, explain);
+  const genAltText = async (verbosity: string, explain: string) => {
+    const resp = await generateAltText(provObject.provenance.getState(), data, verbosity, explain);
     return resp;
   }
 
