@@ -1,6 +1,15 @@
 import {
   Box,
-  Divider, Drawer, FormControlLabel, IconButton, Radio, RadioGroup, TextField, Typography, css,
+  Divider,
+  Drawer,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  css,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { useState, useEffect, FC, useContext } from 'react';
@@ -27,14 +36,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       setAltText(resp);
     }
 
-    if (open) {
-      generate();
-    }
+    generate();
   }
 
   useEffect(() => {
     genAltText();
-  }, [open, verbosity, explain]);
+  }, [verbosity, explain]);
 
   provenance.currentChange(() => {
     genAltText();
@@ -76,7 +83,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           `}
         >
           <Typography variant="button" fontSize="1em">
-            Alternative Text
+            Alt Text
           </Typography>
           <IconButton onClick={close}>
             <CloseIcon />
@@ -89,38 +96,36 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             margin-bottom: 1em;
           `}
         />
-        <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Generated" defaultValue={altText} fullWidth maxRows={8} />
-        <Box>
-          <Typography variant="caption" fontSize="1em">
-            Verbosity
-          </Typography>
-          <RadioGroup
-            row
-            defaultValue="low"
-            value={verbosity}
-            onChange={(e): void => handleVerbosityChange(e.target)}
-          >
-            <FormControlLabel value="low" control={<Radio />} label="Low" />
-            <FormControlLabel value="medium" control={<Radio />} label="Medium" />
-            <FormControlLabel value="high" control={<Radio />} label="High" />
-          </RadioGroup>
-        </Box>
-        <Box>
-          <Typography variant="caption" fontSize="1em">
-            Explain
-          </Typography>
-          <RadioGroup
-            row
-            defaultValue="full"
-            value={explain}
-            onChange={(e): void => handleExplainChange(e.target)}
-          >
-            <FormControlLabel value="none" control={<Radio />} label="None" />
-            <FormControlLabel value="simple" control={<Radio />} label="Simple" />
-            <FormControlLabel value="full" control={<Radio />} label="Full" />
-          </RadioGroup>
+        <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={altText} fullWidth maxRows={8} />
+        <Box display="flex" justifyContent="space-around" marginTop="1rem">
+          <FormControl sx={{ width: '40%' }}>
+            <InputLabel id="verbosity-label">Verbosity</InputLabel>
+            <Select
+              labelId="verbosity-label"
+              label="Verbosity"
+              value={verbosity}
+              onChange={(e: any): void => handleVerbosityChange(e.target)}
+            >
+              <MenuItem value="low">Low</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="high">High</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: '40%' }}>
+            <InputLabel id="explain-label">Explain</InputLabel>
+            <Select
+              labelId="explain-label"
+              label="Explain"
+              value={explain}
+              onChange={(e: any): void => handleExplainChange(e.target)}
+            >
+              <MenuItem value="none">None</MenuItem>
+              <MenuItem value="simple">Simple</MenuItem>
+              <MenuItem value="full">Full</MenuItem>
+            </Select>
+          </FormControl>
         </Box>
       </div>
     </Drawer>
-  )
+  );
 };
