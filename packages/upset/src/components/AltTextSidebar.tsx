@@ -38,6 +38,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const [textDescription, setTextDescription] = useState('');
 
+  // values added as a dependency here indicate values which are usable to the alt-text generator API call
+  // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
       const resp = await generateAltText(verbosity, explain);
@@ -55,6 +57,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     actions.setExplain(e.value);
   };
 
+  // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
   const debouncedVerbosityChange = debounce(handleVerbosityChange, 1);
   const debouncedExplainChange = debounce(handleExplainChange, 1);
 
