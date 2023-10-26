@@ -84,9 +84,12 @@ export const Sidebar = () => {
         width: ${dimensions.sidebar.width}px
       `}
     >
+      <Typography variant="h2" fontSize="1.5em" fontWeight="inherit">
+        Settings
+      </Typography>
       <Accordion disableGutters defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS}>Sorting</Typography>
+          <Typography css={sidebarHeaderCSS} variant="h3">Sorting</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormControl>
@@ -117,7 +120,7 @@ export const Sidebar = () => {
       </Accordion>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS}>Aggregation</Typography>
+          <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormControl sx={{ width: '100%' }}>
@@ -168,7 +171,7 @@ export const Sidebar = () => {
         disabled={firstAggregateBy === 'None'}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS}>Second Aggregation</Typography>
+          <Typography css={sidebarHeaderCSS} variant="h3">Second Aggregation</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormControl sx={{ width: '100%' }}>
@@ -213,7 +216,7 @@ export const Sidebar = () => {
       </Accordion>
       <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS}>Filter Intersections</Typography>
+          <Typography css={sidebarHeaderCSS} variant="h3">Filter Intersections</Typography>
         </AccordionSummary>
         <AccordionDetails>
           <FormGroup sx={{ mb: 2.5, width: '100%' }}>

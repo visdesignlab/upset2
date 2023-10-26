@@ -88,8 +88,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             width: 95%;
           `}
         >
-          <Typography variant="button" fontSize="1em">
-            Alt Text
+          <Typography variant="h2" fontSize="1.5em" fontWeight="inherit">
+            Alternative Text
           </Typography>
           <IconButton onClick={close}>
             <CloseIcon />
