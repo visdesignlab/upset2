@@ -11,7 +11,6 @@ import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { api } from '../atoms/authAtoms';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
-import { generateAltText } from '../utils/generateAltText';
 
 type Props = {
   yOffset: number;
@@ -48,9 +47,12 @@ export const Body = ({ yOffset, data, config }: Props) => {
     })
   }, [provObject.provenance, sessionId, workspace]);
 
-  const genAltText = async (verbosity: string, explain: string) => {
-    const resp = await generateAltText(provObject.provenance.getState(), data, verbosity, explain);
-    return resp;
+  async function generateAltText(verbosity: string, explain: string) {
+    const state = provObject.provenance.getState();
+    const config = getAltTextConfig(state, data, getRows(data, state));
+
+    const response = await api.generateAltText(verbosity, 2, explain, config);
+    return response.alttxt;
   }
 
   if (data === null) return null;
@@ -77,7 +79,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
           provVis={provVis}
           elementSidebar={elementSidebar}
           altTextSidebar={altTextSidebar}
-          generateAltText={genAltText}
+          generateAltText={generateAltText}
         />
       }
     </div>

@@ -12,8 +12,10 @@ import {
   css,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState, useEffect, FC, useContext } from 'react';
-import { ProvenanceContext } from './Root';
+import { useState, useEffect, FC } from 'react';
+import { useRecoilValue } from 'recoil';
+import { sortBySelector } from '../atoms/config/sortByAtom';
+import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 
 type Props = {
   open: boolean;
@@ -28,24 +30,18 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const [verbosity, setVerbosity] = useState<string>('low');
   const [explain, setExplain] = useState<string>('full');
 
-  const { provenance } = useContext(ProvenanceContext);
+  const sort = useRecoilValue(sortBySelector);
+  const minVisible = useRecoilValue(minVisibleSelector);
+  const maxVisible = useRecoilValue(maxVisibleSelector);
 
-  function genAltText(): void {
+  useEffect(() => {
     async function generate(): Promise<void> {
       const resp = await generateAltText(verbosity, explain);
       setAltText(resp);
     }
 
     generate();
-  }
-
-  useEffect(() => {
-    genAltText();
-  }, [verbosity, explain]);
-
-  provenance.currentChange(() => {
-    genAltText();
-  });
+  }, [verbosity, explain, sort, minVisible, maxVisible]);
 
   const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
     setVerbosity(e.value);
