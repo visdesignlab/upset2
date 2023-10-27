@@ -31,7 +31,7 @@ import { AltTextSidebar } from './AltTextSidebar';
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
-}>(undefined!);
+} | undefined>(undefined);
 
 const baseStyle = css`
   padding: 0.25em;

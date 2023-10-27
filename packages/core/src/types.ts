@@ -49,7 +49,7 @@ export type BaseElement = {
   type: RowType;
   size: number;
   attributes: Attributes;
-  parent?: string
+  parent?: string;
 };
 
 export type SetMembershipStatus = 'Yes' | 'No' | 'May';
@@ -153,7 +153,7 @@ export type WordCloud = BasePlot & {
 
 export type Plot = Scatterplot | Histogram | WordCloud;
 
-export type Bookmark = { id: string, label: string, size: number }
+export type Bookmark = { id: string; label: string; size: number }
 
 export type UpsetConfig = {
   firstAggregateBy: AggregateBy;
@@ -178,6 +178,10 @@ export type UpsetConfig = {
     wordClouds: WordCloud[];
   };
   allSets: ColumnName[];
+  altText: {
+    verbosity: string;
+    explain: string;
+  };
 };
 
 export type AccessibleDataEntry = {
@@ -198,7 +202,7 @@ export type AccessibleDataEntry = {
 
 export type AccessibleData = {
   values: {
-      [row: string]: AccessibleDataEntry
+      [row: string]: AccessibleDataEntry;
   };
 }
 

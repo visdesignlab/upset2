@@ -10,12 +10,15 @@ import {
   TextField,
   Typography,
   css,
+  debounce,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState, useEffect, FC } from 'react';
+import { useState, useEffect, FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
+import { ProvenanceContext } from './Root';
+import { altTextSelector } from '../atoms/config/altTextAtoms';
 
 type Props = {
   open: boolean;
@@ -26,30 +29,37 @@ type Props = {
 const initialDrawerWidth = 450;
 
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
-  const [altText, setAltText] = useState<string>('');
-  const [verbosity, setVerbosity] = useState<string>('low');
-  const [explain, setExplain] = useState<string>('full');
+  const { actions } = useContext(ProvenanceContext);
+  const { verbosity, explain } = useRecoilValue(altTextSelector);
 
   const sort = useRecoilValue(sortBySelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const maxVisible = useRecoilValue(maxVisibleSelector);
 
+  const [textDescription, setTextDescription] = useState('');
+
+  // values added as a dependency here indicate values which are usable to the alt-text generator API call
+  // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
       const resp = await generateAltText(verbosity, explain);
-      setAltText(resp);
+      setTextDescription(resp);
     }
 
     generate();
   }, [verbosity, explain, sort, minVisible, maxVisible]);
 
   const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
-    setVerbosity(e.value);
+    actions.setVerbosity(e.value);
   };
 
   const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
-    setExplain(e.value);
+    actions.setExplain(e.value);
   };
+
+  // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
+  const debouncedVerbosityChange = debounce(handleVerbosityChange, 1);
+  const debouncedExplainChange = debounce(handleExplainChange, 1);
 
   return (
     <Drawer
@@ -92,34 +102,36 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             margin-bottom: 1em;
           `}
         />
-        <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={altText} fullWidth maxRows={8} />
-        <Box display="flex" justifyContent="space-around" marginTop="1rem">
-          <FormControl sx={{ width: '40%' }}>
-            <InputLabel id="verbosity-label">Verbosity</InputLabel>
-            <Select
-              labelId="verbosity-label"
-              label="Verbosity"
-              value={verbosity}
-              onChange={(e: any): void => handleVerbosityChange(e.target)}
-            >
-              <MenuItem value="low">Low</MenuItem>
-              <MenuItem value="medium">Medium</MenuItem>
-              <MenuItem value="high">High</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl sx={{ width: '40%' }}>
-            <InputLabel id="explain-label">Explain</InputLabel>
-            <Select
-              labelId="explain-label"
-              label="Explain"
-              value={explain}
-              onChange={(e: any): void => handleExplainChange(e.target)}
-            >
-              <MenuItem value="none">None</MenuItem>
-              <MenuItem value="simple">Simple</MenuItem>
-              <MenuItem value="full">Full</MenuItem>
-            </Select>
-          </FormControl>
+        <Box>
+          <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={textDescription} fullWidth maxRows={8} />
+          <Box display="flex" justifyContent="space-around" marginTop="1rem">
+            <FormControl sx={{ width: '40%' }}>
+              <InputLabel id="verbosity-label">Verbosity</InputLabel>
+              <Select
+                labelId="verbosity-label"
+                label="Verbosity"
+                defaultValue="low"
+                onChange={(e: any): void => debouncedVerbosityChange(e.target)}
+              >
+                <MenuItem value="low">Low</MenuItem>
+                <MenuItem value="medium">Medium</MenuItem>
+                <MenuItem value="high">High</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '40%' }}>
+              <InputLabel id="explain-label">Explain</InputLabel>
+              <Select
+                labelId="explain-label"
+                label="Explain"
+                defaultValue="full"
+                onChange={(e: any): void => debouncedExplainChange(e.target)}
+              >
+                <MenuItem value="none">None</MenuItem>
+                <MenuItem value="simple">Simple</MenuItem>
+                <MenuItem value="full">Full</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
         </Box>
       </div>
     </Drawer>

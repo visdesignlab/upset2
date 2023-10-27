@@ -1,6 +1,7 @@
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { atom } from 'recoil';
 
+// This config is overruled by any config provided by an external source
 export const defaultConfig: UpsetConfig = {
   firstAggregateBy: 'None',
   firstOverlapDegree: 2,
@@ -24,6 +25,10 @@ export const defaultConfig: UpsetConfig = {
     wordClouds: [],
   },
   allSets: [],
+  altText: {
+    verbosity: 'low',
+    explain: 'full',
+  },
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({
