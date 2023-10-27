@@ -1,9 +1,9 @@
 import {
-  AccessibleData, Aggregate, CoreUpsetData, Row, Rows, UpsetConfig, getDegreeFromSetMembership, isRowAggregate,
+  AccessibleData, Aggregate, AltTextConfig, CoreUpsetData, Row, Rows, UpsetConfig, getDegreeFromSetMembership, isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { UpsetProvenance } from '../provenance';
 
-export const getAccessibleData = (rows: Rows, includeId = false) => {
+export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData => {
   const data = { values: {} } as AccessibleData;
   Object.values(rows.values).forEach((r: Row) => {
     // if the key is ONLY one set, the name should be "Just {set name}"
@@ -46,7 +46,7 @@ export const getAccessibleData = (rows: Rows, includeId = false) => {
   return data;
 };
 
-const downloadJSON = (filename: string, json: string) => {
+const downloadJSON = (filename: string, json: string): void => {
   const blob = new Blob([json], { type: 'application/json' });
   const href = URL.createObjectURL(blob);
 
@@ -60,17 +60,20 @@ const downloadJSON = (filename: string, json: string) => {
   URL.revokeObjectURL(href);
 };
 
-export const getAltTextConfig = (provenance: UpsetProvenance, data: CoreUpsetData, rows: Rows) => {
-  let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
+export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
+  let dataObj = state as AltTextConfig;
 
   dataObj = {
-    ...dataObj, rawData: data, processedData: rows, accessibleProcessedData: getAccessibleData(rows),
+    ...dataObj,
+    rawData: data,
+    processedData: rows,
+    accessibleProcessedData: getAccessibleData(rows),
   };
 
   return dataObj;
 };
 
-export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows) => {
+export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows): void => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
 
@@ -89,13 +92,13 @@ export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, r
   downloadJSON(filename, json);
 };
 
-export const exportRawData = (data: CoreUpsetData) => {
+export const exportRawData = (data: CoreUpsetData): void => {
   const filename = `upset_data_raw_${new Date().toJSON().slice(0, 10)}`;
   const json = JSON.stringify(data, null, 2);
   downloadJSON(filename, json);
 };
 
-export const exportProcessedData = (rows: Rows, accessible?: boolean) => {
+export const exportProcessedData = (rows: Rows, accessible?: boolean): void => {
   const filename = `upset_data_${new Date().toJSON().slice(0, 10)}`;
   const data: Rows | AccessibleData = (accessible) ? getAccessibleData(rows) : rows;
 

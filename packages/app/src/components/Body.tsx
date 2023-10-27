@@ -41,19 +41,19 @@ export const Body = ({ yOffset, data, config }: Props) => {
     close: () => { setIsAltTextSidebarOpen(false) }
   }
 
-  const generateAltText = async () => {
-    const state = provObject.provenance.getState();
-    const config = getAltTextConfig(provObject.provenance, data, getRows(data, state));
-
-    const response = await api.generateAltText('medium', 2, 'full', config);
-    return response.alttxt;
-  }
-
   useEffect(() => {
     provObject.provenance.currentChange(() => {
       api.updateSession(workspace || '', parseInt(sessionId || ''), 'table', provObject.provenance.exportObject());
     })
   }, [provObject.provenance, sessionId, workspace]);
+
+  async function generateAltText(verbosity: string, explain: string) {
+    const state = provObject.provenance.getState();
+    const config = getAltTextConfig(state, data, getRows(data, state));
+
+    const response = await api.generateAltText(verbosity, 2, explain, config);
+    return response.alttxt;
+  }
 
   if (data === null) return null;
 

@@ -154,7 +154,14 @@ const Header = ({ data }: { data: any }) => {
         </Box>
         <Box sx={{display:'flex', alignItems: 'center', margin: 0, padding: 0}}>
           {data !== null &&
-            <>
+            <>              
+              <Button color="inherit" onClick={() => {
+                closeAnySidebar();
+
+                setIsAltTextSidebarOpen(true);
+              }}>
+                Show Alt-Text
+              </Button>
               <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
                 <Button
                   color="inherit"
@@ -223,13 +230,6 @@ const Header = ({ data }: { data: any }) => {
                   handleMenuClose();
                 }}>
                   Show History
-              </MenuItem>
-              <MenuItem onClick={() => {
-                closeAnySidebar();
-
-                setIsAltTextSidebarOpen(true);
-              }}>
-                Show Alt-Text
               </MenuItem>
             </Menu>
           <IconButton

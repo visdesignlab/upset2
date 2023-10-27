@@ -1,30 +1,55 @@
 import {
-  Divider, Drawer, IconButton, TextField, Typography, css,
+  Box,
+  Divider,
+  Drawer,
+  FormControl,
+  IconButton,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  css,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, FC } from 'react';
+import { useRecoilValue } from 'recoil';
+import { sortBySelector } from '../atoms/config/sortByAtom';
+import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 
 type Props = {
-  open: boolean,
-  close: () => void,
-  generateAltText: () => Promise<string>,
+  open: boolean;
+  close: () => void;
+  generateAltText: (verbosity: string, explain: string) => Promise<string>;
 }
 
 const initialDrawerWidth = 450;
 
-export const AltTextSidebar = ({ open, close, generateAltText }: Props) => {
+export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const [altText, setAltText] = useState<string>('');
+  const [verbosity, setVerbosity] = useState<string>('low');
+  const [explain, setExplain] = useState<string>('full');
+
+  const sort = useRecoilValue(sortBySelector);
+  const minVisible = useRecoilValue(minVisibleSelector);
+  const maxVisible = useRecoilValue(maxVisibleSelector);
 
   useEffect(() => {
-    async function generate() {
-      const resp = await generateAltText();
+    async function generate(): Promise<void> {
+      const resp = await generateAltText(verbosity, explain);
       setAltText(resp);
     }
 
-    if (open) {
-      generate();
-    }
-  }, [open]);
+    generate();
+  }, [verbosity, explain, sort, minVisible, maxVisible]);
+
+  const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
+    setVerbosity(e.value);
+  };
+
+  const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
+    setExplain(e.value);
+  };
 
   return (
     <Drawer
@@ -54,7 +79,7 @@ export const AltTextSidebar = ({ open, close, generateAltText }: Props) => {
           `}
         >
           <Typography variant="button" fontSize="1em">
-            Alternative Text
+            Alt Text
           </Typography>
           <IconButton onClick={close}>
             <CloseIcon />
@@ -67,8 +92,36 @@ export const AltTextSidebar = ({ open, close, generateAltText }: Props) => {
             margin-bottom: 1em;
           `}
         />
-        <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Generated" defaultValue={altText} fullWidth maxRows={8} />
+        <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={altText} fullWidth maxRows={8} />
+        <Box display="flex" justifyContent="space-around" marginTop="1rem">
+          <FormControl sx={{ width: '40%' }}>
+            <InputLabel id="verbosity-label">Verbosity</InputLabel>
+            <Select
+              labelId="verbosity-label"
+              label="Verbosity"
+              value={verbosity}
+              onChange={(e: any): void => handleVerbosityChange(e.target)}
+            >
+              <MenuItem value="low">Low</MenuItem>
+              <MenuItem value="medium">Medium</MenuItem>
+              <MenuItem value="high">High</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControl sx={{ width: '40%' }}>
+            <InputLabel id="explain-label">Explain</InputLabel>
+            <Select
+              labelId="explain-label"
+              label="Explain"
+              value={explain}
+              onChange={(e: any): void => handleExplainChange(e.target)}
+            >
+              <MenuItem value="none">None</MenuItem>
+              <MenuItem value="simple">Simple</MenuItem>
+              <MenuItem value="full">Full</MenuItem>
+            </Select>
+          </FormControl>
+        </Box>
       </div>
     </Drawer>
-  )
+  );
 };
