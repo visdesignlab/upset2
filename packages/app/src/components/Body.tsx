@@ -51,7 +51,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
     const state = provObject.provenance.getState();
     const config = getAltTextConfig(state, data, getRows(data, state));
 
-    const response = await api.generateAltText(verbosity, 2, explain, config);
+    const response = await api.generateAltText(verbosity, explain, config);
     return response.alttxt;
   }
 
