@@ -148,12 +148,29 @@ export const Root: FC<Props> = ({
       >
         <Sidebar />
       </div>
+      <h2
+        id="desc"
+        css={css`
+          position: absolute; 
+          width: 1px; 
+          height: 1px; 
+          padding: 0;
+          margin: -1px;
+          overflow: hidden;
+          clip: rect(0,0,0,0);
+          border: 0;
+        `}
+      >
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and apologize for any inconvienence.
+      </h2>
       <div
         css={css`
           flex: 1 1 auto;
           overflow: auto;
           ${baseStyle};
         `}
+        aria-hidden
+        aria-describedby="desc"
       >
         <SvgBase>
           <Header />
