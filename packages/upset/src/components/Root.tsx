@@ -161,7 +161,7 @@ export const Root: FC<Props> = ({
           border: 0;
         `}
       >
-        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and apologize for any inconvienence.
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and apologize for any inconvenience.
       </h2>
       <div
         css={css`
