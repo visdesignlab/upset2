@@ -84,7 +84,7 @@ export const Sidebar = () => {
         width: ${dimensions.sidebar.width}px
       `}
     >
-      <Typography variant="h2" fontSize="1.5em" fontWeight="inherit">
+      <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
         Settings
       </Typography>
       <Accordion disableGutters defaultExpanded>

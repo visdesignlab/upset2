@@ -166,7 +166,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </IconButton>
       </div>
       <div style={{ marginBottom: '1em' }}>
-        <Typography variant="h2" fontSize="1.5em" fontWeight="inherit" gutterBottom>
+        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" gutterBottom>
           Element View
         </Typography>
         <Divider />
