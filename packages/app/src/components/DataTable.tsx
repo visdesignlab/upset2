@@ -5,6 +5,18 @@ import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { getAccessibleData } from "@visdesignlab/upset2-react";
 import DownloadIcon from '@mui/icons-material/Download';
 
+const downloadCSS = {
+    m: "4px",
+    height: "40%",
+}
+
+const headerCSS = {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    m: "2px"
+}
+
 const getRowData = (row: AccessibleDataEntry) => {
     return {id: row.id, elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName}`, size: row.size}
 }
@@ -17,24 +29,11 @@ const getAggRows = (row: AccessibleDataEntry) => {
         retVal.push(getRowData(r));
 
         if (r.type === "Aggregate") {
-            console.log("is agg")
             retVal.push(...getAggRows(r));
         }
     });
 
     return retVal;
-}
-
-const downloadCSS = {
-    m: "4px",
-    height: "40%",
-}
-
-const headerCSS = {
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    m: "2px"
 }
 
 function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
@@ -120,7 +119,7 @@ export const DataTable = () => {
     const getSetRows = (sets: string[], data: CoreUpsetData) => {
         const retVal: {setName: string, size: number}[] = [];
         retVal.push(...sets.map((s: string) => {
-            return {id: s, setName: s, size: data.sets[s].size};
+            return {id: s, setName: s.replace('Set_', ''), size: data.sets[s].size};
         }));
 
         return retVal;
