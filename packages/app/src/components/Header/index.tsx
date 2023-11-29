@@ -159,7 +159,9 @@ const Header = ({ data }: { data: any }) => {
                 closeAnySidebar();
 
                 setIsAltTextSidebarOpen(true);
-              }}>
+              }}
+              aria-label="Open alt text sidebar"
+              >
                 Show Alt-Text
               </Button>
               <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
@@ -174,6 +176,7 @@ const Header = ({ data }: { data: any }) => {
                 color="inherit"
                 onClick={(e) => { handleAttributeClick(e) }}
                 aria-label="Open attributes selection menu"
+                aria-haspopup="menu"
               >
                 Attributes
               </Button>
@@ -218,6 +221,7 @@ const Header = ({ data }: { data: any }) => {
            sx={{ minWidth: "24px" }}
            onKeyDown={(e) => handleMenuKeypress(e)}
            aria-label='Open additional options menu'
+           aria-haspopup="menu"
           >
             <MoreVertIcon
               onClick={(e) => handleMenuClick(e.currentTarget)}
@@ -227,10 +231,10 @@ const Header = ({ data }: { data: any }) => {
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit" aria-label="Import UpSet JSON state file">
                 Import State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="Export UpSet JSON state file">
+              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="Download UpSet JSON state file">
                 Export State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))} aria-label="Export UpSet JSON state file with table data included">
+              <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))} aria-label="Download UpSet JSON state file with table data included">
                 Export State + Data
               </MenuItem>
               <MenuItem onClick={() => downloadSVG()} aria-label="Download the UpSet plot as an SVG">
@@ -253,7 +257,8 @@ const Header = ({ data }: { data: any }) => {
             onClick={(e) => {
               handleLoginOpen(e);
             }}
-            aria-label="Login/Logout"
+            aria-label="Open login menu"
+            aria-haspopup="menu"
           >
             <Avatar sx={{ width: "32px", height: "32px" }} alt="User login status icon" variant="circular">
               {userInfo !== null ?
