@@ -144,10 +144,10 @@ const Header = ({ data }: { data: any }) => {
             Upset - Visualizing Intersecting Sets
           </Typography>
           <ButtonGroup>
-            <IconButton color="inherit" onClick={() => provenance.undo()} disabled={trrackPosition.isAtRoot}>
+            <IconButton color="inherit" onClick={() => provenance.undo()} disabled={trrackPosition.isAtRoot} aria-label="Undo">
               <UndoIcon />
             </IconButton>
-            <IconButton color="inherit" onClick={() => provenance.redo()} disabled={trrackPosition.isAtLatest}>
+            <IconButton color="inherit" onClick={() => provenance.redo()} disabled={trrackPosition.isAtLatest} aria-label="Redo">
               <RedoIcon />
             </IconButton>
           </ButtonGroup>
@@ -173,20 +173,24 @@ const Header = ({ data }: { data: any }) => {
               <Button
                 color="inherit"
                 onClick={(e) => { handleAttributeClick(e) }}
+                aria-label="Open attributes selection menu"
               >
                 Attributes
               </Button>
-              <Button onClick={() => {
-                closeAnySidebar();
+              <Button 
+                onClick={() => {
+                  closeAnySidebar();
 
-                if (isElementSidebarOpen) {
-                  setIsElementSidebarOpen(false);
-                } else {
-                  setIsElementSidebarOpen(true);
-                }
+                  if (isElementSidebarOpen) {
+                    setIsElementSidebarOpen(false);
+                  } else {
+                    setIsElementSidebarOpen(true);
+                  }
 
-                handleMenuClose();
-              }}>
+                  handleMenuClose();
+                }}
+                aria-label='Open element view sidebar'
+              >
                 Element View
               </Button>
             </>
@@ -206,21 +210,30 @@ const Header = ({ data }: { data: any }) => {
                 window.location.href = getMultinetDataUrl(workspace);
               }
             }}
+            aria-label='Load data from Multinet'
           >
             Load Data
           </Button>
-          <Button sx={{ minWidth: "24px" }} onKeyDown={(e) => handleMenuKeypress(e)} ><MoreVertIcon onClick={(e) => handleMenuClick(e.currentTarget)}></MoreVertIcon></Button>
+          <Button
+           sx={{ minWidth: "24px" }}
+           onKeyDown={(e) => handleMenuKeypress(e)}
+           aria-label='Open additional options menu'
+          >
+            <MoreVertIcon
+              onClick={(e) => handleMenuClick(e.currentTarget)}
+            ></MoreVertIcon>
+          </Button>
             <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
-              <MenuItem onClick={() => setShowImportModal(true) } color="inherit">
+              <MenuItem onClick={() => setShowImportModal(true) } color="inherit" aria-label="Import UpSet JSON state file">
                 Import State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance)} color="inherit">
+              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="Export UpSet JSON state file">
                 Export State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))}>
+              <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))} aria-label="Export UpSet JSON state file with table data included">
                 Export State + Data
               </MenuItem>
-              <MenuItem onClick={() => downloadSVG()}>
+              <MenuItem onClick={() => downloadSVG()} aria-label="Download the UpSet plot as an SVG">
                 Download SVG
               </MenuItem>
               <MenuItem onClick={() => {
@@ -228,7 +241,9 @@ const Header = ({ data }: { data: any }) => {
 
                   setIsProvVisOpen(true); 
                   handleMenuClose();
-                }}>
+                }}
+                aria-label='Open history tree sidebar'  
+              >
                   Show History
               </MenuItem>
             </Menu>
@@ -238,6 +253,7 @@ const Header = ({ data }: { data: any }) => {
             onClick={(e) => {
               handleLoginOpen(e);
             }}
+            aria-label="Login/Logout"
           >
             <Avatar sx={{ width: "32px", height: "32px" }} alt="User login status icon" variant="circular">
               {userInfo !== null ?
@@ -252,14 +268,18 @@ const Header = ({ data }: { data: any }) => {
             anchorEl={anchorEl}
           >
           {userInfo === null ?
-            <MenuItem onClick={() => {
-              restoreQueryParam();
-              oAuth.redirectToLogin();
-            }}>Login</MenuItem>
-            : <MenuItem onClick={() => {
-              oAuth.logout();
-              window.location.reload();
-            }}>Log out</MenuItem>
+            <MenuItem
+              onClick={() => {
+                restoreQueryParam();
+                oAuth.redirectToLogin();
+              }}
+            >Login</MenuItem>
+            : <MenuItem
+                onClick={() => {
+                  oAuth.logout();
+                  window.location.reload();
+                }}
+              >Log out</MenuItem>
           }
           </Menu>
         </Box>
