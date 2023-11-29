@@ -213,6 +213,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         <Alert
           severity="info"
           variant="outlined"
+          role="generic"
           sx={{
             alignItems: 'center', marginTop: '0.5em', border: 'none', color: '#777777',
           }}

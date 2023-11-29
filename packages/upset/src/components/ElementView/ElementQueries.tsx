@@ -32,6 +32,7 @@ export const ElementQueries = () => {
         <Alert
           severity="info"
           variant="outlined"
+          role="generic"
           sx={{
             alignItems: 'center', margin: '0.5em 0', border: 'none', color: '#777777',
           }}

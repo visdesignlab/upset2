@@ -101,7 +101,7 @@ export const Sidebar = () => {
             >
               {sortByList.map((sort) => (sort === 'Deviation' ?
                 (
-                  <Alert severity="info" variant="outlined" key={sort} sx={{ alignItems: 'center', padding: '0.1em 0.4em', marginTop: '0.5em' }}><Typography>Use column headers for custom sorting</Typography></Alert>
+                  <Alert severity="info" variant="outlined" role="generic" key={sort} sx={{ alignItems: 'center', padding: '0.1em 0.4em', marginTop: '0.5em' }}><Typography>Use column headers for custom sorting</Typography></Alert>
                 ) :
                 (
                   <div css={itemDivCSS} key={sort}>
