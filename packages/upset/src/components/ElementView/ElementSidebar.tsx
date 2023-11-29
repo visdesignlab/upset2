@@ -141,6 +141,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
             onClick={() => {
               setFullWidth(true);
             }}
+            aria-label="Expand the sidebar in full screen"
           >
             <OpenInFullIcon />
           </IconButton>
@@ -153,6 +154,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
                 setHideElementSidebar(true);
               }
             }}
+            aria-label="Reduce the sidebar to normal size"
           >
             <CloseFullscreen />
           </IconButton>}
@@ -161,6 +163,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
             setHideElementSidebar(true);
             close();
           }}
+          aria-label="Close the sidebar"
         >
           <CloseIcon />
         </IconButton>
