@@ -14,7 +14,7 @@ export const AccessibilityStatement = ({open, close}: Props) => {
                 <Typography variant="h4" component="h4">UpSet 2 Accessibility Statement</Typography>
                 <p>
                     The Visualization Design Lab at the University of Utah is committed to ensuring accessibility for all individuals, including those with disabilities. 
-                    We strive to make our software user-friendly, accessible, and compliant with the <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noreferrer">Web Content Accessibility Guidelines (WCAG)</a> 2.1 Level AA.
+                    We strive to make our software user-friendly, accessible, and compliant with the <a href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noreferrer" aria-label='Read more about web content accessibility guidelines'>Web Content Accessibility Guidelines (WCAG)</a> 2.1 Level AA.
                 </p>
                 <p>
                     Despite our ongoing efforts to provide an inclusive experience, we would like to acknowledge that certain aspects of our software may currently pose accessibility challenges. 
@@ -46,7 +46,7 @@ export const AccessibilityStatement = ({open, close}: Props) => {
                     Please be assured that we have plans in place to address these accessibility limitations and make UpSet2 fully inclusive.
                 </p>
                 <p>
-                    To report any accessibility issues you may encounter or to provide suggestions for improvement, please contact us at <a type="email" href="mailto:vdl-faculty@sci.utah.edu">vdl-faculty@sci.utah.edu</a>. 
+                    To report any accessibility issues you may encounter or to provide suggestions for improvement, please contact us at <a type="email" href="mailto:vdl-faculty@sci.utah.edu" aria-label='Send an email to VDL faculty'>vdl-faculty@sci.utah.edu</a>. 
                     We value your feedback and are committed to continuously enhancing the accessibility and usability of our software.
                 </p>
                 <p>
