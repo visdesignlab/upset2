@@ -115,6 +115,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
       onClose={close}
       variant="persistent"
       anchor="right"
+      aria-label="Element View sidebar"
     >
       <Box
         sx={{

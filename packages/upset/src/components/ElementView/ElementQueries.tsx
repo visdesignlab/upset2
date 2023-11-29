@@ -55,6 +55,13 @@ export const ElementQueries = () => {
                   : 'default',
             })}
             key={bookmark.id}
+            aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                if (currentIntersection?.id === bookmark.id) setCurrentIntersection(null);
+                else setCurrentIntersection(rows[bookmark.id]);
+              }
+            }}
             label={`${bookmark.label} - ${bookmark.size}`}
             icon={<SquareIcon fontSize={'1em' as any} />}
             deleteIcon={<StarIcon />}
@@ -80,6 +87,16 @@ export const ElementQueries = () => {
             backgroundColor: 'rgba(0,0,0,0.2)',
           })}
           icon={<SquareIcon fontSize={'1em' as any} />}
+          aria-label={`Selected intersection ${currentIntersection.elementName}, size ${currentIntersection.size}`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              actions.bookmarkIntersection(
+                currentIntersection.id,
+                currentIntersection.elementName,
+                currentIntersection.size,
+              );
+            }
+          }}
           label={`${currentIntersection.elementName} - ${currentIntersection.size}`}
           onDelete={() => {
             actions.bookmarkIntersection(
