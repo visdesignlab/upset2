@@ -165,17 +165,23 @@ export const ElementSidebar = ({ open, close }: Props) => {
           <CloseIcon />
         </IconButton>
       </div>
-      <Typography variant="button" fontSize="1em">
+      <div style={{ marginBottom: '1em' }}>
+        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" gutterBottom>
+          Element View
+        </Typography>
+        <Divider />
+      </div>
+      <Typography variant="h3" fontSize="1.2em">
         Element Queries
       </Typography>
       <Divider />
       <ElementQueries />
-      <Typography variant="button" fontSize="1em">
+      <Typography variant="h3" fontSize="1.2em">
         Element Visualization
       </Typography>
       <Divider />
       <ElementVisualization />
-      <Typography variant="button" fontSize="1em">
+      <Typography variant="h3" fontSize="1.2em">
         Query Result
         <Tooltip
           title={

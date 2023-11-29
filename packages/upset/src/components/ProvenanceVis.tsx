@@ -48,7 +48,7 @@ export const ProvenanceVis = ({ open, close }: Props) => {
             width: 95%;
           `}
         >
-          <Typography variant="button" fontSize="1em">
+          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
             History
           </Typography>
           <IconButton onClick={close}>
