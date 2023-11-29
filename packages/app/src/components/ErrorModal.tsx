@@ -38,8 +38,8 @@ export const ErrorModal = () => {
     }
     
     return (
-        <Dialog open={true} >
-            <DialogTitle>Error</DialogTitle>
+        <Dialog open={true}>
+            <DialogTitle>Import Error</DialogTitle>
             <DialogContent>
                 <DialogContentText>The provided data is in an incompatible form for visualization with Upset. To visualize this dataset, please upload set-based data or, if compatible, select columns to one-hot encode.</DialogContentText>
                 { needOneHot && 
@@ -61,7 +61,7 @@ export const ErrorModal = () => {
                             input={<OutlinedInput label="Columns to encode" />}
                             renderValue={(selected: any) => selected.join(', ')}
                             MenuProps={MenuProps}
-                            >
+                        >
                             {Object.entries(data.columnTypes).map(([name, type]) => (
                                 <MenuItem key={name} value={name}>
                                 <Checkbox checked={encodeList.includes(name)} />
