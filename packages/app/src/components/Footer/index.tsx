@@ -51,9 +51,9 @@ const Footer = () => {
         <Box sx={{ position: "absolute", bottom: 0, width: "100%" }}>
             <footer>
                 <Box sx={{backgroundColor: "#e0e0e0", width: "100%", display: "flex", justifyContent: "space-around", padding: "5px 0"}}>
-                    <FooterButton onClick={() => setAboutModal(true)} icon={<img src={vdl_logo} alt="About Us" height="32px" width="100%" />} />
-                    <FooterButton href={"https://github.com/visdesignlab/upset2/issues"} label={"Report a Bug"} icon={<BugReport />} />
-                    <FooterButton onClick={() => setAccessibilityStatement(true)} label={"Accessibility"} icon={<AccessibilityNew />} tabIndex={1} />
+                    <FooterButton onClick={() => setAboutModal(true)} aria-label="Open About Us modal" icon={<img src={vdl_logo} alt="About Us" height="32px" width="100%" />} />
+                    <FooterButton href={"https://github.com/visdesignlab/upset2/issues"} aria-label="Open GitHub issues for this project" label={"Report a Bug"} icon={<BugReport />} />
+                    <FooterButton onClick={() => setAccessibilityStatement(true)} label={"Accessibility"} aria-label="Open Accessibility Statement modal" icon={<AccessibilityNew />} tabIndex={1} />
 
                     {/* Accessibility Statement dialog */}
                     <AccessibilityStatement open={accessibilityStatement} close={() => setAccessibilityStatement(false)} />
