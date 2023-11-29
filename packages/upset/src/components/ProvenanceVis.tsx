@@ -27,6 +27,7 @@ export const ProvenanceVis = ({ open, close }: Props) => {
       open={open}
       onClose={close}
       variant="persistent"
+      aria-label="History Sidebar"
       sx={{
         width: (open) ? initialDrawerWidth : 0,
         flexShrink: 0,
