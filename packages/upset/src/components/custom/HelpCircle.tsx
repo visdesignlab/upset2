@@ -28,6 +28,7 @@ export const HelpCircle = ({ text, margin = { ...defaultMargin }, size = 13 }: {
         padding: '3px',
       }}
       disableTouchRipple
+      aria-hidden
     >
       <QuestionMark sx={{ height: size, width: size }} />
     </IconButton>

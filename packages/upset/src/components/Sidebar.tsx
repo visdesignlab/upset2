@@ -5,6 +5,7 @@ import {
   AccordionDetails,
   AccordionSummary,
   Alert,
+  Box,
   FormControl,
   FormControlLabel,
   FormGroup,
@@ -104,7 +105,16 @@ export const Sidebar = () => {
                   <Alert severity="info" variant="outlined" role="generic" key={sort} sx={{ alignItems: 'center', padding: '0.1em 0.4em', marginTop: '0.5em' }}><Typography>Use column headers for custom sorting</Typography></Alert>
                 ) :
                 (
-                  <div css={itemDivCSS} key={sort}>
+                  <Box
+                    css={itemDivCSS}
+                    key={sort}
+                    aria-label={helpText.sorting[sort]}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        actions.sortBy(sort);
+                      }
+                    }}
+                  >
                     <FormControlLabel
                       key={sort}
                       value={sort}
@@ -112,7 +122,7 @@ export const Sidebar = () => {
                       control={<Radio size="small" />}
                     />
                     <HelpCircle text={helpText.sorting[sort]} />
-                  </div>
+                  </Box>
                 )))}
             </RadioGroup>
           </FormControl>
@@ -133,7 +143,16 @@ export const Sidebar = () => {
             >
               {aggregateByList.map((agg) => (
                 <Fragment key={agg}>
-                  <div css={itemDivCSS}>
+                  <Box
+                    css={itemDivCSS}
+                    key={agg}
+                    aria-label={agg !== 'None' ? helpText.aggregation[agg] : undefined}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        actions.firstAggregateBy(agg);
+                      }
+                    }}
+                  >
                     <FormControlLabel
                       key={agg}
                       value={agg}
@@ -141,9 +160,10 @@ export const Sidebar = () => {
                       control={<Radio size="small" />}
                     />
                     {agg !== 'None' && <HelpCircle text={helpText.aggregation[agg]} />}
-                  </div>
+                  </Box>
                   {agg === 'Overlaps' && firstAggregateBy === agg && (
                     <TextField
+                      aria-label="Select the overlap degree (minimum 2)"
                       label="Degree"
                       size="small"
                       type="number"
@@ -186,16 +206,26 @@ export const Sidebar = () => {
                 .filter((agg) => agg !== firstAggregateBy)
                 .map((agg) => (
                   <Fragment key={agg}>
-                    <div css={itemDivCSS}>
+                    <Box
+                      css={itemDivCSS}
+                      key={agg}
+                      aria-label={agg !== 'None' ? helpText.aggregation[agg] : 'No aggregation'}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          actions.secondAggregateBy(agg);
+                        }
+                      }}
+                    >
                       <FormControlLabel
                         value={agg}
                         label={agg}
                         control={<Radio size="small" />}
                       />
                       {agg !== 'None' && <HelpCircle text={helpText.aggregation[agg]} />}
-                    </div>
+                    </Box>
                     {agg === 'Overlaps' && secondAggregateBy === agg && (
                       <TextField
+                        aria-label="Select the overlap degree (minimum 2)"
                         label="Degree"
                         size="small"
                         type="number"
@@ -220,7 +250,15 @@ export const Sidebar = () => {
         </AccordionSummary>
         <AccordionDetails>
           <FormGroup sx={{ mb: 2.5, width: '100%' }}>
-            <div css={itemDivCSS}>
+            <Box
+              css={itemDivCSS}
+              aria-label={helpText.filter.HideEmptySets}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  actions.setHideEmpty(!hideEmpty);
+                }
+              }}
+            >
               <FormControlLabel
                 sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
                 label="Hide Empty Intersections"
@@ -236,8 +274,16 @@ export const Sidebar = () => {
                 labelPlacement="start"
               />
               <HelpCircle text={helpText.filter.HideEmptySets} margin={{ ...defaultMargin, left: 12 }} />
-            </div>
-            <div css={itemDivCSS}>
+            </Box>
+            <Box
+              css={itemDivCSS}
+              aria-label={helpText.filter.HideNoSet}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  actions.setHideNoSet(!hideNoSet);
+                }
+              }}
+            >
               <FormControlLabel
                 sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
                 label="Hide No-Set Intersection"
@@ -253,16 +299,21 @@ export const Sidebar = () => {
                 labelPlacement="start"
               />
               <HelpCircle text={helpText.filter.HideNoSet} margin={{ ...defaultMargin, left: 12 }} />
-            </div>
+            </Box>
           </FormGroup>
           <FormGroup>
-            <div css={itemDivCSS}>
+            <Box
+              css={itemDivCSS}
+            >
               <FormLabel>
                 <Typography>Filter by Degree</Typography>
               </FormLabel>
               <HelpCircle text={helpText.filter.Degree} />
-            </div>
-            <div css={itemDivCSS}>
+            </Box>
+            <Box
+              css={itemDivCSS}
+              aria-label={helpText.filter.Degree}
+            >
               <Slider
                 value={degreeFilters}
                 min={0}
@@ -280,7 +331,7 @@ export const Sidebar = () => {
                   actions.setMaxVisible(degreeFilters[1]);
                 }}
               />
-            </div>
+            </Box>
           </FormGroup>
         </AccordionDetails>
       </Accordion>
