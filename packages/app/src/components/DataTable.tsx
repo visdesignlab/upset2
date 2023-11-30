@@ -120,7 +120,7 @@ export const DataTable = () => {
     const getSetRows = (sets: string[], data: CoreUpsetData) => {
         const retVal: {setName: string, size: number}[] = [];
         retVal.push(...sets.map((s: string) => {
-            return {id: s, setName: s, size: data.sets[s].size};
+            return {id: s, setName: s.replace('Set_', ''), size: data.sets[s].size};
         }));
 
         return retVal;

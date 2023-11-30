@@ -58,6 +58,7 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
               <Button 
                 variant="contained" 
                 size="small"
+                aria-errormessage='import-error'
                 onClick={() => {
                   const input: HTMLInputElement | null = document.getElementById('state-upload-file') as HTMLInputElement;
                   
@@ -75,7 +76,7 @@ export const ImportModal = (props:{open: boolean, close: () => void}) => {
         </DialogContent>
           <Snackbar
             open={isError.isOpen} autoHideDuration={6000} onClose={() => setIsError({...isError, isOpen: false})}>
-            <Alert severity="error">{isError.message}</Alert>
+            <Alert severity="error"><div id="import-error">{isError.message}</div></Alert>
           </Snackbar>
     </Dialog>
   );

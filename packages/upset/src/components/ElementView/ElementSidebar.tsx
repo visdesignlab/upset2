@@ -115,6 +115,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
       onClose={close}
       variant="persistent"
       anchor="right"
+      aria-label="Element View sidebar"
     >
       <Box
         sx={{
@@ -141,6 +142,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
             onClick={() => {
               setFullWidth(true);
             }}
+            aria-label="Expand the sidebar in full screen"
           >
             <OpenInFullIcon />
           </IconButton>
@@ -153,6 +155,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
                 setHideElementSidebar(true);
               }
             }}
+            aria-label="Reduce the sidebar to normal size"
           >
             <CloseFullscreen />
           </IconButton>}
@@ -161,6 +164,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
             setHideElementSidebar(true);
             close();
           }}
+          aria-label="Close the sidebar"
         >
           <CloseIcon />
         </IconButton>
@@ -213,6 +217,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         <Alert
           severity="info"
           variant="outlined"
+          role="generic"
           sx={{
             alignItems: 'center', marginTop: '0.5em', border: 'none', color: '#777777',
           }}
