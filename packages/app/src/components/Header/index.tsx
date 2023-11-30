@@ -158,11 +158,15 @@ const Header = ({ data }: { data: any }) => {
               <Button color="inherit" onClick={() => {
                 closeAnySidebar();
 
-                setIsAltTextSidebarOpen(true);
+                if (isAltTextSidebarOpen) {
+                  setIsAltTextSidebarOpen(false);
+                } else {
+                  setIsAltTextSidebarOpen(true);
+                }
               }}
-              aria-label="Open alt text sidebar"
+              aria-label={`${isAltTextSidebarOpen ? 'Close' : 'Open'} alt text sidebar`}
               >
-                Show Alt-Text
+                Alt-Text
               </Button>
               <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
                 <Button
@@ -184,15 +188,13 @@ const Header = ({ data }: { data: any }) => {
                 onClick={() => {
                   closeAnySidebar();
 
-                  if (isElementSidebarOpen) {
-                    setIsElementSidebarOpen(false);
-                  } else {
+                  if (!isElementSidebarOpen) {
                     setIsElementSidebarOpen(true);
                   }
 
                   handleMenuClose();
                 }}
-                aria-label='Open element view sidebar'
+                aria-label={`${isElementSidebarOpen ? 'Close' : 'Open'} element view sidebar`}
               >
                 Element View
               </Button>
