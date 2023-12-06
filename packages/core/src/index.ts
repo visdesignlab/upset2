@@ -1,6 +1,5 @@
 import * as d3 from 'd3';
 
-import meta from './data-meta';
 import { process } from './process';
 
 export async function test() {

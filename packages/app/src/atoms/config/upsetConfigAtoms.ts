@@ -2,6 +2,11 @@ import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { atom } from 'recoil';
 
 export const defaultConfig: UpsetConfig = {
+  metaData: {
+    description: 'An UpSet 2 Plot',
+    sets: 'sets',
+    items: 'items',
+  },
   firstAggregateBy: 'None',
   firstOverlapDegree: 2,
   secondAggregateBy: 'None',

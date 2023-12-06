@@ -4,7 +4,6 @@ import { upsetConfigAtom } from './upsetConfigAtoms';
 type AltText = {
     verbosity: string;
     explain: string;
-    textDescription: string;
 }
 
 export const altTextSelector = selector<AltText>({

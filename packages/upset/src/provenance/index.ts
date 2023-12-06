@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, SortBy, SortVisibleBy, UpsetConfig,
+  AggregateBy, MetaData, Plot, SortBy, SortVisibleBy, UpsetConfig,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -304,6 +304,14 @@ const setExplainAction = registry.register(
   },
 );
 
+const setMetaDataAction = registry.register(
+  'set-meta-data',
+  (state: UpsetConfig, metaData) => {
+    state.metaData = metaData;
+    return state;
+  },
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -355,6 +363,7 @@ export function getActions(provenance: UpsetProvenance) {
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setVerbosity: (verbosity: string) => provenance.apply('Set alt text verbosity', setVerbosityAction(verbosity)),
     setExplain: (explain: string) => provenance.apply('Set alt text explain', setExplainAction(explain)),
+    setMetaData: (metaData: MetaData) => provenance.apply('Set meta data', setMetaDataAction(metaData)),
   };
 }
 
