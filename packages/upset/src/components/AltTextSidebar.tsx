@@ -146,7 +146,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             </AccordionSummary>
             <AccordionDetails>
               {/* edit icon here which triggers the isEditable state */}
-              <IconButton onClick={() => setIsEditable(!isEditable)} onKeyDown={(e) => e.key === 'Enter' && setIsEditable(!isEditable)}><Edit /></IconButton>
+              <IconButton
+                aria-label="Toggle editable descriptions"
+                onClick={() => setIsEditable(!isEditable)}
+                onKeyDown={(e) => e.key === 'Enter' && setIsEditable(!isEditable)}
+              >
+                <Edit />
+              </IconButton>
               <Box>
                 <Box sx={plotInfoItem}>
                   <Typography variant="h4" sx={plotInfoTitle}>
@@ -207,7 +213,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                     />}
                 </Box>
               </Box>
-              { isEditable && <Button onClick={() => { actions.setMetaData(metaData); setIsEditable(!isEditable); }}>Save</Button> }
+              { isEditable && <Button color="error" onClick={() => { setIsEditable(false); }}>Cancel</Button>}
+              { isEditable && <Button onClick={() => { actions.setMetaData(metaData); setIsEditable(false); }}>Save</Button> }
             </AccordionDetails>
           </Accordion>
         </Box>
