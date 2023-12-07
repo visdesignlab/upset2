@@ -1,13 +1,13 @@
 import { selector } from 'recoil';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
-type MetaData = {
+type PlotInformation = {
     description: string;
     sets: string;
     items: string;
 }
 
-export const metaDataSelector = selector<MetaData>({
+export const plotInformationSelector = selector<PlotInformation>({
   key: 'meta-data',
-  get: ({ get }) => get(upsetConfigAtom).metaData,
+  get: ({ get }) => get(upsetConfigAtom).plotInformation,
 });

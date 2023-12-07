@@ -27,7 +27,7 @@ import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
 import { altTextSelector } from '../atoms/config/altTextAtoms';
-import { metaDataSelector } from '../atoms/config/metaDataAtom';
+import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 
 type Props = {
   open: boolean;
@@ -43,12 +43,6 @@ const plotInfoItem = {
   minHeight: '4em',
 };
 
-const plotInfoText = {
-  fontSize: '1em',
-  fontWeight: 'inherit',
-  width: '70%',
-};
-
 const plotInfoTitle = {
   fontSize: '1em',
   fontWeight: 'inherit',
@@ -61,7 +55,7 @@ const initialDrawerWidth = 450;
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions } = useContext(ProvenanceContext);
   const { verbosity, explain } = useRecoilValue(altTextSelector);
-  const metaDataState = useRecoilValue(metaDataSelector);
+  const plotInformationState = useRecoilValue(plotInformationSelector);
 
   const sort = useRecoilValue(sortBySelector);
   const minVisible = useRecoilValue(minVisibleSelector);
@@ -70,7 +64,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const [textDescription, setTextDescription] = useState('');
   const [isEditable, setIsEditable] = useState(false);
 
-  const [metaData, setMetaData] = useState(metaDataState);
+  const [plotInformation, setPlotInformation] = useState(plotInformationState);
 
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
@@ -90,6 +84,25 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
     actions.setExplain(e.value);
   };
+
+  const handleEditableChange = () => {
+    setIsEditable(!isEditable);
+  };
+
+  // this useEffect resets the plot information when the edit is toggled off
+  useEffect(() => {
+    if (!isEditable) {
+      setPlotInformation(plotInformationState);
+    }
+  }, [isEditable]);
+
+  // this useEffect sets the plot information state to match the trrack state
+  useEffect(() => {
+    // this will prevent the state from being reset while the user is editing the form values
+    if (!isEditable) {
+      setPlotInformation(plotInformationState);
+    }
+  });
 
   // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
   const debouncedVerbosityChange = debounce(handleVerbosityChange, 1);
@@ -148,7 +161,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               {/* edit icon here which triggers the isEditable state */}
               <IconButton
                 aria-label="Toggle editable descriptions"
-                onClick={() => setIsEditable(!isEditable)}
+                onClick={handleEditableChange}
                 onKeyDown={(e) => e.key === 'Enter' && setIsEditable(!isEditable)}
               >
                 <Edit />
@@ -158,19 +171,17 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   <Typography variant="h4" sx={plotInfoTitle}>
                     Dataset Description:
                   </Typography>
-                  { !isEditable ?
-                    <Typography variant="h4" sx={plotInfoText}>
-                      {metaDataState.description}
-                    </Typography> :
-                    <TextField
-                      onChange={(e) => setMetaData({ ...metaData, description: e.target.value })}
-                      sx={{ width: '70%' }}
-                      multiline
-                      InputLabelProps={{ shrink: true }}
-                      defaultValue={metaDataState.description}
-                      fullWidth
-                      maxRows={8}
-                    />}
+                  <TextField
+                    onChange={(e) => setPlotInformation({ ...plotInformation, description: e.target.value })}
+                    sx={{ width: '70%' }}
+                    multiline
+                    InputLabelProps={{ shrink: true }}
+                    value={plotInformation.description}
+                    fullWidth
+                    maxRows={8}
+                    disabled={!isEditable}
+                    placeholder="eg: movies and genres"
+                  />
                 </Box>
               </Box>
               <Box>
@@ -178,19 +189,17 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   <Typography variant="h4" sx={plotInfoTitle}>
                     Sets:
                   </Typography>
-                  { !isEditable ?
-                    <Typography variant="h4" sx={plotInfoText}>
-                      {metaDataState.sets}
-                    </Typography> :
-                    <TextField
-                      onChange={(e) => setMetaData({ ...metaData, sets: e.target.value })}
-                      sx={{ width: '70%' }}
-                      multiline
-                      InputLabelProps={{ shrink: true }}
-                      defaultValue={metaDataState.sets}
-                      fullWidth
-                      maxRows={8}
-                    />}
+                  <TextField
+                    onChange={(e) => setPlotInformation({ ...plotInformation, sets: e.target.value })}
+                    sx={{ width: '70%' }}
+                    multiline
+                    InputLabelProps={{ shrink: true }}
+                    value={plotInformation.sets}
+                    fullWidth
+                    maxRows={8}
+                    disabled={!isEditable}
+                    placeholder="eg: movie genre (dataset column)"
+                  />
                 </Box>
               </Box>
               <Box>
@@ -198,23 +207,21 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   <Typography variant="h4" sx={plotInfoTitle}>
                     Items:
                   </Typography>
-                  { !isEditable ?
-                    <Typography variant="h4" sx={plotInfoText}>
-                      {metaDataState.items}
-                    </Typography> :
-                    <TextField
-                      onChange={(e) => setMetaData({ ...metaData, items: e.target.value })}
-                      sx={{ width: '70%' }}
-                      multiline
-                      InputLabelProps={{ shrink: true }}
-                      defaultValue={metaDataState.items}
-                      fullWidth
-                      maxRows={8}
-                    />}
+                  <TextField
+                    onChange={(e) => setPlotInformation({ ...plotInformation, items: e.target.value })}
+                    sx={{ width: '70%' }}
+                    multiline
+                    InputLabelProps={{ shrink: true }}
+                    value={plotInformation.items}
+                    fullWidth
+                    maxRows={8}
+                    disabled={!isEditable}
+                    placeholder="eg: movie (dataset row)"
+                  />
                 </Box>
               </Box>
-              { isEditable && <Button color="error" onClick={() => { setIsEditable(false); }}>Cancel</Button>}
-              { isEditable && <Button onClick={() => { actions.setMetaData(metaData); setIsEditable(false); }}>Save</Button> }
+              { isEditable && <Button color="error" onClick={handleEditableChange}>Cancel</Button>}
+              { isEditable && <Button onClick={() => { actions.setPlotInformation(plotInformation); setIsEditable(false); }}>Save</Button> }
             </AccordionDetails>
           </Accordion>
         </Box>
