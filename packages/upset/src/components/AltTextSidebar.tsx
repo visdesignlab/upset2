@@ -101,7 +101,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const generatePlotInformationText = () => {
     // return default string if there are no values filled in
     if (Object.values(plotInformation).filter((a) => a.length > 0).length === 0) {
-      return `This UpSet plot show ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
+      return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
     }
 
     let str: string = '';
