@@ -66,6 +66,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
 
+  const placeholderText = {
+    description: 'movie genres and ratings',
+    sets: 'movie genres (dataset columns)',
+    items: 'movies (dataset rows)',
+  };
+
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
@@ -76,18 +82,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
     generate();
   }, [verbosity, explain, sort, minVisible, maxVisible]);
-
-  const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
-    actions.setVerbosity(e.value);
-  };
-
-  const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
-    actions.setExplain(e.value);
-  };
-
-  const handleEditableChange = () => {
-    setIsEditable(!isEditable);
-  };
 
   // this useEffect resets the plot information when the edit is toggled off
   useEffect(() => {
@@ -103,6 +97,38 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       setPlotInformation(plotInformationState);
     }
   });
+
+  const generatePlotInformationText = () => {
+    // return default string if there are no values filled in
+    if (Object.values(plotInformation).filter((a) => a.length > 0).length === 0) {
+      return `This UpSet plot show ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
+    }
+
+    let str: string = '';
+    if (plotInformation.description !== '') {
+      str += `This UpSet plot shows ${plotInformation.description}. `;
+    }
+    if (plotInformation.sets !== '') {
+      str += `The sets are ${plotInformation.sets}. `;
+    }
+    if (plotInformation.items !== '') {
+      str += `The items are ${plotInformation.items}.`;
+    }
+
+    return str;
+  };
+
+  const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
+    actions.setVerbosity(e.value);
+  };
+
+  const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
+    actions.setExplain(e.value);
+  };
+
+  const handleEditableChange = () => {
+    setIsEditable(!isEditable);
+  };
 
   // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
   const debouncedVerbosityChange = debounce(handleVerbosityChange, 1);
@@ -162,7 +188,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               <IconButton
                 aria-label="Toggle editable descriptions"
                 onClick={handleEditableChange}
-                onKeyDown={(e) => e.key === 'Enter' && setIsEditable(!isEditable)}
               >
                 <Edit />
               </IconButton>
@@ -180,7 +205,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                     fullWidth
                     maxRows={8}
                     disabled={!isEditable}
-                    placeholder="eg: movies and genres"
+                    placeholder={`eg: ${placeholderText.description}`}
                   />
                 </Box>
               </Box>
@@ -198,7 +223,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                     fullWidth
                     maxRows={8}
                     disabled={!isEditable}
-                    placeholder="eg: movie genre (dataset column)"
+                    placeholder={`eg: ${placeholderText.sets}`}
                   />
                 </Box>
               </Box>
@@ -216,10 +241,11 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                     fullWidth
                     maxRows={8}
                     disabled={!isEditable}
-                    placeholder="eg: movie (dataset row)"
+                    placeholder={`eg: ${placeholderText.items}`}
                   />
                 </Box>
               </Box>
+              <Typography variant="body1">{generatePlotInformationText()}</Typography>
               { isEditable && <Button color="error" onClick={handleEditableChange}>Cancel</Button>}
               { isEditable && <Button onClick={() => { actions.setPlotInformation(plotInformation); setIsEditable(false); }}>Save</Button> }
             </AccordionDetails>
