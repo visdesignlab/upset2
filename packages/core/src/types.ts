@@ -4,12 +4,10 @@ export type ColumnDefs = {
   [columnName: string]: 'number' | 'boolean' | 'string' | 'label';
 };
 
-export type Meta = {
-  name: string;
-  author?: string;
-  description?: string;
-  source?: string;
-  columns: ColumnDefs;
+export type PlotInformation = {
+  description: string;
+  sets: string;
+  items: string;
 };
 
 export type RowType =
@@ -156,6 +154,7 @@ export type Plot = Scatterplot | Histogram | WordCloud;
 export type Bookmark = { id: string; label: string; size: number }
 
 export type UpsetConfig = {
+  plotInformation: PlotInformation;
   firstAggregateBy: AggregateBy;
   firstOverlapDegree: number;
   secondAggregateBy: AggregateBy;

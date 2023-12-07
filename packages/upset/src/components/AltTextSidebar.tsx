@@ -1,5 +1,9 @@
 import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
   Box,
+  Button,
   Divider,
   Drawer,
   FormControl,
@@ -12,13 +16,18 @@ import {
   css,
   debounce,
 } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
-import { useState, useEffect, FC, useContext } from 'react';
+import {
+  useState, useEffect, FC, useContext,
+} from 'react';
 import { useRecoilValue } from 'recoil';
+import { Edit } from '@mui/icons-material';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
 import { altTextSelector } from '../atoms/config/altTextAtoms';
+import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 
 type Props = {
   open: boolean;
@@ -26,17 +35,42 @@ type Props = {
   generateAltText: (verbosity: string, explain: string) => Promise<string>;
 }
 
+const plotInfoItem = {
+  display: 'flex',
+  width: '100%',
+  justifyContent: 'space-between',
+  margin: '0.25em 0',
+  minHeight: '4em',
+};
+
+const plotInfoTitle = {
+  fontSize: '1em',
+  fontWeight: 'inherit',
+  color: 'GrayText',
+  width: '30%',
+};
+
 const initialDrawerWidth = 450;
 
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions } = useContext(ProvenanceContext);
   const { verbosity, explain } = useRecoilValue(altTextSelector);
+  const plotInformationState = useRecoilValue(plotInformationSelector);
 
   const sort = useRecoilValue(sortBySelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const maxVisible = useRecoilValue(maxVisibleSelector);
 
   const [textDescription, setTextDescription] = useState('');
+  const [isEditable, setIsEditable] = useState(false);
+
+  const [plotInformation, setPlotInformation] = useState(plotInformationState);
+
+  const placeholderText = {
+    description: 'movie genres and ratings',
+    sets: 'movie genres (dataset columns)',
+    items: 'movies (dataset rows)',
+  };
 
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
@@ -49,12 +83,51 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     generate();
   }, [verbosity, explain, sort, minVisible, maxVisible]);
 
+  // this useEffect resets the plot information when the edit is toggled off
+  useEffect(() => {
+    if (!isEditable) {
+      setPlotInformation(plotInformationState);
+    }
+  }, [isEditable]);
+
+  // this useEffect sets the plot information state to match the trrack state
+  useEffect(() => {
+    // this will prevent the state from being reset while the user is editing the form values
+    if (!isEditable) {
+      setPlotInformation(plotInformationState);
+    }
+  });
+
+  const generatePlotInformationText = () => {
+    // return default string if there are no values filled in
+    if (Object.values(plotInformation).filter((a) => a.length > 0).length === 0) {
+      return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
+    }
+
+    let str: string = '';
+    if (plotInformation.description !== '') {
+      str += `This UpSet plot shows ${plotInformation.description}. `;
+    }
+    if (plotInformation.sets !== '') {
+      str += `The sets are ${plotInformation.sets}. `;
+    }
+    if (plotInformation.items !== '') {
+      str += `The items are ${plotInformation.items}.`;
+    }
+
+    return str;
+  };
+
   const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
     actions.setVerbosity(e.value);
   };
 
   const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
     actions.setExplain(e.value);
+  };
+
+  const handleEditableChange = () => {
+    setIsEditable(!isEditable);
   };
 
   // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
@@ -104,6 +177,81 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           `}
         />
         <Box>
+          <Accordion>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+              <Typography variant="h3" fontSize="1em" fontWeight="inherit">
+                Plot Information
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              {/* edit icon here which triggers the isEditable state */}
+              <IconButton
+                aria-label="Toggle editable descriptions"
+                onClick={handleEditableChange}
+              >
+                <Edit />
+              </IconButton>
+              <Box>
+                <Box sx={plotInfoItem}>
+                  <Typography variant="h4" sx={plotInfoTitle}>
+                    Dataset Description:
+                  </Typography>
+                  <TextField
+                    onChange={(e) => setPlotInformation({ ...plotInformation, description: e.target.value })}
+                    sx={{ width: '70%' }}
+                    multiline
+                    InputLabelProps={{ shrink: true }}
+                    value={plotInformation.description}
+                    fullWidth
+                    maxRows={8}
+                    disabled={!isEditable}
+                    placeholder={`eg: ${placeholderText.description}`}
+                  />
+                </Box>
+              </Box>
+              <Box>
+                <Box sx={plotInfoItem}>
+                  <Typography variant="h4" sx={plotInfoTitle}>
+                    Sets:
+                  </Typography>
+                  <TextField
+                    onChange={(e) => setPlotInformation({ ...plotInformation, sets: e.target.value })}
+                    sx={{ width: '70%' }}
+                    multiline
+                    InputLabelProps={{ shrink: true }}
+                    value={plotInformation.sets}
+                    fullWidth
+                    maxRows={8}
+                    disabled={!isEditable}
+                    placeholder={`eg: ${placeholderText.sets}`}
+                  />
+                </Box>
+              </Box>
+              <Box>
+                <Box sx={plotInfoItem}>
+                  <Typography variant="h4" sx={plotInfoTitle}>
+                    Items:
+                  </Typography>
+                  <TextField
+                    onChange={(e) => setPlotInformation({ ...plotInformation, items: e.target.value })}
+                    sx={{ width: '70%' }}
+                    multiline
+                    InputLabelProps={{ shrink: true }}
+                    value={plotInformation.items}
+                    fullWidth
+                    maxRows={8}
+                    disabled={!isEditable}
+                    placeholder={`eg: ${placeholderText.items}`}
+                  />
+                </Box>
+              </Box>
+              <Typography variant="body1">{generatePlotInformationText()}</Typography>
+              { isEditable && <Button color="error" onClick={handleEditableChange}>Cancel</Button>}
+              { isEditable && <Button onClick={() => { actions.setPlotInformation(plotInformation); setIsEditable(false); }}>Save</Button> }
+            </AccordionDetails>
+          </Accordion>
+        </Box>
+        <Box marginTop={5}>
           <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={textDescription} fullWidth maxRows={8} />
           <Box display="flex" justifyContent="space-around" marginTop="1rem">
             <FormControl sx={{ width: '40%' }}>
