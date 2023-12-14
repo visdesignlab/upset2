@@ -16,8 +16,6 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
         if (r2.aggregateBy === 'Overlaps') {
           elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
         }
-      } else {
-        elName = elName.split(' ').join(' & ');
       }
     } else {
       elName = `Just ${elName}`;
@@ -73,13 +71,34 @@ export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: 
   return dataObj;
 };
 
+const removeUnderscoresElName = (rows: Rows): Rows => {
+  const newRows = { ...rows };
+
+  Object.values(newRows.values).forEach((r: Row) => {
+    const splitElName = r['elementName'].split(' ');
+
+    if (splitElName.length > 1) {
+      const lastWord = splitElName.pop();
+      const elName = splitElName.join(', ');
+      r['elementName'] = `${elName}, and ${lastWord}`;
+    }
+
+    if (r['elementName'].includes('_')) {
+      r['elementName'] = r['elementName'].replaceAll('_', ' ');
+    }
+  });
+
+  return newRows;
+};
+
 export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows): void => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
 
   if (data && rows) {
+    const updatedRows = removeUnderscoresElName(rows);
     dataObj = {
-      ...dataObj, rawData: data, processedData: rows, accessibleProcessedData: getAccessibleData(rows),
+      ...dataObj, rawData: data, processedData: updatedRows, accessibleProcessedData: getAccessibleData(updatedRows),
     };
     filename = `upset_state_data_${new Date().toJSON().slice(0, 10)}`;
   } else if (data) {
