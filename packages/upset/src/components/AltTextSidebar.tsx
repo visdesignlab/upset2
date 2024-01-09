@@ -26,13 +26,12 @@ import { Edit } from '@mui/icons-material';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
-import { altTextSelector } from '../atoms/config/altTextAtoms';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 
 type Props = {
   open: boolean;
   close: () => void;
-  generateAltText: (verbosity: string, explain: string) => Promise<string>;
+  generateAltText: () => Promise<string>;
 }
 
 const plotInfoItem = {
@@ -54,7 +53,6 @@ const initialDrawerWidth = 450;
 
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions } = useContext(ProvenanceContext);
-  const { verbosity, explain } = useRecoilValue(altTextSelector);
   const plotInformationState = useRecoilValue(plotInformationSelector);
 
   const sort = useRecoilValue(sortBySelector);
@@ -76,12 +74,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
-      const resp = await generateAltText(verbosity, explain);
+      const resp = await generateAltText();
       setTextDescription(resp);
     }
 
     generate();
-  }, [verbosity, explain, sort, minVisible, maxVisible]);
+  }, [sort, minVisible, maxVisible]);
 
   // this useEffect resets the plot information when the edit is toggled off
   useEffect(() => {
