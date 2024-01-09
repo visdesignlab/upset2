@@ -14602,10 +14602,10 @@ multimatch@^5.0.0:
     arrify "^2.0.1"
     minimatch "^3.0.4"
 
-multinet@0.23.2:
-  version "0.23.2"
-  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.23.2.tgz#ee8c445ebeaa50a8e213cfc4783fca10fee178d1"
-  integrity sha512-q1Nh0Xj304luuxc6D26EWt6JK3TrkqtWbFr5G3j0KvYA876iXqvX8t9KOLjSLqOVUgF53ID3KM/gcvRVgtWsMA==
+multinet@0.23.3:
+  version "0.23.3"
+  resolved "https://registry.yarnpkg.com/multinet/-/multinet-0.23.3.tgz#8ac3c3a9c8fdda1cc3703f19a88412e6e556f9a6"
+  integrity sha512-gD+4sx5tRSg5uTwS3ouragef6OHVMwb9w91DqrTQ1aMnSGj635QbfPDxsRAl3T/h+LTqyPbtTY1va8WiXztD0g==
   dependencies:
     axios "^0.21.1"
     django-s3-file-field "^0.1.2"
