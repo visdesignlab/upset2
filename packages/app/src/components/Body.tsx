@@ -52,7 +52,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
     const config = getAltTextConfig(state, data, getRows(data, state));
 
     const response = await api.generateAltText(true, config);
-    return response.alttxt;
+    return response.alttxt.longDescription;
   }
 
   if (data === null) return null;

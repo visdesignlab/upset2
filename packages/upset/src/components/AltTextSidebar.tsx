@@ -6,15 +6,10 @@ import {
   Button,
   Divider,
   Drawer,
-  FormControl,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   css,
-  debounce,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
@@ -23,6 +18,7 @@ import {
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Edit } from '@mui/icons-material';
+import { Marked, Renderer } from '@ts-stack/markdown';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
@@ -70,12 +66,33 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     items: 'movies (dataset rows)',
   };
 
+  /**
+   * Custom renderer for rendering alternative text.
+   */
+  class AltTextRenderer extends Renderer {
+    // Overriding parent method for heading rendering
+    override heading(text: string, level: number, raw: string) {
+      // this adds a hyphen separated id to each heading
+      const id = text.toLowerCase().replace(/[^\w]+/g, '-');
+
+      // level + 2 is there to match existing page heading heirarchy
+      return `<h${level + 2} id="${id}">${text}</h${level + 2}>`;
+    }
+  }
+
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
       const resp = await generateAltText();
-      setTextDescription(resp);
+
+      Marked.setOptions({
+        sanitize: true,
+        renderer: new AltTextRenderer(),
+      });
+      const markdown = Marked.parse(resp);
+
+      setTextDescription(markdown);
     }
 
     generate();
@@ -116,21 +133,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     return str;
   };
 
-  const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
-    actions.setVerbosity(e.value);
-  };
-
-  const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
-    actions.setExplain(e.value);
-  };
-
   const handleEditableChange = () => {
     setIsEditable(!isEditable);
   };
-
-  // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
-  const debouncedVerbosityChange = debounce(handleVerbosityChange, 1);
-  const debouncedExplainChange = debounce(handleExplainChange, 1);
 
   return (
     <Drawer
@@ -249,36 +254,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             </AccordionDetails>
           </Accordion>
         </Box>
-        <Box marginTop={5}>
-          <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={textDescription} fullWidth maxRows={8} />
-          <Box display="flex" justifyContent="space-around" marginTop="1rem">
-            <FormControl sx={{ width: '40%' }}>
-              <InputLabel id="verbosity-label">Verbosity</InputLabel>
-              <Select
-                labelId="verbosity-label"
-                label="Verbosity"
-                defaultValue="low"
-                onChange={(e: any): void => debouncedVerbosityChange(e.target)}
-              >
-                <MenuItem value="low">Low</MenuItem>
-                <MenuItem value="medium">Medium</MenuItem>
-                <MenuItem value="high">High</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ width: '40%' }}>
-              <InputLabel id="explain-label">Explain</InputLabel>
-              <Select
-                labelId="explain-label"
-                label="Explain"
-                defaultValue="full"
-                onChange={(e: any): void => debouncedExplainChange(e.target)}
-              >
-                <MenuItem value="none">None</MenuItem>
-                <MenuItem value="simple">Simple</MenuItem>
-                <MenuItem value="full">Full</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+        <Box marginTop={2}>
+          <div css={css`overflow-y: auto; padding-bottom: 4rem;`} dangerouslySetInnerHTML={{ __html: textDescription }} />
         </Box>
       </div>
     </Drawer>
