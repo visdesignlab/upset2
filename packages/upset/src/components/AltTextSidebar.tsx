@@ -23,6 +23,7 @@ import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
+import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 
 type Props = {
   open: boolean;
@@ -236,7 +237,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <Markdown>{textDescription}</Markdown>  
+            <ReactMarkdownWrapper text={textDescription} />
           </div>
         </Box>
       </div>
