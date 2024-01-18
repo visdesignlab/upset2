@@ -13,12 +13,12 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
+import Markdown from 'react-markdown'
 import {
   useState, useEffect, FC, useContext,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Edit } from '@mui/icons-material';
-import { Marked, Renderer } from '@ts-stack/markdown';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
@@ -66,33 +66,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     items: 'movies (dataset rows)',
   };
 
-  /**
-   * Custom renderer for rendering alternative text.
-   */
-  class AltTextRenderer extends Renderer {
-    // Overriding parent method for heading rendering
-    override heading(text: string, level: number, raw: string) {
-      // this adds a hyphen separated id to each heading
-      const id = text.toLowerCase().replace(/[^\w]+/g, '-');
-
-      // level + 2 is there to match existing page heading heirarchy
-      return `<h${level + 2} id="${id}">${text}</h${level + 2}>`;
-    }
-  }
-
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
       const resp = await generateAltText();
 
-      Marked.setOptions({
-        sanitize: true,
-        renderer: new AltTextRenderer(),
-      });
-      const markdown = Marked.parse(resp);
-
-      setTextDescription(markdown);
+      setTextDescription(resp);
     }
 
     generate();
@@ -255,7 +235,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           </Accordion>
         </Box>
         <Box marginTop={2}>
-          <div css={css`overflow-y: auto; padding-bottom: 4rem;`} dangerouslySetInnerHTML={{ __html: textDescription }} />
+          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
+            <Markdown>{textDescription}</Markdown>  
+          </div>
         </Box>
       </div>
     </Drawer>
