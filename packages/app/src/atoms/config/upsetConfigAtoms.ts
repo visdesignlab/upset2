@@ -30,10 +30,6 @@ export const defaultConfig: UpsetConfig = {
     wordClouds: [],
   },
   allSets: [],
-  altText: {
-    verbosity: 'low',
-    explain: 'full',
-  },
 };
 
 export const upsetConfigAtom = atom<UpsetConfig>({

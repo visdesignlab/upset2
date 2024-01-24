@@ -289,22 +289,6 @@ const expandAllAction = registry.register(
   },
 );
 
-const setVerbosityAction = registry.register(
-  'set-verbosity',
-  (state: UpsetConfig, verbosity) => {
-    state.altText.verbosity = verbosity;
-    return state;
-  },
-);
-
-const setExplainAction = registry.register(
-  'set-explain',
-  (state: UpsetConfig, explain) => {
-    state.altText.explain = explain;
-    return state;
-  },
-);
-
 const setPlotInformationAction = registry.register(
   'set-plot-information',
   (state: UpsetConfig, plotInformation) => {
@@ -362,8 +346,6 @@ export function getActions(provenance: UpsetProvenance) {
     removeCollapsed: (id: string) => provenance.apply(`Expanded ${id}`, removeCollapsedAction(id)),
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
-    setVerbosity: (verbosity: string) => provenance.apply('Set alt text verbosity', setVerbosityAction(verbosity)),
-    setExplain: (explain: string) => provenance.apply('Set alt text explain', setExplainAction(explain)),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
   };
 }
