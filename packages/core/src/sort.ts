@@ -15,10 +15,9 @@ function sortBySize(rows: Intersections, sortOrder?: string) {
   const { values, order } = rows;
 
   const newOrder = [...order].sort((b, a) => {
-    if (sortOrder === 'Ascending') {
-      return values[a].size - values[b].size;
-    }
-    return values[b].size - values[a].size;
+    const valA = values[a].size;
+    const valB = values[b].size;
+    return (sortOrder === 'Ascending') ? valA - valB : valB - valA;
   });
 
   return { values, order: newOrder };
@@ -66,10 +65,14 @@ function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSet
   return { values, order: newOrder };
 }
 
-function sortByDeviation(rows: Intersections) {
+function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   const newOrder = [...order].sort(
-    (a, b) => values[a].deviation - values[b].deviation,
+    (a, b) => {
+      const devA = values[a].deviation;
+      const devB = values[b].deviation;
+      return (sortByOrder === 'Ascending') ? devA - devB : devB - devA;
+    },
   );
 
   return { values, order: newOrder };
@@ -88,7 +91,7 @@ function sortIntersections<T extends Intersections>(
     case 'Degree':
       return sortByDegree(intersection, vSetSortBy, visibleSets, sortByOrder);
     case 'Deviation':
-      return sortByDeviation(intersection);
+      return sortByDeviation(intersection, sortByOrder);
     default:
       return intersection;
   }

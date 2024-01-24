@@ -1,11 +1,11 @@
 import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { SortBy } from '@visdesignlab/upset2-core';
+import { SortBy, SortByOrder } from '@visdesignlab/upset2-core';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
-import { sortBySelector } from '../../atoms/config/sortByAtom';
+import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 /** @jsxImportSource @emotion/react */
@@ -20,27 +20,38 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
     ProvenanceContext,
   );
   const sortBy = useRecoilValue(sortBySelector);
+  const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const handleContextMenuClose = () => {
     setContextMenu(null);
   };
 
-  const sortByHeader = () => {
-    actions.sortBy(label as SortBy);
+  const sortByHeader = (order: SortByOrder) => {
+    actions.sortBy(label as SortBy, order);
   };
 
   const getMenuItems = () => {
     const items = [];
     if (sort) {
-      items.push({
-        label: `Sort by ${label}`,
-        onClick: () => {
-          sortByHeader();
-          handleContextMenuClose();
+      items.push(
+        {
+          label: `Sort by ${label} - Ascending`,
+          onClick: () => {
+            sortByHeader('Ascending');
+            handleContextMenuClose();
+          },
+          disabled: sortBy === label && sortByOrder === 'Ascending',
         },
-        disabled: sortBy === label,
-      });
+        {
+          label: `Sort by ${label} - Descending`,
+          onClick: () => {
+            sortByHeader('Descending');
+            handleContextMenuClose();
+          },
+          disabled: sortBy === label && sortByOrder === 'Descending',
+        },
+      );
     }
     items.push({
       label: `Remove ${label}`,
