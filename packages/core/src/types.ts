@@ -177,10 +177,6 @@ export type UpsetConfig = {
     wordClouds: WordCloud[];
   };
   allSets: ColumnName[];
-  altText: {
-    verbosity: string;
-    explain: string;
-  };
 };
 
 export type AccessibleDataEntry = {

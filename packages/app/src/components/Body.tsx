@@ -47,12 +47,12 @@ export const Body = ({ yOffset, data, config }: Props) => {
     })
   }, [provObject.provenance, sessionId, workspace]);
 
-  async function generateAltText(verbosity: string, explain: string) {
+  async function generateAltText() {
     const state = provObject.provenance.getState();
     const config = getAltTextConfig(state, data, getRows(data, state));
 
-    const response = await api.generateAltText(verbosity, explain, config);
-    return response.alttxt;
+    const response = await api.generateAltText(true, config);
+    return response.alttxt.longDescription;
   }
 
   if (data === null) return null;

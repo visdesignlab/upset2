@@ -6,18 +6,14 @@ import {
   Button,
   Divider,
   Drawer,
-  FormControl,
   IconButton,
-  InputLabel,
-  MenuItem,
-  Select,
   TextField,
   Typography,
   css,
-  debounce,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
+import Markdown from 'react-markdown'
 import {
   useState, useEffect, FC, useContext,
 } from 'react';
@@ -26,13 +22,13 @@ import { Edit } from '@mui/icons-material';
 import { sortBySelector } from '../atoms/config/sortByAtom';
 import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
-import { altTextSelector } from '../atoms/config/altTextAtoms';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
+import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 
 type Props = {
   open: boolean;
   close: () => void;
-  generateAltText: (verbosity: string, explain: string) => Promise<string>;
+  generateAltText: () => Promise<string>;
 }
 
 const plotInfoItem = {
@@ -54,7 +50,6 @@ const initialDrawerWidth = 450;
 
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions } = useContext(ProvenanceContext);
-  const { verbosity, explain } = useRecoilValue(altTextSelector);
   const plotInformationState = useRecoilValue(plotInformationSelector);
 
   const sort = useRecoilValue(sortBySelector);
@@ -76,12 +71,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
-      const resp = await generateAltText(verbosity, explain);
+      const resp = await generateAltText();
+
       setTextDescription(resp);
     }
 
     generate();
-  }, [verbosity, explain, sort, minVisible, maxVisible]);
+  }, [sort, minVisible, maxVisible]);
 
   // this useEffect resets the plot information when the edit is toggled off
   useEffect(() => {
@@ -118,21 +114,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     return str;
   };
 
-  const handleVerbosityChange = (e: EventTarget & HTMLInputElement): void => {
-    actions.setVerbosity(e.value);
-  };
-
-  const handleExplainChange = (e: EventTarget & HTMLInputElement): void => {
-    actions.setExplain(e.value);
-  };
-
   const handleEditableChange = () => {
     setIsEditable(!isEditable);
   };
-
-  // the selection values are debounced so that the select dropdown updates immediately while the alt-text is generated, rather than waiting for the generation to complete
-  const debouncedVerbosityChange = debounce(handleVerbosityChange, 1);
-  const debouncedExplainChange = debounce(handleExplainChange, 1);
 
   return (
     <Drawer
@@ -251,36 +235,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             </AccordionDetails>
           </Accordion>
         </Box>
-        <Box marginTop={5}>
-          <TextField multiline InputProps={{ readOnly: true }} InputLabelProps={{ shrink: true }} label="Text Description" defaultValue={textDescription} fullWidth maxRows={8} />
-          <Box display="flex" justifyContent="space-around" marginTop="1rem">
-            <FormControl sx={{ width: '40%' }}>
-              <InputLabel id="verbosity-label">Verbosity</InputLabel>
-              <Select
-                labelId="verbosity-label"
-                label="Verbosity"
-                defaultValue="low"
-                onChange={(e: any): void => debouncedVerbosityChange(e.target)}
-              >
-                <MenuItem value="low">Low</MenuItem>
-                <MenuItem value="medium">Medium</MenuItem>
-                <MenuItem value="high">High</MenuItem>
-              </Select>
-            </FormControl>
-            <FormControl sx={{ width: '40%' }}>
-              <InputLabel id="explain-label">Explain</InputLabel>
-              <Select
-                labelId="explain-label"
-                label="Explain"
-                defaultValue="full"
-                onChange={(e: any): void => debouncedExplainChange(e.target)}
-              >
-                <MenuItem value="none">None</MenuItem>
-                <MenuItem value="simple">Simple</MenuItem>
-                <MenuItem value="full">Full</MenuItem>
-              </Select>
-            </FormControl>
-          </Box>
+        <Box marginTop={2}>
+          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
+            <ReactMarkdownWrapper text={textDescription} />
+          </div>
         </Box>
       </div>
     </Drawer>
