@@ -7,6 +7,7 @@ import {
   SortBy,
   SortVisibleBy,
   Sets,
+  SortByOrder,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -37,7 +38,7 @@ function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVi
   return (vSetSortBy === 'Ascending') ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
 }
 
-function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: string) {
+function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   const newOrder = [...order].sort(
     (a, b) => {
@@ -79,7 +80,7 @@ function sortIntersections<T extends Intersections>(
   sortBy: SortBy,
   vSetSortBy: SortVisibleBy,
   visibleSets: Sets,
-  sortByOrder?: string,
+  sortByOrder?: SortByOrder,
 ) {
   switch (sortBy) {
     case 'Size':
@@ -93,7 +94,7 @@ function sortIntersections<T extends Intersections>(
   }
 }
 
-export function sortRows(baseRows: Rows, sortBy: SortBy, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: string): Rows {
+export function sortRows(baseRows: Rows, sortBy: SortBy, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: SortByOrder): Rows {
   const rows = deepCopy(baseRows);
 
   if (areRowsSubsets(rows)) {
