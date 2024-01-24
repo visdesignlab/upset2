@@ -5,7 +5,7 @@ import {
 } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { sortBySelector } from '../../atoms/config/sortByAtom';
+import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
 import { maxSize } from '../../atoms/maxSizeAtom';
@@ -35,6 +35,7 @@ export const SizeHeader: FC = () => {
   const items = useRecoilValue(itemsAtom);
   const subsets = useRecoilValue(subsetSelector);
   const sortBy = useRecoilValue(sortBySelector);
+  const sortByOrder = useRecoilValue(sortByOrderSelector);
 
   const itemCount = Object.keys(items).length;
   const [sliding, setSliding] = useState(false);
@@ -47,18 +48,26 @@ export const SizeHeader: FC = () => {
     setContextMenu(null);
   };
 
-  const sortBySize = () => {
-    actions.sortBy('Size');
+  const sortBySize = (order: string) => {
+    actions.sortBy('Size', order);
   };
 
   const getMenuItems = () => [
     {
-      label: 'Sort by Size',
+      label: 'Sort by Size - Ascending',
       onClick: () => {
-        sortBySize();
+        sortBySize('Ascending');
         handleContextMenuClose();
       },
-      disabled: sortBy === 'Size',
+      disabled: sortBy === 'Size' && sortByOrder === 'Ascending',
+    },
+    {
+      label: 'Sort by Size - Descending',
+      onClick: () => {
+        sortBySize('Descending');
+        handleContextMenuClose();
+      },
+      disabled: sortBy === 'Size' && sortByOrder === 'Descending',
     },
     {
       label: 'Toggle Advanced Scale',

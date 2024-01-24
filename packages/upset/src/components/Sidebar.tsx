@@ -25,14 +25,17 @@ import {
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
+import { ArrowUpward } from '@mui/icons-material';
 import {
   firstAggregateSelector,
   firstOvelapDegreeSelector,
   secondAggregateSelector,
   secondOverlapDegreeSelector,
 } from '../atoms/config/aggregateAtoms';
-import { hideEmptySelector, hideNoSetSelector, maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
-import { sortBySelector } from '../atoms/config/sortByAtom';
+import {
+  hideEmptySelector, hideNoSetSelector, maxVisibleSelector, minVisibleSelector,
+} from '../atoms/config/filterAtoms';
+import { sortByOrderSelector, sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
@@ -42,7 +45,12 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 const itemDivCSS = css`
   display: flex;
   justify-content: space-between;
+  align-items: center;
 `;
+
+const arrowIconCSS = {
+  height: '16px', width: '16px', marginLeft: '6px',
+};
 
 const sidebarHeaderCSS = css`
   font-size: 0.95rem;
@@ -61,6 +69,7 @@ export const Sidebar = () => {
   const secondOverlapDegree = useRecoilValue(secondOverlapDegreeSelector);
 
   const sortBy = useRecoilValue(sortBySelector);
+  const sortByOrder = useRecoilValue(sortByOrderSelector);
   const maxVisible = useRecoilValue(maxVisibleSelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
@@ -97,33 +106,88 @@ export const Sidebar = () => {
             <RadioGroup
               value={sortBy}
               onChange={(ev) => {
-                actions.sortBy(ev.target.value as SortBy);
+                actions.sortBy(ev.target.value as SortBy, 'Ascending');
               }}
             >
-              {sortByList.map((sort) => (sort === 'Deviation' ?
-                (
-                  <Alert severity="info" variant="outlined" role="generic" key={sort} sx={{ alignItems: 'center', padding: '0.1em 0.4em', marginTop: '0.5em' }}><Typography>Use column headers for custom sorting</Typography></Alert>
-                ) :
-                (
-                  <Box
-                    css={itemDivCSS}
-                    key={sort}
-                    aria-label={helpText.sorting[sort]}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        actions.sortBy(sort);
+              <Box
+                css={itemDivCSS}
+                key="Degree"
+                aria-label={helpText.sorting['Degree']}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    actions.sortBy('Degree', 'Ascending');
+                  }
+                }}
+              >
+                <FormControlLabel
+                  key="Degree"
+                  value="Degree"
+                  label={
+                    <Box
+                      css={itemDivCSS}
+                      onClick={() => {
+                        if (sortBy === 'Degree') {
+                          if (sortByOrder === 'Ascending') {
+                            actions.sortBy('Degree', 'Descending');
+                          } else {
+                            actions.sortBy('Degree', 'Ascending');
+                          }
+                        }
+                      }}
+                    >
+                      <Typography>Degree</Typography>
+                      { sortBy === 'Degree' &&
+                        (sortByOrder === 'Ascending' ?
+                          <ArrowUpward sx={arrowIconCSS} /> :
+                          <ArrowUpward sx={{ ...arrowIconCSS, transform: 'rotate(180deg)' }} />
+                        )
                       }
-                    }}
-                  >
-                    <FormControlLabel
-                      key={sort}
-                      value={sort}
-                      label={sort}
-                      control={<Radio size="small" />}
-                    />
-                    <HelpCircle text={helpText.sorting[sort]} />
-                  </Box>
-                )))}
+                    </Box>
+                  }
+                  control={<Radio size="small" />}
+                />
+                <HelpCircle text={helpText.sorting['Degree']} />
+              </Box>
+              <Box
+                css={itemDivCSS}
+                key="Size"
+                aria-label={helpText.sorting['Size']}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    actions.sortBy('Size', 'Ascending');
+                  }
+                }}
+              >
+                <FormControlLabel
+                  key="Size"
+                  value="Size"
+                  label={
+                    <Box
+                      css={itemDivCSS}
+                      onClick={() => {
+                        if (sortBy === 'Size') {
+                          if (sortByOrder === 'Ascending') {
+                            actions.sortBy('Size', 'Descending');
+                          } else {
+                            actions.sortBy('Size', 'Ascending');
+                          }
+                        }
+                      }}
+                    >
+                      <Typography>Size</Typography>
+                      { sortBy === 'Size' &&
+                        (sortByOrder === 'Ascending' ?
+                          <ArrowUpward sx={arrowIconCSS} /> :
+                          <ArrowUpward sx={{ ...arrowIconCSS, transform: 'rotate(180deg)' }} />
+                        )
+                      }
+                    </Box>
+                  }
+                  control={<Radio size="small" />}
+                />
+                <HelpCircle text={helpText.sorting['Size']} />
+              </Box>
+              <Alert severity="info" variant="outlined" role="generic" key="info" sx={{ alignItems: 'center', padding: '0.1em 0.4em', marginTop: '0.5em' }}><Typography>Use column headers for custom sorting</Typography></Alert>
             </RadioGroup>
           </FormControl>
         </AccordionDetails>

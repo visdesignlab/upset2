@@ -59,8 +59,9 @@ const sortVisibleSetsAction = registry.register(
 
 const sortByAction = registry.register(
   'sort-by',
-  (state, sort) => {
+  (state, { sort, sortByOrder }) => {
     state.sortBy = sort;
+    state.sortByOrder = sortByOrder;
     return state;
   },
 );
@@ -341,7 +342,7 @@ export function getActions(provenance: UpsetProvenance) {
     secondAggregateBy: (aggBy: AggregateBy) => provenance.apply(`Second aggregate by ${aggBy}`, secondAggAction(aggBy)),
     secondOverlapBy: (overlap: number) => provenance.apply(`Second overlap by ${overlap}`, secondOverlapAction(overlap)),
     sortVisibleBy: (sort: SortVisibleBy) => provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
-    sortBy: (sort: SortBy) => provenance.apply(`Sort by ${sort}`, sortByAction(sort)),
+    sortBy: (sort: SortBy, sortByOrder: string) => provenance.apply(`Sort by ${sort}, in ${sortByOrder} order`, sortByAction({sort, sortByOrder})),
     setMaxVisible: (val: number) => provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
     setMinVisible: (val: number) => provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
     setHideEmpty: (val: boolean) => provenance.apply(val ? 'Hide empty intersections' : 'Show empty intersections', hideEmptyAction(val)),
