@@ -1,5 +1,10 @@
 export type ColumnName = string;
 
+export type Column = {
+  name: string,
+  size: number
+};
+
 export type ColumnDefs = {
   [columnName: string]: 'number' | 'boolean' | 'string' | 'label';
 };
@@ -176,7 +181,7 @@ export type UpsetConfig = {
     histograms: Histogram[];
     wordClouds: WordCloud[];
   };
-  allSets: ColumnName[];
+  allSets: Column[];
 };
 
 export type AccessibleDataEntry = {
