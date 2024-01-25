@@ -22,7 +22,7 @@ export const Home = () => {
                     </Typography>
                     <Box sx={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', marginTop: '1em'}}>
                         <Card sx={{boxShadow: 4, borderRadius: "8px"}} aria-label="Example of a dataset of movies in UpSet">
-                            <CardActionArea onClick={() => window.open('https://upset.multinet.app/?workspace=Upset+Examples&table=movies&sessionId=192')}>
+                            <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=192')}>
                                 <CardMedia component="img" height="250" image="/placard/movies.png" alt="Example UpSet plot: movies" />
                                 <CardContent sx={{paddingLeft: 0}}>
                                     <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
@@ -32,7 +32,7 @@ export const Home = () => {
                             </CardActionArea>
                         </Card>
                         <Card sx={{boxShadow: 4, borderRadius: "8px"}} aria-label="Example of a dataset of Simpsons character attributes in UpSet">
-                            <CardActionArea onClick={() => window.open('https://upset.multinet.app/?workspace=Upset+Examples&table=simpsons&sessionId=193')}>
+                            <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=simpsons&sessionId=193')}>
                                 <CardMedia component="img" height="250" image="/placard/simpsons.png" alt="Example UpSet plot: simpsons" />
                                 <CardContent sx={{paddingLeft: 0}}>
                                     <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5em', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
