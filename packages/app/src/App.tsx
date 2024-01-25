@@ -11,6 +11,8 @@ import { DataTable } from './components/DataTable';
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
+const defaultVisibleSets = 6;
+
 function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
@@ -27,11 +29,11 @@ function App() {
     if (data !== null) {
       const conf = JSON.parse(JSON.stringify(config))
       if (config.visibleSets.length === 0) {
-        const setList = Object.keys(data.sets);
-        conf.visibleSets = setList.slice(0, 6);
-        conf.allSets = setList;
+        const setList = Object.entries(data.sets);
+        conf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]) // get first 6 set names
+        conf.allSets = setList.map((set) => {return { name: set[0], size: set[1].size }})
       }
-      
+
       conf.visibleAttributes = data.attributeColumns.slice(0, 3);
 
       return conf;

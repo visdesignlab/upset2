@@ -1,5 +1,5 @@
 import { exportState, getAccessibleData, downloadSVG } from '@visdesignlab/upset2-react';
-import { getRows } from '@visdesignlab/upset2-core';
+import { Column, getRows } from '@visdesignlab/upset2-core';
 import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
@@ -38,7 +38,7 @@ const Header = ({ data }: { data: any }) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
   
   const visibleSets = provenance.getState().visibleSets;
-  const hiddenSets = provenance.getState().allSets.filter((set: string) => !visibleSets.includes(set));
+  const hiddenSets = provenance.getState().allSets.filter((set: Column) => !visibleSets.includes(set.name));
 
   const handleImportModalClose = () => {
     setShowImportModal(false);
