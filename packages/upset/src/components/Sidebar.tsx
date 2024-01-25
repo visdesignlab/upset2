@@ -112,7 +112,7 @@ export const Sidebar = () => {
               <Box
                 css={itemDivCSS}
                 key="Degree"
-                aria-label={helpText.sorting['Degree']}
+                aria-label={`${helpText.sorting['Degree']} - ${sortByOrder}`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     actions.sortBy('Degree', 'Ascending');
@@ -137,10 +137,7 @@ export const Sidebar = () => {
                     >
                       <Typography>Degree</Typography>
                       { sortBy === 'Degree' &&
-                        (sortByOrder === 'Ascending' ?
-                          <ArrowUpward sx={arrowIconCSS} /> :
-                          <ArrowUpward sx={{ ...arrowIconCSS, transform: 'rotate(180deg)' }} />
-                        )
+                        <ArrowUpward sx={{ ...arrowIconCSS, transform: (sortByOrder === 'Ascending' ? '' : 'rotate(180deg)') }} />
                       }
                     </Box>
                   }
@@ -151,7 +148,7 @@ export const Sidebar = () => {
               <Box
                 css={itemDivCSS}
                 key="Size"
-                aria-label={helpText.sorting['Size']}
+                aria-label={`${helpText.sorting['Degree']} - ${sortByOrder}`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     actions.sortBy('Size', 'Ascending');
@@ -176,10 +173,7 @@ export const Sidebar = () => {
                     >
                       <Typography>Size</Typography>
                       { sortBy === 'Size' &&
-                        (sortByOrder === 'Ascending' ?
-                          <ArrowUpward sx={arrowIconCSS} /> :
-                          <ArrowUpward sx={{ ...arrowIconCSS, transform: 'rotate(180deg)' }} />
-                        )
+                        <ArrowUpward sx={{ ...arrowIconCSS, transform: (sortByOrder === 'Ascending' ? '' : 'rotate(180deg)') }} />
                       }
                     </Box>
                   }
