@@ -92,6 +92,7 @@ export type AggregateBy = typeof aggregateByList[number];
 
 export const sortByList = ['Degree', 'Size', 'Deviation'] as const;
 export type SortBy = typeof sortByList[number];
+export type SortByOrder = 'Ascending' | 'Descending';
 
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
 export type SortVisibleBy = typeof sortVisibleByList[number];
@@ -166,6 +167,7 @@ export type UpsetConfig = {
   secondOverlapDegree: number;
   sortVisibleBy: SortVisibleBy;
   sortBy: SortBy;
+  sortByOrder: SortByOrder;
   filters: {
     maxVisible: number;
     minVisible: number;

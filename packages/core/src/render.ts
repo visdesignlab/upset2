@@ -41,7 +41,7 @@ export const sortByRR = (data: any, state: UpsetConfig) => {
   const vSets: Sets = Object.fromEntries(Object.entries(data.sets as Sets).filter(([name, _set]) => state.visibleSets.includes(name)));
   const rr = secondAggRR(data, state);
 
-  return sortRows(rr, state.sortBy, state.sortVisibleBy, vSets);
+  return sortRows(rr, state.sortBy, state.sortVisibleBy, vSets, state.sortByOrder);
 };
 
 export const filterRR = (data: any, state: UpsetConfig) => {
