@@ -53,9 +53,9 @@ export const Upset: FC<UpsetProps> = ({
     const conf: UpsetConfig = { ...defaultConfig, ...config };
 
     if (conf.visibleSets.length === 0) {
-      const setList = Object.keys(data.sets);
-      conf.visibleSets = setList.slice(0, defaultVisibleSets);
-      conf.allSets = setList;
+      const setList = Object.entries(data.sets);
+      conf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]); // get first 6 set names
+      conf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
     }
 
     conf.visibleAttributes = data.attributeColumns.slice(0, loadAttributes);
