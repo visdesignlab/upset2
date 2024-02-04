@@ -100,7 +100,7 @@ const Header = ({ data }: { data: any }) => {
     localStorage.setItem('data', JSON.stringify(data));
     localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()), true)));
     localStorage.setItem('visibleSets', JSON.stringify(visibleSets));
-    localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets));
+    localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets.map((set: Column) => set.name)));
     saveQueryParam();
   };
 
