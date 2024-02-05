@@ -1,0 +1,61 @@
+name: Playwright Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: 🧪 ${{ matrix.project }} E2E Tests
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - project: chromium
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+
+          - project: firefox
+            os: ubuntu-latest
+            cache_dir: ~/.cache/ms-playwright
+
+          - project: webkit
+            os: macos-latest
+            cache_dir: ~/Library/Caches/ms-playwright
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: "yarn"
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Write out playwright version
+        run: yarn --silent playwright --version > .playwright-version
+
+      - name: ⚡️ Cache playwright binaries
+        uses: actions/cache@v3
+        id: playwright-cache
+        with:
+          path: ${{ matrix.cache_dir }}
+          key: ${{ runner.os }}-${{ matrix.project }}-pw-${{ hashFiles('**/.playwright-version') }}
+
+      - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: yarn playwright install --with-deps ${{ matrix.project }}
+
+      - name: Run Playwright tests
+        run: yarn test --project=${{ matrix.project }}
+
+      - name: Upload test results
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: playwright-report
+          path: playwright-report

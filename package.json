@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache",
     "storybook": "turbo run storybook",
-    "test": "turbo run test",
+    "test": "playwright test",
     "build": "turbo run build --force",
     "prepublish": "lerna run prepublish",
     "publish-canary": "echo 'Do something'",
