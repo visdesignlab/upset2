@@ -17,7 +17,7 @@ function sortBySize(rows: Intersections, sortOrder?: string) {
   const newOrder = [...order].sort((b, a) => {
     const valA = values[a].size;
     const valB = values[b].size;
-    return (sortOrder === 'Ascending') ? valA - valB : valB - valA;
+    return (sortOrder === 'Descending') ? valA - valB : valB - valA;
   });
 
   return { values, order: newOrder };
@@ -71,7 +71,7 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
     (a, b) => {
       const devA = values[a].deviation;
       const devB = values[b].deviation;
-      return (sortByOrder === 'Ascending') ? devA - devB : devB - devA;
+      return (sortByOrder === 'Descending') ? devA - devB : devB - devA;
     },
   );
 
