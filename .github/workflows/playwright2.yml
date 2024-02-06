@@ -13,7 +13,7 @@ jobs:
       with:
         node-version: 18
     - name: Install dependencies
-      run: npm install
+      run: yarn install
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
     - name: Run Playwright tests
