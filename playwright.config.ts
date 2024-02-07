@@ -11,8 +11,8 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
-  use: {
-    trace: 'on-first-retry',
+  expect: {
+    timeout: 15 * 1000,
   },
 
   /* Configure projects for major browsers */
