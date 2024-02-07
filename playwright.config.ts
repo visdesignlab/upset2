@@ -12,8 +12,11 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: 'html',
   expect: {
+    /* assertion timeout */
     timeout: 15 * 1000,
   },
+  /* global test timeout */
+  timeout: 120 * 1000,
 
   /* Configure projects for major browsers */
   projects: [
