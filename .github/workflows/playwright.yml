@@ -23,7 +23,7 @@ jobs:
             cache_dir: ~/.cache/ms-playwright
 
           - project: webkit
-            os: macos-latest
+            os: macos-14
             cache_dir: ~/Library/Caches/ms-playwright
     steps:
       - uses: actions/checkout@v3
