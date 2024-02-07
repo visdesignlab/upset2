@@ -33,45 +33,46 @@ test.beforeEach(async ({ page }) => {
 test('Alt Text', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
-  const altTextSidebarButton = page.getByLabel('Open alt text sidebar');
+  const altTextSidebarButton = await page.getByLabel('Open alt text sidebar');
+  await expect(altTextSidebarButton).toBeVisible();
   await altTextSidebarButton.click();
 
-  const altTextSidebar = page.getByLabel('Alt Text Sidebar', { exact: true });
+  const altTextSidebar = await page.getByLabel('Alt Text Sidebar', { exact: true });
   await expect(altTextSidebar).toBeVisible();
 
-  const altTextHeading = page.getByRole('heading', { name: 'Alt Text' });
+  const altTextHeading = await page.getByRole('heading', { name: 'Alt Text' });
   await expect(altTextHeading).toBeVisible();
 
   /// /////////////////
   // Plot Information
   /// /////////////////
-  const plotInformation = page.getByRole('button', { name: 'Plot Information' });
+  const plotInformation = await page.getByRole('button', { name: 'Plot Information' });
   await expect(plotInformation).toBeVisible();
   await plotInformation.click();
 
-  const editPlotInformationButton = page.getByLabel('Toggle editable descriptions');
+  const editPlotInformationButton = await page.getByLabel('Toggle editable descriptions');
   await expect(editPlotInformationButton).toBeVisible();
   await editPlotInformationButton.click();
 
-  const datasetDescriptionInput = page.getByPlaceholder('eg: movie genres and ratings');
+  const datasetDescriptionInput = await page.getByPlaceholder('eg: movie genres and ratings');
   await expect(datasetDescriptionInput).toBeVisible();
   await expect(datasetDescriptionInput).toBeEditable();
   await datasetDescriptionInput.click();
   await datasetDescriptionInput.fill('Test dataset description');
 
-  const setsInput = page.getByPlaceholder('eg: movie genres (dataset');
+  const setsInput = await page.getByPlaceholder('eg: movie genres (dataset');
   await expect(setsInput).toBeVisible();
   await expect(setsInput).toBeEditable();
   await setsInput.click();
   await setsInput.fill('Test sets value');
 
-  const itemsInput = page.getByPlaceholder('eg: movies (dataset rows)');
+  const itemsInput = await page.getByPlaceholder('eg: movies (dataset rows)');
   await expect(itemsInput).toBeVisible();
   await expect(itemsInput).toBeEditable();
   await itemsInput.click();
   await itemsInput.fill('Test items value');
 
-  const plotInformationOutput = page.getByText('This UpSet plot shows test');
+  const plotInformationOutput = await page.getByText('This UpSet plot shows test');
   await expect(plotInformationOutput).toBeVisible();
   await expect(plotInformationOutput).toHaveText('This UpSet plot shows Test dataset description. The sets are Test sets value. The items are Test items value.');
 
@@ -82,16 +83,16 @@ test('Alt Text', async ({ page }) => {
   // Alt Text Output
   /// /////////////////
   const UpSetIntroduction = {
-    heading: page.getByRole('heading', { name: 'UpSet Introduction' }),
-    content: page.getByText('This is an UpSet plot that'),
+    heading: await page.getByRole('heading', { name: 'UpSet Introduction' }),
+    content: await page.getByText('This is an UpSet plot that'),
   };
   await expect(UpSetIntroduction.heading).toBeVisible();
   await expect(UpSetIntroduction.content).toBeVisible();
   await expect(UpSetIntroduction.content).toHaveText('This is an UpSet plot that visualizes set intersection. To learn about UpSet plots, visit https://upset.app.');
 
   const datasetProperties = {
-    heading: page.getByRole('heading', { name: 'Dataset Properties' }),
-    content: page.getByText('The dataset contains 6 sets'),
+    heading: await page.getByRole('heading', { name: 'Dataset Properties' }),
+    content: await page.getByText('The dataset contains 6 sets'),
   };
 
   await expect(datasetProperties.heading).toBeVisible();
@@ -99,24 +100,24 @@ test('Alt Text', async ({ page }) => {
   await expect(datasetProperties.content).toHaveText('The dataset contains 6 sets, and 44 elements, of which 6 are shown in the plot.');
 
   const setProperties = {
-    heading: page.getByRole('heading', { name: 'Set Properties', exact: true }),
-    content: page.getByText('The largest set is Male with'),
+    heading: await page.getByRole('heading', { name: 'Set Properties', exact: true }),
+    content: await page.getByText('The largest set is Male with'),
   };
   await expect(setProperties.heading).toBeVisible();
   await expect(setProperties.content).toBeVisible();
   await expect(setProperties.content).toHaveText('The largest set is Male with 18 elements, followed by School with 6, Duff Fan with 6, Evil with 6, Power Plant with 5, and Blue Hair with 3.');
 
   const intersectionProperties = {
-    heading: page.getByRole('heading', { name: 'Intersection Properties' }),
-    content: page.getByText('The plot is sorted by size.'),
+    heading: await page.getByRole('heading', { name: 'Intersection Properties' }),
+    content: await page.getByText('The plot is sorted by size.'),
   };
   await expect(intersectionProperties.heading).toBeVisible();
   await expect(intersectionProperties.content).toBeVisible();
   await expect(intersectionProperties.content).toHaveText('The plot is sorted by size. There are 12 non-empty intersections, all of which are shown in the plot. The largest 5 intersections are School Male (3), the empty intersection (3), Just Male (3), Duff_Fan Male Power_Plant (3), and Evil Male (2).');
 
   const statisticalInformation = {
-    heading: page.getByRole('heading', { name: 'Statistical Information' }),
-    content: page.getByText('The average intersection size'),
+    heading: await page.getByRole('heading', { name: 'Statistical Information' }),
+    content: await page.getByText('The average intersection size'),
   };
   await expect(statisticalInformation.heading).toBeVisible();
   await expect(statisticalInformation.content).toBeVisible();
