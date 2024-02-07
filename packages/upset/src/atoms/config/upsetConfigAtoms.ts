@@ -14,7 +14,7 @@ export const defaultConfig: UpsetConfig = {
   secondOverlapDegree: 2,
   sortVisibleBy: 'Alphabetical',
   sortBy: 'Size',
-  sortByOrder: 'Ascending',
+  sortByOrder: 'Descending',
   filters: {
     maxVisible: 3,
     minVisible: 0,

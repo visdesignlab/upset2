@@ -18,7 +18,7 @@ import {
   Typography,
 } from '@mui/material';
 import {
-  AggregateBy, aggregateByList, SortBy, sortByList,
+  AggregateBy, aggregateByList, SortBy,
 } from '@visdesignlab/upset2-core';
 import {
   Fragment, useContext, useEffect, useState,
@@ -106,7 +106,7 @@ export const Sidebar = () => {
             <RadioGroup
               value={sortBy}
               onChange={(ev) => {
-                actions.sortBy(ev.target.value as SortBy, 'Ascending');
+                actions.sortBy(ev.target.value as SortBy, 'Descending');
               }}
             >
               <Box
@@ -115,7 +115,7 @@ export const Sidebar = () => {
                 aria-label={`${helpText.sorting['Degree']} - ${sortByOrder}`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    actions.sortBy('Degree', 'Ascending');
+                    actions.sortBy('Degree', 'Descending');
                   }
                 }}
               >
@@ -151,7 +151,7 @@ export const Sidebar = () => {
                 aria-label={`${helpText.sorting['Degree']} - ${sortByOrder}`}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
-                    actions.sortBy('Size', 'Ascending');
+                    actions.sortBy('Size', 'Descending');
                   }
                 }}
               >
