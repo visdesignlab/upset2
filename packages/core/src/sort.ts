@@ -71,7 +71,7 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
     (a, b) => {
       const devA = values[a].deviation;
       const devB = values[b].deviation;
-      return (sortByOrder === 'Descending') ? devA - devB : devB - devA;
+      return (sortByOrder === 'Ascending') ? devA - devB : devB - devA;
     },
   );
 
