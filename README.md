@@ -53,3 +53,14 @@ To deploy UpSet 2.0 locally it is necessary to install the Multinet infrastructu
 
 To run UpSet 2.0 locally, first, complete the [Local Installation](#local-installation) steps. Then, use `yarn dev` to run UpSet 2.0 on port 3000.
 A browser window for `localhost:3000` will open during the launch process.
+
+## End To End (e2e) Testing
+
+To run the playwright end to end tests, use the command:
+`yarn test`
+
+To open the test in a UI view to track steps, append `--ui`.
+
+This will launch a local server if there is not one already running on port 3000.
+
+To add a test, add a `.spec.ts` file to `e2e-tests`. For information on how to use playwright, please see the [playwright documentation](https://playwright.dev/docs/writing-tests).
