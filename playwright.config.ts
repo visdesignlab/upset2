@@ -13,10 +13,10 @@ export default defineConfig({
   reporter: 'html',
   expect: {
     /* assertion timeout */
-    timeout: 15 * 1000,
+    timeout: 10 * 1000,
   },
   /* global test timeout */
-  timeout: 120 * 1000,
+  timeout: 30 * 1000,
 
   /* Configure projects for major browsers */
   projects: [
@@ -38,7 +38,7 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: 'yarn build && yarn dev',
+    command: 'yarn dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
     stdout: 'ignore',
