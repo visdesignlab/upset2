@@ -2,11 +2,12 @@ import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
+import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { maxSize } from '../atoms/maxSizeAtom';
 import { useScale } from '../hooks/useScale';
 import translate from '../utils/transform';
+import { newShade } from '../utils/colors';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -14,17 +15,15 @@ type Props = {
   row?: Row;
 };
 
-const color1 = 'rgb(189, 189, 189)';
-const color2 = 'rgb(136, 136, 136)';
-const color3 = 'rgb(37, 37, 37)';
-const color4 = 'rgb(116, 173, 209)';
-const color5 = 'rgb(94, 102, 171)';
-const color6 = 'rgb(29, 41, 71)';
+const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
+const highlightColors = ['rgb(116, 173, 209)', 'rgb(94, 102, 171)', 'rgb(29, 41, 71)'];
 
 export const SizeBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionAtom);
+  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
 
   const scale = useScale(
     [0, sizeDomain],
@@ -33,10 +32,6 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
 
   let fullBars = size > 0 ? Math.floor(size / sizeDomain) : size;
   const rem = size % sizeDomain;
-
-  const colors = [color1, color2, color3, color4, color5, color6];
-
-  const highlightOffset = 3;
 
   if (size < 0 || sizeDomain < 0) return null;
 
@@ -49,6 +44,22 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
   const rectArray: number[] = [];
   for (let i = 0; i < fullBars; ++i) {
     rectArray[i] = i;
+  }
+
+  function getFillColor(index: number) {
+    // if the row is bookmarked, highlight the bar with the bookmark color
+    if (row !== undefined && bookmarkedIntersections.some((bookmark) => bookmark.id === row.id)) {
+      // darken the color for advanced scale sub-bars
+      if (index !== 0) {
+        return newShade(bookmarkedColorPallete[row.id], -(12 + (index * 2)));
+      }
+      return bookmarkedColorPallete[row.id];
+    }
+
+    if (row !== undefined && currentIntersection !== null && currentIntersection.id === row.id) { // if currently selected, use the highlight colors
+      return highlightColors[index];
+    }
+    return colors[index];
   }
 
   return (
@@ -67,7 +78,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
           key={arr}
           height={dimensions.size.plotHeight - arr * offset}
           width={dimensions.attribute.width}
-          fill={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[arr + highlightOffset] : colors[arr]}
+          fill={getFillColor(arr)}
         />
       ))}
       {fullBars < 3 && (
@@ -75,7 +86,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
           transform={translate(0, (fullBars * offset) / 2)}
           height={dimensions.size.plotHeight - fullBars * offset}
           width={scale(rem)}
-          fill={row !== undefined && currentIntersection !== null && currentIntersection.id === row.id ? colors[fullBars + highlightOffset] : colors[fullBars]}
+          fill={getFillColor(fullBars)}
         />
       )}
       {fullBars === 3 && (
