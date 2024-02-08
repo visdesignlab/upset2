@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { Aggregate } from '@visdesignlab/upset2-core';
+import { Aggregate, getDegreeFromSetMembership } from '@visdesignlab/upset2-core';
 import { FC, useContext } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
@@ -17,6 +17,7 @@ import { BookmarkStar } from './custom/BookmarkStar';
 import { collapsedSelector } from '../atoms/collapsedAtom';
 import { ProvenanceContext } from './Root';
 import { AttributeBars } from './AttributeBars';
+import { Degree } from './Degree';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -119,6 +120,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
         { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
         <BookmarkStar row={aggregateRow} />}
+        <Degree degree={getDegreeFromSetMembership(aggregateRow.setMembership)} />
         <SizeBar row={aggregateRow} size={aggregateRow.size} />
         <DeviationBar deviation={aggregateRow.deviation} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />

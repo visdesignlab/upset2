@@ -45,12 +45,20 @@ export const SizeHeader: FC = () => {
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
-  const handleContextMenuClose = () => {
-    setContextMenu(null);
-  };
-
   const sortBySize = (order: string) => {
     actions.sortBy('Size', order);
+  };
+
+  const handleOnClick = () => {
+    if (sortBy !== 'Size') {
+      sortBySize('Ascending');
+    } else {
+      sortBySize(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
+    }
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
   };
 
   const getMenuItems = () => [
@@ -148,7 +156,9 @@ export const SizeHeader: FC = () => {
         dimensions.matrixColumn.width +
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap,
+        dimensions.bookmarkStar.gap +
+        dimensions.degreeColumn.width +
+        dimensions.degreeColumn.gap,
         dimensions.header.totalHeight - dimensions.size.height,
       )}
     >
@@ -232,6 +242,7 @@ export const SizeHeader: FC = () => {
           e.stopPropagation();
           openContextMenu(e);
         }}
+        onClick={handleOnClick}
       >
         <rect
           fill="#ccc"
@@ -240,9 +251,6 @@ export const SizeHeader: FC = () => {
           strokeWidth="0.3px"
           height={dimensions.size.buttonHeight}
           width={dimensions.attribute.width}
-          onClick={() => {
-            if (sortBy !== 'Size') actions.sortBy('Size');
-          }}
         />
         <g
           transform={translate(
@@ -261,7 +269,7 @@ export const SizeHeader: FC = () => {
             Size
           </text>
           { sortBy === 'Size' &&
-            <HeaderSortArrow translateX={(dimensions.attribute.width / 2) - 16} translateY={-8} />
+            <HeaderSortArrow />
           }
         </g>
       </g>

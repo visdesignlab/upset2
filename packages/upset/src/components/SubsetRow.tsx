@@ -1,4 +1,4 @@
-import { Subset, getBelongingSetsFromSetMembership } from '@visdesignlab/upset2-core';
+import { Subset, getBelongingSetsFromSetMembership, getDegreeFromSetMembership } from '@visdesignlab/upset2-core';
 import React, { FC, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -14,6 +14,7 @@ import {
 } from '../utils/styles';
 import { BookmarkStar } from './custom/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
+import { Degree } from './Degree';
 
 type Props = {
   subset: Subset;
@@ -72,6 +73,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       <Matrix sets={visibleSets} subset={subset} />
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />}
+      <Degree degree={getDegreeFromSetMembership(subset.setMembership)} />
       <SizeBar size={subset.size} row={subset} />
       <DeviationBar deviation={subset.deviation} />
       <AttributeBars attributes={subset.attributes} row={subset} />

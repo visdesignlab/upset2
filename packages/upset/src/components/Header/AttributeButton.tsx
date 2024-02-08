@@ -12,10 +12,10 @@ import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 /** @jsxImportSource @emotion/react */
 type Props = {
   label: string;
-  sort?: boolean;
+  sortable?: boolean;
 };
 
-export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
+export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
     ProvenanceContext,
@@ -24,17 +24,27 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
-  const handleContextMenuClose = () => {
-    setContextMenu(null);
-  };
-
   const sortByHeader = (order: SortByOrder) => {
     actions.sortBy(label as SortBy, order);
   };
 
+  const handleOnClick = () => {
+    if (sortable) {
+      if (sortBy !== label) {
+        sortByHeader('Ascending');
+      } else {
+        sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
+      }
+    }
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  };
+
   const getMenuItems = () => {
     const items = [];
-    if (sort) {
+    if (sortable) {
       items.push(
         {
           label: `Sort by ${label} - Ascending`,
@@ -82,7 +92,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         '&:hover': {
           opacity: 0.7,
         },
-        cursor: (sort ? 'context-menu' : 'default'),
+        cursor: 'context-menu',
       }}
       onContextMenu={(e) => {
         e.preventDefault();
@@ -90,6 +100,7 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         openContextMenu(e);
       }}
       transform={translate(0, 6)}
+      onClick={handleOnClick}
     >
       <rect
         height={dimensions.attribute.buttonHeight}
@@ -107,14 +118,14 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
       >
         <text
           id={`header-text-${label}`}
-          pointerEvents={sort ? 'default' : 'none'}
+          pointerEvents={sortable ? 'default' : 'none'}
           dominantBaseline="middle"
           textAnchor="middle"
         >
           {label}
         </text>
-        {(sort && sortBy === label) &&
-          <HeaderSortArrow translateX={(dimensions.attribute.width / 2) - 16} translateY={-8} />
+        {(sortable && sortBy === label) &&
+          <HeaderSortArrow />
         }
       </g>
     </g>

@@ -18,7 +18,7 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
     <g
       transform={translate(
         dimensions.matrixColumn.width +
-                      dimensions.bookmarkStar.gap,
+        dimensions.bookmarkStar.gap,
         0,
       )}
     >
