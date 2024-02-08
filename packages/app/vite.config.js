@@ -9,6 +9,7 @@ export default defineConfig(() => {
     plugins: [
         react(),
     ],
-    optimizeDeps: { exclude: [] }
+    optimizeDeps: { exclude: [] },
+    server: { hmr: process.env.NODE_TESTING !== 'true' },
   };
 });
