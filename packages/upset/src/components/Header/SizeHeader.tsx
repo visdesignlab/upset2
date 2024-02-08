@@ -15,6 +15,7 @@ import translate from '../../utils/transform';
 import { Axis } from '../Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -243,19 +244,26 @@ export const SizeHeader: FC = () => {
             if (sortBy !== 'Size') actions.sortBy('Size');
           }}
         />
-        <text
-          css={css`
-            pointer-event: none;
-          `}
-          dominantBaseline="middle"
+        <g
           transform={translate(
             dimensions.attribute.width / 2,
             dimensions.size.buttonHeight / 2,
           )}
-          textAnchor="middle"
         >
-          Size
-        </text>
+          <text
+            id="header-text"
+            css={css`
+              pointer-event: none;
+            `}
+            dominantBaseline="middle"
+            textAnchor="middle"
+          >
+            Size
+          </text>
+          { sortBy === 'Size' &&
+            <HeaderSortArrow translateX={(dimensions.attribute.width / 2) - 16} translateY={-8} />
+          }
+        </g>
       </g>
       <g
         className="details-scale"

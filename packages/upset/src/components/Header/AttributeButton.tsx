@@ -7,6 +7,7 @@ import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -98,17 +99,24 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         opacity="0.5"
         strokeWidth="0.3px"
       />
-      <text
-        pointerEvents={sort ? 'default' : 'none'}
-        dominantBaseline="middle"
+      <g
         transform={translate(
           dimensions.attribute.width / 2,
           dimensions.attribute.buttonHeight / 2,
         )}
-        textAnchor="middle"
       >
-        {label}
-      </text>
+        <text
+          id={`header-text-${label}`}
+          pointerEvents={sort ? 'default' : 'none'}
+          dominantBaseline="middle"
+          textAnchor="middle"
+        >
+          {label}
+        </text>
+        {(sort && sortBy === label) &&
+          <HeaderSortArrow translateX={(dimensions.attribute.width / 2) - 16} translateY={-8} />
+        }
+      </g>
     </g>
   );
 };

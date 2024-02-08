@@ -40,3 +40,7 @@ export const queryColorPalette = [
 export const mousePointer = css`
   cursor: pointer;
 `;
+
+export const arrowIconCSS = {
+  height: '16px', width: '16px', marginLeft: '6px',
+};
