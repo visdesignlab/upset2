@@ -41,16 +41,13 @@ import { ProvenanceContext } from './Root';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { arrowIconCSS } from '../utils/styles';
 
 const itemDivCSS = css`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
-
-const arrowIconCSS = {
-  height: '16px', width: '16px', marginLeft: '6px',
-};
 
 const sidebarHeaderCSS = css`
   font-size: 0.95rem;
