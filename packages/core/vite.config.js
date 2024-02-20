@@ -18,6 +18,7 @@ export default defineConfig({
       root: '../../',
     }),
   ],
+  server: { hmr: process.env.NODE_TESTING !== 'true' },
 
   // Configuration for building your library.
   // See: https://vitejs.dev/guide/build.html#library-mode

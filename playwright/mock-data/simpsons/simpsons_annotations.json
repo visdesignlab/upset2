@@ -1,0 +1,10 @@
+{
+  "Name": "label",
+  "School": "boolean",
+  "Blue Hair": "boolean",
+  "Duff Fan": "boolean",
+  "Evil": "boolean",
+  "Male": "boolean",
+  "Power Plant": "boolean",
+  "Age": "number"
+}

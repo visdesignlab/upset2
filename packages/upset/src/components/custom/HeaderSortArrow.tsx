@@ -28,11 +28,14 @@ export const HeaderSortArrow: FC<Props> = ({ translateX, translateY }) => {
   }
 
   return (
-    <SvgIcon
-      component={sortByOrder === 'Ascending' ? ArrowUpward : ArrowDownward}
-      height={`${height}px`}
-      width={`${width}px`}
+    <g
       transform={`${translate(translateX, translateY)}`}
-    />
+    >
+      <SvgIcon
+        height={`${height}px`}
+        width={`${width}px`}
+        component={sortByOrder === 'Ascending' ? ArrowUpward : ArrowDownward}
+      />
+    </g>
   );
 };
