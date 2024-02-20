@@ -14,11 +14,14 @@ export const HeaderSortArrow: FC<Props> = ({ translateX, translateY }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
 
   return (
-    <SvgIcon
-      component={sortByOrder === 'Ascending' ? ArrowUpward : ArrowDownward}
-      height="16px"
-      width="16px"
+    <g
       transform={`${translate(translateX, translateY)}`}
-    />
+    >
+      <SvgIcon
+        height="16px"
+        width="16px"
+        component={sortByOrder === 'Ascending' ? ArrowUpward : ArrowDownward}
+      />
+    </g>
   );
 };
