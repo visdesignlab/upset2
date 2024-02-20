@@ -23,6 +23,8 @@ export const AttributeBars: FC<Props> = ({ attributes, row }) => {
           dimensions.bookmarkStar.gap +
           dimensions.bookmarkStar.width +
           dimensions.bookmarkStar.gap +
+          dimensions.degreeColumn.width +
+          dimensions.degreeColumn.gap +
           dimensions.size.width +
           dimensions.gap +
           dimensions.attribute.width +

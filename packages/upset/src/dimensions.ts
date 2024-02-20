@@ -65,6 +65,11 @@ export function calculateDimensions(
     gap: 10,
   };
 
+  const degreeColumn = {
+    width: 40,
+    gap: 10,
+  };
+
   const sidebar = {
     width: 250,
   };
@@ -78,6 +83,9 @@ export function calculateDimensions(
       bookmarkStar.gap +
       bookmarkStar.width + // Bookmark Star
       bookmarkStar.gap +
+      degreeColumn.gap +
+      degreeColumn.width + // Degree Column
+      degreeColumn.gap + // Add margin
       attribute.width + // Deviation
       attribute.vGap +
       (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
@@ -104,6 +112,7 @@ export function calculateDimensions(
     xOffset,
     size,
     bookmarkStar,
+    degreeColumn,
     body,
     matrixColumn,
     margin,
