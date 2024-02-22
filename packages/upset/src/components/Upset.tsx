@@ -3,7 +3,6 @@ import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 
-import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
 import { UpsetActions, UpsetProvenance } from '../provenance';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';

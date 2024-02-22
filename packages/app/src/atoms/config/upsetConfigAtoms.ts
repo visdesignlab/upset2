@@ -1,38 +1,10 @@
-import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { UpsetConfig, DefaultConfig } from '@visdesignlab/upset2-core';
 import { atom } from 'recoil';
 
-export const defaultConfig: UpsetConfig = {
-  plotInformation: {
-    description: '',
-    sets: '',
-    items: '',
-  },
-  firstAggregateBy: 'None',
-  firstOverlapDegree: 2,
-  secondAggregateBy: 'None',
-  secondOverlapDegree: 2,
-  sortVisibleBy: 'Alphabetical',
-  sortBy: 'Size',
-  sortByOrder: 'Descending',
-  filters: {
-    maxVisible: 3,
-    minVisible: 0,
-    hideEmpty: true,
-    hideNoSet: false,
-  },
-  visibleSets: [],
-  visibleAttributes: [],
-  bookmarkedIntersections: [],
-  collapsed: [],
-  plots: {
-    scatterplots: [],
-    histograms: [],
-    wordClouds: [],
-  },
-  allSets: [],
-};
+// fields can be edited here to stray from default config
+const config = { ...DefaultConfig };
 
 export const upsetConfigAtom = atom<UpsetConfig>({
   key: 'app-config',
-  default: defaultConfig,
+  default: config,
 });
