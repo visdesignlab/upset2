@@ -15,7 +15,7 @@ export const DefaultConfig: UpsetConfig = {
   sortBy: 'Size',
   sortByOrder: 'Descending',
   filters: {
-    maxVisible: 3,
+    maxVisible: 6,
     minVisible: 0,
     hideEmpty: true,
     hideNoSet: false,
