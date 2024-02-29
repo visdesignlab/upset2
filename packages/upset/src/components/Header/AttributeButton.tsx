@@ -94,7 +94,7 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
         },
         cursor: 'context-menu',
       }}
-      onContextMenu={(e) => {
+      onContextMenu={(e: any) => {
         e.preventDefault();
         e.stopPropagation();
         openContextMenu(e);
@@ -125,8 +125,7 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
           {label}
         </text>
         {(sortable && sortBy === label) &&
-          <HeaderSortArrow />
-        }
+          <HeaderSortArrow />}
       </g>
     </g>
   );

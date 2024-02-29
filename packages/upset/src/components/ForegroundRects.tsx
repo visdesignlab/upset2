@@ -1,5 +1,5 @@
 /** @jsxImportSource @emotion/react */
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
@@ -12,7 +12,7 @@ export const ForegroundRects = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(flattenedRowsSelector);
   const setHoveredRow = useSetRecoilState(rowHoverAtom);
-  const setHoveredColumn = useSetRecoilState(columnHoverAtom);
+  const [hoveredColumn, setHoveredColumn] = useRecoilState(columnHoverAtom);
 
   return (
     <>
@@ -28,10 +28,10 @@ export const ForegroundRects = () => {
               width={dimensions.set.width}
               fill="none"
               onMouseEnter={() => {
-                setHoveredColumn(setName);
+                setHoveredColumn([...hoveredColumn, setName]);
               }}
               onMouseLeave={() => {
-                setHoveredColumn(null);
+                setHoveredColumn([]);
               }}
             />
           </g>

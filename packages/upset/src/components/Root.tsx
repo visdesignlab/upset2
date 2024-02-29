@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import {
+import React, {
   createContext, FC, useEffect, useMemo,
 } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -27,11 +27,10 @@ import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 
-/** @jsxImportSource @emotion/react */
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
-} | undefined>(undefined);
+} | any>({});
 
 const baseStyle = css`
   padding: 0.25em;
@@ -131,14 +130,13 @@ export const Root: FC<Props> = ({
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 
+  const contextValue = useMemo(() => ({
+    provenance,
+    actions,
+  }), [provenance, actions]);
+
   return (
-    <ProvenanceContext.Provider
-      // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{
-        provenance,
-        actions,
-      }}
-    >
+    <ProvenanceContext.Provider value={contextValue}>
       <div
         css={css`
           flex: 0 0 auto;

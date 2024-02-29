@@ -13,7 +13,6 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
-import Markdown from 'react-markdown'
 import {
   useState, useEffect, FC, useContext,
 } from 'react';

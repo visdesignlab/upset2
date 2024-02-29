@@ -34,7 +34,7 @@ export const MatrixHeader = () => {
                 dimensions.bookmarkStar.width +
                 dimensions.bookmarkStar.gap, 0)}
       >
-        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
+        <body style={{ fontFamily: 'Roboto, Arial', padding: 0, margin: 0 }}>
           <div
             id="hiddenSetDiv"
             style={{

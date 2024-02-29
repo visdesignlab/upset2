@@ -4,7 +4,6 @@ import { ScaleLinear } from 'd3';
 import { FiveNumberSummary } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes';
-import translate from '../../utils/transform';
 
 type Props = {
   scale: ScaleLinear<number, number, never>;

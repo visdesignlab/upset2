@@ -1,4 +1,6 @@
-import { Aggregate, FiveNumberSummary, Items, Subset, isRowAggregate } from '@visdesignlab/upset2-core';
+import {
+  Aggregate, FiveNumberSummary, Items, Subset, isRowAggregate,
+} from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
