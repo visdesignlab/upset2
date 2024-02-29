@@ -79,15 +79,13 @@ export const SetSizeBar: FC<Props> = ({
             textAlign: 'start',
           }}
         >
-          <body style={{ fontFamily: 'Roboto, Arial', padding: 0, margin: 0 }}>
-            <p style={{
-              padding: '0',
-              margin: '0',
-            }}
-            >
-              {label}
-            </p>
-          </body>
+          <p style={{
+            padding: '0',
+            margin: '0',
+          }}
+          >
+            {label}
+          </p>
         </foreignObject>
       )}
     </Group>

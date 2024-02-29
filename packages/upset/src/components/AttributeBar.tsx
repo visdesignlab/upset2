@@ -42,7 +42,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
       { row.size > 5
         ? <BoxPlot scale={scale} summary={summary} />
-        : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} />}
+        : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} row={row} />}
     </g>
   );
 };

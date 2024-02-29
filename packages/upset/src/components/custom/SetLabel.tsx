@@ -49,18 +49,16 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         }}
 
       >
-        <body style={{ fontFamily: 'Roboto, Arial', padding: 0, margin: 0 }}>
-          <p style={{
-            height: '100%',
-            padding: '0',
-            margin: '2px 0 0 0',
-            fontWeight: '500',
-            textAlign: 'start',
-          }}
-          >
-            {name}
-          </p>
-        </body>
+        <p style={{
+          height: '100%',
+          padding: '0',
+          margin: '2px 0 0 0',
+          fontWeight: '500',
+          textAlign: 'start',
+        }}
+        >
+          {name}
+        </p>
       </foreignObject>
     </Group>
   );

@@ -130,13 +130,9 @@ export const Root: FC<Props> = ({
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 
-  const contextValue = useMemo(() => ({
-    provenance,
-    actions,
-  }), [provenance, actions]);
-
   return (
-    <ProvenanceContext.Provider value={contextValue}>
+    // eslint-disable-next-line react/jsx-no-constructed-context-values
+    <ProvenanceContext.Provider value={{ provenance, actions }}>
       <div
         css={css`
           flex: 0 0 auto;

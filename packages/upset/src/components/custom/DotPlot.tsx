@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3';
-import { FiveNumberSummary } from '@visdesignlab/upset2-core';
+import { Aggregate, FiveNumberSummary, Subset } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes';
 
@@ -11,10 +11,11 @@ type Props = {
   attribute: string;
   summary: FiveNumberSummary;
   isAggregate: boolean;
+  row: Subset | Aggregate;
 };
 
 export const DotPlot: FC<Props> = ({
-  scale, values, attribute, summary, isAggregate,
+  scale, values, attribute, summary, isAggregate, row,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attributes = useRecoilValue(visibleAttributesSelector);
@@ -33,8 +34,9 @@ export const DotPlot: FC<Props> = ({
         x={-(dimensions.attribute.dotSize)}
         y={-(dimensions.attribute.plotHeight / 2)}
       />
-      {values.map((value) => (
-        <circle cx={scale(value)} cy={0} r={dimensions.attribute.dotSize} fill="black" opacity="0.4" />
+      {values.map((value, idx) => (
+        // eslint-disable-next-line react/no-array-index-key
+        <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={0} r={dimensions.attribute.dotSize} fill="black" opacity="0.4" />
       ))}
     </g>
   );
