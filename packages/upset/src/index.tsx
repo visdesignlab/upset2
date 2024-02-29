@@ -10,7 +10,6 @@ export {
 
 export {
   upsetConfigAtom,
-  defaultConfig,
 } from './atoms/config/upsetConfigAtoms';
 
 export * from './utils/downloads';
