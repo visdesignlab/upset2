@@ -84,7 +84,7 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
       {hiddenSetsTransition(({ transform }, item) => (
         <a.g
           transform={transform}
-          onContextMenu={(e) => {
+          onContextMenu={(e: any) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e, item.id);

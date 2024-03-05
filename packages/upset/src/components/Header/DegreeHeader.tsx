@@ -84,7 +84,7 @@ export const DegreeHeader = () => {
             transition: opacity 0s;
             }
           `}
-          onContextMenu={(e) => {
+          onContextMenu={(e: any) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e);
