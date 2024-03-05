@@ -58,21 +58,10 @@ const downloadJSON = (filename: string, json: string): void => {
   URL.revokeObjectURL(href);
 };
 
-export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
-  let dataObj = state as AltTextConfig;
-
-  dataObj = {
-    ...dataObj,
-    rawData: data,
-    processedData: rows,
-    accessibleProcessedData: getAccessibleData(rows),
-  };
-
-  return dataObj;
-};
-
-const removeUnderscoresElName = (rows: Rows): Rows => {
+const generateElementName = (rows: Rows): Rows => {
   const newRows = { ...rows };
+
+  console.log("remove underscores");
 
   Object.values(newRows.values).forEach((r: Row) => {
     const splitElName = r['elementName'].split(' ');
@@ -83,6 +72,7 @@ const removeUnderscoresElName = (rows: Rows): Rows => {
       r['elementName'] = `${elName}, and ${lastWord}`;
     }
 
+    // problem?
     if (r['elementName'].includes('_')) {
       r['elementName'] = r['elementName'].replaceAll('_', ' ');
     }
@@ -91,12 +81,25 @@ const removeUnderscoresElName = (rows: Rows): Rows => {
   return newRows;
 };
 
+export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
+  let dataObj = state as AltTextConfig;
+
+  dataObj = {
+    ...dataObj,
+    rawData: data,
+    processedData: generateElementName(rows),
+    accessibleProcessedData: getAccessibleData(rows),
+  };
+
+  return dataObj;
+};
+
 export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows): void => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
 
   if (data && rows) {
-    const updatedRows = removeUnderscoresElName(rows);
+    const updatedRows = generateElementName(rows);
     dataObj = {
       ...dataObj, rawData: data, processedData: updatedRows, accessibleProcessedData: getAccessibleData(updatedRows),
     };
