@@ -237,7 +237,7 @@ export const SizeHeader: FC = () => {
           0,
           dimensions.size.scaleHeight + dimensions.size.gap,
         )}
-        onContextMenu={(e) => {
+        onContextMenu={(e: any) => {
           e.preventDefault();
           e.stopPropagation();
           openContextMenu(e);
@@ -269,8 +269,7 @@ export const SizeHeader: FC = () => {
             Size
           </text>
           { sortBy === 'Size' &&
-            <HeaderSortArrow />
-          }
+            <HeaderSortArrow />}
         </g>
       </g>
       <g
