@@ -51,7 +51,7 @@ const generateElementName = (rows: Rows, vSetNames: string[]): Rows => {
   const newRows = { ...rows };
 
   Object.values(newRows.values).forEach((r: Row) => {
-    const splitElName = r['elementName'].split('-');
+    const splitElName = r['elementName'].split('~&~');
 
     let elName = splitElName.join(', ');
 
