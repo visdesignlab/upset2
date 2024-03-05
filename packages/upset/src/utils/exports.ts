@@ -8,21 +8,10 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
   Object.values(rows.values).forEach((r: Row) => {
     // if the key is ONLY one set, the name should be "Just {set name}"
     // any key with more than one set should include "&" between the set names
-    let elName = r['elementName'];
     const degree = getDegreeFromSetMembership(r['setMembership']);
-    if (degree !== 1) {
-      if (r.type === 'Aggregate') {
-        const r2 = r as Aggregate;
-        if (r2.aggregateBy === 'Overlaps') {
-          elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
-        }
-      }
-    } else {
-      elName = `Just ${elName}`;
-    }
 
     data['values'][r['id']] = {
-      elementName: elName,
+      elementName: r['elementName'],
       type: r['type'],
       size: r['size'],
       deviation: r['deviation'],
@@ -58,24 +47,28 @@ const downloadJSON = (filename: string, json: string): void => {
   URL.revokeObjectURL(href);
 };
 
-const generateElementName = (rows: Rows): Rows => {
+const generateElementName = (rows: Rows, vSetNames: string[]): Rows => {
   const newRows = { ...rows };
 
-  console.log("remove underscores");
-
   Object.values(newRows.values).forEach((r: Row) => {
-    const splitElName = r['elementName'].split(' ');
+    const splitElName = r['elementName'].split('-');
+
+    let elName = splitElName.join(', ');
 
     if (splitElName.length > 1) {
       const lastWord = splitElName.pop();
-      const elName = splitElName.join(', ');
-      r['elementName'] = `${elName}, and ${lastWord}`;
+      // elName = `${elName}, and ${lastWord}`;
+      elName = `${splitElName.join(', ')}, and ${lastWord}`;
+    } else if (r.type === 'Aggregate') {
+      const r2 = r as Aggregate;
+      if (r2.aggregateBy === 'Overlaps') {
+        elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
+      }
+    } else {
+      elName = `Just ${elName}`;
     }
 
-    // problem?
-    if (r['elementName'].includes('_')) {
-      r['elementName'] = r['elementName'].replaceAll('_', ' ');
-    }
+    r['elementName'] = elName;
   });
 
   return newRows;
@@ -84,11 +77,15 @@ const generateElementName = (rows: Rows): Rows => {
 export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
   let dataObj = state as AltTextConfig;
 
+  console.log(rows.order);
+
+  const updatedRows = generateElementName(rows, dataObj.visibleSets);
+
   dataObj = {
     ...dataObj,
     rawData: data,
-    processedData: generateElementName(rows),
-    accessibleProcessedData: getAccessibleData(rows),
+    processedData: updatedRows,
+    accessibleProcessedData: getAccessibleData(updatedRows),
   };
 
   return dataObj;
@@ -99,7 +96,7 @@ export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, r
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
 
   if (data && rows) {
-    const updatedRows = generateElementName(rows);
+    const updatedRows = generateElementName(rows, dataObj.visibleSets);
     dataObj = {
       ...dataObj, rawData: data, processedData: updatedRows, accessibleProcessedData: getAccessibleData(updatedRows),
     };
