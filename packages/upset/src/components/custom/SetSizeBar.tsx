@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { ScaleLinear } from 'd3';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -80,15 +79,13 @@ export const SetSizeBar: FC<Props> = ({
             textAlign: 'start',
           }}
         >
-          <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
-            <p style={{
-              padding: '0',
-              margin: '0',
-            }}
-            >
-              {label}
-            </p>
-          </body>
+          <p style={{
+            padding: '0',
+            margin: '0',
+          }}
+          >
+            {label}
+          </p>
         </foreignObject>
       )}
     </Group>

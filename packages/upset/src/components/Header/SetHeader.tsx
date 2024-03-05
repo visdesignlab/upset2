@@ -97,7 +97,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
         <a.g
           key={set.setName}
           transform={transform}
-          onContextMenu={(e) => {
+          onContextMenu={(e: any) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e, set.setName);

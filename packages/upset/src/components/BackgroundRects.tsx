@@ -27,7 +27,7 @@ export const BackgroundRects = () => {
             <rect
               className={setName}
               css={css`
-                ${hoveredColumn === setName && highlight}
+                ${hoveredColumn.includes(setName) && highlight}
               `}
               height={dimensions.body.height}
               width={dimensions.set.width}
