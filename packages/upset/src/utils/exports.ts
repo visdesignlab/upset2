@@ -77,8 +77,6 @@ const generateElementName = (rows: Rows, vSetNames: string[]): Rows => {
 export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
   let dataObj = state as AltTextConfig;
 
-  console.log(rows.order);
-
   const updatedRows = generateElementName(rows, dataObj.visibleSets);
 
   dataObj = {
