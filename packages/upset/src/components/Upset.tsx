@@ -1,9 +1,8 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import { FC, useMemo } from 'react';
+import { CoreUpsetData, UpsetConfig, DefaultConfig } from '@visdesignlab/upset2-core';
+import React, { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 
-import { defaultConfig } from '../atoms/config/upsetConfigAtoms';
 import { UpsetActions, UpsetProvenance } from '../provenance';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
@@ -50,7 +49,7 @@ export const Upset: FC<UpsetProps> = ({
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
   const combinedConfig = useMemo(() => {
-    const conf: UpsetConfig = { ...defaultConfig, ...config };
+    const conf: UpsetConfig = { ...DefaultConfig, ...config };
 
     if (conf.visibleSets.length === 0) {
       const setList = Object.entries(data.sets);

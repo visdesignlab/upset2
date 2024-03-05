@@ -34,20 +34,18 @@ export const MatrixHeader = () => {
                 dimensions.bookmarkStar.width +
                 dimensions.bookmarkStar.gap, 0)}
       >
-        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
-          <div
-            id="hiddenSetDiv"
-            style={{
-              overflowX: 'auto',
-              overflowY: 'hidden',
-              height: '100%',
-            }}
-          >
-            <svg width={hiddenSets.length * (set.width + 1)} xmlns="http://www.w3.org/2000/svg">
-              <HiddenSets hiddenSets={hiddenSets} scale={scale} />
-            </svg>
-          </div>
-        </body>
+        <div
+          id="hiddenSetDiv"
+          style={{
+            overflowX: 'auto',
+            overflowY: 'hidden',
+            height: '100%',
+          }}
+        >
+          <svg width={hiddenSets.length * (set.width + 1)} xmlns="http://www.w3.org/2000/svg">
+            <HiddenSets hiddenSets={hiddenSets} scale={scale} />
+          </svg>
+        </div>
       </foreignObject>
     </>
   );

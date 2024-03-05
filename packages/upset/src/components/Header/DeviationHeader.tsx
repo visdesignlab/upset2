@@ -18,12 +18,14 @@ export const DeviationHeader = () => {
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap +
+        dimensions.degreeColumn.width +
+        dimensions.degreeColumn.gap +
         dimensions.size.width +
         dimensions.gap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >
-      <AttributeButton label="Deviation" sort />
+      <AttributeButton label="Deviation" sortable />
       <g
         transform={translate(
           0,

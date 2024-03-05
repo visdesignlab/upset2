@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -12,11 +11,6 @@ type Props = {
   setId: string;
   name: string;
 };
-
-/** @jsxImportSource @emotion/react */
-const matrixColumnBackgroundRect = css`
-  fill: #f0f0f0;
-`;
 
 export const SetLabel: FC<Props> = ({ setId, name }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -55,17 +49,16 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
         }}
 
       >
-        <body xmlns="http://www.w3.org/2000/xhtml" padding="0" margin="0" style={{ fontFamily: 'Roboto, Arial' }}>
-          <p style={{
-            height: '100%',
-            padding: '0',
-            margin: '2px 0 0 0',
-            fontWeight: '500',
-            textAlign: 'start',
-          }}>
-            {name}
-          </p>
-        </body>
+        <p style={{
+          height: '100%',
+          padding: '0',
+          margin: '2px 0 0 0',
+          fontWeight: '500',
+          textAlign: 'start',
+        }}
+        >
+          {name}
+        </p>
       </foreignObject>
     </Group>
   );

@@ -74,6 +74,7 @@ export const Matrix: FC<Props> = ({
                 fillOpacity="0.0"
               />
               <MemberShipCircle
+                key={`circle ${set}`}
                 membershipStatus={membershipStatus}
                 cx={idx * dimensions.set.width}
                 cy={dimensions.body.rowHeight / 2}

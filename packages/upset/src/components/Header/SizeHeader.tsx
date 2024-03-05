@@ -15,6 +15,7 @@ import translate from '../../utils/transform';
 import { Axis } from '../Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -44,12 +45,20 @@ export const SizeHeader: FC = () => {
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
-  const handleContextMenuClose = () => {
-    setContextMenu(null);
-  };
-
   const sortBySize = (order: string) => {
     actions.sortBy('Size', order);
+  };
+
+  const handleOnClick = () => {
+    if (sortBy !== 'Size') {
+      sortBySize('Ascending');
+    } else {
+      sortBySize(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
+    }
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
   };
 
   const getMenuItems = () => [
@@ -147,7 +156,9 @@ export const SizeHeader: FC = () => {
         dimensions.matrixColumn.width +
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap,
+        dimensions.bookmarkStar.gap +
+        dimensions.degreeColumn.width +
+        dimensions.degreeColumn.gap,
         dimensions.header.totalHeight - dimensions.size.height,
       )}
     >
@@ -226,11 +237,12 @@ export const SizeHeader: FC = () => {
           0,
           dimensions.size.scaleHeight + dimensions.size.gap,
         )}
-        onContextMenu={(e) => {
+        onContextMenu={(e: any) => {
           e.preventDefault();
           e.stopPropagation();
           openContextMenu(e);
         }}
+        onClick={handleOnClick}
       >
         <rect
           fill="#ccc"
@@ -239,23 +251,26 @@ export const SizeHeader: FC = () => {
           strokeWidth="0.3px"
           height={dimensions.size.buttonHeight}
           width={dimensions.attribute.width}
-          onClick={() => {
-            if (sortBy !== 'Size') actions.sortBy('Size');
-          }}
         />
-        <text
-          css={css`
-            pointer-event: none;
-          `}
-          dominantBaseline="middle"
+        <g
           transform={translate(
             dimensions.attribute.width / 2,
             dimensions.size.buttonHeight / 2,
           )}
-          textAnchor="middle"
         >
-          Size
-        </text>
+          <text
+            id="header-text"
+            css={css`
+              pointer-event: none;
+            `}
+            dominantBaseline="middle"
+            textAnchor="middle"
+          >
+            Size
+          </text>
+          { sortBy === 'Size' &&
+            <HeaderSortArrow />}
+        </g>
       </g>
       <g
         className="details-scale"

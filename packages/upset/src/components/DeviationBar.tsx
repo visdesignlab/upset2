@@ -1,4 +1,3 @@
-import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -28,6 +27,8 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap +
+        dimensions.degreeColumn.width +
+        dimensions.degreeColumn.gap +
         dimensions.size.width +
         dimensions.gap +
         dimensions.attribute.width / 2,

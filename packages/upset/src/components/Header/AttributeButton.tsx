@@ -7,14 +7,15 @@ import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
   label: string;
-  sort?: boolean;
+  sortable?: boolean;
 };
 
-export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
+export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
     ProvenanceContext,
@@ -23,17 +24,27 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
-  const handleContextMenuClose = () => {
-    setContextMenu(null);
-  };
-
   const sortByHeader = (order: SortByOrder) => {
     actions.sortBy(label as SortBy, order);
   };
 
+  const handleOnClick = () => {
+    if (sortable) {
+      if (sortBy !== label) {
+        sortByHeader('Ascending');
+      } else {
+        sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
+      }
+    }
+  };
+
+  const handleContextMenuClose = () => {
+    setContextMenu(null);
+  };
+
   const getMenuItems = () => {
     const items = [];
-    if (sort) {
+    if (sortable) {
       items.push(
         {
           label: `Sort by ${label} - Ascending`,
@@ -81,14 +92,15 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         '&:hover': {
           opacity: 0.7,
         },
-        cursor: (sort ? 'context-menu' : 'default'),
+        cursor: 'context-menu',
       }}
-      onContextMenu={(e) => {
+      onContextMenu={(e: any) => {
         e.preventDefault();
         e.stopPropagation();
         openContextMenu(e);
       }}
       transform={translate(0, 6)}
+      onClick={handleOnClick}
     >
       <rect
         height={dimensions.attribute.buttonHeight}
@@ -98,17 +110,23 @@ export const AttributeButton: FC<Props> = ({ label, sort = false }) => {
         opacity="0.5"
         strokeWidth="0.3px"
       />
-      <text
-        pointerEvents={sort ? 'default' : 'none'}
-        dominantBaseline="middle"
+      <g
         transform={translate(
           dimensions.attribute.width / 2,
           dimensions.attribute.buttonHeight / 2,
         )}
-        textAnchor="middle"
       >
-        {label}
-      </text>
+        <text
+          id={`header-text-${label}`}
+          pointerEvents={sortable ? 'default' : 'none'}
+          dominantBaseline="middle"
+          textAnchor="middle"
+        >
+          {label}
+        </text>
+        {(sortable && sortBy === label) &&
+          <HeaderSortArrow />}
+      </g>
     </g>
   );
 };

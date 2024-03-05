@@ -13,13 +13,15 @@ export const AttributeHeaders = () => {
     <g
       transform={translate(
         dimensions.matrixColumn.width +
-          dimensions.gap +
-          dimensions.size.width +
-          dimensions.bookmarkStar.gap +
-          dimensions.bookmarkStar.width +
-          dimensions.bookmarkStar.gap +
-          dimensions.attribute.width +
-          dimensions.attribute.vGap,
+        dimensions.gap +
+        dimensions.size.width +
+        dimensions.bookmarkStar.gap +
+        dimensions.bookmarkStar.width +
+        dimensions.bookmarkStar.gap +
+        dimensions.degreeColumn.width +
+        dimensions.degreeColumn.gap +
+        dimensions.attribute.width +
+        dimensions.attribute.vGap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >

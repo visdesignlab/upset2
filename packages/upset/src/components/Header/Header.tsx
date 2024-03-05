@@ -1,4 +1,5 @@
 import { AttributeHeaders } from './AttributeHeaders';
+import { DegreeHeader } from './DegreeHeader';
 import { SizeHeader } from './SizeHeader';
 import { DeviationHeader } from './DeviationHeader';
 import { MatrixHeader } from './MatrixHeader';
@@ -8,6 +9,7 @@ export const Header = () => (
   <>
     <CollapseAllButton />
     <MatrixHeader />
+    <DegreeHeader />
     <SizeHeader />
     <DeviationHeader />
     <AttributeHeaders />

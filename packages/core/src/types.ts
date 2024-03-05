@@ -1,12 +1,16 @@
 export type ColumnName = string;
 
 export type Column = {
-  name: string,
-  size: number
+  name: string;
+  size: number;
 };
 
 export type ColumnDefs = {
   [columnName: string]: 'number' | 'boolean' | 'string' | 'label';
+};
+
+export type Meta = {
+  columns: ColumnDefs;
 };
 
 export type PlotInformation = {
@@ -161,6 +165,7 @@ export type Bookmark = { id: string; label: string; size: number }
 
 export type UpsetConfig = {
   plotInformation: PlotInformation;
+  horizontal: boolean;
   firstAggregateBy: AggregateBy;
   firstOverlapDegree: number;
   secondAggregateBy: AggregateBy;

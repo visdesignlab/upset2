@@ -4,7 +4,6 @@ import {
   Accordion,
   AccordionDetails,
   AccordionSummary,
-  Alert,
   Box,
   FormControl,
   FormControlLabel,
@@ -18,14 +17,13 @@ import {
   Typography,
 } from '@mui/material';
 import {
-  AggregateBy, aggregateByList, SortBy,
+  AggregateBy, aggregateByList,
 } from '@visdesignlab/upset2-core';
 import {
   Fragment, useContext, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { ArrowUpward } from '@mui/icons-material';
 import {
   firstAggregateSelector,
   firstOvelapDegreeSelector,
@@ -35,7 +33,6 @@ import {
 import {
   hideEmptySelector, hideNoSetSelector, maxVisibleSelector, minVisibleSelector,
 } from '../atoms/config/filterAtoms';
-import { sortByOrderSelector, sortBySelector } from '../atoms/config/sortByAtom';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
@@ -47,10 +44,6 @@ const itemDivCSS = css`
   justify-content: space-between;
   align-items: center;
 `;
-
-const arrowIconCSS = {
-  height: '16px', width: '16px', marginLeft: '6px',
-};
 
 const sidebarHeaderCSS = css`
   font-size: 0.95rem;
@@ -67,9 +60,6 @@ export const Sidebar = () => {
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
   const secondAggregateBy = useRecoilValue(secondAggregateSelector);
   const secondOverlapDegree = useRecoilValue(secondOverlapDegreeSelector);
-
-  const sortBy = useRecoilValue(sortBySelector);
-  const sortByOrder = useRecoilValue(sortByOrderSelector);
   const maxVisible = useRecoilValue(maxVisibleSelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
@@ -98,95 +88,6 @@ export const Sidebar = () => {
         Settings
       </Typography>
       <Accordion disableGutters defaultExpanded>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS} variant="h3">Sorting</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormControl>
-            <RadioGroup
-              value={sortBy}
-              onChange={(ev) => {
-                actions.sortBy(ev.target.value as SortBy, 'Descending');
-              }}
-            >
-              <Box
-                css={itemDivCSS}
-                key="Degree"
-                aria-label={`${helpText.sorting['Degree']} - ${sortByOrder}`}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    actions.sortBy('Degree', 'Descending');
-                  }
-                }}
-              >
-                <FormControlLabel
-                  key="Degree"
-                  value="Degree"
-                  label={
-                    <Box
-                      css={itemDivCSS}
-                      onClick={() => {
-                        if (sortBy === 'Degree') {
-                          if (sortByOrder === 'Ascending') {
-                            actions.sortBy('Degree', 'Descending');
-                          } else {
-                            actions.sortBy('Degree', 'Ascending');
-                          }
-                        }
-                      }}
-                    >
-                      <Typography>Degree</Typography>
-                      { sortBy === 'Degree' &&
-                        <ArrowUpward sx={{ ...arrowIconCSS, transform: (sortByOrder === 'Ascending' ? '' : 'rotate(180deg)') }} />
-                      }
-                    </Box>
-                  }
-                  control={<Radio size="small" />}
-                />
-                <HelpCircle text={helpText.sorting['Degree']} />
-              </Box>
-              <Box
-                css={itemDivCSS}
-                key="Size"
-                aria-label={`${helpText.sorting['Degree']} - ${sortByOrder}`}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    actions.sortBy('Size', 'Descending');
-                  }
-                }}
-              >
-                <FormControlLabel
-                  key="Size"
-                  value="Size"
-                  label={
-                    <Box
-                      css={itemDivCSS}
-                      onClick={() => {
-                        if (sortBy === 'Size') {
-                          if (sortByOrder === 'Ascending') {
-                            actions.sortBy('Size', 'Descending');
-                          } else {
-                            actions.sortBy('Size', 'Ascending');
-                          }
-                        }
-                      }}
-                    >
-                      <Typography>Size</Typography>
-                      { sortBy === 'Size' &&
-                        <ArrowUpward sx={{ ...arrowIconCSS, transform: (sortByOrder === 'Ascending' ? '' : 'rotate(180deg)') }} />
-                      }
-                    </Box>
-                  }
-                  control={<Radio size="small" />}
-                />
-                <HelpCircle text={helpText.sorting['Size']} />
-              </Box>
-              <Alert severity="info" variant="outlined" role="generic" key="info" sx={{ alignItems: 'center', padding: '0.1em 0.4em', marginTop: '0.5em' }}><Typography>Use column headers for custom sorting</Typography></Alert>
-            </RadioGroup>
-          </FormControl>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion disableGutters>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
         </AccordionSummary>
@@ -217,7 +118,7 @@ export const Sidebar = () => {
                       label={agg}
                       control={<Radio size="small" />}
                     />
-                    {agg !== 'None' && <HelpCircle text={helpText.aggregation[agg]} />}
+                    {agg !== 'None' && <HelpCircle key={`${agg} 1st`} text={helpText.aggregation[agg]} />}
                   </Box>
                   {agg === 'Overlaps' && firstAggregateBy === agg && (
                     <TextField
@@ -279,7 +180,7 @@ export const Sidebar = () => {
                         label={agg}
                         control={<Radio size="small" />}
                       />
-                      {agg !== 'None' && <HelpCircle text={helpText.aggregation[agg]} />}
+                      {agg !== 'None' && <HelpCircle key={`${agg} 2nd`} text={helpText.aggregation[agg]} />}
                     </Box>
                     {agg === 'Overlaps' && secondAggregateBy === agg && (
                       <TextField
