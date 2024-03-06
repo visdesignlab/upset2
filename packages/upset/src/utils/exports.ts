@@ -47,28 +47,30 @@ const downloadJSON = (filename: string, json: string): void => {
   URL.revokeObjectURL(href);
 };
 
-const generateElementName = (rows: Rows, vSetNames: string[]): Rows => {
+const generateElementName = (rows: Rows): Rows => {
   const newRows = { ...rows };
 
   Object.values(newRows.values).forEach((r: Row) => {
-    const splitElName = r['elementName'].split('~&~');
+    if (r['elementName'] !== 'Unincluded') {
+      const splitElName = r['elementName'].split('~&~');
 
-    let elName = splitElName.join(', ');
+      let elName = splitElName.join(', ');
 
-    if (splitElName.length > 1) {
-      const lastWord = splitElName.pop();
-      // elName = `${elName}, and ${lastWord}`;
-      elName = `${splitElName.join(', ')}, and ${lastWord}`;
-    } else if (r.type === 'Aggregate') {
-      const r2 = r as Aggregate;
-      if (r2.aggregateBy === 'Overlaps') {
-        elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
+      if (splitElName.length > 1) {
+        const lastWord = splitElName.pop();
+        // elName = `${elName}, and ${lastWord}`;
+        elName = `${splitElName.join(', ')}, and ${lastWord}`;
+      } else if (r.type === 'Aggregate') {
+        const r2 = r as Aggregate;
+        if (r2.aggregateBy === 'Overlaps') {
+          elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
+        }
+      } else {
+        elName = `Just ${elName}`;
       }
-    } else {
-      elName = `Just ${elName}`;
-    }
 
-    r['elementName'] = elName;
+      r['elementName'] = elName;
+    }
   });
 
   return newRows;
@@ -77,7 +79,7 @@ const generateElementName = (rows: Rows, vSetNames: string[]): Rows => {
 export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
   let dataObj = state as AltTextConfig;
 
-  const updatedRows = generateElementName(rows, dataObj.visibleSets);
+  const updatedRows = generateElementName(rows);
 
   dataObj = {
     ...dataObj,
@@ -94,7 +96,7 @@ export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, r
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
 
   if (data && rows) {
-    const updatedRows = generateElementName(rows, dataObj.visibleSets);
+    const updatedRows = generateElementName(rows);
     dataObj = {
       ...dataObj, rawData: data, processedData: updatedRows, accessibleProcessedData: getAccessibleData(updatedRows),
     };
