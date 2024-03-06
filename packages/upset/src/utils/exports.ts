@@ -63,9 +63,10 @@ const generateElementName = (rows: Rows): Rows => {
           if (r2.aggregateBy === 'Overlaps') {
             elName = elName.split(' - ').join(' & ');
           }
+        } else {
+          const lastWord = splitElName.pop();
+          elName = `${splitElName.join(', ')}, and ${lastWord}`;
         }
-        const lastWord = splitElName.pop();
-        elName = `${splitElName.join(', ')}, and ${lastWord}`;
       } else {
         elName = `Just ${elName}`;
       }
