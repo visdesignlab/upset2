@@ -57,14 +57,15 @@ const generateElementName = (rows: Rows): Rows => {
       let elName = splitElName.join(', ');
 
       if (splitElName.length > 1) {
-        const lastWord = splitElName.pop();
-        // elName = `${elName}, and ${lastWord}`;
-        elName = `${splitElName.join(', ')}, and ${lastWord}`;
-      } else if (r.type === 'Aggregate') {
-        const r2 = r as Aggregate;
-        if (r2.aggregateBy === 'Overlaps') {
-          elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
+        if (r.type === 'Aggregate') {
+          const r2 = r as Aggregate;
+          // replace aggregate overlaps hyphen with " & " for better readability
+          if (r2.aggregateBy === 'Overlaps') {
+            elName = elName.split(' - ').join(' & ');
+          }
         }
+        const lastWord = splitElName.pop();
+        elName = `${splitElName.join(', ')}, and ${lastWord}`;
       } else {
         elName = `Just ${elName}`;
       }
