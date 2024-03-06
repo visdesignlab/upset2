@@ -226,8 +226,7 @@ export function getSubsets(
     setIntersectionMembership[combo] = [];
     const name = vSetNames
       .filter((_, i) => combo[i] === '1')
-      .map((v) => v.replace(' ', '_'))
-      .join(' ');
+      .join('~&~');
     intersectionName[combo] = name || 'Unincluded';
   }
 

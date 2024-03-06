@@ -8,21 +8,10 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
   Object.values(rows.values).forEach((r: Row) => {
     // if the key is ONLY one set, the name should be "Just {set name}"
     // any key with more than one set should include "&" between the set names
-    let elName = r['elementName'];
     const degree = getDegreeFromSetMembership(r['setMembership']);
-    if (degree !== 1) {
-      if (r.type === 'Aggregate') {
-        const r2 = r as Aggregate;
-        if (r2.aggregateBy === 'Overlaps') {
-          elName = elName.split(' - ').join(' & '); // overlaps look like "Adventure - Action", so replace the hyphen with " & "
-        }
-      }
-    } else {
-      elName = `Just ${elName}`;
-    }
 
     data['values'][r['id']] = {
-      elementName: elName,
+      elementName: r['elementName'],
       type: r['type'],
       size: r['size'],
       deviation: r['deviation'],
@@ -58,37 +47,50 @@ const downloadJSON = (filename: string, json: string): void => {
   URL.revokeObjectURL(href);
 };
 
-export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
-  let dataObj = state as AltTextConfig;
-
-  dataObj = {
-    ...dataObj,
-    rawData: data,
-    processedData: rows,
-    accessibleProcessedData: getAccessibleData(rows),
-  };
-
-  return dataObj;
-};
-
-const removeUnderscoresElName = (rows: Rows): Rows => {
+const generateElementName = (rows: Rows): Rows => {
   const newRows = { ...rows };
 
   Object.values(newRows.values).forEach((r: Row) => {
-    const splitElName = r['elementName'].split(' ');
+    if (r['elementName'] !== 'Unincluded') {
+      const splitElName = r['elementName'].split('~&~');
 
-    if (splitElName.length > 1) {
-      const lastWord = splitElName.pop();
-      const elName = splitElName.join(', ');
-      r['elementName'] = `${elName}, and ${lastWord}`;
-    }
+      let elName = splitElName.join(', ');
 
-    if (r['elementName'].includes('_')) {
-      r['elementName'] = r['elementName'].replaceAll('_', ' ');
+      if (splitElName.length > 1) {
+        if (r.type === 'Aggregate') {
+          const r2 = r as Aggregate;
+          // replace aggregate overlaps hyphen with " & " for better readability
+          if (r2.aggregateBy === 'Overlaps') {
+            elName = elName.split(' - ').join(' & ');
+          }
+        } else {
+          const lastWord = splitElName.pop();
+          elName = `${splitElName.join(', ')}, and ${lastWord}`;
+        }
+      } else {
+        elName = `Just ${elName}`;
+      }
+
+      r['elementName'] = elName;
     }
   });
 
   return newRows;
+};
+
+export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
+  let dataObj = state as AltTextConfig;
+
+  const updatedRows = generateElementName(rows);
+
+  dataObj = {
+    ...dataObj,
+    rawData: data,
+    processedData: updatedRows,
+    accessibleProcessedData: getAccessibleData(updatedRows),
+  };
+
+  return dataObj;
 };
 
 export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows): void => {
@@ -96,7 +98,7 @@ export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, r
   let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
 
   if (data && rows) {
-    const updatedRows = removeUnderscoresElName(rows);
+    const updatedRows = generateElementName(rows);
     dataObj = {
       ...dataObj, rawData: data, processedData: updatedRows, accessibleProcessedData: getAccessibleData(updatedRows),
     };

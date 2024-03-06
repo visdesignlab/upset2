@@ -113,7 +113,7 @@ test('Alt Text', async ({ page }) => {
   };
   await expect(intersectionProperties.heading).toBeVisible();
   await expect(intersectionProperties.content).toBeVisible();
-  await expect(intersectionProperties.content).toHaveText('The plot is sorted by size. There are 12 non-empty intersections, all of which are shown in the plot. The largest 5 intersections are School Male (3), the empty intersection (3), Just Male (3), Duff_Fan Male Power_Plant (3), and Evil Male (2).');
+  await expect(intersectionProperties.content).toHaveText('The plot is sorted by size. There are 12 non-empty intersections, all of which are shown in the plot. The largest 5 intersections are School, and Male (3), Just Unincluded (3), Just Male (3), Duff Fan, Male, and Power Plant (3), and Evil, and Male (2).');
 
   const statisticalInformation = {
     heading: await page.getByRole('heading', { name: 'Statistical Information' }),
@@ -121,5 +121,5 @@ test('Alt Text', async ({ page }) => {
   };
   await expect(statisticalInformation.heading).toBeVisible();
   await expect(statisticalInformation.content).toBeVisible();
-  await expect(statisticalInformation.content).toHaveText('The average intersection size is 2, and the median is 2. The 90th percentile is 3, and the 10th percentile is 1. The largest set, Male, is present in 75.0% of all non-empty intersections. The smallest set, Blue Hair, is present in 0.0% of all non-empty intersections.');
+  await expect(statisticalInformation.content).toHaveText('The average intersection size is 2, and the median is 2. The 90th percentile is 3, and the 10th percentile is 1. The largest set, Male, is present in 75.0% of all non-empty intersections. The smallest set, Blue Hair, is present in 16.7% of all non-empty intersections.');
 });

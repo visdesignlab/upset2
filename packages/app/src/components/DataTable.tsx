@@ -6,7 +6,7 @@ import { getAccessibleData } from "@visdesignlab/upset2-react";
 import DownloadIcon from '@mui/icons-material/Download';
 
 const getRowData = (row: AccessibleDataEntry) => {
-    return {id: row.id, elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName}`, size: row.size}
+    return {id: row.id, elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName.replaceAll("~&~", " & ")}`, size: row.size}
 }
 
 const getAggRows = (row: AccessibleDataEntry) => {
