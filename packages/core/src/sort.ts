@@ -11,6 +11,13 @@ import {
 } from './types';
 import { deepCopy } from './utils';
 
+/**
+ * Sorts the rows of intersections by size.
+ *
+ * @param rows - The intersections to be sorted.
+ * @param sortOrder - The order in which to sort the rows. Defaults to ascending order.
+ * @returns An object containing the sorted rows and the new order.
+ */
 function sortBySize(rows: Intersections, sortOrder?: string) {
   const { values, order } = rows;
 
@@ -23,6 +30,14 @@ function sortBySize(rows: Intersections, sortOrder?: string) {
   return { values, order: newOrder };
 }
 
+/**
+ * Compares the union sizes of two objects based on their set membership.
+ * @param a - The first object to compare.
+ * @param b - The second object to compare.
+ * @param visibleSets - The visible sets.
+ * @param vSetSortBy - The sort order for visible sets.
+ * @returns A number indicating the comparison result.
+ */
 function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVisibleBy) {
   const aUnionSize = Object.entries(a.setMembership)
     .filter(([_key, value]) => value === 'Yes')
@@ -37,6 +52,15 @@ function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVi
   return (vSetSortBy === 'Ascending') ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
 }
 
+/**
+ * Sorts the rows of intersections based on the degree of set membership and other criteria.
+ *
+ * @param rows - The intersections to be sorted.
+ * @param vSetSortBy - The criteria to sort the intersections by.
+ * @param visibleSets - The visible sets.
+ * @param sortByOrder - The order in which to sort the intersections.
+ * @returns The sorted intersections.
+ */
 function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   const newOrder = [...order].sort(
@@ -65,6 +89,13 @@ function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSet
   return { values, order: newOrder };
 }
 
+/**
+ * Sorts the rows of intersections by deviation.
+ *
+ * @param rows - The intersections object containing values and order.
+ * @param sortByOrder - The sort order ('Ascending' or 'Descending'). Defaults to 'Ascending'.
+ * @returns The sorted intersections object.
+ */
 function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   const newOrder = [...order].sort(
@@ -78,6 +109,17 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   return { values, order: newOrder };
 }
 
+/**
+ * Sorts the intersections based on the specified criteria.
+ *
+ * @template T - The type of intersections.
+ * @param {T} intersection - The intersection to be sorted.
+ * @param {SortBy} sortBy - The criteria to sort the intersection by.
+ * @param {SortVisibleBy} vSetSortBy - The criteria to sort the visible sets by.
+ * @param {Sets} visibleSets - The visible sets.
+ * @param {SortByOrder} [sortByOrder] - The order in which to sort the intersection.
+ * @returns {T} The sorted intersection.
+ */
 function sortIntersections<T extends Intersections>(
   intersection: T,
   sortBy: SortBy,
@@ -97,6 +139,16 @@ function sortIntersections<T extends Intersections>(
   }
 }
 
+/**
+ * Sorts the rows based on the specified criteria.
+ *
+ * @param baseRows - The base rows to be sorted.
+ * @param sortBy - The sort criteria.
+ * @param vSetSortBy - The sort criteria for visible sets.
+ * @param visibleSets - The visible sets.
+ * @param sortByOrder - The sort order.
+ * @returns The sorted rows.
+ */
 export function sortRows(baseRows: Rows, sortBy: SortBy, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: SortByOrder): Rows {
   const rows = deepCopy(baseRows);
 
