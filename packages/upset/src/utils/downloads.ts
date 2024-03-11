@@ -1,3 +1,7 @@
+/**
+ * Downloads an SVG file of the current UpSet plot.
+ * @param filename - The name of the downloaded file. Defaults to "upset-plot-{current date}".
+ */
 export function downloadSVG(
   filename = `upset-plot-${new Date().toJSON().slice(0, 10)}`,
 ) {

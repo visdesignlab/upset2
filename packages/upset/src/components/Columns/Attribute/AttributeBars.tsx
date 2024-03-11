@@ -2,9 +2,9 @@ import { Aggregate, Attributes, Subset } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import translate from '../utils/transform';
+import { visibleAttributesSelector } from '../../../atoms/config/visibleAttributes';
+import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
+import translate from '../../../utils/transform';
 import { AttributeBar } from './AttributeBar';
 
 type Props = {

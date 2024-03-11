@@ -7,6 +7,7 @@ type Props = SVGProps<SVGGElement> & {
   ty?: number;
 };
 
+// Custom component for grouping SVG elements with a transform
 const Group: FC<Props> = (props) => {
   const {
     tx = 0, ty = tx, children, ...base

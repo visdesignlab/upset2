@@ -3,7 +3,7 @@ import { useRecoilValue } from 'recoil';
 import { css } from '@emotion/css';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
-import { MatrixRows } from './MatrixRows';
+import { MatrixRows } from './Rows/MatrixRows';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 
 export const Body = () => {

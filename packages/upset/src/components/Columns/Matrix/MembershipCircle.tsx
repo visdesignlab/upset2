@@ -3,7 +3,7 @@ import { SetMembershipStatus } from '@visdesignlab/upset2-core';
 import { FC, SVGProps } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 
 type Props = SVGProps<SVGCircleElement> & {
   membershipStatus: SetMembershipStatus;
