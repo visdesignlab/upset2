@@ -2,4 +2,5 @@
     "$schema": "https://typedoc.org/schema.json",
     "includeVersion": true,
     "skipErrorChecking": true,
+    "excludeExternals": true,
 }

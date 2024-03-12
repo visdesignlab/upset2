@@ -4,30 +4,5 @@
     "entryPointStrategy": "packages",
     "out": "docs",
     "exclude": ["**.d.ts**","**.test.tsx**","**.test.ts**","**.spec.tsx**","**.spec","**/node_modules/**"],
-    "externalPattern": [
-        "**/node_modules/**"
-    ],
     "excludeExternals": true,
-    "excludeNotDocumented": true,
-    "excludeNotDocumentedKinds": [
-        "Module",
-        "Namespace",
-        "Enum",
-        "Variable",
-        "Function",
-        "Class",
-        "Interface",
-        "Constructor",
-        "Property",
-        "Method",
-        "CallSignature",
-        "IndexSignature",
-        "ConstructorSignature",
-        "Accessor",
-        "GetSignature",
-        "SetSignature",
-        "TypeAlias",
-        "Reference"
-    ],
-    "skipErrorChecking": true,
 }

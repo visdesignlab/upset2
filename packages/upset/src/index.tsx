@@ -1,5 +1,7 @@
 export { Upset } from './components/Upset';
 
+export * from './types';
+
 export * from './provenance/index';
 
 export {
