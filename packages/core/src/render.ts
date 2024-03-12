@@ -68,7 +68,7 @@ export const sortByRR = (data: any, state: UpsetConfig) => {
 
 /**
  * Filters the data based on the provided state using the RR (Relative Ranking) algorithm.
- * 
+ *
  * @param data - The data to be filtered.
  * @param state - The state object containing the Upset configuration.
  * @returns The filtered rows based on the RR algorithm and the provided filters.
