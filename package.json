@@ -14,7 +14,7 @@
     "publish-canary": "echo 'Do something'",
     "publish-stable": "echo 'Do something'",
     "lint": "turbo run lint --parallel --no-cache",
-    "doc": "typedoc --options typedoc.json --plugin typedoc-plugin-missing-exports"
+    "doc": "typedoc --options typedoc.json"
   },
   "devDependencies": {
     "@playwright/test": "^1.15.0",

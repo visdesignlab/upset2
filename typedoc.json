@@ -4,5 +4,7 @@
     "entryPointStrategy": "packages",
     "out": "docs",
     "exclude": ["**.d.ts**","**.test.tsx**","**.test.ts**","**.spec.tsx**","**.spec","**/node_modules/**"],
-    "excludeExternals": true,
+    "plugin": [
+        "typedoc-plugin-missing-exports"
+    ]
 }
