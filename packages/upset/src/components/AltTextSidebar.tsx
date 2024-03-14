@@ -18,8 +18,6 @@ import {
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Edit } from '@mui/icons-material';
-import { sortBySelector } from '../atoms/config/sortByAtom';
-import { maxVisibleSelector, minVisibleSelector } from '../atoms/config/filterAtoms';
 import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
@@ -48,12 +46,10 @@ const plotInfoTitle = {
 const initialDrawerWidth = 450;
 
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
-  const { actions } = useContext(ProvenanceContext);
+  const { provenance, actions } = useContext(ProvenanceContext);
   const plotInformationState = useRecoilValue(plotInformationSelector);
 
-  const sort = useRecoilValue(sortBySelector);
-  const minVisible = useRecoilValue(minVisibleSelector);
-  const maxVisible = useRecoilValue(maxVisibleSelector);
+  const currState = provenance.getState();
 
   const [textDescription, setTextDescription] = useState('');
   const [isEditable, setIsEditable] = useState(false);
@@ -76,7 +72,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     }
 
     generate();
-  }, [sort, minVisible, maxVisible]);
+  }, [currState]);
 
   // this useEffect resets the plot information when the edit is toggled off
   useEffect(() => {
