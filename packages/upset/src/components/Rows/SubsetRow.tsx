@@ -2,19 +2,19 @@ import { Subset, getBelongingSetsFromSetMembership, getDegreeFromSetMembership }
 import React, { FC, useState } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
-import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
-import { AttributeBars } from './AttributeBars';
-import { SizeBar } from './SizeBar';
-import { DeviationBar } from './DeviationBar';
-import { Matrix } from './Matrix';
-import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
+import { AttributeBars } from '../Columns/Attribute/AttributeBars';
+import { SizeBar } from '../Columns/SizeBar';
+import { DeviationBar } from '../Columns/DeviationBar';
+import { Matrix } from '../Columns/Matrix/Matrix';
+import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
-} from '../utils/styles';
-import { BookmarkStar } from './custom/BookmarkStar';
-import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
-import { Degree } from './Degree';
+} from '../../utils/styles';
+import { BookmarkStar } from '../Columns/BookmarkStar';
+import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
+import { Degree } from '../Columns/Degree';
 
 type Props = {
   subset: Subset;

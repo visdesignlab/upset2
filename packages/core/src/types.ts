@@ -219,6 +219,11 @@ export type AltTextConfig = UpsetConfig & {
   accessibleProcessedData?: AccessibleData
 };
 
+/**
+ * Checks if the given rows are aggregates.
+ * @param rr The rows to check.
+ * @returns `true` if the rows are aggregates, `false` otherwise.
+ */
 export function areRowsAggregates(rr: Rows): rr is Aggregates {
   const { order } = rr;
 
@@ -229,6 +234,11 @@ export function areRowsAggregates(rr: Rows): rr is Aggregates {
   return row.type === 'Aggregate';
 }
 
+/**
+ * Checks if the given rows are subsets.
+ * @param rr - The rows to check.
+ * @returns True if the rows are subsets, false otherwise.
+ */
 export function areRowsSubsets(rr: Rows): rr is Subsets {
   const { order } = rr;
 
@@ -239,14 +249,31 @@ export function areRowsSubsets(rr: Rows): rr is Subsets {
   return row.type === 'Subset';
 }
 
+/**
+ * Checks if a given row is an aggregate.
+ * @param row - The row to check.
+ * @returns True if the row is an aggregate, false otherwise.
+ */
 export function isRowAggregate(row: Row): row is Aggregate {
   return row.type === 'Aggregate';
 }
 
+/**
+ * Checks if a given row is a subset.
+ * @param row - The row to check.
+ * @returns True if the row is a subset, false otherwise.
+ */
 export function isRowSubset(row: Row): row is Subset {
   return row.type === 'Subset';
 }
 
+/**
+ * Calculates the degree of set membership based on the provided membership object.
+ * The degree of set membership is the number of sets in which the subset is comprised of.
+ *
+ * @param membership - The membership object containing the set membership statuses.
+ * @returns The degree of set membership.
+ */
 export function getDegreeFromSetMembership(membership: {
   [key: string]: SetMembershipStatus;
 }): number {
@@ -254,6 +281,11 @@ export function getDegreeFromSetMembership(membership: {
   return Object.values(membership).filter((m) => m === 'Yes').length;
 }
 
+/**
+ * Retrieves the belonging sets from a set membership object.
+ * @param membership - The set membership object.
+ * @returns An array of strings representing the belonging sets.
+ */
 export function getBelongingSetsFromSetMembership(membership: {
   [key: string]: SetMembershipStatus;
 }): string[] {

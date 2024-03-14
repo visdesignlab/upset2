@@ -1,3 +1,4 @@
+// Help text tooltip content for the sidebar
 export const helpText = {
   sorting: {
     Degree: 'Sort all intersections by the number of overlaps',

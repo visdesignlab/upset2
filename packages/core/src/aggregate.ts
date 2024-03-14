@@ -17,6 +17,15 @@ import {
   UNINCLUDED,
 } from './types';
 
+/**
+ * Retrieves all items from a given row.
+ * If the row is a subset, it returns the items directly.
+ * If the row is not a subset, it recursively retrieves the items from its subsets.
+ * The returned items are unique (no duplicates).
+ *
+ * @param row - The row object from which to retrieve the items.
+ * @returns An array of unique items from the row.
+ */
 export function getItems(row: Row) {
   if (isRowSubset(row)) {
     return row.items;
@@ -32,6 +41,13 @@ export function getItems(row: Row) {
   return Array.from(new Set(items));
 }
 
+/**
+ * Calculates the aggregate size of a row.
+ * If the row is a subset, returns the size directly.
+ * If the row contains items, recursively calculates the aggregate size of each item.
+ * @param row - The row object to calculate the aggregate size for.
+ * @returns The aggregate size of the row.
+ */
 export const getAggSize = (row: Row) => {
   if (isRowSubset(row)) {
     return row.size;
@@ -45,6 +61,16 @@ export const getAggSize = (row: Row) => {
   return size;
 };
 
+/**
+ * Aggregates subsets by degree.
+ *
+ * @param subsets - The subsets to be aggregated.
+ * @param level - The level of the aggregation.
+ * @param items - The items to be aggregated.
+ * @param attributeColumns - The attribute columns to be considered in the aggregation.
+ * @param parentPrefix - The parent prefix for the aggregated subsets.
+ * @returns The aggregated subsets.
+ */
 function aggregateByDegree(
   subsets: Subsets,
   level: number,
@@ -116,6 +142,17 @@ function aggregateByDegree(
   return aggs;
 }
 
+/**
+ * Aggregates subsets based on sets and other parameters.
+ *
+ * @param subsets - The subsets to be aggregated.
+ * @param sets - The sets used for aggregation.
+ * @param level - The level of aggregation.
+ * @param items - The items to be aggregated.
+ * @param attributeColumns - The attribute columns used for aggregation.
+ * @param parentPrefix - The parent prefix used for aggregation.
+ * @returns The aggregated subsets.
+ */
 function aggregateBySets(
   subsets: Subsets,
   sets: Sets,
@@ -218,6 +255,16 @@ function aggregateBySets(
   return aggs;
 }
 
+/**
+ * Aggregates subsets by deviation.
+ *
+ * @param subsets - The subsets to be aggregated.
+ * @param level - The level of the aggregation.
+ * @param items - The items to be aggregated.
+ * @param attributeColumns - The attribute columns to be considered.
+ * @param parentPrefix - The parent prefix for the aggregation.
+ * @returns The aggregated subsets.
+ */
 function aggregateByDeviation(
   subsets: Subsets,
   level: number,
@@ -300,6 +347,18 @@ function aggregateByDeviation(
   return aggs;
 }
 
+/**
+ * Aggregates subsets based on overlaps.
+ *
+ * @param subsets - The subsets to be aggregated.
+ * @param sets - The sets associated with the subsets.
+ * @param degree - The degree of overlap for aggregation.
+ * @param level - The level of the aggregation.
+ * @param items - The items associated with the subsets.
+ * @param attributeColumns - The attribute columns to be considered for aggregation.
+ * @param parentPrefix - The prefix for the parent identifier.
+ * @returns The aggregated subsets.
+ */
 function aggregateByOverlaps(
   subsets: Subsets,
   sets: Sets,
@@ -398,6 +457,19 @@ function aggregateByOverlaps(
   return aggs;
 }
 
+/**
+ * Aggregates subsets based on the specified criteria.
+ *
+ * @param subsets - The subsets to be aggregated.
+ * @param aggregateBy - The criteria to aggregate the subsets by.
+ * @param overlapDegree - The degree of overlap to consider when aggregating by overlaps.
+ * @param sets - The sets associated with the subsets.
+ * @param items - The items associated with the subsets.
+ * @param attributeColumns - The attribute columns to consider when aggregating by deviations.
+ * @param level - The level of aggregation (default: 1).
+ * @param parentPrefix - The parent prefix for the aggregated subsets (default: '').
+ * @returns The aggregated subsets.
+ */
 function aggregateSubsets(
   subsets: Subsets,
   aggregateBy: AggregateBy,
@@ -425,6 +497,17 @@ function aggregateSubsets(
   return subsets;
 }
 
+/**
+ * Performs the first aggregation step by calling the `aggregateSubsets` function.
+ *
+ * @param subsets - The subsets to be aggregated.
+ * @param aggregateBy - The aggregation method to be used.
+ * @param overlapDegree - The degree of overlap required for aggregation.
+ * @param sets - The sets associated with the subsets.
+ * @param items - The items associated with the subsets.
+ * @param attributeColumns - The attribute columns to be considered during aggregation.
+ * @returns The aggregated rows.
+ */
 export function firstAggregation(
   subsets: Subsets,
   aggregateBy: AggregateBy,
@@ -443,6 +526,17 @@ export function firstAggregation(
   );
 }
 
+/**
+ * Performs a second level aggregation on the given aggregates.
+ *
+ * @param aggregates - The aggregates to be processed.
+ * @param aggregateBy - The attribute to aggregate by.
+ * @param overlapDegree - The degree of overlap required for aggregation.
+ * @param sets - The sets data.
+ * @param items - The items data.
+ * @param attributeColumns - The attribute columns to consider.
+ * @returns The aggregated result.
+ */
 export function secondAggregation(
   aggregates: Aggregates,
   aggregateBy: AggregateBy,

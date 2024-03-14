@@ -3,11 +3,11 @@ import { FC } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import translate from '../utils/transform';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import translate from '../../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
-import { collapsedSelector } from '../atoms/collapsedAtom';
+import { collapsedSelector } from '../../atoms/collapsedAtom';
 
 type Props = {
   rows: RenderRow[];

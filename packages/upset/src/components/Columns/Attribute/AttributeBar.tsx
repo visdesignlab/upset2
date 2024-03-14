@@ -4,13 +4,13 @@ import {
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { attributeMinMaxSelector } from '../atoms/attributeAtom';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { useScale } from '../hooks/useScale';
-import translate from '../utils/transform';
-import { BoxPlot } from './custom/BoxPlot';
-import { DotPlot } from './custom/DotPlot';
-import { itemsAtom } from '../atoms/itemsAtoms';
+import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
+import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
+import { useScale } from '../../../hooks/useScale';
+import translate from '../../../utils/transform';
+import { BoxPlot } from './AttributePlots/BoxPlot';
+import { DotPlot } from './AttributePlots/DotPlot';
+import { itemsAtom } from '../../../atoms/itemsAtoms';
 
 type Props = {
   attribute: string;

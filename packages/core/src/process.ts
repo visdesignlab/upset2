@@ -17,6 +17,17 @@ import {
   Subsets,
 } from './types';
 
+/**
+ * Calculates the deviation based on the total number of items, intersection size,
+ * sets, vSets, and containedSets.
+ *
+ * @param totalItems - The total number of items.
+ * @param intersectionSize - The size of the intersection.
+ * @param sets - The sets object.
+ * @param vSets - The vSets array.
+ * @param containedSets - The containedSets array.
+ * @returns The calculated deviation.
+ */
 function calculateDeviation(
   totalItems: number,
   intersectionSize: number,
@@ -45,10 +56,23 @@ function calculateDeviation(
   return dev * 100;
 }
 
+/**
+ * Generates an ID by concatenating a prefix with an array of strings.
+ * Replaces spaces in each string with underscores.
+ * 
+ * @param prefix - The prefix to be added to the ID.
+ * @param arr - An array of strings to be concatenated.
+ * @returns The generated ID.
+ */
 export function getId(prefix: string, ...arr: string[]) {
   return `${prefix}_${arr.map((s) => s.replace(' ', '_')).join('_')}`;
 }
 
+/**
+ * Retrieves the first column name that has a value of 'label' in the given column definitions.
+ * @param columns - The column definitions object.
+ * @returns The column name with the value 'label', or false if no such column exists.
+ */
 function getLabel(columns: ColumnDefs): ColumnName | false {
   const labelColumns = Object.entries(columns)
     .filter((col) => col[1] === 'label')
@@ -59,18 +83,38 @@ function getLabel(columns: ColumnDefs): ColumnName | false {
   return labelColumns[0];
 }
 
+/**
+ * Retrieves the column names from the given column definitions object
+ * where the column type is 'boolean'.
+ *
+ * @param columns - The column definitions object.
+ * @returns An array of column names.
+ */
 function getSetColumns(columns: ColumnDefs): ColumnName[] {
   return Object.entries(columns)
     .filter((col) => col[1] === 'boolean')
     .map((col) => col[0]);
 }
 
+/**
+ * Retrieves the attribute columns from the given column definitions.
+ * 
+ * @param columns - The column definitions.
+ * @returns An array of attribute column names.
+ */
 function getAttributeColumns(columns: ColumnDefs): ColumnName[] {
   return Object.entries(columns)
     .filter((col) => col[1] === 'number')
     .map((col) => col[0]);
 }
 
+/**
+ * Processes raw data and returns an object containing various properties.
+ * 
+ * @param data - The raw data to be processed.
+ * @param columns - The column definitions.
+ * @returns An object containing the processed data.
+ */
 function processRawData(data: DSVRowArray, columns: ColumnDefs) {
   const labelColumn = getLabel(columns) || '_id';
   const setColumns = getSetColumns(columns);
@@ -115,6 +159,14 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
   };
 }
 
+/**
+ * Calculates the five-number summary for each attribute in the given items.
+ * 
+ * @param items - The items to calculate the summary for.
+ * @param memberItems - The member items to consider.
+ * @param attributeColumns - The attribute columns to calculate the summary for.
+ * @returns An object containing the five-number summary for each attribute.
+ */
 export function getFiveNumberSummary(
   items: Items,
   memberItems: string[],
@@ -140,6 +192,15 @@ export function getFiveNumberSummary(
   return attributes;
 }
 
+/**
+ * Retrieves the sets based on the set membership, set columns, items, and attribute columns.
+ *
+ * @param setMembership - The set membership object containing the mapping of columns to set membership arrays.
+ * @param setColumns - The array of column names representing the set columns.
+ * @param items - The items object containing the data items.
+ * @param attributeColumns - The array of column names representing the attribute columns.
+ * @returns The sets object containing the retrieved sets.
+ */
 function getSets(
   setMembership: { [col: string]: string[] },
   setColumns: ColumnName[],
@@ -174,6 +235,13 @@ function getSets(
   return sets;
 }
 
+/**
+ * Processes the data and returns the core upset data.
+ *
+ * @param data - The input data in DSVRowArray format.
+ * @param meta - The metadata object containing information about the columns.
+ * @returns The core upset data object.
+ */
 export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
   const { columns } = meta;
 
@@ -194,6 +262,14 @@ export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
   };
 }
 
+/**
+ * Calculates the subsets based on the provided data items, sets, vSets, and attribute columns.
+ * @param dataItems - The data items to calculate subsets from.
+ * @param sets - The sets used to calculate subsets.
+ * @param vSets - The vSets used to calculate subsets.
+ * @param attributeColumns - The attribute columns used to calculate subsets.
+ * @returns The calculated subsets.
+ */
 export function getSubsets(
   dataItems: { [k: string]: Item },
   sets: Sets,

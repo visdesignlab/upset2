@@ -4,14 +4,14 @@ import {
 import React, { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
-import ConnectingLine from './custom/ConnectingLine';
-import Group from './custom/Group';
-import MemberShipCircle from './custom/MembershipCircle';
-import { defaultBackground, hoverHighlight } from '../utils/styles';
-import translate from '../utils/transform';
-import { setsAtom } from '../atoms/setsAtoms';
+import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
+import { columnHoverAtom, columnSelectAtom } from '../../../atoms/highlightAtom';
+import ConnectingLine from './ConnectingLine';
+import Group from '../../custom/Group';
+import MemberShipCircle from './MembershipCircle';
+import { defaultBackground, hoverHighlight } from '../../../utils/styles';
+import translate from '../../../utils/transform';
+import { setsAtom } from '../../../atoms/setsAtoms';
 
 type Props = {
   subset: Subset | Aggregate;

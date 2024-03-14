@@ -96,6 +96,11 @@ const Header = ({ data }: { data: any }) => {
     }
   }
 
+  /**
+   * Dispatches the state by saving relevant data to the local storage.
+   * This function saves the 'data', 'rows', 'visibleSets', 'hiddenSets', and query parameters to the local storage.
+   * TODO: resolve cache size limit issues for large datasets (10mb)
+   */
   const dispatchState = () => {
     localStorage.setItem('data', JSON.stringify(data));
     localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()), true)));
