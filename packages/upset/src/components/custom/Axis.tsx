@@ -1,8 +1,8 @@
 import { ScaleLinear } from 'd3';
 import React, { useMemo } from 'react';
 
-import translate from '../utils/transform';
-import { TickLine, AxisType } from './custom/AxisTickLine';
+import translate from '../../utils/transform';
+import { TickLine, AxisType } from './AxisTickLine';
 
 type Props = {
   scale: ScaleLinear<number, number>;

@@ -2,12 +2,12 @@ import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { maxSize } from '../atoms/maxSizeAtom';
-import { useScale } from '../hooks/useScale';
-import translate from '../utils/transform';
-import { newShade } from '../utils/colors';
+import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { maxSize } from '../../atoms/maxSizeAtom';
+import { useScale } from '../../hooks/useScale';
+import translate from '../../utils/transform';
+import { newShade } from '../../utils/colors';
 
 /** @jsxImportSource @emotion/react */
 type Props = {

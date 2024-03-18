@@ -4,6 +4,18 @@ import {
 } from './types';
 import { deepCopy } from './utils';
 
+/**
+ * Filters the intersections based on the provided criteria.
+ *
+ * @template T - The type of the intersections.
+ * @param {T} rows - The intersections to filter.
+ * @param {Object} filters - The filter criteria.
+ * @param {number} filters.maxVisible - The maximum visible degree.
+ * @param {number} filters.minVisible - The minimum visible degree.
+ * @param {boolean} filters.hideEmpty - Whether to hide empty subsets.
+ * @param {boolean} filters.hideNoSet - Whether to hide subsets with no set membership.
+ * @returns {Object} - The filtered intersections.
+ */
 function filterIntersections<T extends Intersections>(
   rows: T,
   filters: { maxVisible: number; minVisible: number; hideEmpty: boolean, hideNoSet: boolean },
@@ -39,6 +51,12 @@ function filterIntersections<T extends Intersections>(
   return { values: newValues, order: newOrder };
 }
 
+/**
+ * Filters the rows based on the provided filters.
+ * @param baseRows The base rows to filter.
+ * @param filters The filters to apply.
+ * @returns The filtered rows.
+ */
 export function filterRows(
   baseRows: Rows,
   filters: { maxVisible: number; minVisible: number; hideEmpty: boolean, hideNoSet: boolean },

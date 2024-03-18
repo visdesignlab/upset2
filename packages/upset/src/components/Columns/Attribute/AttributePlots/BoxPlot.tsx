@@ -2,8 +2,11 @@ import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3';
 import { FiveNumberSummary } from '@visdesignlab/upset2-core';
-import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 
+/*
+ * Box plot component for the attributes
+ */
 type Props = {
   scale: ScaleLinear<number, number, never>;
   summary: FiveNumberSummary;
