@@ -2,8 +2,8 @@ import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3';
 import { Aggregate, FiveNumberSummary, Subset } from '@visdesignlab/upset2-core';
-import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes';
+import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
+import { visibleAttributesSelector } from '../../../../atoms/config/visibleAttributes';
 
 type Props = {
   scale: ScaleLinear<number, number, never>;
@@ -14,6 +14,7 @@ type Props = {
   row: Subset | Aggregate;
 };
 
+// Dot plot component for the attributes plots
 export const DotPlot: FC<Props> = ({
   scale, values, attribute, summary, isAggregate, row,
 }) => {

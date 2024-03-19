@@ -1,9 +1,9 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { deviationScaleAtom } from '../atoms/scaleAtoms';
-import translate from '../utils/transform';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { deviationScaleAtom } from '../../atoms/scaleAtoms';
+import translate from '../../utils/transform';
 
 /** @jsxImportSource @emotion/react */
 type Props = {

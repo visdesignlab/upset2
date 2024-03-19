@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import translate from '../utils/transform';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import translate from '../../utils/transform';
 
 type Props = {
   degree: number;

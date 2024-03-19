@@ -1,39 +1,31 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { CoreUpsetData, UpsetConfig, DefaultConfig } from '@visdesignlab/upset2-core';
+import { UpsetConfig, DefaultConfig } from '@visdesignlab/upset2-core';
 import React, { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 
-import { UpsetActions, UpsetProvenance } from '../provenance';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
-
-export type UpsetProps = {
-  parentHasHeight?: boolean;
-  data: CoreUpsetData;
-  config?: Partial<UpsetConfig>;
-  loadAttributes?: number;
-  extProvenance?: {
-    provenance: UpsetProvenance;
-    actions: UpsetActions;
-  };
-  yOffset?: number;
-  provVis?: {
-    open: boolean;
-    close: () => void;
-  };
-  elementSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
-  altTextSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
-  generateAltText?: () => Promise<string>;
-};
+import { UpsetProps } from '../types';
 
 const defaultVisibleSets = 6;
 
+/**
+ * Renders the Upset component.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {Object} props.data - The data for the Upset component.
+ * @param {boolean} [props.parentHasHeight=false] - Indicates if the parent has a fixed height.
+ * @param {number} [props.yOffset=0] - The offset from the top of the viewport.
+ * @param {Object} [props.config={}] - The configuration options for the Upset component.
+ * @param {number} [props.loadAttributes=0] - The number of attributes to load.
+ * @param {Object} [props.extProvenance] - The external provenance data.
+ * @param {Object} [props.provVis] - The provenance visualization options.
+ * @param {Object} [props.elementSidebar] - The element sidebar options.
+ * @param {Object} [props.altTextSidebar] - The alternative text sidebar options.
+ * @param {Function} [props.generateAltText] - The function to generate alternative text.
+ * @returns {JSX.Element} The rendered Upset component.
+ */
 export const Upset: FC<UpsetProps> = ({
   data,
   parentHasHeight = false,

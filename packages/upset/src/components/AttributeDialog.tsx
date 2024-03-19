@@ -24,9 +24,9 @@ import {
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { attributeAtom } from '../../atoms/attributeAtom';
-import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes';
-import { ProvenanceContext } from '../Root';
+import { attributeAtom } from '../atoms/attributeAtom';
+import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
+import { ProvenanceContext } from './Root';
 
 const Transition = forwardRef((
   props: TransitionProps & {

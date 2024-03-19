@@ -5,18 +5,18 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
 
-import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
-import translate from '../utils/transform';
-import { highlight, mousePointer } from '../utils/styles';
-import { SizeBar } from './SizeBar';
-import { DeviationBar } from './DeviationBar';
-import { Matrix } from './Matrix';
-import { BookmarkStar } from './custom/BookmarkStar';
-import { collapsedSelector } from '../atoms/collapsedAtom';
-import { ProvenanceContext } from './Root';
-import { AttributeBars } from './AttributeBars';
+import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
+import { dimensionsSelector } from '../../atoms/dimensionsAtom';
+import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import translate from '../../utils/transform';
+import { highlight, mousePointer } from '../../utils/styles';
+import { SizeBar } from '../Columns/SizeBar';
+import { DeviationBar } from '../Columns/DeviationBar';
+import { Matrix } from '../Columns/Matrix/Matrix';
+import { BookmarkStar } from '../Columns/BookmarkStar';
+import { collapsedSelector } from '../../atoms/collapsedAtom';
+import { ProvenanceContext } from '../Root';
+import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 
 /** @jsxImportSource @emotion/react */
 type Props = {

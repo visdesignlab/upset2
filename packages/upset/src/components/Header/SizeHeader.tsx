@@ -12,7 +12,7 @@ import { maxSize } from '../../atoms/maxSizeAtom';
 import { subsetSelector } from '../../atoms/subsetAtoms';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
-import { Axis } from '../Axis';
+import { Axis } from '../custom/Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
