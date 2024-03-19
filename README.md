@@ -28,6 +28,12 @@ UpSet: Visualization of Intersecting Sets
 IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983--1992, doi:10.1109/TVCG.2014.2346248, 2014.
 ```
 
+## Documentation
+
+Developer documentation can be found at [https://vdl.sci.utah.edu/upset2/](https://vdl.sci.utah.edu/upset2/).
+
+For more information on documentation see the [Developer Documentation Guidelines](#developer-documentation-guidelines).
+
 ## Local Installation
 
 To deploy UpSet 2.0 locally it is necessary to install the Multinet infrastructure.
@@ -64,3 +70,9 @@ To open the test in a UI view to track steps, append `--ui`.
 This will launch a local server if there is not one already running on port 3000.
 
 To add a test, add a `.spec.ts` file to `e2e-tests`. For information on how to use playwright, please see the [playwright documentation](https://playwright.dev/docs/writing-tests).
+
+## Developer Documentation Guidelines
+
+When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+
+To build the documentation locally, use the command: `yarn doc`. The default file output is at `/docs`.
