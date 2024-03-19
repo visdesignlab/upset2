@@ -25,6 +25,7 @@ export const ElementQueries = () => {
   const data = useRecoilValue(dataAtom);
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll("~&~", " & ") || "";
 
   return (
     <>
@@ -87,21 +88,21 @@ export const ElementQueries = () => {
             backgroundColor: 'rgba(0,0,0,0.2)',
           })}
           icon={<SquareIcon fontSize={'1em' as any} />}
-          aria-label={`Selected intersection ${currentIntersection.elementName}, size ${currentIntersection.size}`}
+          aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               actions.bookmarkIntersection(
                 currentIntersection.id,
-                currentIntersection.elementName,
+                currentIntersectionDisplayName,
                 currentIntersection.size,
               );
             }
           }}
-          label={`${currentIntersection.elementName} - ${currentIntersection.size}`}
+          label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
           onDelete={() => {
             actions.bookmarkIntersection(
               currentIntersection.id,
-              currentIntersection.elementName,
+              currentIntersectionDisplayName,
               currentIntersection.size,
             );
           }}
