@@ -296,6 +296,14 @@ const setPlotInformationAction = registry.register(
   },
 );
 
+const setSelectedAction = registry.register(
+  'select-intersection',
+  (state, intersection) => {
+    state.selected = intersection;
+    return state;
+  },
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -346,6 +354,7 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
+    setSelected: (intersection: { id: string; label: string; size: number }) => provenance.apply(`Selected ${intersection.label}`, setSelectedAction(intersection)),
   };
 }
 

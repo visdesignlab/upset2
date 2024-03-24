@@ -189,6 +189,7 @@ export type UpsetConfig = {
     wordClouds: WordCloud[];
   };
   allSets: Column[];
+  selected: Bookmark;
 };
 
 export type AccessibleDataEntry = {
