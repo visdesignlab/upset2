@@ -155,11 +155,7 @@ export type Histogram = BasePlot & {
   frequency: boolean;
 };
 
-export type WordCloud = BasePlot & {
-  type: 'Word Cloud';
-};
-
-export type Plot = Scatterplot | Histogram | WordCloud;
+export type Plot = Scatterplot | Histogram;
 
 export type Bookmark = { id: string; label: string; size: number }
 
@@ -186,7 +182,6 @@ export type UpsetConfig = {
   plots: {
     scatterplots: Scatterplot[];
     histograms: Histogram[];
-    wordClouds: WordCloud[];
   };
   allSets: Column[];
 };
