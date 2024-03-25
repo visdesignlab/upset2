@@ -74,7 +74,7 @@ test('Datatable', async ({ page }) => {
   // //////////////////
   const datatable = await page1.getByText('IntersectionSizeSchool & Male3Unincluded3Male3Duff Fan & Male & Power Plant3Evil & Male2Evil & Male & Power Plant2Duff Fan & Male2Blue Hair2School1School & Evil & Male1Rows per page:101–10 of');
   await expect(datatable).toBeVisible();
-  const visibleSets = await page1.getByText('SetSizeSchool6Blue_Hair3Duff_Fan6Evil6Male18Power_Plant5Rows per page:101–6 of');
+  const visibleSets = await page1.getByText('SetSizeSchool6Blue Hair3Duff Fan6Evil6Male18Power Plant5Rows per page:101–6 of');
   await expect(visibleSets).toBeVisible();
   const hiddenSets = await page1.getByText('No rowsSetSizeRows per page:100–0 of');
   await expect(hiddenSets).toBeVisible();
