@@ -71,6 +71,8 @@ export const Sidebar = () => {
   );
 
   const [degreeFilters, setDegreeFilters] = useState([minVisible, maxVisible]);
+  // Tracking the previous state of the filters to avoid unnecessary updates
+  const [prevFilters, setPrevFilters] = useState([minVisible, maxVisible]);
 
   useEffect(() => {
     if (firstAggregateBy === 'None') {
@@ -286,8 +288,14 @@ export const Sidebar = () => {
                   }
                 }}
                 onChangeCommitted={() => {
-                  actions.setMinVisible(degreeFilters[0]);
-                  actions.setMaxVisible(degreeFilters[1]);
+                  // Prevents unncessary Trrack state changes
+                  if (prevFilters[0] !== degreeFilters[0]) {
+                    actions.setMinVisible(degreeFilters[0]);
+                  }
+                  if (prevFilters[1] !== degreeFilters[1]) {
+                    actions.setMaxVisible(degreeFilters[1]);
+                  }
+                  setPrevFilters(degreeFilters);
                 }}
               />
             </Box>
