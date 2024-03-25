@@ -17,16 +17,10 @@ export const histogramSelector = selector({
   get: ({ get }) => get(plotsMapSelector).histograms,
 });
 
-export const wordCloudSelector = selector({
-  key: 'wordcloud',
-  get: ({ get }) => get(plotsMapSelector).wordClouds,
-});
-
 export const plotsSelector = selector({
   key: 'all-plots',
   get: ({ get }) => [
     ...get(scatterplotsSelector),
     ...get(histogramSelector),
-    ...get(wordCloudSelector),
   ],
 });
