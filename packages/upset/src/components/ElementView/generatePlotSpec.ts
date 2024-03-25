@@ -214,27 +214,3 @@ export function generateVega(
 
   return base;
 }
-
-export function createWordCloudSpec(): VisualizationSpec {
-  return {
-    width: 400,
-    height: 400,
-    data: {
-      name: 'elements',
-    },
-    mark: 'text',
-    transform: [
-      {
-        type: 'wordcloud',
-        size: [800, 400],
-        text: { field: 'label' },
-        rotate: { random: [-60, -30, 0, 30, 60] },
-        font: 'Helvetica Neue, Arial',
-        fontSize: { field: 'datum.count' },
-        fontWeight: { field: 'datum.weight' },
-        fontSizeRange: [12, 56],
-        padding: 2,
-      } as any,
-    ],
-  };
-}

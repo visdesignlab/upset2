@@ -230,20 +230,3 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
     </Grid>
   );
 };
-
-export const AddWordCloud = () => (
-  <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
-    <Grid container item xs={12}>
-      Coming Soon...
-      {/* {Object.values(items).length && (
-          <VegaLite
-            spec={createWordCloudSpec()}
-            data={{
-              elements: Object.values(JSON.parse(JSON.stringify(items))),
-            }}
-            actions={false}
-          />
-        )} */}
-    </Grid>
-  </Grid>
-);
