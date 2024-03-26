@@ -35,13 +35,13 @@ const Footer = () => {
                         <img src={vdl_logo} alt="About Us" height="32px" width="100%" />
                     </Button>
                     <Link
+                        sx={categoryCSS}
                         href="https://github.com/visdesignlab/upset2/issues"
                         target="_blank"
                         rel="noreferrer"
                         aria-label="Open GitHub issues for this project"
                     >
                         <Button
-                            sx={categoryCSS}
                             variant="contained"
                             color="inherit"
                             size="medium"
