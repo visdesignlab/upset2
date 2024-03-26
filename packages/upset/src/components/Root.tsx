@@ -106,10 +106,8 @@ export const Root: FC<Props> = ({
     setData(data);
   }, [data]);
 
-  // remove all current selections and highlight states
-  const removeSelections = () => {
-    setCurrentIntersection(null);
-    setColumnSelect([]);
+  // remove column hover state
+  const removeHover = () => {
     setColumnHover([]);
   };
 
@@ -119,11 +117,11 @@ export const Root: FC<Props> = ({
   };
 
   useEffect(() => {
-    document.addEventListener('click', removeSelections, false);
     document.addEventListener('contextmenu', removeContextMenu, false);
+    document.addEventListener('mousemove', removeHover, false);
 
     return function removeListeners() {
-      document.removeEventListener('click', removeSelections, false);
+      document.removeEventListener('mousemove', removeHover, false);
       document.removeEventListener('contextmenu', removeContextMenu, false);
     };
   }, []);
