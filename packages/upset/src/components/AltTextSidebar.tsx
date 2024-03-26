@@ -21,6 +21,7 @@ import { Edit } from '@mui/icons-material';
 import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
+import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 
 type Props = {
   open: boolean;
@@ -46,10 +47,10 @@ const plotInfoTitle = {
 const initialDrawerWidth = 450;
 
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
-  const { provenance, actions } = useContext(ProvenanceContext);
+  const { actions } = useContext(ProvenanceContext);
   const plotInformationState = useRecoilValue(plotInformationSelector);
 
-  const currState = provenance.getState();
+  const currState = useRecoilValue(upsetConfigAtom);
 
   const [textDescription, setTextDescription] = useState('');
   const [isEditable, setIsEditable] = useState(false);
@@ -71,7 +72,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       setTextDescription(resp);
     }
 
-    if (currState.aggregateBy === 'None') {
+    if (currState.firstAggregateBy === 'None') {
       generate();
     }
   }, [currState]);
