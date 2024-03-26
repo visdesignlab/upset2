@@ -11,10 +11,9 @@ import { columnsAtom } from '../atoms/columnAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
 import { dataAtom } from '../atoms/dataAtom';
-import { columnHoverAtom, columnSelectAtom } from '../atoms/highlightAtom';
+import { columnHoverAtom } from '../atoms/highlightAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { currentIntersectionAtom } from '../atoms/config/currentIntersectionAtom';
 import {
   getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
 } from '../provenance';
@@ -66,12 +65,10 @@ export const Root: FC<Props> = ({
 
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
+  const [columnHover, setColumnHover] = useRecoilState(columnHoverAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
-  const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
-  const setColumnHover = useSetRecoilState(columnHoverAtom);
-  const setColumnSelect = useSetRecoilState(columnSelectAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   useEffect(() => {
@@ -108,7 +105,9 @@ export const Root: FC<Props> = ({
 
   // remove column hover state
   const removeHover = () => {
-    setColumnHover([]);
+    if (columnHover.length > 0) {
+      setColumnHover([]);
+    }
   };
 
   // close all open context menus
