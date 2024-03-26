@@ -76,10 +76,10 @@ test('Element View', async ({ page }) => {
   const vis = await page.locator('canvas');
   await expect(vis).toBeVisible();
 
-  const option1 = await page.getByLabel('Bins');
+  const option1 = await page.locator('div').filter({ hasText: /^AttributeAgeAttribute$/ }).first();
   await expect(option1).toBeVisible();
 
-  const option2 = await page.getByLabel('Age');
+  const option2 = page.locator('div').filter({ hasText: /^BinsBins$/ }).first();
   await expect(option2).toBeVisible();
 
   const option3 = await page.locator('label').filter({ hasText: 'Frequency' });
@@ -88,8 +88,6 @@ test('Element View', async ({ page }) => {
   const closeButton = await page.getByRole('heading', { name: 'Add Plot' }).getByRole('button');
   await expect(closeButton).toBeVisible();
   await closeButton.click();
-
-  await row.click();
 
   const downloadPromise = page.waitForEvent('download');
   const downloadButton = await page.getByLabel('Download 3 elements');
