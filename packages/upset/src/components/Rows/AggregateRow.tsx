@@ -65,6 +65,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
 
   return (
     <g
+      onMouseMove={(e) => e.stopPropagation()}
       onClick={() => aggregateRow && (setCurrentIntersectionAtom(aggregateRow))}
       css={mousePointer}
     >
