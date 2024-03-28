@@ -4,6 +4,7 @@ import { visibleAttributesSelector } from '../../atoms/config/visibleAttributes'
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { AttributeHeader } from './AttributeHeader';
+import { DeviationHeader } from './DeviationHeader';
 
 export const AttributeHeaders = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -19,9 +20,7 @@ export const AttributeHeaders = () => {
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap +
         dimensions.degreeColumn.width +
-        dimensions.degreeColumn.gap +
-        dimensions.attribute.width +
-        dimensions.attribute.vGap,
+        dimensions.degreeColumn.gap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >
@@ -33,7 +32,9 @@ export const AttributeHeaders = () => {
             0,
           )}
         >
-          <AttributeHeader attribute={attribute} />
+          { attribute === 'Deviation' ?
+            <DeviationHeader /> :
+            <AttributeHeader attribute={attribute} />}
         </g>
       ))}
     </g>

@@ -19,7 +19,7 @@ import { ProvenanceContext } from "./Root"
 import { dataSelector } from "../atoms/dataAtom";
 import { useRecoilValue } from "recoil";
 import { useState } from "react";
-import { CoreUpsetData } from "@visdesignlab/upset2-core";
+import { CoreUpsetData, DefaultConfig } from "@visdesignlab/upset2-core";
 
 /**
  * Get the count of items that have a specific attribute. 
@@ -29,7 +29,10 @@ import { CoreUpsetData } from "@visdesignlab/upset2-core";
  * @returns The count of items with the specified attribute value.
  */
 const getAttributeItemCount = (attribute: string, data: CoreUpsetData) => {
-  let count = 0;
+    if (DefaultConfig.visibleAttributes.includes(attribute)) {
+        return '';
+    }
+    let count = 0;
 
   Object.values(data.items).forEach((item) => {
     Object.entries(item).forEach(([key, val]) => {
@@ -62,12 +65,15 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
       []
   );
 
-  const [ searchTerm, setSearchTerm ] = useState<string>("");
-  const attributeItemCount: { [attr: string]: number } = {};
+    const [ searchTerm, setSearchTerm ] = useState<string>("");
 
-  data?.attributeColumns.forEach((attr) => {
-    attributeItemCount[attr] = getAttributeItemCount(attr,data);
-  })
+    const attributeItemCount: { [attr: string]: number | string } = {};
+
+    if (data) {
+        [...data.attributeColumns, ...DefaultConfig.visibleAttributes].forEach((attr) => {
+            attributeItemCount[attr] = getAttributeItemCount(attr,data);
+        })
+    }
 
   /**
    * Handle checkbox toggle: add or remove the attribute from the visible attributes
@@ -104,7 +110,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
     if (data === undefined || data === null) {
       return []
     }
-    return data.attributeColumns.map((attr, index) => {
+    return [...DefaultConfig.visibleAttributes, ...data.attributeColumns].map((attr, index) => {
       return {
         id: index,
         attribute: attr,

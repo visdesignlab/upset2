@@ -21,7 +21,7 @@ export const DefaultConfig: UpsetConfig = {
     hideNoSet: false,
   },
   visibleSets: [],
-  visibleAttributes: [],
+  visibleAttributes: ['Deviation'],
   bookmarkedIntersections: [],
   collapsed: [],
   plots: {

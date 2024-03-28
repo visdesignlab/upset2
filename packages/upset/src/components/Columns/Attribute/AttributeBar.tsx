@@ -11,10 +11,11 @@ import translate from '../../../utils/transform';
 import { BoxPlot } from './AttributePlots/BoxPlot';
 import { DotPlot } from './AttributePlots/DotPlot';
 import { itemsAtom } from '../../../atoms/itemsAtoms';
+import { DeviationBar } from '../DeviationBar';
 
 type Props = {
   attribute: string;
-  summary: FiveNumberSummary;
+  summary: FiveNumberSummary | number;
   row: Subset | Aggregate;
 };
 
@@ -34,15 +35,17 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const items = useRecoilValue(itemsAtom);
   const values = getValuesFromRow(row, attribute, items);
 
-  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
+  if (typeof summary !== 'number' && (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined)) {
     return null;
   }
 
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
-      { row.size > 5
-        ? <BoxPlot scale={scale} summary={summary} />
-        : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} row={row} />}
+      { typeof summary === 'number' ?
+        <DeviationBar deviation={summary} /> :
+        row.size > 5
+          ? <BoxPlot scale={scale} summary={summary} />
+          : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} row={row} />}
     </g>
   );
 };

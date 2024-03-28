@@ -96,7 +96,6 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         <BookmarkStar row={subset} />}
       <Degree degree={getDegreeFromSetMembership(subset.setMembership)} />
       <SizeBar size={subset.size} row={subset} />
-      <DeviationBar deviation={subset.attributes.deviation} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );

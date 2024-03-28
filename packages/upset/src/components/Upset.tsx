@@ -49,7 +49,7 @@ export const Upset: FC<UpsetProps> = ({
       conf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
     }
 
-    conf.visibleAttributes = data.attributeColumns.slice(0, loadAttributes);
+    conf.visibleAttributes = [...DefaultConfig.visibleAttributes, ...data.attributeColumns.slice(0, loadAttributes)];
 
     return conf;
   }, [data, config]);

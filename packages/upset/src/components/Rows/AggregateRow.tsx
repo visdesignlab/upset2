@@ -121,7 +121,6 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
         <BookmarkStar row={aggregateRow} />}
         <SizeBar row={aggregateRow} size={aggregateRow.size} />
-        <DeviationBar deviation={aggregateRow.attributes.deviation} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>

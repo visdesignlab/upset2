@@ -44,7 +44,6 @@ export const AttributeDialog: FC<Props> = ({ open, onClose }) => {
   const { actions } = useContext(ProvenanceContext);
   const attributes = useRecoilValue(attributeAtom);
   const visibleAttributes = useRecoilValue(visibleAttributesSelector);
-
   const [currentlySelectedAttributes, setCurrentlySelectedAttributes] =
     useState(() => visibleAttributes);
 

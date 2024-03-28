@@ -6,6 +6,7 @@ import { visibleAttributesSelector } from '../../../atoms/config/visibleAttribut
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import { AttributeBar } from './AttributeBar';
+import { DeviationBar } from '../DeviationBar';
 
 type Props = {
   attributes: Attributes;
@@ -26,9 +27,7 @@ export const AttributeBars: FC<Props> = ({ attributes, row }) => {
         dimensions.degreeColumn.width +
         dimensions.degreeColumn.gap +
         dimensions.size.width +
-        dimensions.gap +
-        dimensions.attribute.width +
-        dimensions.attribute.vGap,
+        dimensions.gap,
         (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
       )}
     >
@@ -40,7 +39,9 @@ export const AttributeBars: FC<Props> = ({ attributes, row }) => {
             0,
           )}
         >
-          <AttributeBar summary={attributes[attr]} attribute={attr} row={row} />
+          { attr === 'Deviation' ?
+            <DeviationBar deviation={row.attributes.deviation} /> :
+            <AttributeBar summary={attributes[attr]} attribute={attr} row={row} />}
         </g>
       ))}
     </g>
