@@ -1,9 +1,10 @@
-import { Box, Button } from "@mui/material"
+import { Backdrop, Box, Button, CircularProgress } from "@mui/material"
 import { AccessibleDataEntry, CoreUpsetData } from "@visdesignlab/upset2-core";
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { getAccessibleData } from "@visdesignlab/upset2-react";
 import DownloadIcon from '@mui/icons-material/Download';
+import localforage from "localforage";
 
 const getRowData = (row: AccessibleDataEntry) => {
     return {id: row.id, elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName.replaceAll("~&~", " & ")}`, size: row.size}
@@ -87,16 +88,29 @@ const DownloadButton = ({onClick}: DownloadButtonProps) => {
 }
 
 export const DataTable = () => {
-    const storedData = localStorage.getItem("data");
-    const storedRows = localStorage.getItem("rows");
-    const storedVisibleSets = localStorage.getItem("visibleSets");
-    const storedHiddenSets = localStorage.getItem("hiddenSets");
+    const [data , setData] = useState<CoreUpsetData | null>(null);
+    const [rows, setRows] = useState<ReturnType<typeof getAccessibleData> | null>(null);
+    const [visibleSets, setVisibleSets] = useState<string[] | null>(null);
+    const [hiddenSets, setHiddenSets] = useState<string[] | null>(null);
+    const [loading, setLoading] = useState(false);
 
-    const data = storedData ? JSON.parse(storedData) as CoreUpsetData : null;
-    const rows = storedRows ? JSON.parse(storedRows) as ReturnType<typeof getAccessibleData> : null;
-    const visibleSets = storedVisibleSets ? JSON.parse(storedVisibleSets) as string[] : null;
-    const hiddenSets = storedHiddenSets ? JSON.parse(storedHiddenSets) as string[] : null;
-
+    useEffect(() => {
+        setLoading(true);
+        Promise.all([
+            localforage.getItem("data"),
+            localforage.getItem("rows"),
+            localforage.getItem("visibleSets"),
+            localforage.getItem("hiddenSets")
+        ]).then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
+            console.log("Fetched items!");
+            setData(storedData as CoreUpsetData);
+            setRows(storedRows as ReturnType<typeof getAccessibleData>);
+            setVisibleSets(storedVisibleSets as string[]);
+            setHiddenSets(storedHiddenSets as string[]);
+        });
+        setLoading(false);
+    }, []);
+    
     // fetch subset data and create row objects with subset name and size
     const tableRows: ReturnType<typeof getRowData>[] = useMemo(() => {
         if (rows === null) {
@@ -183,6 +197,9 @@ export const DataTable = () => {
     return (
         <>
             <Box sx={{display: "flex", justifyContent: "space-between"}}>
+                <Backdrop open={loading} style={{zIndex: 1000}}>
+                    <CircularProgress color="inherit" />
+                </Backdrop>
                 <Box sx={{width: "50%", margin: "20px"}}>
                     <div style={headerCSS}>
                         <h2>UpSet Data Table</h2>
