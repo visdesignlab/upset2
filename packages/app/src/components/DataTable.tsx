@@ -93,6 +93,7 @@ export const DataTable = () => {
     const [visibleSets, setVisibleSets] = useState<string[] | null>(null);
     const [hiddenSets, setHiddenSets] = useState<string[] | null>(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
         setLoading(true);
@@ -102,12 +103,16 @@ export const DataTable = () => {
             localforage.getItem("visibleSets"),
             localforage.getItem("hiddenSets")
         ]).then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
-            console.log("Fetched items!");
+            if (storedData === null || storedRows === null || storedVisibleSets === null || storedHiddenSets === null) {
+                setError(true);
+                setLoading(false);
+                return;
+            }
             setData(storedData as CoreUpsetData);
             setRows(storedRows as ReturnType<typeof getAccessibleData>);
             setVisibleSets(storedVisibleSets as string[]);
             setHiddenSets(storedHiddenSets as string[]);
-        });
+        })
         setLoading(false);
     }, []);
     
@@ -196,71 +201,74 @@ export const DataTable = () => {
 
     return (
         <>
-            <Box sx={{display: "flex", justifyContent: "space-between"}}>
-                <Backdrop open={loading} style={{zIndex: 1000}}>
-                    <CircularProgress color="inherit" />
-                </Backdrop>
-                <Box sx={{width: "50%", margin: "20px"}}>
-                    <div style={headerCSS}>
-                        <h2>UpSet Data Table</h2>
-                        <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")} />
-                    </div>
-                    <DataGrid
-                        columns={dataColumns}
-                        rows={tableRows}
-                        autoHeight
-                        disableSelectionOnClick
-                        initialState={{
-                            pagination: {
-                                page: 0,
-                                pageSize: 10,
-                            },
-                        }}
-                        paginationMode="client"
-                        rowsPerPageOptions={[5, 10, 20]}
-                    ></DataGrid>
+            { error ? 
+                <h1>Error fetching data...</h1> :
+                <Box sx={{display: "flex", justifyContent: "space-between"}}>
+                    <Backdrop open={loading} style={{zIndex: 1000}}>
+                        <CircularProgress color="inherit" />
+                    </Backdrop>
+                    <Box sx={{width: "50%", margin: "20px"}}>
+                        <div style={headerCSS}>
+                            <h2>UpSet Data Table</h2>
+                            <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, ["elementName", "size"], "upset2_datatable")} />
+                        </div>
+                        <DataGrid
+                            columns={dataColumns}
+                            rows={tableRows}
+                            autoHeight
+                            disableSelectionOnClick
+                            initialState={{
+                                pagination: {
+                                    page: 0,
+                                    pageSize: 10,
+                                },
+                            }}
+                            paginationMode="client"
+                            rowsPerPageOptions={[5, 10, 20]}
+                        ></DataGrid>
+                    </Box>
+                    <Box sx={{width: "25%", margin: "20px"}}>
+                        <div style={headerCSS}>
+                            <h2>Visible Sets</h2>
+                            <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")} />
+                        </div>
+                        <DataGrid
+                            columns={setColumns}
+                            rows={visibleSetRows}
+                            autoHeight
+                            disableSelectionOnClick
+                            initialState={{
+                                pagination: {
+                                    page: 0,
+                                    pageSize: 10,
+                                },
+                            }}
+                            paginationMode="client"
+                            rowsPerPageOptions={[5, 10, 20]}
+                        ></DataGrid>
+                    </Box>
+                    <Box sx={{width: "25%", margin: "20px"}}>
+                        <div style={headerCSS}>
+                            <h2>Hidden Sets</h2>
+                            <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")} />
+                        </div>
+                        <DataGrid
+                            columns={setColumns}
+                            rows={hiddenSetRows}
+                            autoHeight
+                            disableSelectionOnClick
+                            initialState={{
+                                pagination: {
+                                    page: 0,
+                                    pageSize: 10,
+                                },
+                            }}
+                            paginationMode="client"
+                            rowsPerPageOptions={[5, 10, 20]}
+                        ></DataGrid>
+                    </Box>
                 </Box>
-                <Box sx={{width: "25%", margin: "20px"}}>
-                    <div style={headerCSS}>
-                        <h2>Visible Sets</h2>
-                        <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")} />
-                    </div>
-                    <DataGrid
-                        columns={setColumns}
-                        rows={visibleSetRows}
-                        autoHeight
-                        disableSelectionOnClick
-                        initialState={{
-                            pagination: {
-                                page: 0,
-                                pageSize: 10,
-                            },
-                        }}
-                        paginationMode="client"
-                        rowsPerPageOptions={[5, 10, 20]}
-                    ></DataGrid>
-                </Box>
-                <Box sx={{width: "25%", margin: "20px"}}>
-                    <div style={headerCSS}>
-                        <h2>Hidden Sets</h2>
-                        <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")} />
-                    </div>
-                    <DataGrid
-                        columns={setColumns}
-                        rows={hiddenSetRows}
-                        autoHeight
-                        disableSelectionOnClick
-                        initialState={{
-                            pagination: {
-                                page: 0,
-                                pageSize: 10,
-                            },
-                        }}
-                        paginationMode="client"
-                        rowsPerPageOptions={[5, 10, 20]}
-                    ></DataGrid>
-                </Box>
-            </Box>
+            }
         </>
     )   
 }
