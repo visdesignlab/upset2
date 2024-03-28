@@ -100,8 +100,8 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   const newOrder = [...order].sort(
     (a, b) => {
-      const devA = values[a].deviation;
-      const devB = values[b].deviation;
+      const devA = values[a].attributes.deviation;
+      const devB = values[b].attributes.deviation;
       return (sortByOrder === 'Ascending') ? devA - devB : devB - devA;
     },
   );

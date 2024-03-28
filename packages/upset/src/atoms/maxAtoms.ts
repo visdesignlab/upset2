@@ -6,7 +6,7 @@ export const maxDeviationSelector = selector({
   get: ({ get }) => {
     const rows = get(flattenedRowsSelector);
 
-    const deviations = rows.map((d) => Math.abs(d.row.deviation));
+    const deviations = rows.map((d) => Math.abs(d.row.attributes.deviation));
     const maxDeviation = Math.max(...deviations);
 
     return maxDeviation;

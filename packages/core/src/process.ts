@@ -3,7 +3,7 @@ import {
 } from 'd3';
 
 import {
-  Attributes,
+  AttributeList,
   ColumnDefs,
   ColumnName,
   CoreUpsetData,
@@ -59,7 +59,7 @@ function calculateDeviation(
 /**
  * Generates an ID by concatenating a prefix with an array of strings.
  * Replaces spaces in each string with underscores.
- * 
+ *
  * @param prefix - The prefix to be added to the ID.
  * @param arr - An array of strings to be concatenated.
  * @returns The generated ID.
@@ -98,7 +98,7 @@ function getSetColumns(columns: ColumnDefs): ColumnName[] {
 
 /**
  * Retrieves the attribute columns from the given column definitions.
- * 
+ *
  * @param columns - The column definitions.
  * @returns An array of attribute column names.
  */
@@ -110,7 +110,7 @@ function getAttributeColumns(columns: ColumnDefs): ColumnName[] {
 
 /**
  * Processes raw data and returns an object containing various properties.
- * 
+ *
  * @param data - The raw data to be processed.
  * @param columns - The column definitions.
  * @returns An object containing the processed data.
@@ -161,7 +161,7 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
 
 /**
  * Calculates the five-number summary for each attribute in the given items.
- * 
+ *
  * @param items - The items to calculate the summary for.
  * @param memberItems - The member items to consider.
  * @param attributeColumns - The attribute columns to calculate the summary for.
@@ -171,8 +171,8 @@ export function getFiveNumberSummary(
   items: Items,
   memberItems: string[],
   attributeColumns: string[],
-): Attributes {
-  const attributes: Attributes = {};
+): AttributeList {
+  const attributes: AttributeList = {};
 
   attributeColumns.forEach((attribute) => {
     const values = memberItems
@@ -324,7 +324,7 @@ export function getSubsets(
       }
     });
 
-    const deviation = calculateDeviation(
+    const subsetDeviation = calculateDeviation(
       items.length,
       itm.length,
       sets,
@@ -338,6 +338,8 @@ export function getSubsets(
       setMembershipStatus[set] = combo[idx];
     });
 
+    const subsetAttributes = { ...getFiveNumberSummary(dataItems, itm, attributeColumns), deviation: subsetDeviation };
+
     const subset: Subset = {
       id: getId('Subset', intersectionName[comboBinary]),
       elementName: intersectionName[comboBinary],
@@ -345,8 +347,7 @@ export function getSubsets(
       size: itm.length,
       type: 'Subset',
       setMembership: setMembershipStatus,
-      deviation,
-      attributes: getFiveNumberSummary(dataItems, itm, attributeColumns),
+      attributes: subsetAttributes,
     };
 
     subsets.values[subset.id] = subset;

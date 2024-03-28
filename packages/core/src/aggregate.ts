@@ -101,11 +101,12 @@ function aggregateByDegree(
       size: 0,
       type: 'Aggregate',
       setMembership: {},
-      deviation: 0,
       aggregateBy: 'Degree',
       level,
       description: i === 0 ? 'in no set' : `${i} set intersection`,
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -128,15 +129,18 @@ function aggregateByDegree(
     relevantAggregate.items.values[subsetId] = subset;
     relevantAggregate.items.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.deviation += subset.deviation;
+    relevantAggregate.attributes.deviation += subset.attributes.deviation;
   });
 
   aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
+    aggs.values[aggId].attributes = {
+      ...getFiveNumberSummary(
+        items,
+        getItems(aggs.values[aggId]),
+        attributeColumns,
+      ),
+      deviation: aggs.values[aggId].attributes.deviation,
+    };
   });
 
   return aggs;
@@ -198,11 +202,12 @@ function aggregateBySets(
         set === UNINCLUDED
           ? { ...setMembershipNone }
           : { ...setMembership, [set]: 'Yes' },
-      deviation: 0,
       aggregateBy: 'Sets',
       level,
       description: elementName,
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -229,7 +234,7 @@ function aggregateBySets(
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.deviation += subset.deviation;
+      relevantAggregate.attributes.deviation += subset.attributes.deviation;
     }
 
     belongingSets.forEach((set) => {
@@ -240,16 +245,19 @@ function aggregateBySets(
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.deviation += subset.deviation;
+      relevantAggregate.attributes.deviation += subset.attributes.deviation;
     });
   });
 
   aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
+    aggs.values[aggId].attributes = {
+      ...getFiveNumberSummary(
+        items,
+        getItems(aggs.values[aggId]),
+        attributeColumns,
+      ),
+      deviation: aggs.values[aggId].attributes.deviation,
+    };
   });
 
   return aggs;
@@ -307,10 +315,11 @@ function aggregateByDeviation(
       size: 0,
       type: 'Aggregate',
       setMembership: {},
-      deviation: 0,
       aggregateBy: 'Deviations',
       level,
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -324,7 +333,7 @@ function aggregateByDeviation(
 
   subsets.order.forEach((subsetId) => {
     let subset = subsets.values[subsetId];
-    const deviationType = subset.deviation >= 0 ? 'pos' : 'neg';
+    const deviationType = subset.attributes.deviation >= 0 ? 'pos' : 'neg';
 
     const relevantAggregate = aggs.values[deviationMap[deviationType]];
 
@@ -333,15 +342,18 @@ function aggregateByDeviation(
     relevantAggregate.items.values[subsetId] = subset;
     relevantAggregate.items.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.deviation += subset.deviation;
+    relevantAggregate.attributes.deviation += subset.attributes.deviation;
   });
 
   aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
+    aggs.values[aggId].attributes = {
+      ...getFiveNumberSummary(
+        items,
+        getItems(aggs.values[aggId]),
+        attributeColumns,
+      ),
+      deviation: aggs.values[aggId].attributes.deviation,
+    };
   });
 
   return aggs;
@@ -410,10 +422,11 @@ function aggregateByOverlaps(
       type: 'Aggregate',
       aggregateBy: 'Overlaps',
       setMembership: sm,
-      deviation: 0,
       level,
       description: setNames.join(' - '),
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -442,16 +455,19 @@ function aggregateByOverlaps(
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.deviation += subset.deviation;
+      relevantAggregate.attributes.deviation += subset.attributes.deviation;
     });
   });
 
   aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
+    aggs.values[aggId].attributes = {
+      ...getFiveNumberSummary(
+        items,
+        getItems(aggs.values[aggId]),
+        attributeColumns,
+      ),
+      deviation: aggs.values[aggId].attributes.deviation,
+    };
   });
 
   return aggs;

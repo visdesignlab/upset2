@@ -45,8 +45,13 @@ export type FiveNumberSummary = {
   third?: number;
 };
 
-export type Attributes = {
-  [attribute: string]: FiveNumberSummary;
+export type AttributeList = {
+  [attribute: string]: FiveNumberSummary | number;
+}
+
+export type Attributes = AttributeList & {
+  deviation: number;
+  degree?: number;
 };
 
 export type BaseElement = {
@@ -61,7 +66,14 @@ export type BaseElement = {
 
 export type SetMembershipStatus = 'Yes' | 'No' | 'May';
 
-export type ISet = BaseElement & {
+export type ISet = {
+  id: string;
+  elementName: string;
+  items: string[];
+  type: RowType;
+  size: number;
+  parent?: string | undefined;
+  attributes: AttributeList;
   setMembership: { [key: string]: SetMembershipStatus };
 };
 
@@ -69,8 +81,8 @@ export const UNINCLUDED = 'unincluded';
 
 export type Sets = { [set_id: string]: ISet };
 
-type BaseIntersection = ISet & {
-  deviation: number;
+type BaseIntersection = BaseElement & {
+  setMembership: { [key: string]: SetMembershipStatus };
 };
 
 export type Subset = BaseIntersection;
@@ -191,7 +203,6 @@ export type AccessibleDataEntry = {
   elementName: string;
   type: RowType;
   size: number;
-  deviation: number;
   attributes: Attributes;
   degree: number;
   id?: string;
