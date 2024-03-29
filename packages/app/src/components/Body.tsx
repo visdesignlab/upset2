@@ -67,7 +67,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
   }
 
   return (
-    <div>
+    <div style={{maxWidth: "100vw"}}>
       { data.setColumns.length === 0 ?
         <ErrorModal />:
         <Upset

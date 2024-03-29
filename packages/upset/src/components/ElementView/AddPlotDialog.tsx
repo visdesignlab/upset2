@@ -4,9 +4,9 @@ import {
 } from '@mui/material';
 import { FC, ReactNode, useState } from 'react';
 
-import { AddHistogram, AddScatterplot, AddWordCloud } from './AddPlot';
+import { AddHistogram, AddScatterplot } from './AddPlot';
 
-type PlotType = 'Scatterplot' | 'Histogram' | 'WordCloud';
+type PlotType = 'Scatterplot' | 'Histogram';
 
 type TabProps = {
   children?: ReactNode;
@@ -69,7 +69,6 @@ export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
       >
         <Tab label="Scatterplot" value="Scatterplot" />
         <Tab label="Histogram" value="Histogram" />
-        <Tab label="Word Cloud" value="WordCloud" />
       </Tabs>
 
       <TabPanel index="Scatterplot" value={currentTab}>
@@ -77,9 +76,6 @@ export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
       </TabPanel>
       <TabPanel index="Histogram" value={currentTab}>
         <AddHistogram handleClose={onClose} />
-      </TabPanel>
-      <TabPanel index="WordCloud" value={currentTab}>
-        <AddWordCloud />
       </TabPanel>
     </Dialog>
   );

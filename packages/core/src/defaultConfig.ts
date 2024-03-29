@@ -27,7 +27,6 @@ export const DefaultConfig: UpsetConfig = {
   plots: {
     scatterplots: [],
     histograms: [],
-    wordClouds: [],
   },
   allSets: [],
 };

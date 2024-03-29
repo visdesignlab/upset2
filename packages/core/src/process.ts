@@ -216,7 +216,7 @@ function getSets(
   const sets: Sets = {};
   setColumns.forEach((col) => {
     const set: ISet = {
-      id: getId('Set', col),
+      id: `Set_${col}`,
       elementName: col,
       items: setMembership[col],
       type: 'Set',

@@ -186,9 +186,6 @@ const addPlotAction = registry.register(
       case 'Scatterplot':
         state.plots.scatterplots = [...state.plots.scatterplots, plot];
         break;
-      case 'Word Cloud':
-        state.plots.wordClouds = [...state.plots.wordClouds, plot];
-        break;
       default:
         throw new Error(`Unknown plot type: ${plot.type}`);
     }
@@ -208,11 +205,6 @@ const removePlotAction = registry.register(
         break;
       case 'Scatterplot':
         state.plots.scatterplots = state.plots.scatterplots.filter(
-          (d) => d.id !== plot.id,
-        );
-        break;
-      case 'Word Cloud':
-        state.plots.wordClouds = state.plots.wordClouds.filter(
           (d) => d.id !== plot.id,
         );
         break;
