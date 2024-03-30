@@ -9,7 +9,7 @@ import { flattenedOnlyRows } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
   bookmarkedIntersectionSelector,
-  currentIntersectionAtom,
+  currentIntersectionSelector,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 import { ProvenanceContext } from '../Root';
@@ -18,7 +18,7 @@ import { dataAtom } from '../../atoms/dataAtom';
 export const ElementQueries = () => {
   const { provenance, actions } = useContext(ProvenanceContext);
   const [currentIntersection, setCurrentIntersection] = useRecoilState(
-    currentIntersectionAtom,
+    currentIntersectionSelector,
   );
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);

@@ -1,12 +1,23 @@
 import { Bookmark, Row } from '@visdesignlab/upset2-core';
-import { atom, selector } from 'recoil';
+import { DefaultValue, selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
-export const currentIntersectionAtom = atom<Row | null>({
+/**
+ * Represents the currently selected intersection,
+ * which is tracked by & pulled from the upsetConfigAtom
+ */
+export const currentIntersectionSelector = selector<Row | null>({
   key: 'current-intersection',
-  default: null,
+  get: ({ get }) => get(upsetConfigAtom).selected,
+  set: ({ set }, newValue) => {
+    set(upsetConfigAtom, (old) => {
+      // Type guard to convert (Row | DefaultValue | null) to (Row | null)
+      old.selected = newValue instanceof DefaultValue ? null : newValue;
+      return old;
+    });
+  }
 });
 
 export const bookmarkedIntersectionSelector = selector<Bookmark[]>({

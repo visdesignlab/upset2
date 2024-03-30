@@ -1,5 +1,5 @@
 import { Subset, getBelongingSetsFromSetMembership, getDegreeFromSetMembership } from '@visdesignlab/upset2-core';
-import React, { FC, useState } from 'react';
+import { FC, useState, useContext } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
@@ -7,7 +7,7 @@ import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { DeviationBar } from '../Columns/DeviationBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -15,6 +15,8 @@ import {
 import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { Degree } from '../Columns/Degree';
+import { ProvenanceContext } from '../Root';
+import { Row } from '@visdesignlab/upset2-core';
 
 type Props = {
   subset: Subset;
@@ -22,10 +24,17 @@ type Props = {
 
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
-  const currentIntersection = useRecoilValue(currentIntersectionAtom);
-  const setCurrentIntersection = useSetRecoilState(currentIntersectionAtom);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+
+  // Use trrack action for current intersection
+  const { actions } = useContext(
+    ProvenanceContext,
+  );
+  function setCurrentIntersection(inter: Row | null) {
+    actions.setSelected(inter);
+  }
 
   const setColumnHighlight = useSetRecoilState(columnHoverAtom);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
@@ -37,7 +46,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       onMouseMove={(e) => e.stopPropagation()}
       onClick={
         () => {
-          if (currentIntersection !== null && currentIntersection.id === subset.id) { // if the row is already selected, deselect it
+          if (currentIntersection?.id === subset.id) { // if the row is already selected, deselect it
             setCurrentIntersection(null);
             setColumnSelect([]);
             setHover(subset.id);
@@ -63,7 +72,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         height={dimensions.body.rowHeight}
         width={dimensions.body.rowWidth}
         css={
-          currentIntersection !== null && currentIntersection.id === subset.id
+          currentIntersection?.id === subset.id
             ? highlight
             : (hover === subset.id)
               ? hoverHighlight

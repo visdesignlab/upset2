@@ -2,7 +2,7 @@ import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';
@@ -21,7 +21,7 @@ const highlightColors = ['rgb(116, 173, 209)', 'rgb(94, 102, 171)', 'rgb(29, 41,
 export const SizeBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
-  const currentIntersection = useRecoilValue(currentIntersectionAtom);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
 
@@ -56,7 +56,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
       return bookmarkedColorPallete[row.id];
     }
 
-    if (row !== undefined && currentIntersection !== null && currentIntersection.id === row.id) { // if currently selected, use the highlight colors
+    if (currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
       return highlightColors[index];
     }
     return colors[index];
