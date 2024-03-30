@@ -290,7 +290,7 @@ const setPlotInformationAction = registry.register(
 
 const setSelectedAction = registry.register(
   'select-intersection',
-  (state, intersection) => {
+  (state: UpsetConfig, intersection) => {
     state.selected = intersection;
     return state;
   },
@@ -346,7 +346,12 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
-    setSelected: (intersection: Row) => provenance.apply(`Selected "${intersection.elementName.replaceAll('~&~', ' ')}"`, setSelectedAction(intersection)),
+    setSelected: (intersection: Row) => provenance.apply(
+      intersection ? 
+      `Select intersection "${intersection.elementName.replaceAll('~&~', ' ')}"` :
+      'Deselect intersection', 
+      setSelectedAction(intersection)
+    ),
   };
 }
 
