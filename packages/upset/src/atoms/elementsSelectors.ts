@@ -32,7 +32,7 @@ export const elementSelector = selectorFamily<
       color: palette[id] || get(nextColorSelector),
       isCurrentSelected: !!currentIntersection,
       isCurrent:
-        !!(currentIntersection && currentIntersection.id === id),
+        !!(currentIntersection?.id === id),
     }));
   },
 });
