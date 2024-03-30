@@ -6,7 +6,10 @@ import { upsetConfigAtom } from './upsetConfigAtoms';
 
 /**
  * Represents the currently selected intersection,
- * which is tracked by & pulled from the upsetConfigAtom
+ * which is tracked by & pulled from the upsetConfigAtom.
+ * Defaults to undefined in some cases, which is equivalent to null,
+ * ie no intersection is selected.
+ * @returns {Row | null | undefined} The currently selected intersection.
  */
 export const currentIntersectionSelector = selector<Row | null>({
   key: 'current-intersection',
