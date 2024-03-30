@@ -65,7 +65,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   return (
     <g
       onMouseMove={(e) => e.stopPropagation()}
-      onClick={() => aggregateRow && (actions.setSelected(aggregateRow))}
+      onClick={() => aggregateRow && 
+        (currentIntersection?.id === aggregateRow.id ? 
+          actions.setSelected(null) : actions.setSelected(aggregateRow))}
       css={mousePointer}
     >
       <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
