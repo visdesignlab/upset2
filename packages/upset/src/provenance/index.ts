@@ -348,7 +348,7 @@ export function getActions(provenance: UpsetProvenance) {
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
     setSelected: (intersection: Row) => provenance.apply(
       intersection ? 
-      `Select intersection "${intersection.elementName.replaceAll('~&~', ' ')}"` :
+      `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
       'Deselect intersection', 
       setSelectedAction(intersection)
     ),
