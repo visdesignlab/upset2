@@ -22,6 +22,10 @@ type Props = {
   subset: Subset;
 };
 
+/**
+ * A row in the upset plot that represents a subset.
+ * @param subset The subset to display data for
+ */
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -32,6 +36,11 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const { actions } = useContext(
     ProvenanceContext,
   );
+  /**
+   * Sets the currently selected intersection and fires
+   * a Trrack action to update the provenance graph.
+   * @param inter intersection to select
+   */
   function setCurrentIntersection(inter: Row | null) {
     actions.setSelected(inter);
   }
