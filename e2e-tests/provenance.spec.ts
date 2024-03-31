@@ -32,7 +32,8 @@ test.beforeEach(async ({ page }) => {
 
 /**
  * Asserts that trrack history works for selecting and deselecting rows, provenance tree is displayed correctly, 
- * reverting to an earlier state works, and aggregate rows can be selected and deselected.
+ * reverting to an earlier state works, elementView row deselection is trracked,
+ *  and aggregate rows can be selected and deselected.
  */
 test('Selection History', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
@@ -56,5 +57,14 @@ test('Selection History', async ({ page }) => {
   await page.locator('.css-zf6412').click();
   await page.locator('g:nth-child(7) > .css-1kek4un-Y > g:nth-child(4) > rect').click();
   await expect(page.getByText('Deselect intersection')).toBeVisible();
+  await expect(page.getByText('Select intersection "Duff Fan')).toBeVisible();
+  await page.getByLabel('Open element view sidebar').click();
+  await page.locator('svg[data-testid="StarBorderIcon"]').click();
+  await page.locator('span.MuiChip-label+svg[data-testid="StarIcon"]').click();
+  await page.getByLabel('Open additional options menu').click();
+  await page.getByLabel('Open history tree sidebar').click();
+  await expect(page.getByText('Unbookmark Duff Fan & Male')).toBeVisible();
+  await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
+  await expect(page.getByText('Bookmark Duff Fan & Male', { exact: true })).toBeVisible();
   await expect(page.getByText('Select intersection "Duff Fan')).toBeVisible();
 });
