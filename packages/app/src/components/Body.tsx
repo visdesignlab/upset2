@@ -11,6 +11,8 @@ import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { api } from '../atoms/authAtoms';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
+import { loadingAtom } from '../atoms/loadingAtom';
+import { Backdrop, CircularProgress } from '@mui/material';
 
 type Props = {
   yOffset: number;
@@ -25,6 +27,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
   const [ isProvVisOpen, setIsProvVisOpen ] = useRecoilState(provenanceVisAtom);
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
+  const loading = useRecoilValue(loadingAtom);
 
   const provVis = {
     open: isProvVisOpen,
@@ -92,17 +95,22 @@ export const Body = ({ yOffset, data, config }: Props) => {
     <div style={{maxWidth: "100vw"}}>
       { data.setColumns.length === 0 ?
         <ErrorModal />:
-        <Upset
-          data={data}
-          loadAttributes={3}
-          yOffset={yOffset === -1 ? 0 : yOffset}
-          extProvenance={provObject}
-          config={config}
-          provVis={provVis}
-          elementSidebar={elementSidebar}
-          altTextSidebar={altTextSidebar}
-          generateAltText={generateAltText}
-        />
+        <div>
+          <Backdrop open={loading} style={{zIndex: 1000}}>
+            <CircularProgress color="inherit" />
+          </Backdrop>
+          <Upset
+            data={data}
+            loadAttributes={3}
+            yOffset={yOffset === -1 ? 0 : yOffset}
+            extProvenance={provObject}
+            config={config}
+            provVis={provVis}
+            elementSidebar={elementSidebar}
+            altTextSidebar={altTextSidebar}
+            generateAltText={generateAltText}
+          />
+        </div>
       }
     </div>
   );

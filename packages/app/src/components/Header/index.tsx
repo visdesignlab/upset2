@@ -7,8 +7,9 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
 import { AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography } from '@mui/material';
-import { useRecoilValue, useRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import React, { useContext, useEffect, useState } from 'react';
+import localforage from 'localforage';
 import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { getQueryParam, queryParamAtom, saveQueryParam } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
@@ -21,6 +22,7 @@ import { Link } from 'react-router-dom';
 import { getUserInfo } from '../../getUserInfo';
 import { restoreQueryParam } from '../../atoms/queryParamAtom';
 import { altTextSidebarAtom } from '../../atoms/altTextSidebarAtom';
+import { loadingAtom } from '../../atoms/loadingAtom';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -28,6 +30,7 @@ const Header = ({ data }: { data: any }) => {
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
   const importError = useRecoilValue(importErrorAtom);
+  const setLoading = useSetRecoilState(loadingAtom);
   
   const { provenance } = useContext(ProvenanceContext);
   
@@ -99,14 +102,19 @@ const Header = ({ data }: { data: any }) => {
   /**
    * Dispatches the state by saving relevant data to the local storage.
    * This function saves the 'data', 'rows', 'visibleSets', 'hiddenSets', and query parameters to the local storage.
-   * TODO: resolve cache size limit issues for large datasets (10mb)
    */
-  const dispatchState = () => {
-    localStorage.setItem('data', JSON.stringify(data));
-    localStorage.setItem('rows', JSON.stringify(getAccessibleData(getRows(data, provenance.getState()), true)));
-    localStorage.setItem('visibleSets', JSON.stringify(visibleSets));
-    localStorage.setItem('hiddenSets', JSON.stringify(hiddenSets.map((set: Column) => set.name)));
+  async function dispatchState() {
+    setLoading(true);
+    await Promise.all([
+      localforage.clear(),
+      localforage.setItem('data', data),
+      localforage.setItem('rows', getAccessibleData(getRows(data, provenance.getState()), true)),
+      localforage.setItem('visibleSets', visibleSets),
+      localforage.setItem('hiddenSets', hiddenSets.map((set: Column) => set.name))
+    ]);
+
     saveQueryParam();
+    setLoading(false);
   };
 
   const [ userInfo, setUserInfo ] = useState<UserSpec | null>(null);
