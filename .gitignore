@@ -156,6 +156,7 @@ sketch
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+*playwright-report*
 
 # typedoc
 /docs/
