@@ -184,7 +184,7 @@ export type UpsetConfig = {
     histograms: Histogram[];
   };
   allSets: Column[];
-  selected: Bookmark;
+  selected: Row;
 };
 
 export type AccessibleDataEntry = {
