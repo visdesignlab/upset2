@@ -37,32 +37,43 @@ test.beforeEach(async ({ page }) => {
  */
 test('Selection History', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
-
   await page.getByLabel('Open additional options menu').click();
   await page.getByLabel('Open history tree sidebar').click();
+
+  // Testing history for a subset selection & deselection
   await page.locator('circle').first().click();
   await page.locator('circle').first().click();
   await expect(page.locator('div').filter({ hasText: /^Select intersection "School & Male"$/ }).nth(2)).toBeVisible();
   await expect(page.locator('div').filter({ hasText: /^Deselect intersection$/ }).nth(2)).toBeVisible();
+
+  // Testing history for an aggregate row selection & deselection
   await page.getByRole('radio', { name: 'Degree' }).check();
   await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').click();
   await expect(page.locator('div').filter({ hasText: /^Select intersection "Degree 3"$/ }).nth(2)).toBeVisible();
   await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').click();
   await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
+
+  // Check that selections are maintained after de-aggregation
   await page.locator('g:nth-child(4) > .css-1kek4un-Y > g:nth-child(4) > rect').click();
   await page.getByRole('radio', { name: 'None' }).check();
   await page.locator('.css-zf6412').click();
   await expect(page.getByText('Deselect intersection').nth(2)).toBeVisible();
+
+  // Check that selections can be reverted & start a new history tree branch
   await page.locator('g:nth-child(10) > circle').click();
   await page.locator('.css-zf6412').click();
   await page.locator('g:nth-child(7) > .css-1kek4un-Y > g:nth-child(4) > rect').click();
   await expect(page.getByText('Deselect intersection')).toBeVisible();
   await expect(page.getByText('Select intersection "Duff Fan')).toBeVisible();
+
+  // Check that deselection triggered by element view unbookmarking is reflected in history tree.
+  // Also tests that the bookmarking & unbookmarking is trracked
   await page.getByLabel('Open element view sidebar').click();
   await page.locator('svg[data-testid="StarBorderIcon"]').click();
   await page.locator('span.MuiChip-label+svg[data-testid="StarIcon"]').click();
   await page.getByLabel('Open additional options menu').click();
   await page.getByLabel('Open history tree sidebar').click();
+  
   await expect(page.getByText('Unbookmark Duff Fan & Male')).toBeVisible();
   await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
   await expect(page.getByText('Bookmark Duff Fan & Male', { exact: true })).toBeVisible();
