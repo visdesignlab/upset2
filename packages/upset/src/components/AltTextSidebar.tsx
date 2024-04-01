@@ -72,9 +72,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       setTextDescription(resp);
     }
 
-    if (currState.firstAggregateBy === 'None') {
-      generate();
-    }
+    generate();
   }, [currState]);
 
   // this useEffect resets the plot information when the edit is toggled off

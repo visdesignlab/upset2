@@ -50,11 +50,33 @@ export const Body = ({ yOffset, data, config }: Props) => {
     })
   }, [provObject.provenance, sessionId, workspace]);
 
-  async function generateAltText() {
+  /**
+   * Generates alt text for a plot based on the current state and configuration.
+   * If an error occurs during the generation, an error message is returned.
+   * Alt text generation currently is not supported for aggregated plots
+   * and an error message is returned if the plot is aggregated.
+   * @returns A promise that resolves to the generated alt text.
+   */
+  async function generateAltText(): Promise<string> {
     const state = provObject.provenance.getState();
     const config = getAltTextConfig(state, data, getRows(data, state));
 
-    const response = await api.generateAltText(true, config);
+    if (config.firstAggregateBy !== "None") {
+      return "Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.";
+    }
+
+    let response;
+    try {
+      response = await api.generateAltText(true, config);
+    } catch (e: any) {
+      if (e.response.status === 500) {
+        return "Server error while generating alt text. Please try again later. If the issue persists, please contact an UpSet developer at vdl-faculty@sci.utah.edu.";
+      } else if (e.response.status === 400) {
+        return "Error generating alt text. Contact an upset developer at vdl-faculty@sci.utah.edu.";
+      } else {
+        return "Unknown error while generating alt text: " + e.response.statusText + ". Please contact an UpSet developer at vdl-faculty@sci.utah.edu.";
+      }
+    }
     return response.alttxt.longDescription;
   }
 

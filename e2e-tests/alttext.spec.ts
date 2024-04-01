@@ -59,6 +59,12 @@ test('Alt Text', async ({ page }) => {
   await expect(plotInformation).toBeVisible();
   await plotInformation.click();
 
+  // Test error message for aggregated plots
+  await page.getByRole('radio', { name: 'Degree' }).check();
+  const aggErrMsg = await page.getByText("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
+  await expect(aggErrMsg).toBeVisible();
+  await page.getByRole('radio', { name: 'None' }).check();
+
   const editPlotInformationButton = await page.getByLabel('Toggle editable descriptions');
   await expect(editPlotInformationButton).toBeVisible();
   await editPlotInformationButton.click();
