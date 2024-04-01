@@ -13,8 +13,17 @@ import App from './App';
 import DefaultTheme from './components/theme';
 import { api, client_id, oAuth } from './atoms/authAtoms';
 import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
+import localforage from 'localforage';
 
 // import reportWebVitals from './reportWebVitals';
+
+localforage.config({
+  name: 'UpSet2-Data',
+  storeName: 'upset2-data',
+  description: 'Local storage for Upset2 datatable',
+  size: 30 * 1024 * 1024, // Size of the database in bytes (30 MB) (used only in WEBSQL fallback driver)
+  driver: [localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE], // fallback drivers
+});
 
 const loginTokenKey = `oauth-token-${client_id}`;
 const sharedLoginCookie = readSharedLoginCookie();
