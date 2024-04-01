@@ -56,6 +56,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
       return bookmarkedColorPallete[row.id];
     }
 
+    // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
     if (currentIntersection && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
       return highlightColors[index];
     }
