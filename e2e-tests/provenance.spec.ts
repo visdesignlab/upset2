@@ -41,8 +41,8 @@ test('Selection History', async ({ page }) => {
   await page.getByLabel('Open history tree sidebar').click();
 
   // Testing history for a subset selection & deselection
-  await page.locator('circle').first().click();
-  await page.locator('circle').first().click();
+  await page.locator('g > circle').first().click();
+  await page.locator('g > circle').first().click();
   await expect(page.locator('div').filter({ hasText: /^Select intersection "School & Male"$/ }).nth(2)).toBeVisible();
   await expect(page.locator('div').filter({ hasText: /^Deselect intersection$/ }).nth(2)).toBeVisible();
 
