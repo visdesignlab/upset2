@@ -11,7 +11,6 @@ import { columnsAtom } from '../atoms/columnAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
 import { dataAtom } from '../atoms/dataAtom';
-import { columnHoverAtom } from '../atoms/highlightAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import {
@@ -65,7 +64,6 @@ export const Root: FC<Props> = ({
 
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
-  const [columnHover, setColumnHover] = useRecoilState(columnHoverAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
@@ -103,13 +101,6 @@ export const Root: FC<Props> = ({
     setData(data);
   }, [data]);
 
-  // remove column hover state
-  const removeHover = () => {
-    if (columnHover.length > 0) {
-      setColumnHover([]);
-    }
-  };
-
   // close all open context menus
   const removeContextMenu = () => {
     setContextMenu(null);
@@ -117,10 +108,8 @@ export const Root: FC<Props> = ({
 
   useEffect(() => {
     document.addEventListener('contextmenu', removeContextMenu, false);
-    document.addEventListener('mousemove', removeHover, false);
 
     return function removeListeners() {
-      document.removeEventListener('mousemove', removeHover, false);
       document.removeEventListener('contextmenu', removeContextMenu, false);
     };
   }, []);
