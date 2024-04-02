@@ -16,6 +16,7 @@ import { Axis } from '../custom/Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
+import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -100,8 +101,12 @@ export const SizeHeader: FC = () => {
     );
   };
 
+  /**
+   * Updates the scale of the header based on the largest subset as long as the advanced scale slider hasn't taken
+   * control and set a value 
+   */
   useEffect(() => {
-    if (maxC !== -1) return;
+    if (advancedScale) return;
     const subs = Object.values(subsets.values);
     if (subs.length === 0) return;
 
