@@ -16,7 +16,6 @@ import { Axis } from '../custom/Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
-import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -113,7 +112,7 @@ export const SizeHeader: FC = () => {
     const sizes = subs.map((s) => s.size);
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
-  }, [subsets, maxSize]);
+  }, [subsets, maxSize, advancedScale]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
 
