@@ -52,7 +52,6 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
 
   return (
     <g
-      onMouseMove={(e) => e.stopPropagation()}
       onClick={
         () => {
           if (currentIntersection?.id === subset.id) { // if the row is already selected, deselect it
@@ -74,6 +73,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       }
       onMouseLeave={() => {
         setHover(null);
+        setColumnHighlight([]);
       }}
       css={mousePointer}
     >
