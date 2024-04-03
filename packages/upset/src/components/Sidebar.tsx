@@ -131,6 +131,7 @@ export const Sidebar = () => {
                       value={firstOverlapDegree}
                       onChange={(ev) => {
                         let val = parseInt(ev.target.value, 10);
+                        if (!val) return; // Blocks users from clearing the input
                         if (val < 2) val = 2;
                         if (val > visibleSets.length) val = visibleSets.length;
                         if (val === firstOverlapDegree) return; // Don't dispatch action if overlap hasn't changed
@@ -194,6 +195,7 @@ export const Sidebar = () => {
                         value={secondOverlapDegree}
                         onChange={(ev) => {
                           let val = parseInt(ev.target.value, 10);
+                          if (!val) return; // Block users from clearing the input
                           if (val < 2) val = 2;
                           if (val > visibleSets.length) val = visibleSets.length;
                           if (val === secondOverlapDegree) return; // Don't dispatch an action if overlap hasn't changed
