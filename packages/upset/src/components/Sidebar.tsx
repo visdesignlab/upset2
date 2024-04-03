@@ -133,6 +133,7 @@ export const Sidebar = () => {
                         let val = parseInt(ev.target.value, 10);
                         if (val < 2) val = 2;
                         if (val > visibleSets.length) val = visibleSets.length;
+                        if (val === firstOverlapDegree) return; // Don't dispatch action if overlap hasn't changed
                         actions.firstOverlapBy(val);
                       }}
                     />
@@ -195,6 +196,7 @@ export const Sidebar = () => {
                           let val = parseInt(ev.target.value, 10);
                           if (val < 2) val = 2;
                           if (val > visibleSets.length) val = visibleSets.length;
+                          if (val === secondOverlapDegree) return; // Don't dispatch an action if overlap hasn't changed
                           actions.secondOverlapBy(val);
                         }}
                       />
