@@ -17,3 +17,9 @@ code {
   width: 32px;
   margin-right: 10px;
 }
+
+@media only screen and (max-width: 1060px) {
+  #upset-title {
+    display: none;
+  }
+}
