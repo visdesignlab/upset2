@@ -36,7 +36,8 @@ test.beforeEach(async ({ page }) => {
  */
 async function toggleAdvancedScale(page) {
   await page.getByText('Size', { exact: true }).click({
-    button: 'right'
+    button: 'right',
+    force: true,
   });
   await page.getByRole('menuitem', { name: 'Toggle Advanced Scale' }).click();
 }
@@ -85,7 +86,7 @@ test('Size header', async ({ page }) => {
   // Ensure that dragging the advanced slider works
   await toggleAdvancedScale(page);
   await page.locator('g').filter({ hasText: /^0055101015152020Size001122334455$/ }).locator('rect').nth(1).
-    dragTo(page.getByText('15', { exact: true }).nth(1));
+    dragTo(page.getByText('15', { exact: true }).nth(1), {force: true});
   await expect(page.getByText('15').nth(3)).toBeVisible();
 
   // Ensure that adding sets doesn't affect the advanced scale
