@@ -184,6 +184,7 @@ export type UpsetConfig = {
     histograms: Histogram[];
   };
   allSets: Column[];
+  selected: Row;
 };
 
 export type AccessibleDataEntry = {

@@ -1,12 +1,21 @@
 import { Bookmark, Row } from '@visdesignlab/upset2-core';
-import { atom, selector } from 'recoil';
+import { selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
-export const currentIntersectionAtom = atom<Row | null>({
+
+/**
+ * Represents the currently selected intersection,
+ * which is tracked by & pulled from the upsetConfigAtom.
+ * Defaults to undefined in some cases, which is equivalent to null,
+ * ie no intersection is selected.
+ * @returns {Row | null | undefined} The currently selected intersection.
+ */
+export const currentIntersectionSelector = selector<Row | null | undefined>({
   key: 'current-intersection',
-  default: null,
+  get: ({ get }) => get(upsetConfigAtom).selected,
+  // No setter; this should be set by calling actions.setSelected(intersection)
 });
 
 export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
