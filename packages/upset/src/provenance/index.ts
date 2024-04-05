@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig,
+  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -288,6 +288,14 @@ const setPlotInformationAction = registry.register(
   },
 );
 
+const setSelectedAction = registry.register(
+  'select-intersection',
+  (state: UpsetConfig, intersection) => {
+    state.selected = intersection;
+    return state;
+  },
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -338,6 +346,12 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
+    setSelected: (intersection: Row) => provenance.apply(
+      intersection ? 
+      `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
+      'Deselect intersection', 
+      setSelectedAction(intersection)
+    ),
   };
 }
 

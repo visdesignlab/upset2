@@ -33,10 +33,11 @@ export const ProvenanceVis = ({ open, close }: Props) => {
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           padding: '1em',
-          marginTop: '2em',
+          marginTop: '3em',
           width: (open) ? initialDrawerWidth : 0,
           boxSizing: 'border-box',
           zIndex: 0,
+          maxHeight: 'calc(100% - 3em)',
         },
       }}
     >
