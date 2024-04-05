@@ -65,35 +65,45 @@ async function addSetByName(page, setName: string) {
 }
 
 /**
+ * Asserts that the max value of the size scale is equal to the given max value
+ * @param page page provided to test
+ * @param max max value to assert
+ */
+async function assertSizeScaleMax(page, max: number) {
+  await expect(page.locator('g.details-scale > g > g:last-child > text').nth(1))
+    .toHaveText(new RegExp('^' + max + '$'));
+}
+
+/**
  * Tests that the size header resizes when sets are added/removed and the advanced scale slider works
  */
 test('Size header', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   // Ensure that the scale increases when necessary upon set removal
-  await expect(page.locator('g').filter({ hasText: /^33$/ }).locator('text').nth(1)).toBeVisible();
+  await assertSizeScaleMax(page, 3);
   await removeSetByName(page, 'Blue Hair');
-  await expect(page.getByText('5', { exact: true }).nth(1)).toBeVisible();
+  await assertSizeScaleMax(page, 5);
 
   // Ensure that the scale decreases when necessary upon set removal
   await removeSetByName(page, 'Male');
-  await expect(page.getByText('8', { exact: true }).nth(1)).toBeVisible();
+  await assertSizeScaleMax(page, 8);
   
   // Ensure that the scale updates upon set addition
   await addSetByName(page, 'Male');
-  await expect(page.getByText('5', { exact: true }).nth(1)).toBeVisible();
+  await assertSizeScaleMax(page, 5);
 
   // Ensure that dragging the advanced slider works
   await toggleAdvancedScale(page);
   await page.locator('g').filter({ hasText: /^0055101015152020Size001122334455$/ }).locator('rect').nth(1).
     dragTo(page.getByText('15', { exact: true }).nth(1), {force: true});
-  await expect(page.getByText('15').nth(3)).toBeVisible();
+  await assertSizeScaleMax(page, 15);
 
   // Ensure that adding sets doesn't affect the advanced scale
   await addSetByName(page, 'Blue Hair');
-  await expect(page.getByText('15').nth(3)).toBeVisible();
+  await assertSizeScaleMax(page, 15);
   
   // Ensure that scale recalculates correctly when advanced is turned off
   await toggleAdvancedScale(page);
-  await expect(page.locator('g').filter({ hasText: /^33$/ }).locator('text').nth(1)).toBeVisible();
+  await assertSizeScaleMax(page, 3);
 });
