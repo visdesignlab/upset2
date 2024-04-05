@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC, useContext } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { bookmarkedIntersectionSelector, currentIntersectionAtom } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
@@ -46,8 +46,7 @@ const secondLevelXOffset = 15;
 export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const currentIntersection = useRecoilValue(currentIntersectionAtom);
-  const setCurrentIntersectionAtom = useSetRecoilState(currentIntersectionAtom);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
@@ -65,14 +64,16 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
 
   return (
     <g
-      onClick={() => aggregateRow && (setCurrentIntersectionAtom(aggregateRow))}
+      onClick={() => aggregateRow && 
+        (currentIntersection?.id === aggregateRow.id ? 
+          actions.setSelected(null) : actions.setSelected(aggregateRow))}
       css={mousePointer}
     >
       <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
         <rect
           transform={translate(0, 2)}
           css={
-            (currentIntersection !== null && currentIntersection.id === aggregateRow.id) &&
+            (currentIntersection?.id === aggregateRow.id) &&
               highlight
           }
           height={(['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? (dimensions.body.rowHeight - 4) * 2 : dimensions.body.rowHeight - 4}

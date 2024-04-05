@@ -3,13 +3,13 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Alert, Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
-import { flattenedOnlyRows } from '@visdesignlab/upset2-core';
+import { Row, flattenedOnlyRows } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
   bookmarkedIntersectionSelector,
-  currentIntersectionAtom,
+  currentIntersectionSelector,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 import { ProvenanceContext } from '../Root';
@@ -17,15 +17,22 @@ import { dataAtom } from '../../atoms/dataAtom';
 
 export const ElementQueries = () => {
   const { provenance, actions } = useContext(ProvenanceContext);
-  const [currentIntersection, setCurrentIntersection] = useRecoilState(
-    currentIntersectionAtom,
-  );
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const data = useRecoilValue(dataAtom);
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll("~&~", " & ") || "";
+
+  /**
+   * Sets the currently selected intersection and fires
+   * a Trrack action to update the provenance graph.
+   * @param inter intersection to select
+   */
+  function setCurrentIntersection(inter: Row | null) {
+    actions.setSelected(inter);
+  }
 
   return (
     <>
