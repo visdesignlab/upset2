@@ -153,7 +153,7 @@ const Header = ({ data }: { data: any }) => {
       }}>
         <Box sx={{display: 'flex', flexGrow: '1', justifyContent: 'start', alignItems: 'center', margin: 0, padding: 0}}>
           <img className="logo" id="multinet-logo" src="https://raw.githubusercontent.com/multinet-app/multinet-components/main/src/assets/multinet_logo.svg" alt="Multinet Logo"/>
-          <Typography variant="h1" noWrap component="div" sx={{ marginRight: '5px', lineHeight: '1.5', fontWeight: 'normal', fontSize: '1.3em' }}>
+          <Typography id="upset-title" variant="h1" noWrap component="div" sx={{ marginRight: '5px', lineHeight: '1.5', fontWeight: 'normal', fontSize: '1.3em' }}>
             Upset - Visualizing Intersecting Sets
           </Typography>
           <ButtonGroup>
