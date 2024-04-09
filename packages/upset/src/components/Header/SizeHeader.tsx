@@ -100,15 +100,19 @@ export const SizeHeader: FC = () => {
     );
   };
 
+  /**
+   * Updates the scale of the header based on the largest subset as long as the advanced scale slider hasn't taken
+   * control and set a value 
+   */
   useEffect(() => {
-    if (maxC !== -1) return;
+    if (advancedScale) return;
     const subs = Object.values(subsets.values);
     if (subs.length === 0) return;
 
     const sizes = subs.map((s) => s.size);
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
-  }, [subsets, maxSize]);
+  }, [subsets, maxSize, advancedScale]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
 
