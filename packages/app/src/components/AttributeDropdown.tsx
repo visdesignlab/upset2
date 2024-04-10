@@ -22,8 +22,8 @@ import { useState } from "react";
 import { CoreUpsetData } from "@visdesignlab/upset2-core";
 
 /**
- * Get the count of items that have a specific attribute value. 
- * Does not count items with null or undefined values.
+ * Get the count of items that have a specific attribute. 
+ * Does not count items with null or undefined values for this attribute.
  * @param attribute - The attribute to count.
  * @param data - The data object containing the items.
  * @returns The count of items with the specified attribute value.
@@ -70,7 +70,8 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
   })
 
   /**
-   * Handle checkbox toggle.
+   * Handle checkbox toggle: add or remove the attribute from the visible attributes
+   * and update the provenance state and plot.
    * @param e - The event object.
    */
   const handleToggle = (e: any) => {
@@ -84,6 +85,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
     }
 
     setChecked(newChecked);
+    actions.addMultipleAttributes(newChecked);
   }
 
   /**
@@ -152,23 +154,6 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
         </TableBody>
         </Table>
       </FormGroup>
-      <Box sx={{display: 'flex', justifyContent: "space-between"}}>
-        <Button color="error" onClick={props.close}>
-          Cancel
-        </Button>
-        <Button 
-          color="secondary" 
-          onClick={() => {
-            if (data) {
-              const attrToAdd = [...checked];
-              actions.addMultipleAttributes(attrToAdd);
-            }
-            props.close();
-          }}
-        >
-          Submit
-        </Button>
-      </Box>
     </Menu>
   )
 }
