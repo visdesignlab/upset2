@@ -15,7 +15,9 @@ export const Degree: FC<Props> = ({ degree }) => {
         dimensions.matrixColumn.width +
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap,
+        dimensions.bookmarkStar.gap +
+        dimensions.degreeColumn.width / 2 +
+        -6, // shift the text left to better center align it
         dimensions.body.rowHeight / 2 + 5,
       )}
     >
