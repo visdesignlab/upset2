@@ -75,20 +75,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     generate();
   }, [currState]);
 
-  // this useEffect resets the plot information when the edit is toggled off
-  useEffect(() => {
-    if (!isEditable) {
-      setPlotInformation(plotInformationState);
-    }
-  }, [isEditable]);
-
-  // this useEffect sets the plot information state to match the trrack state
-  useEffect(() => {
-    // this will prevent the state from being reset while the user is editing the form values
-    if (!isEditable) {
-      setPlotInformation(plotInformationState);
-    }
-  });
+  // this will prevent the state from being reset while the user is editing the form values
+  if (!isEditable) {
+    setPlotInformation(plotInformationState);
+  }
 
   const generatePlotInformationText = () => {
     // return default string if there are no values filled in
