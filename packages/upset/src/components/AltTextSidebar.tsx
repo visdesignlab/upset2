@@ -22,6 +22,7 @@ import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import MDEditor from '@uiw/react-md-editor';
+import { PlotInformation } from '@visdesignlab/upset2-core';
 
 type Props = {
   open: boolean;
@@ -70,6 +71,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       const resp = await generateAltText();
 
       setTextDescription(resp);
+      console.log('Generated alt text: ', resp)
     }
 
     generate();
@@ -77,7 +79,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   useEffect(() => {
     // this will prevent the state from being reset while the user is editing the form values
-    if (!isEditable) {
+    if (!isEditable &&
+      // Technically react will bail out if the values are the same, but this is a more explicit check
+      // which should also run faster.
+      // The point is to prevent an infinite loop of setting the state to the same value
+      !Object.entries(plotInformation).every(([key, value]) => value === plotInformationState[key as keyof PlotInformation])
+    ) {
       setPlotInformation(plotInformationState);
     }
   });
@@ -225,7 +232,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <MDEditor value={textDescription} />
+            <MDEditor height="100%" value={textDescription} />
           </div>
         </Box>
       </div>
