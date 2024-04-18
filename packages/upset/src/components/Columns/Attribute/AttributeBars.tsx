@@ -1,4 +1,4 @@
-import { Aggregate, Attributes, Subset } from '@visdesignlab/upset2-core';
+import { Aggregate, Attributes, Subset, getDegreeFromSetMembership } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -7,6 +7,7 @@ import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import { AttributeBar } from './AttributeBar';
 import { DeviationBar } from '../DeviationBar';
+import { Degree } from '../Degree';
 
 type Props = {
   attributes: Attributes;
@@ -15,7 +16,21 @@ type Props = {
 
 export const AttributeBars: FC<Props> = ({ attributes, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const visibleAttribute = useRecoilValue(visibleAttributesSelector);
+  const visibleAttributes = useRecoilValue(visibleAttributesSelector);
+
+  const degreeXOffset = dimensions.degreeColumn.width + dimensions.degreeColumn.gap;
+  const attributeXOffset = dimensions.attribute.width + dimensions.attribute.vGap;
+
+  function getColToRender(attribute: string) {
+    switch (attribute) {
+      case 'Degree':
+        return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />
+      case 'Deviation':
+        return <DeviationBar deviation={row.attributes.deviation} />;
+      default:
+        return <AttributeBar summary={attributes[attribute]} attribute={attribute} row={row} />;
+    }
+  }
 
   return (
     <g
@@ -24,24 +39,24 @@ export const AttributeBars: FC<Props> = ({ attributes, row }) => {
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
         dimensions.bookmarkStar.gap +
-        dimensions.degreeColumn.width +
-        dimensions.degreeColumn.gap +
         dimensions.size.width +
         dimensions.gap,
         (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
       )}
     >
-      {visibleAttribute.map((attr, idx) => (
+      {visibleAttributes.map((attribute, idx) => (
         <g
-          key={attr}
+          key={attribute}
           transform={translate(
-            idx * (dimensions.attribute.width + dimensions.attribute.vGap),
+            (attribute === 'Degree' ?
+              0 :
+              visibleAttributes.includes('Degree') ?
+                ((idx - 1) * attributeXOffset) + degreeXOffset : // Degree should always be first, and has a smaller offset than a normal attribute
+                idx * attributeXOffset),
             0,
           )}
         >
-          { attr === 'Deviation' ?
-            <DeviationBar deviation={row.attributes.deviation} /> :
-            <AttributeBar summary={attributes[attr]} attribute={attr} row={row} />}
+          { getColToRender(attribute) }
         </g>
       ))}
     </g>

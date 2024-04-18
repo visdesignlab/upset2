@@ -21,7 +21,7 @@ export const DefaultConfig: UpsetConfig = {
     hideNoSet: false,
   },
   visibleSets: [],
-  visibleAttributes: ['Deviation'],
+  visibleAttributes: ['Degree', 'Deviation'],
   bookmarkedIntersections: [],
   collapsed: [],
   plots: {
@@ -29,4 +29,5 @@ export const DefaultConfig: UpsetConfig = {
     histograms: [],
   },
   allSets: [],
+  selected: null,
 };

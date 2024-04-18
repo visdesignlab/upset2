@@ -160,9 +160,7 @@ export const SizeHeader: FC = () => {
         dimensions.matrixColumn.width +
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.degreeColumn.width +
-        dimensions.degreeColumn.gap,
+        dimensions.bookmarkStar.gap,
         dimensions.header.totalHeight - dimensions.size.height,
       )}
     >

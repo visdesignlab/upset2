@@ -90,6 +90,13 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
       newChecked.push(attr);
     }
 
+    // move 'Degree' to the first element if it is selected
+    const degreeIndex = newChecked.indexOf('Degree');
+    if (degreeIndex !== -1) {
+        newChecked.splice(degreeIndex, 1); // Remove 'Degree' from its current position
+        newChecked.unshift('Degree'); // Move 'Degree' to the beginning
+    }
+
     setChecked(newChecked);
     actions.addMultipleAttributes(newChecked);
   }

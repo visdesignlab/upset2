@@ -69,9 +69,7 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
         dimensions.matrixColumn.width +
         dimensions.bookmarkStar.gap +
         dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.degreeColumn.width +
-        dimensions.degreeColumn.gap,
+        dimensions.bookmarkStar.gap,
         (dimensions.body.rowHeight - dimensions.size.plotHeight) / 2,
       )}
     >
