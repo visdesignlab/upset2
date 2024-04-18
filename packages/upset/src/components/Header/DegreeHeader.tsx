@@ -50,6 +50,13 @@ export const DegreeHeader = () => {
       },
       disabled: sortBy === 'Degree' && sortByOrder === 'Descending',
     },
+    {
+      label: 'Remove Degree',
+      onClick: () => {
+        actions.removeAttribute('Degree');
+        handleContextMenuClose();
+      },
+    },
   ];
 
   const openContextMenu = (e: MouseEvent) => {
