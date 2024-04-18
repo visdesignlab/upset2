@@ -20,8 +20,8 @@ import { useRecoilValue } from 'recoil';
 import { Edit } from '@mui/icons-material';
 import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
-import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import MDEditor from '@uiw/react-md-editor';
 
 type Props = {
   open: boolean;
@@ -75,10 +75,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     generate();
   }, [currState]);
 
-  // this will prevent the state from being reset while the user is editing the form values
-  if (!isEditable) {
-    setPlotInformation(plotInformationState);
-  }
+  useEffect(() => {
+    // this will prevent the state from being reset while the user is editing the form values
+    if (!isEditable) {
+      setPlotInformation(plotInformationState);
+    }
+  });
 
   const generatePlotInformationText = () => {
     // return default string if there are no values filled in
@@ -223,7 +225,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <ReactMarkdownWrapper text={textDescription} />
+            <MDEditor value={textDescription} />
           </div>
         </Box>
       </div>
