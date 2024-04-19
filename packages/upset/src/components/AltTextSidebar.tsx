@@ -21,8 +21,9 @@ import { Edit } from '@mui/icons-material';
 import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import MDEditor from '@uiw/react-md-editor';
+import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from '@visdesignlab/upset2-core';
+import '../index.css';
 
 type Props = {
   open: boolean;
@@ -58,6 +59,19 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
 
+  // States for editing the alt text
+  const [textHover, setTextHover] = useState(false);
+  const [textEditing, setTextEditing] = useState(false);
+  const [caption, setCaption] = useState<string | null>(null); // User-edited alt text
+
+  /**
+   * Discards the user-edited caption and reverts to the generated alt text
+   */
+  function discardCaption(): void {
+    setCaption(null);
+    setTextEditing(false);
+  }
+
   const placeholderText = {
     description: 'movie genres and ratings',
     sets: 'movie genres (dataset columns)',
@@ -70,8 +84,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     async function generate(): Promise<void> {
       const resp = await generateAltText();
 
-      setTextDescription(resp);
-      console.log('Generated alt text: ', resp)
+      setTextDescription(resp.trim());
     }
 
     generate();
@@ -231,9 +244,32 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           </Accordion>
         </Box>
         <Box marginTop={2}>
-          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <MDEditor height="100%" value={textDescription} />
-          </div>
+            {textEditing ? (<>
+              <Button color="error" onClick={discardCaption}>Discard</Button>
+              <Button 
+                color="primary" 
+                style={{position: "absolute", right: "1em"}} 
+                onClick={() => setTextEditing(false)}>Save</Button>
+              <TextField multiline fullWidth
+                onChange={(e) => setCaption(e.target.value)}
+                value={caption ?? textDescription} />
+              <br />
+            </>) : (
+              <div style={{
+                overflowY: 'auto',
+                marginBottom: '4em',
+                cursor: 'pointer',
+                padding: '3px',
+                borderRadius: '4px',
+                border: textHover ? '2px solid #ddd' : '2px solid #fff',
+              }} 
+                onMouseEnter={() => setTextHover(true)} 
+                onMouseLeave={() => setTextHover(false)} 
+                onClick={() => setTextEditing(true)}
+              >
+                <ReactMarkdownWrapper text={caption ?? textDescription} />
+              </div>
+            )}
         </Box>
       </div>
     </Drawer>
