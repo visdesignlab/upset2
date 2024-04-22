@@ -2,68 +2,94 @@ import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { UpsetProvenance, UpsetActions } from './provenance';
 
 /**
- * Represents the props for the Upset component.
- */
+* Represents the props for the Upset component.
+*/
 export interface UpsetProps {
-        /**
-         * Specifies whether the parent component has a fixed height.
-         */
-        parentHasHeight?: boolean;
+  /**
+  * Specifies whether the parent component has a fixed height.
+  */
+  parentHasHeight?: boolean;
+  
+  /**
+  * The data for the Upset component.
+  */
+  data: CoreUpsetData;
+  
+  /**
+  * Optional configuration for the Upset component.
+  */
+  config?: Partial<UpsetConfig>;
+  
+  /**
+  * The number of attributes to load.
+  */
+  loadAttributes?: number;
+  
+  /**
+  * External provenance information for the Upset component.
+  */
+  extProvenance?: {
+    provenance: UpsetProvenance;
+    actions: UpsetActions;
+  };
+  
+  /**
+  * The vertical offset for the Upset component.
+  */
+  yOffset?: number;
+  
+  /**
+  * Visualization settings for the provenance component.
+  */
+  provVis?: {
+    open: boolean;
+    close: () => void;
+  };
+  
+  /**
+  * Sidebar settings for the element component.
+  */
+  elementSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
+  
+  /**
+  * Sidebar settings for the alt text component.
+  */
+  altTextSidebar?: {
+    open: boolean;
+    close: () => void;
+  };
+  
+  /**
+  * Generates alternative text for the Upset component.
+  */
+  generateAltText?: () => Promise<AltText>;
+}
 
-        /**
-         * The data for the Upset component.
-         */
-        data: CoreUpsetData;
-
-        /**
-         * Optional configuration for the Upset component.
-         */
-        config?: Partial<UpsetConfig>;
-
-        /**
-         * The number of attributes to load.
-         */
-        loadAttributes?: number;
-
-        /**
-         * External provenance information for the Upset component.
-         */
-        extProvenance?: {
-            provenance: UpsetProvenance;
-            actions: UpsetActions;
-        };
-
-        /**
-         * The vertical offset for the Upset component.
-         */
-        yOffset?: number;
-
-        /**
-         * Visualization settings for the provenance component.
-         */
-        provVis?: {
-            open: boolean;
-            close: () => void;
-        };
-
-        /**
-         * Sidebar settings for the element component.
-         */
-        elementSidebar?: {
-            open: boolean;
-            close: () => void;
-        };
-
-        /**
-         * Sidebar settings for the alt text component.
-         */
-        altTextSidebar?: {
-            open: boolean;
-            close: () => void;
-        };
-
-        /**
-         * Generates alternative text for the Upset component.
-         */
-        generateAltText?: () => Promise<string>;
+/**
+* Represents the alternative text for an Upset plot.
+*/
+export interface AltText {
+  /**
+  * The long description for the Upset plot.
+  */
+  longDescription: string;
+  
+  /**
+  * The short description for the Upset plot.
+  */
+  shortDescription: string;
+  
+  /**
+  * The technique description for the Upset plot.
+  */
+  techniqueDescription: string;
+  
+  /**
+  * Optional warnings for the Upset plot.
+  * Not yet implemented by the API as of 4/22/24
+  */
+  warnings?: string;
 }

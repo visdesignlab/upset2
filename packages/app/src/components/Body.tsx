@@ -1,4 +1,4 @@
-import { Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
+import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
 import { UpsetConfig, getRows } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
@@ -57,12 +57,27 @@ export const Body = ({ yOffset, data, config }: Props) => {
    * and an error message is returned if the plot is aggregated.
    * @returns A promise that resolves to the generated alt text.
    */
-  async function generateAltText(): Promise<string> {
+  async function generateAltText(): Promise<AltText> {
+
+    /**
+     * Converts an error message to an AltText object.
+     *
+     * @param err - The error message to convert.
+     * @returns The AltText object with the error message as the long description, short description, and technique description.
+     */
+    function errToAltText(err: string): AltText {
+      return {
+        longDescription: err,
+        shortDescription: err,
+        techniqueDescription: err,
+      };
+    }
+
     const state = provObject.provenance.getState();
     const config = getAltTextConfig(state, data, getRows(data, state));
 
     if (config.firstAggregateBy !== "None") {
-      return "Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.";
+      return errToAltText("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
     }
 
     let response;
@@ -70,14 +85,14 @@ export const Body = ({ yOffset, data, config }: Props) => {
       response = await api.generateAltText(true, config);
     } catch (e: any) {
       if (e.response.status === 500) {
-        return "Server error while generating alt text. Please try again later. If the issue persists, please contact an UpSet developer at vdl-faculty@sci.utah.edu.";
+        return errToAltText("Server error while generating alt text. Please try again later. If the issue persists, please contact an UpSet developer at vdl-faculty@sci.utah.edu.");
       } else if (e.response.status === 400) {
-        return "Error generating alt text. Contact an upset developer at vdl-faculty@sci.utah.edu.";
+        return errToAltText("Error generating alt text. Contact an upset developer at vdl-faculty@sci.utah.edu.");
       } else {
-        return "Unknown error while generating alt text: " + e.response.statusText + ". Please contact an UpSet developer at vdl-faculty@sci.utah.edu.";
+        return errToAltText("Unknown error while generating alt text: " + e.response.statusText + ". Please contact an UpSet developer at vdl-faculty@sci.utah.edu.");
       }
     }
-    return response.alttxt.longDescription;
+    return response.alttxt;
   }
 
   if (data === null) return null;

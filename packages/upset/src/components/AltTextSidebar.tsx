@@ -22,11 +22,12 @@ import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { AltText } from '../types';
 
 type Props = {
   open: boolean;
   close: () => void;
-  generateAltText: () => Promise<string>;
+  generateAltText: () => Promise<AltText>;
 }
 
 const plotInfoItem = {
@@ -52,7 +53,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const currState = useRecoilValue(upsetConfigAtom);
 
-  const [textDescription, setTextDescription] = useState('');
+  const [longDescription, setLongDescription] = useState('');
+  const [shortDescription, setShortDescription] = useState('');
+  const [useLong, setUseLong] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
 
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
@@ -69,7 +72,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     async function generate(): Promise<void> {
       const resp = await generateAltText();
 
-      setTextDescription(resp);
+      setLongDescription(resp.longDescription);
+      setShortDescription(resp.shortDescription);
     }
 
     generate();
@@ -233,7 +237,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <ReactMarkdownWrapper text={textDescription} />
+            {useLong && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
+            <ReactMarkdownWrapper text={useLong ? longDescription : shortDescription} />
+            {!useLong && <Button onClick={() => setUseLong(true)}>Show More</Button>}
           </div>
         </Box>
       </div>
