@@ -249,7 +249,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               <Button 
                 color="primary" 
                 style={{position: "absolute", right: "1em"}} 
-                onClick={() => setTextEditing(false)}>Save</Button>
+                onClick={() => setTextEditing(false)}
+              >Save</Button>
               <TextField multiline fullWidth
                 onChange={(e) => setCaption(e.target.value)}
                 value={caption ?? textDescription} />
