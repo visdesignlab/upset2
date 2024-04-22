@@ -53,8 +53,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const currState = useRecoilValue(upsetConfigAtom);
 
-  const [longDescription, setLongDescription] = useState('');
-  const [shortDescription, setShortDescription] = useState('');
+  const [altText, setAltText] = useState<AltText | null>(null);
   const [useLong, setUseLong] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
 
@@ -72,8 +71,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     async function generate(): Promise<void> {
       const resp = await generateAltText();
 
-      setLongDescription(resp.longDescription);
-      setShortDescription(resp.shortDescription);
+      setAltText(resp);
     }
 
     generate();
@@ -238,7 +236,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
             {useLong && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
-            <ReactMarkdownWrapper text={useLong ? longDescription : shortDescription} />
+            <ReactMarkdownWrapper text={altText ? useLong ? altText.longDescription : altText.shortDescription : ''} />
             {!useLong && <Button onClick={() => setUseLong(true)}>Show More</Button>}
           </div>
         </Box>
