@@ -23,7 +23,6 @@ import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { AltText } from '../types';
-import { text } from 'd3';
 
 type Props = {
   open: boolean;
