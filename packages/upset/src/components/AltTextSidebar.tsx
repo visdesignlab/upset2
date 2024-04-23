@@ -258,7 +258,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            {useLong && !textGenErr && !textEditing && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
+            {useLong && !textGenErr && !textEditing && !caption && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
             {textEditing ? (<>
               <Button color="error" onClick={discardCaption}>Discard</Button>
               <Button 
@@ -268,26 +268,29 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               >Save</Button>
               <TextField multiline fullWidth
                 onChange={(e) => setCaption(e.target.value)}
-                value={caption ?? textDescription} />
+                value={caption ?? altText?.longDescription} />
               <br />
             </>) : (
-              <div style={{
-                overflowY: 'auto',
-                marginBottom: '4em',
-                cursor: 'pointer',
-                padding: '3px',
-                borderRadius: '4px',
-                border: textHover ? '2px solid #ddd' : '2px solid #fff',
-              }} 
+              <div style={
+                useLong ? {
+                  overflowY: 'auto',
+                  // We want a margin at the bottom if the text is long, but otherwise it pushes the show more button down
+                  marginBottom: useLong ? '4em' : '0',
+                  cursor: 'pointer',
+                  padding: '3px',
+                  borderRadius: '4px',
+                  border: textHover ? '2px solid #ddd' : '2px solid #fff',
+                } : {}
+              }
                 onMouseEnter={() => setTextHover(true)} 
                 onMouseLeave={() => setTextHover(false)} 
-                onClick={() => setTextEditing(true)}
+                onClick={() => {if (useLong) setTextEditing(true)}}
               >
-                // Use the user caption if available. Otherwise, check whether to use short or long auto-generated desc
-                <ReactMarkdownWrapper text={caption ?? altText ? useLong ? altText.longDescription : altText.shortDescription : ''} />
+                {/* Use the user caption if available. Otherwise, check whether to use short or long auto-generated desc */}
+                <ReactMarkdownWrapper text={caption ?? (altText ? useLong ? altText.longDescription : altText.shortDescription : '')} />
               </div>
             )}
-            {!useLong && !textGenErr && <Button onClick={() => setUseLong(true)}>Show More</Button>}
+            {!useLong && !textGenErr && !textEditing && !caption && <Button onClick={() => setUseLong(true)}>Show More</Button>}
           </div>
         </Box>
       </div>
