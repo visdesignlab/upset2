@@ -21,6 +21,7 @@ import { Edit } from '@mui/icons-material';
 import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { AltText } from '../types';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from '@visdesignlab/upset2-core';
 import '../index.css';
@@ -28,7 +29,7 @@ import '../index.css';
 type Props = {
   open: boolean;
   close: () => void;
-  generateAltText: () => Promise<string>;
+  generateAltText: () => Promise<AltText>;
 }
 
 const plotInfoItem = {
@@ -54,7 +55,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const currState = useRecoilValue(upsetConfigAtom);
 
-  const [textDescription, setTextDescription] = useState('');
+  const [altText, setAltText] = useState<AltText | null>(null);
+  const [textGenErr, setTextGenErr] = useState(false);
+  const [useLong, setUseLong] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
 
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
@@ -82,9 +85,19 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
-      const resp = await generateAltText();
-
-      setTextDescription(resp.trim());
+      try {
+        setAltText(await generateAltText());
+        setTextGenErr(false);
+      } catch (e) {
+        const msg: string = (e as Error).message;
+        // We want the error message to display on the frontend
+        setAltText({
+          longDescription: msg,
+          shortDescription: msg,
+          techniqueDescription: msg,
+        });
+        setTextGenErr(true);
+      }
     }
 
     generate();
@@ -244,6 +257,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           </Accordion>
         </Box>
         <Box marginTop={2}>
+          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
+            {useLong && !textGenErr && !textEditing && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
             {textEditing ? (<>
               <Button color="error" onClick={discardCaption}>Discard</Button>
               <Button 
@@ -268,9 +283,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 onMouseLeave={() => setTextHover(false)} 
                 onClick={() => setTextEditing(true)}
               >
-                <ReactMarkdownWrapper text={caption ?? textDescription} />
+                // Use the user caption if available. Otherwise, check whether to use short or long auto-generated desc
+                <ReactMarkdownWrapper text={caption ?? altText ? useLong ? altText.longDescription : altText.shortDescription : ''} />
               </div>
             )}
+            {!useLong && !textGenErr && <Button onClick={() => setUseLong(true)}>Show More</Button>}
+          </div>
         </Box>
       </div>
     </Drawer>
