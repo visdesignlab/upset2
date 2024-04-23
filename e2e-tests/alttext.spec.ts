@@ -95,6 +95,16 @@ test('Alt Text', async ({ page }) => {
   await plotInformation.click();
 
   /// /////////////////
+  // Short Description
+  /// /////////////////
+  await expect(page.getByText("This is an UpSet plot"))
+    .toContainText('This is an UpSet plot which shows set intersection of 6 sets out of 6 sets and the largest intersection is School, and Male (3). The plot is sorted by size and 12 non-empty intersections are shown.');
+  await page.getByRole('button', { name: 'Show More' }).click();
+  await page.getByRole('button', { name: 'Show Less' }).click();
+  await expect(page.getByText('This is an UpSet plot which')).toBeVisible();
+  await page.getByRole('button', { name: 'Show More' }).click();
+
+  /// /////////////////
   // Alt Text Output
   /// /////////////////
   const UpSetIntroduction = {

@@ -22,11 +22,12 @@ import { ProvenanceContext } from './Root';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { AltText } from '../types';
 
 type Props = {
   open: boolean;
   close: () => void;
-  generateAltText: () => Promise<string>;
+  generateAltText: () => Promise<AltText>;
 }
 
 const plotInfoItem = {
@@ -52,7 +53,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const currState = useRecoilValue(upsetConfigAtom);
 
-  const [textDescription, setTextDescription] = useState('');
+  const [altText, setAltText] = useState<AltText | null>(null);
+  const [textGenErr, setTextGenErr] = useState(false);
+  const [useLong, setUseLong] = useState(false);
   const [isEditable, setIsEditable] = useState(false);
 
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
@@ -67,9 +70,19 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
     async function generate(): Promise<void> {
-      const resp = await generateAltText();
-
-      setTextDescription(resp);
+      try {
+        setAltText(await generateAltText());
+        setTextGenErr(false);
+      } catch (e) {
+        const msg: string = (e as Error).message;
+        // We want the error message to display on the frontend
+        setAltText({
+          longDescription: msg,
+          shortDescription: msg,
+          techniqueDescription: msg,
+        });
+        setTextGenErr(true);
+      }
     }
 
     generate();
@@ -233,7 +246,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <ReactMarkdownWrapper text={textDescription} />
+            {useLong && !textGenErr && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
+            <ReactMarkdownWrapper text={altText ? useLong ? altText.longDescription : altText.shortDescription : ''} />
+            {!useLong && !textGenErr && <Button onClick={() => setUseLong(true)}>Show More</Button>}
           </div>
         </Box>
       </div>
