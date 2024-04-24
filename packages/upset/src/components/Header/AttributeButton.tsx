@@ -15,7 +15,7 @@ type Props = {
   sortable?: boolean;
 };
 
-export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
+export const AttributeButton: FC<Props> = ({ label }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
     ProvenanceContext,
@@ -29,12 +29,10 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
   };
 
   const handleOnClick = () => {
-    if (sortable) {
-      if (sortBy !== label) {
-        sortByHeader('Ascending');
-      } else {
-        sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
-      }
+    if (sortBy !== label) {
+      sortByHeader('Ascending');
+    } else {
+      sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
   };
 
@@ -42,38 +40,31 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
     setContextMenu(null);
   };
 
-  const getMenuItems = () => {
-    const items = [];
-    if (sortable) {
-      items.push(
-        {
-          label: `Sort by ${label} - Ascending`,
-          onClick: () => {
-            sortByHeader('Ascending');
-            handleContextMenuClose();
-          },
-          disabled: sortBy === label && sortByOrder === 'Ascending',
-        },
-        {
-          label: `Sort by ${label} - Descending`,
-          onClick: () => {
-            sortByHeader('Descending');
-            handleContextMenuClose();
-          },
-          disabled: sortBy === label && sortByOrder === 'Descending',
-        },
-      );
-    }
-    items.push({
+  const getMenuItems = () => [
+    {
+      label: `Sort by ${label} - Ascending`,
+      onClick: () => {
+        sortByHeader('Ascending');
+        handleContextMenuClose();
+      },
+      disabled: sortBy === label && sortByOrder === 'Ascending',
+    },
+    {
+      label: `Sort by ${label} - Descending`,
+      onClick: () => {
+        sortByHeader('Descending');
+        handleContextMenuClose();
+      },
+      disabled: sortBy === label && sortByOrder === 'Descending',
+    },
+    {
       label: `Remove ${label}`,
       onClick: () => {
         actions.removeAttribute(label);
         handleContextMenuClose();
       },
-    });
-
-    return items;
-  };
+    },
+  ];
 
   const openContextMenu = (e: MouseEvent) => {
     setContextMenu(
@@ -118,13 +109,13 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
       >
         <text
           id={`header-text-${label}`}
-          pointerEvents={sortable ? 'default' : 'none'}
+          pointerEvents="default"
           dominantBaseline="middle"
           textAnchor="middle"
         >
           {label}
         </text>
-        {(sortable && sortBy === label) &&
+        {(sortBy === label) &&
           <HeaderSortArrow />}
       </g>
     </g>

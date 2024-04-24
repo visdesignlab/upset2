@@ -106,8 +106,7 @@ export const aggregateByList = [
 ] as const;
 export type AggregateBy = typeof aggregateByList[number];
 
-export const sortByList = ['Degree', 'Size', 'Deviation'] as const;
-export type SortBy = typeof sortByList[number];
+export type SortBy = string;
 export type SortByOrder = 'Ascending' | 'Descending';
 
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;

@@ -13,7 +13,7 @@ export const DeviationHeader = () => {
 
   return (
     <g>
-      <AttributeButton label="Deviation" sortable />
+      <AttributeButton label="Deviation" />
       <g
         transform={translate(
           0,

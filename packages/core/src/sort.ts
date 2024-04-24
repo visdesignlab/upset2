@@ -8,6 +8,8 @@ import {
   SortVisibleBy,
   Sets,
   SortByOrder,
+  Attributes,
+  FiveNumberSummary,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -110,10 +112,39 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
 }
 
 /**
+ * @param rows - The intersections object containing values and order.
+ * @param sortBy - The attribute to sort by
+ * @param sortByOrder - The sort order ('Ascending' or 'Descending'). Defaults to 'Ascending'.
+ * @returns The sorted intersections object.
+ */
+function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: SortByOrder) {
+  const { values, order } = rows;
+
+  const newOrder = [...order].sort(
+    (a, b) => {
+      const meanA = (values[a].attributes[sortBy] as FiveNumberSummary).mean;
+      const meanB = (values[b].attributes[sortBy] as FiveNumberSummary).mean;
+
+      // If one of the values is undefined (empty subset), sort it to the bottom
+      if (!meanA) {
+        return 1;
+      }
+      if (!meanB) {
+        return -1;
+      }
+
+      return (sortByOrder === 'Ascending') ? meanA - meanB : meanB - meanA;
+    },
+  );
+
+  return { values, order: newOrder };
+}
+
+/**
  * Sorts the intersections based on the specified criteria.
  *
  * @template T - The type of intersections.
- * @param {T} intersection - The intersection to be sorted.
+ * @param {T} intersection - The intersections to be sorted.
  * @param {SortBy} sortBy - The criteria to sort the intersection by.
  * @param {SortVisibleBy} vSetSortBy - The criteria to sort the visible sets by.
  * @param {Sets} visibleSets - The visible sets.
@@ -121,7 +152,7 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
  * @returns {T} The sorted intersection.
  */
 function sortIntersections<T extends Intersections>(
-  intersection: T,
+  intersections: T,
   sortBy: SortBy,
   vSetSortBy: SortVisibleBy,
   visibleSets: Sets,
@@ -129,13 +160,13 @@ function sortIntersections<T extends Intersections>(
 ) {
   switch (sortBy) {
     case 'Size':
-      return sortBySize(intersection, sortByOrder);
+      return sortBySize(intersections, sortByOrder);
     case 'Degree':
-      return sortByDegree(intersection, vSetSortBy, visibleSets, sortByOrder);
+      return sortByDegree(intersections, vSetSortBy, visibleSets, sortByOrder);
     case 'Deviation':
-      return sortByDeviation(intersection, sortByOrder);
+      return sortByDeviation(intersections, sortByOrder);
     default:
-      return intersection;
+      return sortByAttribute(intersections, sortBy, sortByOrder);
   }
 }
 
