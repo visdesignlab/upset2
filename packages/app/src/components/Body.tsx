@@ -66,6 +66,10 @@ export const Body = ({ yOffset, data, config }: Props) => {
       throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
     }
 
+    if (!['Size', 'Degree', 'Deviation'].includes(config.sortBy)) {
+      throw new Error("Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.");
+    }
+
     let response;
     try {
       response = await api.generateAltText(true, config);
