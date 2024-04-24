@@ -12,7 +12,6 @@ import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 /** @jsxImportSource @emotion/react */
 type Props = {
   label: string;
-  sortable?: boolean;
 };
 
 export const AttributeButton: FC<Props> = ({ label }) => {
