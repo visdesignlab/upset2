@@ -2,6 +2,7 @@ import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { SortBy, SortByOrder } from '@visdesignlab/upset2-core';
 
+import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
@@ -77,46 +78,48 @@ export const AttributeButton: FC<Props> = ({ label }) => {
   };
 
   return (
-    <g
-      css={{
-        '&:hover': {
-          opacity: 0.7,
-        },
-        cursor: 'context-menu',
-      }}
-      onContextMenu={(e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openContextMenu(e);
-      }}
-      transform={translate(0, 6)}
-      onClick={handleOnClick}
-    >
-      <rect
-        height={dimensions.attribute.buttonHeight}
-        width={dimensions.attribute.width}
-        fill="#ccc"
-        stroke="#000"
-        opacity="0.5"
-        strokeWidth="0.3px"
-      />
+    <Tooltip title={label} arrow placement="top">
       <g
-        transform={translate(
-          dimensions.attribute.width / 2,
-          dimensions.attribute.buttonHeight / 2,
-        )}
+        css={{
+          '&:hover': {
+            opacity: 0.7,
+          },
+          cursor: 'context-menu',
+        }}
+        onContextMenu={(e: any) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openContextMenu(e);
+        }}
+        transform={translate(0, 6)}
+        onClick={handleOnClick}
       >
-        <text
-          id={`header-text-${label}`}
-          pointerEvents="default"
-          dominantBaseline="middle"
-          textAnchor="middle"
+        <rect
+          height={dimensions.attribute.buttonHeight}
+          width={dimensions.attribute.width}
+          fill="#ccc"
+          stroke="#000"
+          opacity="0.5"
+          strokeWidth="0.3px"
+        />
+        <g
+          transform={translate(
+            dimensions.attribute.width / 2,
+            dimensions.attribute.buttonHeight / 2,
+          )}
         >
-          {label}
-        </text>
-        {(sortBy === label) &&
-          <HeaderSortArrow />}
+          <text
+            id={`header-text-${label}`}
+            pointerEvents="default"
+            dominantBaseline="middle"
+            textAnchor="middle"
+          >
+            {label}
+          </text>
+          {(sortBy === label) &&
+            <HeaderSortArrow />}
+        </g>
       </g>
-    </g>
+    </Tooltip>
   );
 };

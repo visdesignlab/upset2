@@ -31,7 +31,7 @@ test.beforeEach(async ({ page }) => {
 });
 
 /**
- * Asserts that trrack history works for selecting and deselecting rows, provenance tree is displayed correctly, 
+ * Asserts that trrack history works for selecting and deselecting rows, provenance tree is displayed correctly,
  * reverting to an earlier state works, elementView row deselection is trracked,
  *  and aggregate rows can be selected and deselected.
  */
@@ -39,6 +39,9 @@ test('Selection History', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
   await page.getByLabel('Open additional options menu').click();
   await page.getByLabel('Open history tree sidebar').click();
+
+  const schoolIntersection = page.locator('.css-1kek4un-Y > g:nth-child(3) > rect').first();
+  const duffFanIntersection = page.locator('g:nth-child(7) > .css-1kek4un-Y > g:nth-child(3) > rect').first();
 
   // Testing history for a subset selection & deselection
   await page.locator('g > circle').first().click();
@@ -54,7 +57,7 @@ test('Selection History', async ({ page }) => {
   await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
 
   // Check that selections are maintained after de-aggregation
-  await page.locator('g:nth-child(4) > .css-1kek4un-Y > g:nth-child(4) > rect').click();
+  await schoolIntersection.click();
   await page.getByRole('radio', { name: 'None' }).check();
   await page.locator('.css-zf6412').click();
   await expect(page.getByText('Deselect intersection').nth(2)).toBeVisible();
@@ -62,9 +65,9 @@ test('Selection History', async ({ page }) => {
   // Check that selections can be reverted & start a new history tree branch
   await page.locator('g:nth-child(10) > circle').click();
   await page.locator('.css-zf6412').click();
-  await page.locator('g:nth-child(7) > .css-1kek4un-Y > g:nth-child(4) > rect').click();
+  await await duffFanIntersection.click();
   await expect(page.getByText('Deselect intersection')).toBeVisible();
-  await expect(page.getByText('Select intersection "Duff Fan')).toBeVisible();
+  await expect(page.getByText('Select intersection "School')).toBeVisible();
 
   // Check that deselection triggered by element view unbookmarking is reflected in history tree.
   // Also tests that the bookmarking & unbookmarking is trracked
@@ -73,22 +76,22 @@ test('Selection History', async ({ page }) => {
   await page.locator('span.MuiChip-label+svg[data-testid="StarIcon"]').click();
   await page.getByLabel('Open additional options menu').click();
   await page.getByLabel('Open history tree sidebar').click();
-  
+
   await expect(page.getByText('Unbookmark Duff Fan & Male')).toBeVisible();
   await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
   await expect(page.getByText('Bookmark Duff Fan & Male', { exact: true })).toBeVisible();
-  await expect(page.getByText('Select intersection "Duff Fan')).toBeVisible();
+  await expect(page.getByText('Select intersection "School')).toBeVisible();
 });
 
 /**
- * Tests that overlap history works 
+ * Tests that overlap history works
  * & doesn't produce duplicate actions when the overlap degree is changed to the same value
  */
 test('Overlap History', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
   await page.getByLabel('Open additional options menu').click();
   await page.getByLabel('Open history tree sidebar').click();
-  
+
   // Ensure that duplicate actions aren't recorded for decreasing first degree
   await page.getByRole('radio', { name: 'Overlaps' }).check();
   await page.getByRole('spinbutton', { name: 'Degree' }).click();
@@ -112,11 +115,11 @@ test('Overlap History', async ({ page }) => {
   await page.locator('div').filter({ hasText: /^Second AggregationDegreeSetsOverlapsNone$/ })
     .getByLabel('Overlaps', { exact: true }).check();
   await page.getByRole('spinbutton', { name: 'Degree' }).click();
-  
+
   // Ensure no duplicate action for decreasing 2nd degree
   await page.getByRole('spinbutton', { name: 'Degree' }).press('ArrowDown');
   await expect(page.getByText('Second overlap by 2')).toHaveCount(0);
-  
+
   // Try to increment degree to 7; confirm no duplicates
   await page.getByRole('spinbutton', { name: 'Degree' }).press('ArrowUp');
   await page.getByRole('spinbutton', { name: 'Degree' }).press('ArrowUp');
@@ -127,4 +130,4 @@ test('Overlap History', async ({ page }) => {
   await expect(page.getByText('Second overlap by 4')).toHaveCount(1);
   await expect(page.getByText('Second overlap by 5')).toHaveCount(1);
   await expect(page.getByText('Second overlap by 6')).toHaveCount(1);
-})
+});
