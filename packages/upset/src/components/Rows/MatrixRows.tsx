@@ -13,6 +13,11 @@ type Props = {
   rows: RenderRow[];
 };
 
+/**
+ * Renders a row based on its type.
+ * @param row - The row to be rendered.
+ * @returns The rendered row component.
+ */
 export function rowRenderer(row: Row) {
   if (isRowAggregate(row)) {
     return <AggregateRow aggregateRow={row} />;
