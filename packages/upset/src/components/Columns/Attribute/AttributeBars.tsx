@@ -9,11 +9,23 @@ import { AttributeBar } from './AttributeBar';
 import { DeviationBar } from '../DeviationBar';
 import { Degree } from '../Degree';
 
+/**
+ * Props for the AttributeBars component.
+ * attributes: all visible attributes for the row.
+ * row: The row to render the attribute bars for.
+ */
 type Props = {
   attributes: Attributes;
   row: Subset | Aggregate;
 };
 
+/**
+ * Renders the attribute bars for a given row.
+ *
+ * @param attributes - all visible attributes for the row.
+ * @param row - The row to render the attribute bars for.
+ * @returns The JSX element representing the attribute bars.
+ */
 export const AttributeBars: FC<Props> = ({ attributes, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleAttributes = useRecoilValue(visibleAttributesSelector);
@@ -21,10 +33,16 @@ export const AttributeBars: FC<Props> = ({ attributes, row }) => {
   const degreeXOffset = dimensions.degreeColumn.width + dimensions.degreeColumn.gap;
   const attributeXOffset = dimensions.attribute.width + dimensions.attribute.vGap;
 
+  /**
+   * Returns the column to render based on the given attribute.
+   *
+   * @param attribute - The attribute to determine the column for.
+   * @returns The column component to render.
+   */
   function getColToRender(attribute: string) {
     switch (attribute) {
       case 'Degree':
-        return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />
+        return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
       case 'Deviation':
         return <DeviationBar deviation={row.attributes.deviation} />;
       default:

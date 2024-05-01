@@ -1,5 +1,5 @@
 import { combinationsFromArray } from './combinations';
-import { getFiveNumberSummary, getId } from './process';
+import { getSixNumberSummary, getId } from './process';
 import {
   Aggregate,
   AggregateBy,
@@ -39,6 +39,25 @@ export function getItems(row: Row) {
   });
 
   return Array.from(new Set(items));
+}
+
+/**
+ * Updates the aggregate values with the attributes calculated from the items and attribute columns.
+ * @param aggs - The aggregates object containing the order and values of the aggregates.
+ * @param items - The items object containing the data items.
+ * @param attributeColumns - The array of attribute columns to calculate the attributes from.
+ */
+function updateAggValues(aggs: Aggregates, items: Items, attributeColumns: string[]) {
+  aggs.order.forEach((aggId) => {
+    aggs.values[aggId].attributes = {
+      ...getSixNumberSummary(
+        items,
+        getItems(aggs.values[aggId]),
+        attributeColumns,
+      ),
+      deviation: aggs.values[aggId].attributes.deviation,
+    };
+  });
 }
 
 /**
@@ -132,16 +151,7 @@ function aggregateByDegree(
     relevantAggregate.attributes.deviation += subset.attributes.deviation;
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = {
-      ...getFiveNumberSummary(
-        items,
-        getItems(aggs.values[aggId]),
-        attributeColumns,
-      ),
-      deviation: aggs.values[aggId].attributes.deviation,
-    };
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }
@@ -249,16 +259,7 @@ function aggregateBySets(
     });
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = {
-      ...getFiveNumberSummary(
-        items,
-        getItems(aggs.values[aggId]),
-        attributeColumns,
-      ),
-      deviation: aggs.values[aggId].attributes.deviation,
-    };
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }
@@ -345,16 +346,7 @@ function aggregateByDeviation(
     relevantAggregate.attributes.deviation += subset.attributes.deviation;
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = {
-      ...getFiveNumberSummary(
-        items,
-        getItems(aggs.values[aggId]),
-        attributeColumns,
-      ),
-      deviation: aggs.values[aggId].attributes.deviation,
-    };
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }
@@ -459,16 +451,7 @@ function aggregateByOverlaps(
     });
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = {
-      ...getFiveNumberSummary(
-        items,
-        getItems(aggs.values[aggId]),
-        attributeColumns,
-      ),
-      deviation: aggs.values[aggId].attributes.deviation,
-    };
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }

@@ -7,6 +7,10 @@ import { AttributeHeader } from './AttributeHeader';
 import { DeviationHeader } from './DeviationHeader';
 import { DegreeHeader } from './DegreeHeader';
 
+/**
+ * Renders the attribute headers component.
+ * This component displays the headers for each attribute in the plot.
+ */
 export const AttributeHeaders = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleAttributes = useRecoilValue(visibleAttributesSelector);
@@ -14,6 +18,11 @@ export const AttributeHeaders = () => {
   const degreeXOffset = dimensions.degreeColumn.width + dimensions.degreeColumn.gap;
   const attributeXOffset = dimensions.attribute.width + dimensions.attribute.vGap;
 
+  /**
+   * Returns the header component to render based on the given attribute.
+   * @param attribute - The attribute to determine the header component for.
+   * @returns The header component to render.
+   */
   function getHeaderToRender(attribute: string) {
     switch (attribute) {
       case 'Degree':

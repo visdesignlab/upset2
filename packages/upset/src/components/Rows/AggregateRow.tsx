@@ -11,7 +11,6 @@ import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
-import { DeviationBar } from '../Columns/DeviationBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
 import { BookmarkStar } from '../Columns/BookmarkStar';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
@@ -19,12 +18,18 @@ import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 
 /** @jsxImportSource @emotion/react */
+/**
+ * Props for the AggregateRow component.
+ */
 type Props = {
   aggregateRow: Aggregate;
 };
 
 const iconSize = '20px';
 
+/**
+ * Expanded icon for the AggregateRow component.
+ */
 const expanded = (
   <g className="icon" textAnchor="middle" dominantBaseline="middle">
     <SvgIcon height={iconSize} width={iconSize}>
@@ -33,6 +38,9 @@ const expanded = (
   </g>
 );
 
+/**
+ * Collapsed icon for the AggregateRow component.
+ */
 export const collapsed = (
   <g transform={`rotate(180) translate(-${iconSize.replace('px', '')}, -${iconSize.replace('px', '')})`} className="icon" textAnchor="middle" dominantBaseline="middle">
     <SvgIcon height={iconSize} width={iconSize}>
@@ -43,6 +51,13 @@ export const collapsed = (
 
 const secondLevelXOffset = 15;
 
+/**
+ * Represents a component that renders an aggregate row.
+ *
+ * @component
+ * @param {Aggregate} aggregateRow - The AggregateRow to render.
+ * @returns {JSX.Element} The rendered AggregateRow component.
+ */
 export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);

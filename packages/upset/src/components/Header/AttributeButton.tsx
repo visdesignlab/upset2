@@ -9,12 +9,25 @@ import { ProvenanceContext } from '../Root';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
+import { ContextMenuItem } from '../../types';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
+  /**
+   * Text to display on the attribute button
+   */
   label: string;
 };
 
+/**
+ * Represents a button component for sorting and removing attributes in the header.
+ *
+ * @component
+ * @example
+ * return (
+ *   <AttributeButton label="Name" />
+ * )
+ */
 export const AttributeButton: FC<Props> = ({ label }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
@@ -24,10 +37,20 @@ export const AttributeButton: FC<Props> = ({ label }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
+  /**
+   * Sorts the attribute in the specified order.
+   *
+   * @param order - The sort order ('Ascending' or 'Descending').
+   */
   const sortByHeader = (order: SortByOrder) => {
     actions.sortBy(label as SortBy, order);
   };
 
+  /**
+   * Handles the click event of the button.
+   * If the attribute is not currently sorted, it sorts it in ascending order.
+   * If the attribute is already sorted, it toggles between ascending and descending order.
+   */
   const handleOnClick = () => {
     if (sortBy !== label) {
       sortByHeader('Ascending');
@@ -36,36 +59,51 @@ export const AttributeButton: FC<Props> = ({ label }) => {
     }
   };
 
+  /**
+   * Closes the context menu.
+   */
   const handleContextMenuClose = () => {
     setContextMenu(null);
   };
 
-  const getMenuItems = () => [
-    {
-      label: `Sort by ${label} - Ascending`,
-      onClick: () => {
-        sortByHeader('Ascending');
-        handleContextMenuClose();
+  /**
+   * Returns an array of menu items for the context menu.
+   *
+   * @returns An array of menu items.
+   */
+  function getMenuItems(): ContextMenuItem[] {
+    return [
+      {
+        label: `Sort by ${label} - Ascending`,
+        onClick: () => {
+          sortByHeader('Ascending');
+          handleContextMenuClose();
+        },
+        disabled: sortBy === label && sortByOrder === 'Ascending',
       },
-      disabled: sortBy === label && sortByOrder === 'Ascending',
-    },
-    {
-      label: `Sort by ${label} - Descending`,
-      onClick: () => {
-        sortByHeader('Descending');
-        handleContextMenuClose();
+      {
+        label: `Sort by ${label} - Descending`,
+        onClick: () => {
+          sortByHeader('Descending');
+          handleContextMenuClose();
+        },
+        disabled: sortBy === label && sortByOrder === 'Descending',
       },
-      disabled: sortBy === label && sortByOrder === 'Descending',
-    },
-    {
-      label: `Remove ${label}`,
-      onClick: () => {
-        actions.removeAttribute(label);
-        handleContextMenuClose();
+      {
+        label: `Remove ${label}`,
+        onClick: () => {
+          actions.removeAttribute(label);
+          handleContextMenuClose();
+        },
       },
-    },
-  ];
+    ];
+  }
 
+  /**
+   * Opens the context menu at the specified coordinates.
+   *
+   * @param e - The mouse event.
+   */
   const openContextMenu = (e: MouseEvent) => {
     setContextMenu(
       {

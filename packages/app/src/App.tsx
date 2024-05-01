@@ -35,6 +35,7 @@ function App() {
         conf.allSets = setList.map((set) => {return { name: set[0], size: set[1].size }})
       }
 
+      // Add first 4 attribute columns (deviation + 3 attrs) to visibleAttributes
       conf.visibleAttributes = [...DefaultConfig.visibleAttributes, ...data.attributeColumns.slice(0, 4)];
 
       return conf;

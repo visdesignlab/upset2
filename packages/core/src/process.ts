@@ -4,10 +4,10 @@ import {
 
 import {
   AttributeList,
+  BaseIntersection,
   ColumnDefs,
   ColumnName,
   CoreUpsetData,
-  ISet,
   Item,
   Items,
   Meta,
@@ -167,7 +167,7 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
  * @param attributeColumns - The attribute columns to calculate the summary for.
  * @returns An object containing the five-number summary for each attribute.
  */
-export function getFiveNumberSummary(
+export function getSixNumberSummary(
   items: Items,
   memberItems: string[],
   attributeColumns: string[],
@@ -215,14 +215,14 @@ function getSets(
 
   const sets: Sets = {};
   setColumns.forEach((col) => {
-    const set: ISet = {
+    const set: BaseIntersection = {
       id: `Set_${col}`,
       elementName: col,
       items: setMembership[col],
       type: 'Set',
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
-      attributes: getFiveNumberSummary(
+      attributes: getSixNumberSummary(
         items,
         setMembership[col],
         attributeColumns,
@@ -338,7 +338,7 @@ export function getSubsets(
       setMembershipStatus[set] = combo[idx];
     });
 
-    const subsetAttributes = { ...getFiveNumberSummary(dataItems, itm, attributeColumns), deviation: subsetDeviation };
+    const subsetAttributes = { ...getSixNumberSummary(dataItems, itm, attributeColumns), deviation: subsetDeviation };
 
     const subset: Subset = {
       id: getId('Subset', intersectionName[comboBinary]),

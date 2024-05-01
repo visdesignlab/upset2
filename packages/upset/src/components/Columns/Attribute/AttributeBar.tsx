@@ -1,5 +1,5 @@
 import {
-  Aggregate, FiveNumberSummary, Items, Subset, isRowAggregate,
+  Aggregate, SixNumberSummary, Items, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -13,9 +13,22 @@ import { DotPlot } from './AttributePlots/DotPlot';
 import { itemsAtom } from '../../../atoms/itemsAtoms';
 import { DeviationBar } from '../DeviationBar';
 
+/**
+ * Attribute bar props
+ */
 type Props = {
+  /**
+   * The attribute to render
+   */
   attribute: string;
-  summary: FiveNumberSummary | number;
+  /**
+   * The summary statistics for the attribute
+   * Can be SixNumberSummary if it is an attribute, or a number if it is Deviation
+   */
+  summary: SixNumberSummary | number;
+  /**
+   * Row Type
+   */
   row: Subset | Aggregate;
 };
 

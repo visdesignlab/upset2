@@ -14,7 +14,7 @@ import {
   Container,
   TextField,
 } from "@mui/material"
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { ProvenanceContext } from "./Root"
 import { dataSelector } from "../atoms/dataAtom";
 import { useRecoilValue } from "recoil";
@@ -29,10 +29,10 @@ import { CoreUpsetData, DefaultConfig } from "@visdesignlab/upset2-core";
  * @returns The count of items with the specified attribute value.
  */
 const getAttributeItemCount = (attribute: string, data: CoreUpsetData) => {
-    if (DefaultConfig.visibleAttributes.includes(attribute)) {
-        return '';
-    }
-    let count = 0;
+  if (DefaultConfig.visibleAttributes.includes(attribute)) {
+      return '';
+  }
+  let count = 0;
 
   Object.values(data.items).forEach((item) => {
     Object.entries(item).forEach(([key, val]) => {
@@ -65,15 +65,18 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
       []
   );
 
-    const [ searchTerm, setSearchTerm ] = useState<string>("");
+  const [ searchTerm, setSearchTerm ] = useState<string>("");
 
-    const attributeItemCount: { [attr: string]: number | string } = {};
+  const attributeItemCount: { [attr: string]: number | string } = {};
 
-    if (data) {
-        [...data.attributeColumns, ...DefaultConfig.visibleAttributes].forEach((attr) => {
-            attributeItemCount[attr] = getAttributeItemCount(attr,data);
-        })
-    }
+  const attributes = data ? [...data.attributeColumns, ...DefaultConfig.visibleAttributes]: [...DefaultConfig.visibleAttributes];
+    
+
+  if (data) {
+      attributes.forEach((attr) => {
+          attributeItemCount[attr] = getAttributeItemCount(attr,data);
+      })
+  }
 
   /**
    * Handle checkbox toggle: add or remove the attribute from the visible attributes
@@ -117,7 +120,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
     if (data === undefined || data === null) {
       return []
     }
-    return [...DefaultConfig.visibleAttributes, ...data.attributeColumns].map((attr, index) => {
+    return attributes.map((attr, index) => {
       return {
         id: index,
         attribute: attr,

@@ -36,54 +36,104 @@ export type Item = {
 
 export type Items = { [k: string]: Item };
 
-export type FiveNumberSummary = {
+/**
+ * Represents a six-number summary. Derived for the Boxplot
+ */
+export type SixNumberSummary = {
+  /**
+   * The minimum value.
+   */
   min?: number;
+  /**
+   * The maximum value.
+   */
   max?: number;
+  /**
+   * The median value.
+   */
   median?: number;
+  /**
+   * The mean value.
+   */
   mean?: number;
+  /**
+   * The first quartile value.
+   */
   first?: number;
+  /**
+   * The third quartile value.
+   */
   third?: number;
 };
 
+/**
+ * Represents a list of attributes and their corresponding values.
+ * The keys are attribute names and the values can be either a `SixNumberSummary` object or a number (deviation).
+ */
 export type AttributeList = {
-  [attribute: string]: FiveNumberSummary | number;
+  [attribute: string]: SixNumberSummary | number;
 }
 
+/**
+ * List of attributes for a subset ({attr1, attr2, deviation, degree, etc})
+ */
 export type Attributes = AttributeList & {
+  /**
+   * The deviation of the subset.
+   */
   deviation: number;
+  /**
+   * The degree of the subset.
+   */
   degree?: number;
 };
 
+/**
+ * Represents a base element.
+ */
 export type BaseElement = {
+  /**
+   * The ID of the element.
+   */
   id: string;
+  /**
+   * The name of the element.
+   */
   elementName: string;
+  /**
+   * The items associated with the element.
+   */
   items: string[];
+  /**
+   * The type of the element.
+   */
   type: RowType;
+  /**
+   * The size of the element.
+   */
   size: number;
+  /**
+   * The attributes of the element.
+   */
   attributes: Attributes;
+  /**
+   * The parent element ID, if any.
+   */
   parent?: string;
 };
 
 export type SetMembershipStatus = 'Yes' | 'No' | 'May';
 
-export type ISet = {
-  id: string;
-  elementName: string;
-  items: string[];
-  type: RowType;
-  size: number;
-  parent?: string | undefined;
-  attributes: AttributeList;
-  setMembership: { [key: string]: SetMembershipStatus };
-};
-
 export const UNINCLUDED = 'unincluded';
 
-export type Sets = { [set_id: string]: ISet };
-
+/**
+ * Base Intersection type for subsets and aggregates.
+ */
 type BaseIntersection = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
+
+export type Sets = { [set_id: string]: BaseIntersection };
 
 export type Subset = BaseIntersection;
 
