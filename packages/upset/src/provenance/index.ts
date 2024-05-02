@@ -326,7 +326,7 @@ export function getActions(provenance: UpsetProvenance) {
     secondAggregateBy: (aggBy: AggregateBy) => provenance.apply(`Second aggregate by ${aggBy}`, secondAggAction(aggBy)),
     secondOverlapBy: (overlap: number) => provenance.apply(`Second overlap by ${overlap}`, secondOverlapAction(overlap)),
     sortVisibleBy: (sort: SortVisibleBy) => provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
-    sortBy: (sort: SortBy, sortByOrder?: SortByOrder) => provenance.apply(`Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`, sortByAction({ sort, sortByOrder })),
+    sortBy: (sort: string, sortByOrder?: SortByOrder) => provenance.apply(`Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`, sortByAction({ sort, sortByOrder })),
     setMaxVisible: (val: number) => provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
     setMinVisible: (val: number) => provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
     setHideEmpty: (val: boolean) => provenance.apply(val ? 'Hide empty intersections' : 'Show empty intersections', hideEmptyAction(val)),
