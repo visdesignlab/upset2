@@ -17,7 +17,6 @@
     "doc": "typedoc --options typedoc.json"
   },
   "devDependencies": {
-    "@playwright/test": "^1.15.0",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
     "eslint": "^8.6.0",
@@ -45,6 +44,7 @@
     "eslint-config-react-app": "^7.0.1",
     "vite": "^4.4.9",
     "vite-plugin-dts": "^3.5.1",
-    "vite-tsconfig-paths": "^4.2.0"
+    "vite-tsconfig-paths": "^4.2.0",
+    "@playwright/test": "^1.15.0"
   }
 }

@@ -1,5 +1,5 @@
 import {
-  Aggregate, FiveNumberSummary, Items, Subset, isRowAggregate,
+  Aggregate, SixNumberSummary, Items, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -11,10 +11,24 @@ import translate from '../../../utils/transform';
 import { BoxPlot } from './AttributePlots/BoxPlot';
 import { DotPlot } from './AttributePlots/DotPlot';
 import { itemsAtom } from '../../../atoms/itemsAtoms';
+import { DeviationBar } from '../DeviationBar';
 
+/**
+ * Attribute bar props
+ */
 type Props = {
+  /**
+   * The attribute to render
+   */
   attribute: string;
-  summary: FiveNumberSummary;
+  /**
+   * The summary statistics for the attribute
+   * Can be SixNumberSummary if it is an attribute, or a number if it is Deviation
+   */
+  summary: SixNumberSummary | number;
+  /**
+   * Row Type
+   */
   row: Subset | Aggregate;
 };
 
@@ -34,15 +48,17 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const items = useRecoilValue(itemsAtom);
   const values = getValuesFromRow(row, attribute, items);
 
-  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
+  if (typeof summary !== 'number' && (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined)) {
     return null;
   }
 
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
-      { row.size > 5
-        ? <BoxPlot scale={scale} summary={summary} />
-        : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} row={row} />}
+      { typeof summary === 'number' ?
+        <DeviationBar deviation={summary} /> :
+        row.size > 5
+          ? <BoxPlot scale={scale} summary={summary} />
+          : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} row={row} />}
     </g>
   );
 };

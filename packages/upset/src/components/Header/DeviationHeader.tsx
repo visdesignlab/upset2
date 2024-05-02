@@ -12,20 +12,8 @@ export const DeviationHeader = () => {
   const maxDeviation = useRecoilValue(maxDeviationSelector);
 
   return (
-    <g
-      transform={translate(
-        dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.degreeColumn.width +
-        dimensions.degreeColumn.gap +
-        dimensions.size.width +
-        dimensions.gap,
-        dimensions.header.totalHeight - dimensions.attribute.height,
-      )}
-    >
-      <AttributeButton label="Deviation" sortable />
+    <g>
+      <AttributeButton label="Deviation" />
       <g
         transform={translate(
           0,

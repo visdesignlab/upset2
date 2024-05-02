@@ -1,17 +1,7 @@
 import { atom } from 'recoil';
+import { ContextMenuInfo } from '../types';
 
-type Props = {
-    mouseX: number,
-    mouseY: number,
-    id: string,
-    items: {
-        label: string,
-        onClick: () => any,
-        disabled?: boolean
-    }[]
-}
-
-export const contextMenuAtom = atom<Props | null>({
+export const contextMenuAtom = atom<ContextMenuInfo | null>({
   key: 'context-menu-display-state',
   default: null,
 });

@@ -1,11 +1,10 @@
-import { Subset, getBelongingSetsFromSetMembership, getDegreeFromSetMembership } from '@visdesignlab/upset2-core';
+import { Subset, getBelongingSetsFromSetMembership, Row } from '@visdesignlab/upset2-core';
 import { FC, useState, useContext } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
-import { DeviationBar } from '../Columns/DeviationBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
 import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -14,9 +13,7 @@ import {
 } from '../../utils/styles';
 import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
-import { Degree } from '../Columns/Degree';
 import { ProvenanceContext } from '../Root';
-import { Row } from '@visdesignlab/upset2-core';
 
 type Props = {
   subset: Subset;
@@ -94,9 +91,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       <Matrix sets={visibleSets} subset={subset} />
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />}
-      <Degree degree={getDegreeFromSetMembership(subset.setMembership)} />
       <SizeBar size={subset.size} row={subset} />
-      <DeviationBar deviation={subset.deviation} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );

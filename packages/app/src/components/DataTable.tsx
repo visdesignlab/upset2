@@ -18,7 +18,6 @@ const getAggRows = (row: AccessibleDataEntry) => {
         retVal.push(getRowData(r));
 
         if (r.type === "Aggregate") {
-            console.log("is agg")
             retVal.push(...getAggRows(r));
         }
     });

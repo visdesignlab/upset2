@@ -1,5 +1,5 @@
 import { combinationsFromArray } from './combinations';
-import { getFiveNumberSummary, getId } from './process';
+import { getSixNumberSummary, getId } from './process';
 import {
   Aggregate,
   AggregateBy,
@@ -39,6 +39,25 @@ export function getItems(row: Row) {
   });
 
   return Array.from(new Set(items));
+}
+
+/**
+ * Updates the aggregate values with the attributes calculated from the items and attribute columns.
+ * @param aggs - The aggregates object containing the order and values of the aggregates.
+ * @param items - The items object containing the data items.
+ * @param attributeColumns - The array of attribute columns to calculate the attributes from.
+ */
+function updateAggValues(aggs: Aggregates, items: Items, attributeColumns: string[]) {
+  aggs.order.forEach((aggId) => {
+    aggs.values[aggId].attributes = {
+      ...getSixNumberSummary(
+        items,
+        getItems(aggs.values[aggId]),
+        attributeColumns,
+      ),
+      deviation: aggs.values[aggId].attributes.deviation,
+    };
+  });
 }
 
 /**
@@ -101,11 +120,12 @@ function aggregateByDegree(
       size: 0,
       type: 'Aggregate',
       setMembership: {},
-      deviation: 0,
       aggregateBy: 'Degree',
       level,
       description: i === 0 ? 'in no set' : `${i} set intersection`,
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -128,16 +148,10 @@ function aggregateByDegree(
     relevantAggregate.items.values[subsetId] = subset;
     relevantAggregate.items.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.deviation += subset.deviation;
+    relevantAggregate.attributes.deviation += subset.attributes.deviation;
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }
@@ -198,11 +212,12 @@ function aggregateBySets(
         set === UNINCLUDED
           ? { ...setMembershipNone }
           : { ...setMembership, [set]: 'Yes' },
-      deviation: 0,
       aggregateBy: 'Sets',
       level,
       description: elementName,
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -229,7 +244,7 @@ function aggregateBySets(
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.deviation += subset.deviation;
+      relevantAggregate.attributes.deviation += subset.attributes.deviation;
     }
 
     belongingSets.forEach((set) => {
@@ -240,17 +255,11 @@ function aggregateBySets(
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.deviation += subset.deviation;
+      relevantAggregate.attributes.deviation += subset.attributes.deviation;
     });
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }
@@ -307,10 +316,11 @@ function aggregateByDeviation(
       size: 0,
       type: 'Aggregate',
       setMembership: {},
-      deviation: 0,
       aggregateBy: 'Deviations',
       level,
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -324,7 +334,7 @@ function aggregateByDeviation(
 
   subsets.order.forEach((subsetId) => {
     let subset = subsets.values[subsetId];
-    const deviationType = subset.deviation >= 0 ? 'pos' : 'neg';
+    const deviationType = subset.attributes.deviation >= 0 ? 'pos' : 'neg';
 
     const relevantAggregate = aggs.values[deviationMap[deviationType]];
 
@@ -333,16 +343,10 @@ function aggregateByDeviation(
     relevantAggregate.items.values[subsetId] = subset;
     relevantAggregate.items.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.deviation += subset.deviation;
+    relevantAggregate.attributes.deviation += subset.attributes.deviation;
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }
@@ -410,10 +414,11 @@ function aggregateByOverlaps(
       type: 'Aggregate',
       aggregateBy: 'Overlaps',
       setMembership: sm,
-      deviation: 0,
       level,
       description: setNames.join(' - '),
-      attributes: {},
+      attributes: {
+        deviation: 0,
+      },
     };
 
     if (agg.level === 2) {
@@ -442,17 +447,11 @@ function aggregateByOverlaps(
       relevantAggregate.items.values[subsetId] = subset;
       relevantAggregate.items.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.deviation += subset.deviation;
+      relevantAggregate.attributes.deviation += subset.attributes.deviation;
     });
   });
 
-  aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = getFiveNumberSummary(
-      items,
-      getItems(aggs.values[aggId]),
-      attributeColumns,
-    );
-  });
+  updateAggValues(aggs, items, attributeColumns);
 
   return aggs;
 }

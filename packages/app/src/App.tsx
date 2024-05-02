@@ -7,6 +7,7 @@ import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
+import { DefaultConfig } from '@visdesignlab/upset2-core';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -34,7 +35,8 @@ function App() {
         conf.allSets = setList.map((set) => {return { name: set[0], size: set[1].size }})
       }
 
-      conf.visibleAttributes = data.attributeColumns.slice(0, 3);
+      // Add first 4 attribute columns (deviation + 3 attrs) to visibleAttributes
+      conf.visibleAttributes = [...DefaultConfig.visibleAttributes, ...data.attributeColumns.slice(0, 4)];
 
       return conf;
     }

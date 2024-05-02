@@ -53,17 +53,26 @@ test('Alt Text', async ({ page }) => {
   await expect(altTextHeading).toBeVisible();
 
   /// /////////////////
+  // Error Handling
+  /// /////////////////
+  /// Aggregates
+  await page.getByRole('radio', { name: 'Degree' }).check();
+  const aggErrMsg = await page.getByText("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
+  await expect(aggErrMsg).toBeVisible();
+  await page.getByRole('radio', { name: 'None' }).check();
+
+  /// Attribute Sort
+  await page.getByLabel('Age').locator('rect').dispatchEvent('click');
+  const attrSortErrMsg = await page.getByText('Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.');
+  await expect(attrSortErrMsg).toBeVisible();
+  await page.getByText('Size', { exact: true }).dispatchEvent('click');
+
+  /// /////////////////
   // Plot Information
   /// /////////////////
   const plotInformation = await page.getByRole('button', { name: 'Plot Information' });
   await expect(plotInformation).toBeVisible();
   await plotInformation.click();
-
-  // Test error message for aggregated plots
-  await page.getByRole('radio', { name: 'Degree' }).check();
-  const aggErrMsg = await page.getByText("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
-  await expect(aggErrMsg).toBeVisible();
-  await page.getByRole('radio', { name: 'None' }).check();
 
   const editPlotInformationButton = await page.getByLabel('Toggle editable descriptions');
   await expect(editPlotInformationButton).toBeVisible();
@@ -97,7 +106,7 @@ test('Alt Text', async ({ page }) => {
   /// /////////////////
   // Short Description
   /// /////////////////
-  await expect(page.getByText("This is an UpSet plot"))
+  await expect(page.getByText('This is an UpSet plot'))
     .toContainText('This is an UpSet plot which shows set intersection of 6 sets out of 6 sets and the largest intersection is School, and Male (3). The plot is sorted by size and 12 non-empty intersections are shown.');
   await page.getByRole('button', { name: 'Show More' }).click();
   await page.getByRole('button', { name: 'Show Less' }).click();

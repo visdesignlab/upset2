@@ -53,8 +53,8 @@ export const Body = ({ yOffset, data, config }: Props) => {
   /**
    * Generates alt text for a plot based on the current state and configuration.
    * If an error occurs during the generation, an error message is returned.
-   * Alt text generation currently is not supported for aggregated plots
-   * and an error message is returned if the plot is aggregated.
+   * Alt text generation currently is not supported for aggregated or attribute sorted plots
+   * and an error message is returned.
    * @throws Error with descriptive message if an error occurs while generating the alttxt
    * @returns A promise that resolves to the generated alt text.
    */
@@ -64,6 +64,10 @@ export const Body = ({ yOffset, data, config }: Props) => {
 
     if (config.firstAggregateBy !== "None") {
       throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
+    }
+
+    if (!['Size', 'Degree', 'Deviation'].includes(config.sortBy)) {
+      throw new Error("Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.");
     }
 
     let response;

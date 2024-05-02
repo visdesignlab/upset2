@@ -50,6 +50,13 @@ export const DegreeHeader = () => {
       },
       disabled: sortBy === 'Degree' && sortByOrder === 'Descending',
     },
+    {
+      label: 'Remove Degree',
+      onClick: () => {
+        actions.removeAttribute('Degree');
+        handleContextMenuClose();
+      },
+    },
   ];
 
   const openContextMenu = (e: MouseEvent) => {
@@ -66,11 +73,8 @@ export const DegreeHeader = () => {
   return (
     <g
       transform={translate(
-        dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap,
-        dimensions.header.totalHeight - dimensions.attribute.buttonHeight - dimensions.attribute.scaleHeight + 1,
+        0,
+        dimensions.attribute.gap + 1, // not really sure why, but this needs a 1px increase for degree
       )}
 
     >
