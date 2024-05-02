@@ -200,7 +200,7 @@ function sortIntersections<T extends Intersections>(
   sortByOrder?: SortByOrder,
 ) {
   if (sortBy.includes('Set_')) {
-    return sortBySet(intersections, sortBy, vSetSortBy, visibleSets, sortByOrder);
+    return sortBySet(intersections, sortBy, vSetSortBy, visibleSets);
   }
 
   switch (sortBy) {
