@@ -8,6 +8,7 @@ import {
   Sets,
   SortByOrder,
   SixNumberSummary,
+  getBelongingSetsFromSetMembership,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -110,6 +111,48 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
 }
 
 /**
+ * Sorts the rows based on a specified set. This should move the selected set to the top of the list, and sort the rest of the rows by degree ascending.
+ *
+ * @param rows - The rows to be sorted.
+ * @param sortBy - The set to sort by.
+ * @param vSetSortBy - The sort order for visible sets.
+ * @param visibleSets - The visible sets.
+ * @param sortByOrder - The sort order for the specified set. (optional)
+ * @returns The sorted rows.
+ */
+function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleBy, visibleSets: Sets) {
+  // create the subset of rows which contain sortBy in their set list
+  const setMembers: Intersections = { values: {}, order: [] };
+
+  // setMembers needs to be a filtered list of values that contain the set membership, as well as order which corresponds
+  const setMemberEntries = Object.entries(rows.values).filter(([, value]) => getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy));
+  setMemberEntries.forEach(([key, value]) => {
+    setMembers.values[key] = value;
+    setMembers.order.push(key);
+  });
+
+  // create the subset of rows which do NOT contain sortBy in their set list
+  const nonSetMembers: Intersections = { values: {}, order: [] };
+
+  // filter the list for entries which do not have the selected set as members
+  const nonSetMemberEntries = Object.entries(rows.values).filter(([, value]) => !getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy));
+  nonSetMemberEntries.forEach(([key, value]) => {
+    nonSetMembers.values[key] = value;
+    nonSetMembers.order.push(key);
+  });
+
+  // sort each of the two by degree (Ascending)
+  const sortedSetMembers = sortByDegree(setMembers, vSetSortBy, visibleSets, 'Ascending');
+  const sortedNonSetMembers = sortByDegree(nonSetMembers, vSetSortBy, visibleSets, 'Ascending');
+
+  // combine the two sorted row lists
+  const sortedOrder = sortedSetMembers.order.concat(sortedNonSetMembers.order);
+  const sortedValues = { ...sortedSetMembers.values, ...sortedNonSetMembers.values };
+
+  return { values: sortedValues, order: sortedOrder };
+}
+
+/**
  * @param {Intersections} rows - The intersections object containing values and order.
  * @param {string} sortBy - The attribute to sort by
  * @param {SortByOrder} sortByOrder - The sort order ('Ascending' or 'Descending'). Defaults to 'Ascending'.
@@ -151,11 +194,15 @@ function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: Sort
  */
 function sortIntersections<T extends Intersections>(
   intersections: T,
-  sortBy: SortBy,
+  sortBy: string,
   vSetSortBy: SortVisibleBy,
   visibleSets: Sets,
   sortByOrder?: SortByOrder,
 ) {
+  if (sortBy.includes('Set_')) {
+    return sortBySet(intersections, sortBy, vSetSortBy, visibleSets, sortByOrder);
+  }
+
   switch (sortBy) {
     case 'Size':
       return sortBySize(intersections, sortByOrder);

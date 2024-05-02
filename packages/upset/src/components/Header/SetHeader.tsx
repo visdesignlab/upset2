@@ -13,20 +13,39 @@ import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
 import translate from '../../utils/transform';
-import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
+import { columnHoverAtom } from '../../atoms/highlightAtom';
+import { sortBySelector } from '../../atoms/config/sortByAtom';
 
+/**
+ * Props for the SetHeader component.
+ */
 type Props = {
+  /**
+   * List of all visible set names
+   */
   visibleSets: string[];
+  /**
+   * D3 linear scale
+   */
   scale: ScaleLinear<number, number>;
 };
 
+/**
+ * Renders the header component for the set.
+ *
+ * @component
+ * @param {Object} props - The component props.
+ * @param {string[]} props.visibleSets - The array of visible set names.
+ * @param {ScaleLinear<number, number>} props.scale - The scale value.
+ * @returns {JSX.Element} The rendered component.
+ */
 export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
+  const sortBy = useRecoilValue(sortBySelector);
   const sortVisibleBy = useRecoilValue(visibleSortSelector);
 
   const setColumnHover = useSetRecoilState(columnHoverAtom);
-  const setColumnSelect = useSetRecoilState(columnSelectAtom);
 
   const { actions } = useContext(
     ProvenanceContext,
@@ -34,51 +53,81 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
+  /**
+  * Closes the context menu.
+  */
   const handleContextMenuClose = () => {
     setContextMenu(null);
   };
 
+  /**
+   * Returns an array of menu items for a given set name.
+   * @param setName - The name of the set.
+   * @returns An array of menu items.
+  */
+  const getMenuItems = (setName: string) => [
+    {
+      // Label should look like "Remove Set: Drama" rather than "Remove Set_Drama"
+      label: `Remove ${setName.replace('Set_', 'Set: ')}`,
+      onClick: () => {
+        actions.removeVisibleSet(setName);
+        handleContextMenuClose();
+      },
+    },
+    {
+      label: `Bring ${setName.replace('Set_', 'Set: ')} to top`,
+      onClick: () => {
+        actions.sortBy(setName);
+        handleContextMenuClose();
+      },
+    },
+    {
+      label: 'Sort Sets by Alphabetical',
+      onClick: () => {
+        actions.sortVisibleBy('Alphabetical' as SortVisibleBy);
+        handleContextMenuClose();
+      },
+      disabled: sortVisibleBy === 'Alphabetical',
+    },
+    {
+      label: 'Sort Sets by Size - Ascending',
+      onClick: () => {
+        actions.sortVisibleBy('Ascending' as SortVisibleBy);
+        handleContextMenuClose();
+      },
+      disabled: sortVisibleBy === 'Ascending',
+    },
+    {
+      label: 'Sort Sets by Size - Descending',
+      onClick: () => {
+        actions.sortVisibleBy('Descending' as SortVisibleBy);
+        handleContextMenuClose();
+      },
+      disabled: sortVisibleBy === 'Descending',
+    },
+  ];
+
+  /**
+   * Opens the context menu for a given setName.
+   * 
+   * @param e - The mouse event that triggered the context menu.
+   * @param setName - The name of the set.
+   */
   const openContextMenu = (e: MouseEvent, setName: string) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,
       id: `${setName}-menu`,
-      items: [
-        {
-          label: `Remove ${setName.replace('_', ': ')}`,
-          onClick: () => {
-            actions.removeVisibleSet(setName);
-            handleContextMenuClose();
-          },
-        },
-        {
-          label: 'Sort by Alphabetical',
-          onClick: () => {
-            actions.sortVisibleBy('Alphabetical' as SortVisibleBy);
-            handleContextMenuClose();
-          },
-          disabled: sortVisibleBy === 'Alphabetical',
-        },
-        {
-          label: 'Sort by Size - Ascending',
-          onClick: () => {
-            actions.sortVisibleBy('Ascending' as SortVisibleBy);
-            handleContextMenuClose();
-          },
-          disabled: sortVisibleBy === 'Ascending',
-        },
-        {
-          label: 'Sort by Size - Descending',
-          onClick: () => {
-            actions.sortVisibleBy('Descending' as SortVisibleBy);
-            handleContextMenuClose();
-          },
-          disabled: sortVisibleBy === 'Descending',
-        },
-      ],
+      items: getMenuItems(setName),
     });
   };
 
+  /**
+   * Animates the transitions of the visible sets in the header column.
+   * Creates keyframes for animated g elements
+   *
+   * @returns {Array<{ set: { setName: string, x: number }, props: { transform: SpringValue<string> } }>} - The array of transitions for the visible sets.
+   */
   const columnTransitions = useTransition(
     visibleSets.map((setName, idx) => ({
       setName,
@@ -107,7 +156,9 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
           onMouseLeave={() => setColumnHover([])}
           onClick={(e) => {
             e.stopPropagation();
-            setColumnSelect([set.setName]);
+            if (sortBy !== set.setName) {
+              actions.sortBy(set.setName);
+            }
           }}
         >
           <SetSizeBar

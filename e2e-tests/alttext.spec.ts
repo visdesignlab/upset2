@@ -1,4 +1,3 @@
-/* eslint-disable testing-library/prefer-screen-queries */
 import { test, expect } from '@playwright/test';
 import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
 import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';
@@ -57,16 +56,22 @@ test('Alt Text', async ({ page }) => {
   /// /////////////////
   /// Aggregates
   await page.getByRole('radio', { name: 'Degree' }).check();
-  const aggErrMsg = await page.getByText("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
+  const aggErrMsg = page.getByText("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
   await expect(aggErrMsg).toBeVisible();
   await page.getByRole('radio', { name: 'None' }).check();
 
   /// Attribute Sort
   await page.getByLabel('Age').locator('rect').dispatchEvent('click');
-  const attrSortErrMsg = await page.getByText('Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.');
+  const attrSortErrMsg = page.getByText('Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.');
   await expect(attrSortErrMsg).toBeVisible();
-  await page.getByText('Size', { exact: true }).dispatchEvent('click');
 
+  /// Set Sort
+  await page.locator('p').filter({ hasText: /^Male$/ }).click();
+  const setSortErrMsg = page.getByText('Alt text generation is not yet supported for set sorting. To generate an alt text, sort by Size, Degree, or Deviation.');
+  await expect(setSortErrMsg).toBeVisible();
+
+  // reset sorting to size
+  await page.getByText('Size', { exact: true }).dispatchEvent('click');
   /// /////////////////
   // Plot Information
   /// /////////////////

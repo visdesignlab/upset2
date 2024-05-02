@@ -67,7 +67,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
     }
 
     if (!['Size', 'Degree', 'Deviation'].includes(config.sortBy)) {
-      throw new Error("Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.");
+      throw new Error(`Alt text generation is not yet supported for ${config.sortBy.includes("Set_") ? 'set' : 'attribute'} sorting. To generate an alt text, sort by Size, Degree, or Deviation.`);
     }
 
     let response;
