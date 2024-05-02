@@ -49,6 +49,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
 
   return (
     <g
+      id={subset.id}
       onClick={
         () => {
           if (currentIntersection?.id === subset.id) { // if the row is already selected, deselect it
