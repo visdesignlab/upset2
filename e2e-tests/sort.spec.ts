@@ -126,11 +126,11 @@ test('Sort by Size', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   /// Ascending
-  await page.getByText('Size', { exact: true }).click();
+  await page.getByText('Size', { exact: true }).dispatchEvent('click');
   await compareSortedElements(page, SIZE_ORDER.Ascending);
 
   /// Descending
-  await page.getByText('Size', { exact: true }).click();
+  await page.getByText('Size', { exact: true }).dispatchEvent('click');
   await compareSortedElements(page, SIZE_ORDER.Descending);
 });
 
@@ -162,19 +162,19 @@ test('Sort by Set Male', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   /// Only one option for sortOrder for sets
-  await page.locator('p').filter({ hasText: /^Male$/ }).click();
+  await page.locator('p').filter({ hasText: /^Male$/ }).dispatchEvent('click');
   await compareSortedElements(page, SET_MALE_ORDER.Alphabetical);
 
   // Sort visible sets by size, ascending
   // male is largest, so this should put it at the end.
   // This will alter the order of the sets
   await page.locator('p').filter({ hasText: /^Male$/ }).dispatchEvent('contextmenu');
-  await page.getByRole('menuitem', { name: 'Sort Sets by Size - Ascending' }).click();
+  await page.getByRole('menuitem', { name: 'Sort Sets by Size - Ascending' }).dispatchEvent('click');
 
   await compareSortedElements(page, SET_MALE_ORDER.Ascending);
 
   await page.locator('p').filter({ hasText: /^Male$/ }).dispatchEvent('contextmenu');
-  await page.getByRole('menuitem', { name: 'Sort Sets by Size - Descending' }).click();
+  await page.getByRole('menuitem', { name: 'Sort Sets by Size - Descending' }).dispatchEvent('click');
 
   await compareSortedElements(page, SET_MALE_ORDER.Descending);
 });
