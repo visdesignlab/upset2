@@ -138,11 +138,11 @@ test('Sort by Degree', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   /// Ascending
-  await page.getByText('#').click();
+  await page.getByText('#').dispatchEvent('click');
   await compareSortedElements(page, DEGREE_ORDER.Ascending);
 
   /// Descending
-  await page.getByText('#').click();
+  await page.getByText('#').dispatchEvent('click');
   await compareSortedElements(page, DEGREE_ORDER.Descending);
 });
 
