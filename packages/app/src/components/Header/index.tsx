@@ -179,7 +179,7 @@ const Header = ({ data }: { data: any }) => {
               }}
               aria-label={`${isAltTextSidebarOpen ? 'Close' : 'Open'} alt text sidebar`}
               >
-                Alt-Text
+                Text Description
               </Button>
               <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
                 <Button
