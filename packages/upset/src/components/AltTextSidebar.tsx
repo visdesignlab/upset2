@@ -6,7 +6,9 @@ import {
   Button,
   Divider,
   Drawer,
+  FormControlLabel,
   IconButton,
+  Switch,
   TextField,
   Typography,
   css,
@@ -25,6 +27,7 @@ import { AltText } from '../types';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from '@visdesignlab/upset2-core';
 import '../index.css';
+import { HelpCircle } from './custom/HelpCircle';
 
 type Props = {
   open: boolean;
@@ -258,7 +261,24 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            {useLong && !textGenErr && !textEditing && !caption && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
+            <FormControlLabel
+              sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+              label="Show long description"
+              control={
+                <Switch
+                  size="small"
+                  checked={useLong}
+                  onChange={(ev) => {
+                    setUseLong(ev.target.checked);
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+            <HelpCircle 
+              text={"When enabled, displays the long text description for this plot instead of the short version."}
+              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
+            />
             {textEditing ? (<>
               <Button color="error" onClick={discardCaption}>Discard</Button>
               <Button 
@@ -290,7 +310,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 <ReactMarkdownWrapper text={caption ?? (altText ? useLong ? altText.longDescription : altText.shortDescription : '')} />
               </div>
             )}
-            {!useLong && !textGenErr && !textEditing && !caption && <Button onClick={() => setUseLong(true)}>Show More</Button>}
           </div>
         </Box>
       </div>
