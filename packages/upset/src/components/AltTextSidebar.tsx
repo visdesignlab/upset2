@@ -28,6 +28,7 @@ import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from '@visdesignlab/upset2-core';
 import '../index.css';
 import { HelpCircle } from './custom/HelpCircle';
+import { text } from 'd3';
 
 type Props = {
   open: boolean;
@@ -261,24 +262,26 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         </Box>
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            <FormControlLabel
-              sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
-              label="Show long description"
-              control={
-                <Switch
-                  size="small"
-                  checked={useLong}
-                  onChange={(ev) => {
-                    setUseLong(ev.target.checked);
-                  }}
-                />
-              }
-              labelPlacement="start"
-            />
-            <HelpCircle 
-              text={"When enabled, displays the long text description for this plot instead of the short version."}
-              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
-            />
+            {!textGenErr ? (<>
+              <FormControlLabel
+                sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+                label="Show long description"
+                control={
+                  <Switch
+                    size="small"
+                    checked={useLong}
+                    onChange={(ev) => {
+                      setUseLong(ev.target.checked);
+                    }}
+                  />
+                }
+                labelPlacement="start"
+              />
+              <HelpCircle 
+                text={"When enabled, displays the long text description for this plot instead of the short version."}
+                margin={{left: 12, top: 0, right: 0, bottom: 0}} 
+              />
+            </>) : null}
             {textEditing ? (<>
               <Button color="error" onClick={discardCaption}>Discard</Button>
               <Button 
