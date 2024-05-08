@@ -28,7 +28,6 @@ import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from '@visdesignlab/upset2-core';
 import '../index.css';
 import { HelpCircle } from './custom/HelpCircle';
-import { text } from 'd3';
 
 type Props = {
   open: boolean;
@@ -171,9 +170,22 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             width: 95%;
           `}
         >
-          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
-            Alt Text
+          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
+            Title:&nbsp;
           </Typography>
+          <TextField fullWidth 
+            variant='standard'
+            style={{marginBottom: "5px"}}
+            inputProps={{
+              disableUnderline: true,
+              style: {
+                padding: "1px", 
+                height: "1.4em", 
+                fontSize: "1.2em", 
+                fontWeight: "inherit",
+                border: "none",
+            }}}
+          />
           <IconButton onClick={close}>
             <CloseIcon />
           </IconButton>
@@ -185,6 +197,71 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             margin-bottom: 1em;
           `}
         />
+        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
+          Caption:
+        </Typography>
+        <TextField fullWidth multiline
+          inputProps={{
+            rows: 3,
+            // We need to override the default overflow prop (hidden), then still deny x scrolling
+            style: {height: "4em", overflow: "scroll", overflowX: "hidden"}
+          }}
+        />
+        <Box marginTop={2}>
+          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
+            {!textGenErr ? (<>
+              <FormControlLabel
+                sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+                label="Show long description"
+                control={
+                  <Switch
+                    size="small"
+                    checked={useLong}
+                    onChange={(ev) => {
+                      setUseLong(ev.target.checked);
+                    }}
+                  />
+                }
+                labelPlacement="start"
+              />
+              <HelpCircle 
+                text={"When enabled, displays the long text description for this plot instead of the short version."}
+                margin={{left: 12, top: 0, right: 0, bottom: 0}} 
+              />
+            </>) : null}
+            {textEditing ? (<>
+              <Button color="error" onClick={discardCaption}>Discard</Button>
+              <Button 
+                color="primary" 
+                style={{position: "absolute", right: "1em"}} 
+                onClick={() => setTextEditing(false)}
+              >Save</Button>
+              <TextField multiline fullWidth
+                onChange={(e) => setCaption(e.target.value)}
+                value={caption ?? altText?.longDescription} />
+              <br />
+            </>) : (
+              <div style={
+                useLong ? {
+                  overflowY: 'auto',
+                  // We want a margin at the bottom if the text is long, but otherwise it pushes the show more button down
+                  marginBottom: useLong ? '4em' : '0',
+                  cursor: 'pointer',
+                  padding: '3px',
+                  borderRadius: '4px',
+                  border: textHover ? '2px solid #ddd' : '2px solid #fff',
+                } : {}
+              }
+                onMouseEnter={() => setTextHover(true)} 
+                onMouseLeave={() => setTextHover(false)} 
+                onClick={() => {if (useLong) setTextEditing(true)}}
+              >
+                {/* Use the user caption if available. Otherwise, check whether to use short or long auto-generated desc */}
+                <ReactMarkdownWrapper text={caption ?? (altText ? useLong ? altText.longDescription : altText.shortDescription : '')} />
+              </div>
+            )}
+          </div>
+        </Box>
         <Box>
           <Accordion>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -259,61 +336,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               { isEditable && <Button onClick={() => { actions.setPlotInformation(plotInformation); setIsEditable(false); }}>Save</Button> }
             </AccordionDetails>
           </Accordion>
-        </Box>
-        <Box marginTop={2}>
-          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            {!textGenErr ? (<>
-              <FormControlLabel
-                sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
-                label="Show long description"
-                control={
-                  <Switch
-                    size="small"
-                    checked={useLong}
-                    onChange={(ev) => {
-                      setUseLong(ev.target.checked);
-                    }}
-                  />
-                }
-                labelPlacement="start"
-              />
-              <HelpCircle 
-                text={"When enabled, displays the long text description for this plot instead of the short version."}
-                margin={{left: 12, top: 0, right: 0, bottom: 0}} 
-              />
-            </>) : null}
-            {textEditing ? (<>
-              <Button color="error" onClick={discardCaption}>Discard</Button>
-              <Button 
-                color="primary" 
-                style={{position: "absolute", right: "1em"}} 
-                onClick={() => setTextEditing(false)}
-              >Save</Button>
-              <TextField multiline fullWidth
-                onChange={(e) => setCaption(e.target.value)}
-                value={caption ?? altText?.longDescription} />
-              <br />
-            </>) : (
-              <div style={
-                useLong ? {
-                  overflowY: 'auto',
-                  // We want a margin at the bottom if the text is long, but otherwise it pushes the show more button down
-                  marginBottom: useLong ? '4em' : '0',
-                  cursor: 'pointer',
-                  padding: '3px',
-                  borderRadius: '4px',
-                  border: textHover ? '2px solid #ddd' : '2px solid #fff',
-                } : {}
-              }
-                onMouseEnter={() => setTextHover(true)} 
-                onMouseLeave={() => setTextHover(false)} 
-                onClick={() => {if (useLong) setTextEditing(true)}}
-              >
-                {/* Use the user caption if available. Otherwise, check whether to use short or long auto-generated desc */}
-                <ReactMarkdownWrapper text={caption ?? (altText ? useLong ? altText.longDescription : altText.shortDescription : '')} />
-              </div>
-            )}
-          </div>
         </Box>
       </div>
     </Drawer>
