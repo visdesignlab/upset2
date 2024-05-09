@@ -1,5 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-import { Meta } from '@storybook/react';
 import { CoreUpsetData } from '@visdesignlab/upset2-core';
 import React, { useEffect, useState } from 'react';
 
@@ -19,7 +18,7 @@ const meta = {
     },
   },
   parameters: {
-    controls: { expanded: "true" },
+    controls: { expanded: 'true' },
   },
 };
 
@@ -42,7 +41,7 @@ const Template = (args) => {
   ) : (
     <div>
       Loading
-       {args.dataset}
+      {args.dataset}
       {' '}
       dataset
     </div>

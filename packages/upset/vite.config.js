@@ -49,7 +49,6 @@ export default defineConfig({
         '@emotion/css',
         '@emotion/react',
         '@emotion/styled',
-        'react-markdown',
         'vega',
         'vega-lite',
       ],

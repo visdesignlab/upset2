@@ -2,6 +2,18 @@
   "name": "@visdesignlab/upset2-react",
   "version": "0.1.0",
   "license": "MIT",
+  "author": "Kiran Gadhave, Jake Wagoner, Nate Lanza",
+  "description": "React component for UpSet2 visualization",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/visdesignlab/upset2.git",
+    "directory": "packages/upset"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "homepage": "https://upset.multinet.app/",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
   "module": "dist/index.mjs",
@@ -13,6 +25,7 @@
     "node": ">=10"
   },
   "scripts": {
+    "prepublish": "rm -rf ./dist && yarn run build",
     "start": "vite build --watch",
     "dev": "yarn run start",
     "build": "vite build",
@@ -25,14 +38,14 @@
     "build-storybook": "storybook build"
   },
   "peerDependencies": {
-    "react": ">=16"
+    "react": ">=16",
+    "react-dom": "^17.0.2"
   },
   "husky": {
     "hooks": {
       "pre-commit": "eslint src"
     }
   },
-  "author": "Kiran Gadhave, Jake Wagoner",
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
@@ -50,7 +63,9 @@
     "size-limit": "^7.0.5",
     "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^4.5.4",
+    "react": ">=16",
+    "react-dom": ">=17.0.2"
   },
   "dependencies": {
     "@emotion/css": "^11.10.5",
@@ -68,8 +83,6 @@
     "@visdesignlab/upset2-core": "*",
     "d3": "^7.3.0",
     "mobx": "^6.4.2",
-    "react": ">=16",
-    "react-dom": "^17.0.2",
     "react-markdown": "^8.0.7",
     "react-spring": "^9.4.4",
     "react-vega": "^7.4.4",
