@@ -21,8 +21,8 @@
     "prepare": "tsdx build",
     "size": "size-limit",
     "analyze": "size-limit --why",
-    "storybook": "start-storybook -p 6006",
-    "build-storybook": "build-storybook"
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   },
   "peerDependencies": {
     "react": ">=16"
@@ -36,15 +36,11 @@
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
+    "@chromatic-com/storybook": "^1",
     "@emotion/babel-plugin": "^11.7.2",
     "@emotion/babel-preset-css-prop": "^11.2.0",
     "@size-limit/preset-small-lib": "^7.0.5",
-    "@storybook/addon-essentials": "^6.4.9",
-    "@storybook/addon-info": "^5.3.21",
-    "@storybook/addon-links": "^6.4.9",
-    "@storybook/addon-postcss": "^2.0.0",
-    "@storybook/addons": "^6.4.9",
-    "@storybook/react": "^6.4.9",
+    "@storybook/react-vite": "^8.0.10",
     "@types/d3": "^7.1.0",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
@@ -72,13 +68,14 @@
     "@visdesignlab/upset2-core": "*",
     "d3": "^7.3.0",
     "mobx": "^6.4.2",
-    "react": "^17.0.2",
+    "react": ">=16",
     "react-dom": "^17.0.2",
     "react-markdown": "^8.0.7",
     "react-spring": "^9.4.4",
     "react-vega": "^7.4.4",
     "recoil": "^0.5.2",
     "rxjs": "^7.5.5",
+    "storybook": "^8.0.10",
     "vega": "^5.22.0",
     "vega-lite": "^5.2.0"
   }
