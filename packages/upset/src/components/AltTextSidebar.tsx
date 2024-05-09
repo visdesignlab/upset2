@@ -15,6 +15,8 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CloseIcon from '@mui/icons-material/Close';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
+import LockIcon from '@mui/icons-material/Lock';
 import {
   useState, useEffect, FC, useContext,
 } from 'react';
@@ -28,6 +30,7 @@ import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from '@visdesignlab/upset2-core';
 import '../index.css';
 import { HelpCircle } from './custom/HelpCircle';
+import { text } from 'd3';
 
 type Props = {
   open: boolean;
@@ -142,6 +145,14 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     setIsEditable(!isEditable);
   };
 
+  const divider = <Divider
+    css={css`
+      width: 95%;
+      margin: auto;
+      margin-bottom: 1em;
+    `}
+  />
+
   return (
     <Drawer
       anchor="right"
@@ -190,16 +201,11 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             <CloseIcon />
           </IconButton>
         </div>
-        <Divider
-          css={css`
-            width: 95%;
-            margin: auto;
-            margin-bottom: 1em;
-          `}
-        />
+        {divider}
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
           Caption:
         </Typography>
+        {divider}
         <TextField fullWidth multiline
           inputProps={{
             rows: 3,
@@ -207,6 +213,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             style: {height: "4em", overflow: "scroll", overflowX: "hidden"}
           }}
         />
+        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
+          Text Description:
+        </Typography>
+        {divider}
         <Box marginTop={2}>
           <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
             {!textGenErr ? (<>
@@ -215,6 +225,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 label="Show long description"
                 control={
                   <Switch
+                    disabled={textEditing}
                     size="small"
                     checked={useLong}
                     onChange={(ev) => {
@@ -228,36 +239,46 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 text={"When enabled, displays the long text description for this plot instead of the short version."}
                 margin={{left: 12, top: 0, right: 0, bottom: 0}} 
               />
+              <div style={{
+                color: 'GrayText',
+                float: 'right',
+                marginRight: '1em',
+                cursor: 'pointer',
+              }}>
+                {caption ? (<LockIcon/>) : (<LockOpenIcon/>)}
+              </div>
             </>) : null}
             {textEditing ? (<>
+              <TextField multiline fullWidth
+                onChange={(e) => setCaption(e.target.value)}
+                value={caption ?? useLong ? altText?.longDescription : altText?.shortDescription} 
+              />
               <Button color="error" onClick={discardCaption}>Discard</Button>
               <Button 
                 color="primary" 
                 style={{position: "absolute", right: "1em"}} 
                 onClick={() => setTextEditing(false)}
               >Save</Button>
-              <TextField multiline fullWidth
-                onChange={(e) => setCaption(e.target.value)}
-                value={caption ?? altText?.longDescription} />
               <br />
             </>) : (
-              <div style={
-                useLong ? {
-                  overflowY: 'auto',
-                  // We want a margin at the bottom if the text is long, but otherwise it pushes the show more button down
-                  marginBottom: useLong ? '4em' : '0',
-                  cursor: 'pointer',
-                  padding: '3px',
-                  borderRadius: '4px',
-                  border: textHover ? '2px solid #ddd' : '2px solid #fff',
-                } : {}
-              }
+              <div style={{
+                overflowY: 'auto',
+                // We want a margin at the bottom if the text is long, but otherwise it pushes the show more button down
+                marginBottom: useLong ? '4em' : '0',
+                cursor: 'pointer',
+                padding: '3px',
+                borderRadius: '4px',
+                border: textHover ? '2px solid #ddd' : '2px solid #fff',
+                width: 'calc(100% - 10px)', // We have 10px of padding + border
+              }}
                 onMouseEnter={() => setTextHover(true)} 
                 onMouseLeave={() => setTextHover(false)} 
-                onClick={() => {if (useLong) setTextEditing(true)}}
+                onClick={() => {setTextEditing(true)}}
               >
                 {/* Use the user caption if available. Otherwise, check whether to use short or long auto-generated desc */}
-                <ReactMarkdownWrapper text={caption ?? (altText ? useLong ? altText.longDescription : altText.shortDescription : '')} />
+                <ReactMarkdownWrapper 
+                  text={caption ?? (altText ? useLong ? altText.longDescription : altText.shortDescription : '')}
+                />
               </div>
             )}
           </div>
