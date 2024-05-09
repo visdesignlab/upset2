@@ -1,0 +1,242 @@
+[
+  {
+    "Name": "Lisa",
+    "School": true,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 8
+  },
+  {
+    "Name": "Bart",
+    "School": true,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 10
+  },
+  {
+    "Name": "Homer",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": true,
+    "Age": 40
+  },
+  {
+    "Name": "Marge",
+    "School": false,
+    "Blue Hair": true,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 36
+  },
+  {
+    "Name": "Maggie",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 1
+  },
+  {
+    "Name": "Barney",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 39
+  },
+  {
+    "Name": "Mr. Burns",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": true,
+    "Male": true,
+    "Power Plant": true,
+    "Age": 90
+  },
+  {
+    "Name": "Mo",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 41
+  },
+  {
+    "Name": "Ned",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 42
+  },
+  {
+    "Name": "Milhouse",
+    "School": true,
+    "Blue Hair": true,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 10
+  },
+  {
+    "Name": "Grampa",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 85
+  },
+  {
+    "Name": "Krusty",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": true,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 46
+  },
+  {
+    "Name": "Smithers",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": true,
+    "Male": true,
+    "Power Plant": true,
+    "Age": 33
+  },
+  {
+    "Name": "Ralph",
+    "School": true,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 8
+  },
+  {
+    "Name": "Sideshow Bob",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": true,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 37
+  },
+  {
+    "Name": "Kent Brockman",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 45
+  },
+  {
+    "Name": "Fat Tony",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": true,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 50
+  },
+  {
+    "Name": "Jacqueline Bouvier ",
+    "School": false,
+    "Blue Hair": true,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 76
+  },
+  {
+    "Name": "Patty Bouvier",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 45
+  },
+  {
+    "Name": "Selma Bouvier",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 45
+  },
+  {
+    "Name": "Lenny Leonard",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": true,
+    "Age": 38
+  },
+  {
+    "Name": "Carl Carlson",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": true,
+    "Age": 37
+  },
+  {
+    "Name": "Nelson",
+    "School": true,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": true,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 11
+  },
+  {
+    "Name": "Martin Prince",
+    "School": true,
+    "Blue Hair": false,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": false,
+    "Age": 10
+  }
+]

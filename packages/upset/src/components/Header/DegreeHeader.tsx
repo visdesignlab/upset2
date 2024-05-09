@@ -8,12 +8,14 @@ import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { ProvenanceContext } from '../Root';
+import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 
 export const DegreeHeader = () => {
   const { actions } = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
+  const allowAttributeRemoval = useRecoilValue(allowAttributeRemovalAtom);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -33,31 +35,40 @@ export const DegreeHeader = () => {
     setContextMenu(null);
   };
 
-  const getMenuItems = () => [
-    {
-      label: 'Sort by Degree - Ascending',
-      onClick: () => {
-        sortByDegree('Ascending');
-        handleContextMenuClose();
+  const getMenuItems = () => {
+    const items = [
+      {
+        label: 'Sort by Degree - Ascending',
+        onClick: () => {
+          sortByDegree('Ascending');
+          handleContextMenuClose();
+        },
+        disabled: sortBy === 'Degree' && sortByOrder === 'Ascending',
       },
-      disabled: sortBy === 'Degree' && sortByOrder === 'Ascending',
-    },
-    {
-      label: 'Sort by Degree - Descending',
-      onClick: () => {
-        sortByDegree('Descending');
-        handleContextMenuClose();
+      {
+        label: 'Sort by Degree - Descending',
+        onClick: () => {
+          sortByDegree('Descending');
+          handleContextMenuClose();
+        },
+        disabled: sortBy === 'Degree' && sortByOrder === 'Descending',
       },
-      disabled: sortBy === 'Degree' && sortByOrder === 'Descending',
-    },
-    {
-      label: 'Remove Degree',
-      onClick: () => {
-        actions.removeAttribute('Degree');
-        handleContextMenuClose();
-      },
-    },
-  ];
+    ];
+
+    // Add remove attribute option if allowed
+    if (allowAttributeRemoval) {
+      items.push({
+        label: 'Remove Degree',
+        onClick: () => {
+          actions.removeAttribute('Degree');
+          handleContextMenuClose();
+        },
+        disabled: false,
+      });
+    }
+
+    return items;
+  };
 
   const openContextMenu = (e: MouseEvent) => {
     setContextMenu(

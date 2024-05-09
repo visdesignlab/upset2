@@ -13,17 +13,19 @@ const defaultVisibleSets = 6;
  * Renders the Upset component.
  *
  * @component
- * @param {Object} props - The component props.
- * @param {Object} props.data - The data for the Upset component.
- * @param {boolean} [props.parentHasHeight=false] - Indicates if the parent has a fixed height.
- * @param {number} [props.yOffset=0] - The offset from the top of the viewport.
- * @param {Object} [props.config={}] - The configuration options for the Upset component.
- * @param {number} [props.loadAttributes=0] - The number of attributes to load.
- * @param {Object} [props.extProvenance] - The external provenance data.
- * @param {Object} [props.provVis] - The provenance visualization options.
- * @param {Object} [props.elementSidebar] - The element sidebar options.
- * @param {Object} [props.altTextSidebar] - The alternative text sidebar options.
- * @param {Function} [props.generateAltText] - The function to generate alternative text.
+ * @param {Object} data - The data for the Upset component.
+ * @param {boolean} [parentHasHeight=false] - Indicates if the parent has a fixed height.
+ * @param {number} [yOffset=0] - The offset from the top of the viewport.
+ * @param {Object} [config={}] - The configuration options for the Upset component.
+ * @param {string[]} [visualizeAttributes] - The number of attributes to load.
+ * @param {boolean} [visualizeUpsetAttributes=false] - Whether or not to visualize Degree and Deviation.
+ * @param {boolean} [allowAttributeRemoval=false] - Option for allowing attribute removal.
+ * @param {boolean} [hideSettings] - Option for hiding the settings sidebar.
+ * @param {Object} [extProvenance] - The external provenance data.
+ * @param {Object} [provVis] - The provenance visualization options.
+ * @param {Object} [elementSidebar] - The element sidebar options.
+ * @param {Object} [altTextSidebar] - The alternative text sidebar options.
+ * @param {Function} [generateAltText] - The function to generate alternative text.
  * @returns {JSX.Element} The rendered Upset component.
  */
 export const Upset: FC<UpsetProps> = ({
@@ -31,7 +33,10 @@ export const Upset: FC<UpsetProps> = ({
   parentHasHeight = false,
   yOffset = 0,
   config = {},
-  loadAttributes = 0,
+  visualizeDatasetAttributes,
+  visualizeUpsetAttributes = false,
+  allowAttributeRemoval = false,
+  hideSettings,
   extProvenance,
   provVis,
   elementSidebar,
@@ -43,14 +48,37 @@ export const Upset: FC<UpsetProps> = ({
   const combinedConfig = useMemo(() => {
     const conf: UpsetConfig = { ...DefaultConfig, ...config };
 
+    const defaultNumAttributes = 3;
+
     if (conf.visibleSets.length === 0) {
       const setList = Object.entries(data.sets);
       conf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]); // get first 6 set names
       conf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
     }
 
-    // Add attribute columns by default based on the loadAttributes prop to visibleAttributes
-    conf.visibleAttributes = [...DefaultConfig.visibleAttributes, ...data.attributeColumns.slice(0, loadAttributes)];
+    const defaultAttributes = (visualizeUpsetAttributes) ? DefaultConfig.visibleAttributes : [];
+
+    /**
+     * visualizeAttributes can either be undefined or an array of strings
+     * if visualizeAttributes is undefined, load the first 3 attributes by default
+     */
+    if (visualizeDatasetAttributes) {
+      conf.visibleAttributes = [
+        ...defaultAttributes,
+        ...visualizeDatasetAttributes.filter((attr) => data.attributeColumns.includes(attr)),
+      ];
+    }
+
+    /**
+     * if visualizeAttributes is an array of strings, load the specified attributes
+     * if visualizeAttributes is an empty array, load no attributes
+     */
+    else {
+      conf.visibleAttributes = [
+        ...defaultAttributes,
+        ...data.attributeColumns.slice(0, defaultNumAttributes),
+      ];
+    }
 
     return conf;
   }, [data, config]);
@@ -69,6 +97,8 @@ export const Upset: FC<UpsetProps> = ({
           <Root
             data={data}
             config={combinedConfig}
+            allowAttributeRemoval={allowAttributeRemoval}
+            hideSettings={hideSettings}
             extProvenance={extProvenance}
             provVis={provVis}
             elementSidebar={elementSidebar}

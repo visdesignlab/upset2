@@ -89,9 +89,25 @@ export interface UpsetProps {
   config?: Partial<UpsetConfig>;
 
   /**
-  * The number of attributes to load.
+  * The attributes to load.
+  * If empty, load none, if undefined, load some (default 3).
   */
-  loadAttributes?: number;
+  visualizeDatasetAttributes?: string[];
+
+  /**
+   * Whether or not to visualize Degree and Deviation
+   */
+  visualizeUpsetAttributes?: boolean;
+
+  /**
+   * Option for allowing attribute removal
+   */
+  allowAttributeRemoval?: boolean;
+
+  /**
+   * Option for hiding the settings sidebar
+   */
+  hideSettings?: boolean;
 
   /**
   * External provenance information for the Upset component.

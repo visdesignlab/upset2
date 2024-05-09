@@ -106,7 +106,6 @@ export const Body = ({ yOffset, data, config }: Props) => {
           </Backdrop>
           <Upset
             data={data}
-            loadAttributes={3}
             yOffset={yOffset === -1 ? 0 : yOffset}
             extProvenance={provObject}
             config={config}
@@ -114,6 +113,8 @@ export const Body = ({ yOffset, data, config }: Props) => {
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
             generateAltText={generateAltText}
+            visualizeUpsetAttributes
+            allowAttributeRemoval
           />
         </div>
       }

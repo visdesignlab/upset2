@@ -1,6 +1,6 @@
 import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { SortBy, SortByOrder } from '@visdesignlab/upset2-core';
+import { SortByOrder } from '@visdesignlab/upset2-core';
 
 import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -10,6 +10,7 @@ import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAt
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { ContextMenuItem } from '../../types';
+import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -37,13 +38,15 @@ export const AttributeButton: FC<Props> = ({ label }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
+  const allowAttributeRemoval = useRecoilValue(allowAttributeRemovalAtom);
+
   /**
    * Sorts the attribute in the specified order.
    *
    * @param order - The sort order ('Ascending' or 'Descending').
    */
   const sortByHeader = (order: SortByOrder) => {
-    actions.sortBy(label as SortBy, order);
+    actions.sortBy(label, order);
   };
 
   /**
@@ -72,7 +75,7 @@ export const AttributeButton: FC<Props> = ({ label }) => {
    * @returns An array of menu items.
    */
   function getMenuItems(): ContextMenuItem[] {
-    return [
+    const items = [
       {
         label: `Sort by ${label} - Ascending`,
         onClick: () => {
@@ -89,14 +92,23 @@ export const AttributeButton: FC<Props> = ({ label }) => {
         },
         disabled: sortBy === label && sortByOrder === 'Descending',
       },
-      {
-        label: `Remove ${label}`,
-        onClick: () => {
-          actions.removeAttribute(label);
-          handleContextMenuClose();
-        },
-      },
     ];
+
+    // Add remove attribute option if allowed
+    if (allowAttributeRemoval) {
+      items.push(
+        {
+          label: `Remove ${label}`,
+          onClick: () => {
+            actions.removeAttribute(label);
+            handleContextMenuClose();
+          },
+          disabled: false,
+        },
+      );
+    }
+
+    return items;
   }
 
   /**
