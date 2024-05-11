@@ -296,6 +296,39 @@ const setSelectedAction = registry.register(
   },
 );
 
+/**
+ * Sets the plotInformation title string
+ */
+const setTitleAction = registry.register(
+  'set-title',
+  (state: UpsetConfig, title) => {
+    state.title = title;
+    return state;
+  }
+)
+
+/**
+ * Sets the plotInformation caption string
+ */
+const setCaptionAction = registry.register(
+  'set-caption',
+  (state: UpsetConfig, caption) => {
+    state.caption = caption;
+    return state;
+  }
+);
+
+/**
+ * Sets the alt text for the user
+ */
+const setUserAltTextAction = registry.register(
+  'set-user-alt-text',
+  (state: UpsetConfig, altText) => {
+    state.userAltText = altText;
+    return state;
+  }
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -351,6 +384,18 @@ export function getActions(provenance: UpsetProvenance) {
       `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
       'Deselect intersection', 
       setSelectedAction(intersection)
+    ),
+    setTitle: (title: string) => provenance.apply(
+      `Set title to "${title}"`,
+      setTitleAction(title)
+    ),
+    setCaption: (caption: string) => provenance.apply(
+      `Set caption to "${caption}"`,
+      setCaptionAction(caption)
+    ),
+    setUserAltText: (altText: string) => provenance.apply(
+      `Set user alt text to "${altText}"`,
+      setUserAltTextAction(altText)
     ),
   };
 }
