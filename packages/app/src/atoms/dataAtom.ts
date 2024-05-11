@@ -18,7 +18,6 @@ export const dataSelector = selector<CoreUpsetData | null>({
           limit: Number.MAX_SAFE_INTEGER,
         })
       ).results;
-      console.log("await completed");
     } catch (e) {
       return null;
     }

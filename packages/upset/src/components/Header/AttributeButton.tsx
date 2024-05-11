@@ -2,20 +2,33 @@ import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { SortBy, SortByOrder } from '@visdesignlab/upset2-core';
 
+import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { ProvenanceContext } from '../Root';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
+import { ContextMenuItem } from '../../types';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
+  /**
+   * Text to display on the attribute button
+   */
   label: string;
-  sortable?: boolean;
 };
 
-export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
+/**
+ * Represents a button component for sorting and removing attributes in the header.
+ *
+ * @component
+ * @example
+ * return (
+ *   <AttributeButton label="Name" />
+ * )
+ */
+export const AttributeButton: FC<Props> = ({ label }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
     ProvenanceContext,
@@ -24,57 +37,73 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
+  /**
+   * Sorts the attribute in the specified order.
+   *
+   * @param order - The sort order ('Ascending' or 'Descending').
+   */
   const sortByHeader = (order: SortByOrder) => {
     actions.sortBy(label as SortBy, order);
   };
 
+  /**
+   * Handles the click event of the button.
+   * If the attribute is not currently sorted, it sorts it in ascending order.
+   * If the attribute is already sorted, it toggles between ascending and descending order.
+   */
   const handleOnClick = () => {
-    if (sortable) {
-      if (sortBy !== label) {
-        sortByHeader('Ascending');
-      } else {
-        sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
-      }
+    if (sortBy !== label) {
+      sortByHeader('Ascending');
+    } else {
+      sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
   };
 
+  /**
+   * Closes the context menu.
+   */
   const handleContextMenuClose = () => {
     setContextMenu(null);
   };
 
-  const getMenuItems = () => {
-    const items = [];
-    if (sortable) {
-      items.push(
-        {
-          label: `Sort by ${label} - Ascending`,
-          onClick: () => {
-            sortByHeader('Ascending');
-            handleContextMenuClose();
-          },
-          disabled: sortBy === label && sortByOrder === 'Ascending',
+  /**
+   * Returns an array of menu items for the context menu.
+   *
+   * @returns An array of menu items.
+   */
+  function getMenuItems(): ContextMenuItem[] {
+    return [
+      {
+        label: `Sort by ${label} - Ascending`,
+        onClick: () => {
+          sortByHeader('Ascending');
+          handleContextMenuClose();
         },
-        {
-          label: `Sort by ${label} - Descending`,
-          onClick: () => {
-            sortByHeader('Descending');
-            handleContextMenuClose();
-          },
-          disabled: sortBy === label && sortByOrder === 'Descending',
-        },
-      );
-    }
-    items.push({
-      label: `Remove ${label}`,
-      onClick: () => {
-        actions.removeAttribute(label);
-        handleContextMenuClose();
+        disabled: sortBy === label && sortByOrder === 'Ascending',
       },
-    });
+      {
+        label: `Sort by ${label} - Descending`,
+        onClick: () => {
+          sortByHeader('Descending');
+          handleContextMenuClose();
+        },
+        disabled: sortBy === label && sortByOrder === 'Descending',
+      },
+      {
+        label: `Remove ${label}`,
+        onClick: () => {
+          actions.removeAttribute(label);
+          handleContextMenuClose();
+        },
+      },
+    ];
+  }
 
-    return items;
-  };
-
+  /**
+   * Opens the context menu at the specified coordinates.
+   *
+   * @param e - The mouse event.
+   */
   const openContextMenu = (e: MouseEvent) => {
     setContextMenu(
       {
@@ -87,46 +116,48 @@ export const AttributeButton: FC<Props> = ({ label, sortable = false }) => {
   };
 
   return (
-    <g
-      css={{
-        '&:hover': {
-          opacity: 0.7,
-        },
-        cursor: 'context-menu',
-      }}
-      onContextMenu={(e: any) => {
-        e.preventDefault();
-        e.stopPropagation();
-        openContextMenu(e);
-      }}
-      transform={translate(0, 6)}
-      onClick={handleOnClick}
-    >
-      <rect
-        height={dimensions.attribute.buttonHeight}
-        width={dimensions.attribute.width}
-        fill="#ccc"
-        stroke="#000"
-        opacity="0.5"
-        strokeWidth="0.3px"
-      />
+    <Tooltip title={label} arrow placement="top">
       <g
-        transform={translate(
-          dimensions.attribute.width / 2,
-          dimensions.attribute.buttonHeight / 2,
-        )}
+        css={{
+          '&:hover': {
+            opacity: 0.7,
+          },
+          cursor: 'context-menu',
+        }}
+        onContextMenu={(e: any) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openContextMenu(e);
+        }}
+        transform={translate(0, 6)}
+        onClick={handleOnClick}
       >
-        <text
-          id={`header-text-${label}`}
-          pointerEvents={sortable ? 'default' : 'none'}
-          dominantBaseline="middle"
-          textAnchor="middle"
+        <rect
+          height={dimensions.attribute.buttonHeight}
+          width={dimensions.attribute.width}
+          fill="#ccc"
+          stroke="#000"
+          opacity="0.5"
+          strokeWidth="0.3px"
+        />
+        <g
+          transform={translate(
+            dimensions.attribute.width / 2,
+            dimensions.attribute.buttonHeight / 2,
+          )}
         >
-          {label}
-        </text>
-        {(sortable && sortBy === label) &&
-          <HeaderSortArrow />}
+          <text
+            id={`header-text-${label}`}
+            pointerEvents="default"
+            dominantBaseline="middle"
+            textAnchor="middle"
+          >
+            {label}
+          </text>
+          {(sortBy === label) &&
+            <HeaderSortArrow />}
+        </g>
       </g>
-    </g>
+    </Tooltip>
   );
 };

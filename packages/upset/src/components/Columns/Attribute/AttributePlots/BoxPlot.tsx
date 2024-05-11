@@ -1,7 +1,7 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3';
-import { FiveNumberSummary } from '@visdesignlab/upset2-core';
+import { SixNumberSummary } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 
 /*
@@ -9,7 +9,7 @@ import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
  */
 type Props = {
   scale: ScaleLinear<number, number, never>;
-  summary: FiveNumberSummary;
+  summary: SixNumberSummary;
 };
 
 const Tick: FC<{ x1: number; x2: number; y1?: number; y2?: number }> = ({

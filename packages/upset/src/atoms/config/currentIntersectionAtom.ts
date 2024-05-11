@@ -27,6 +27,10 @@ export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
   },
 });
 
+/**
+ * Represents the color palette for the bookmarked intersections.
+ * Maps intersection IDs to colors, both as strings.
+ */
 export const bookmarkedColorPalette = selector<{
   [intersection: string]: string;
 }>({
@@ -44,6 +48,10 @@ export const bookmarkedColorPalette = selector<{
   },
 });
 
+/**
+ * The next color to be used for a newly bookmarked intersection;
+ * comes from the queryColorPalette.
+ */
 export const nextColorSelector = selector<string>({
   key: 'color-selector',
   get: ({ get }) => {

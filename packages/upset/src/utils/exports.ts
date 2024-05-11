@@ -20,7 +20,6 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
       elementName: r['elementName'],
       type: r['type'],
       size: r['size'],
-      deviation: r['deviation'],
       attributes: r['attributes'],
       degree,
     };

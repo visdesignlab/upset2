@@ -14,12 +14,12 @@ import {
   Container,
   TextField,
 } from "@mui/material"
-import { useContext } from "react"
+import { useContext, useMemo } from "react"
 import { ProvenanceContext } from "./Root"
 import { dataSelector } from "../atoms/dataAtom";
 import { useRecoilValue } from "recoil";
 import { useState } from "react";
-import { CoreUpsetData } from "@visdesignlab/upset2-core";
+import { CoreUpsetData, DefaultConfig } from "@visdesignlab/upset2-core";
 
 /**
  * Get the count of items that have a specific attribute. 
@@ -29,6 +29,9 @@ import { CoreUpsetData } from "@visdesignlab/upset2-core";
  * @returns The count of items with the specified attribute value.
  */
 const getAttributeItemCount = (attribute: string, data: CoreUpsetData) => {
+  if (DefaultConfig.visibleAttributes.includes(attribute)) {
+      return '';
+  }
   let count = 0;
 
   Object.values(data.items).forEach((item) => {
@@ -63,11 +66,17 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
   );
 
   const [ searchTerm, setSearchTerm ] = useState<string>("");
-  const attributeItemCount: { [attr: string]: number } = {};
 
-  data?.attributeColumns.forEach((attr) => {
-    attributeItemCount[attr] = getAttributeItemCount(attr,data);
-  })
+  const attributeItemCount: { [attr: string]: number | string } = {};
+
+  const attributes = data ? [...data.attributeColumns, ...DefaultConfig.visibleAttributes]: [...DefaultConfig.visibleAttributes];
+    
+
+  if (data) {
+      attributes.forEach((attr) => {
+          attributeItemCount[attr] = getAttributeItemCount(attr,data);
+      })
+  }
 
   /**
    * Handle checkbox toggle: add or remove the attribute from the visible attributes
@@ -82,6 +91,13 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
       newChecked = checked.filter((a) => a !== attr);
     } else {
       newChecked.push(attr);
+    }
+
+    // move 'Degree' to the first element if it is selected
+    const degreeIndex = newChecked.indexOf('Degree');
+    if (degreeIndex !== -1) {
+        newChecked.splice(degreeIndex, 1); // Remove 'Degree' from its current position
+        newChecked.unshift('Degree'); // Move 'Degree' to the beginning
     }
 
     setChecked(newChecked);
@@ -104,7 +120,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
     if (data === undefined || data === null) {
       return []
     }
-    return data.attributeColumns.map((attr, index) => {
+    return attributes.map((attr, index) => {
       return {
         id: index,
         attribute: attr,

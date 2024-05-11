@@ -23,16 +23,8 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
   return (
     <g
       transform={translate(
-        dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.degreeColumn.width +
-        dimensions.degreeColumn.gap +
-        dimensions.size.width +
-        dimensions.gap +
         dimensions.attribute.width / 2,
-        (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
+        0,
       )}
     >
       <rect
