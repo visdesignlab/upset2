@@ -117,7 +117,6 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
  * @param sortBy - The set to sort by.
  * @param vSetSortBy - The sort order for visible sets.
  * @param visibleSets - The visible sets.
- * @param sortByOrder - The sort order for the specified set. (optional)
  * @returns The sorted rows.
  */
 function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleBy, visibleSets: Sets) {
@@ -146,7 +145,7 @@ function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleB
   const sortedNonSetMembers = sortByDegree(nonSetMembers, vSetSortBy, visibleSets, 'Ascending');
 
   // combine the two sorted row lists
-  const sortedOrder = sortedSetMembers.order.concat(sortedNonSetMembers.order);
+  const sortedOrder = [...sortedSetMembers.order, ...sortedNonSetMembers.order];
   const sortedValues = { ...sortedSetMembers.values, ...sortedNonSetMembers.values };
 
   return { values: sortedValues, order: sortedOrder };
