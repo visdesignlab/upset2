@@ -1,4 +1,3 @@
-/* eslint-disable testing-library/prefer-screen-queries */
 import { test, expect } from '@playwright/test';
 import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
 import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';

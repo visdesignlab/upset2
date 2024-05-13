@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row
+  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -60,7 +60,8 @@ const sortByAction = registry.register(
   'sort-by',
   (state, { sort, sortByOrder }) => {
     state.sortBy = sort;
-    state.sortByOrder = sortByOrder;
+    // should only be 'None' if sortBy is a Set
+    state.sortByOrder = sortByOrder || 'None';
     return state;
   },
 );
@@ -325,7 +326,7 @@ export function getActions(provenance: UpsetProvenance) {
     secondAggregateBy: (aggBy: AggregateBy) => provenance.apply(`Second aggregate by ${aggBy}`, secondAggAction(aggBy)),
     secondOverlapBy: (overlap: number) => provenance.apply(`Second overlap by ${overlap}`, secondOverlapAction(overlap)),
     sortVisibleBy: (sort: SortVisibleBy) => provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
-    sortBy: (sort: SortBy, sortByOrder: SortByOrder) => provenance.apply(`Sort by ${sort}, ${sortByOrder}`, sortByAction({ sort, sortByOrder })),
+    sortBy: (sort: string, sortByOrder?: SortByOrder) => provenance.apply(`Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`, sortByAction({ sort, sortByOrder })),
     setMaxVisible: (val: number) => provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
     setMinVisible: (val: number) => provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
     setHideEmpty: (val: boolean) => provenance.apply(val ? 'Hide empty intersections' : 'Show empty intersections', hideEmptyAction(val)),
@@ -347,10 +348,10 @@ export function getActions(provenance: UpsetProvenance) {
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
     setSelected: (intersection: Row) => provenance.apply(
-      intersection ? 
-      `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
-      'Deselect intersection', 
-      setSelectedAction(intersection)
+      intersection ?
+        `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
+        'Deselect intersection',
+      setSelectedAction(intersection),
     ),
   };
 }
