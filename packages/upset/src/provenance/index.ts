@@ -385,16 +385,16 @@ export function getActions(provenance: UpsetProvenance) {
       'Deselect intersection', 
       setSelectedAction(intersection)
     ),
-    setTitle: (title: string) => provenance.apply(
-      `Set title to "${title}"`,
+    setTitle: (title: string | null) => provenance.apply(
+      title ? `Set title to "${title}"` : "Cleared title",
       setTitleAction(title)
     ),
-    setCaption: (caption: string) => provenance.apply(
-      `Set caption to "${caption}"`,
+    setCaption: (caption: string | null) => provenance.apply(
+      caption ? `Set caption to "${caption}"` : "Cleared caption",
       setCaptionAction(caption)
     ),
-    setUserAltText: (altText: string) => provenance.apply(
-      `Set user alt text to "${altText}"`,
+    setUserAltText: (altText: string | null) => provenance.apply(
+      altText ? `Set user alt text to "${altText}"` : "Cleared user alt text",
       setUserAltTextAction(altText)
     ),
   };
