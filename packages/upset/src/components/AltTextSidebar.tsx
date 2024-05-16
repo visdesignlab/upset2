@@ -218,7 +218,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               style={{float: 'right'}} 
               onClick={() => {
                 setTextEditing(false);
-                actions.setUserAltText(userAltText);
+                if (userAltText !== currState.userAltText)
+                  actions.setUserAltText(userAltText);
               }}
             >Save</Button>
             <br />
