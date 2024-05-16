@@ -1,9 +1,9 @@
-import { SortBy, SortByOrder } from '@visdesignlab/upset2-core';
+import { SortByOrder } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';
 
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
-export const sortBySelector = selector<SortBy>({
+export const sortBySelector = selector<string>({
   key: 'sort-by',
   get: ({ get }) => get(upsetConfigAtom).sortBy,
 });

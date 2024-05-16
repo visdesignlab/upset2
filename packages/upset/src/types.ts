@@ -2,6 +2,21 @@ import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { UpsetProvenance, UpsetActions } from './provenance';
 
 /**
+ * Props for providing functions to open and close any sidebar.
+ */
+export interface SidebarProps {
+  /**
+   * Indicates whether the sidebar is open or closed.
+   */
+  open: boolean;
+
+  /**
+   * Callback function to close the sidebar.
+   */
+  close: () => void;
+}
+
+/**
 * Represents the alternative text for an Upset plot.
 */
 export interface AltText {
@@ -74,11 +89,6 @@ export type ContextMenuInfo = {
 */
 export interface UpsetProps {
   /**
-  * Specifies whether the parent component has a fixed height.
-  */
-  parentHasHeight?: boolean;
-
-  /**
   * The data for the Upset component.
   */
   data: CoreUpsetData;
@@ -110,6 +120,16 @@ export interface UpsetProps {
   hideSettings?: boolean;
 
   /**
+  * Specifies whether the parent component has a fixed height.
+  */
+  parentHasHeight?: boolean;
+
+  /**
+  * The vertical offset for the Upset component.
+  */
+  yOffset?: number;
+
+  /**
   * External provenance information for the Upset component.
   */
   extProvenance?: {
@@ -118,33 +138,19 @@ export interface UpsetProps {
   };
 
   /**
-  * The vertical offset for the Upset component.
-  */
-  yOffset?: number;
-
-  /**
   * Visualization settings for the provenance component.
   */
-  provVis?: {
-    open: boolean;
-    close: () => void;
-  };
+  provVis?: SidebarProps;
 
   /**
   * Sidebar settings for the element component.
   */
-  elementSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
+  elementSidebar?: SidebarProps;
 
   /**
   * Sidebar settings for the alt text component.
   */
-  altTextSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
+  altTextSidebar?: SidebarProps;
 
   /**
   * Generates alternative text for the Upset component.

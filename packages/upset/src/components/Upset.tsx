@@ -13,19 +13,19 @@ const defaultVisibleSets = 6;
  * Renders the Upset component.
  *
  * @component
- * @param {Object} data - The data for the Upset component.
- * @param {boolean} [parentHasHeight=false] - Indicates if the parent has a fixed height.
- * @param {number} [yOffset=0] - The offset from the top of the viewport.
- * @param {Object} [config={}] - The configuration options for the Upset component.
- * @param {string[]} [visualizeAttributes] - The number of attributes to load.
+ * @param {CoreUpsetData} data - The data for the Upset component.
+ * @param {Partial<UpsetConfig>} [config={}] - The configuration options for the Upset component.
+ * @param {string[]} [visualizeAttributes] - The list of attributes to load. Defaults to the first 3 attributes.
  * @param {boolean} [visualizeUpsetAttributes=false] - Whether or not to visualize Degree and Deviation.
  * @param {boolean} [allowAttributeRemoval=false] - Option for allowing attribute removal.
  * @param {boolean} [hideSettings] - Option for hiding the settings sidebar.
+ * @param {boolean} [parentHasHeight=false] - Indicates if the parent has a fixed height.
+ * @param {number} [yOffset=0] - The offset from the top of the viewport.
  * @param {Object} [extProvenance] - The external provenance data.
- * @param {Object} [provVis] - The provenance visualization options.
- * @param {Object} [elementSidebar] - The element sidebar options.
- * @param {Object} [altTextSidebar] - The alternative text sidebar options.
- * @param {Function} [generateAltText] - The function to generate alternative text.
+ * @param {SidebarProps} [provVis] - The provenance visualization options.
+ * @param {SidebarProps} [elementSidebar] - The element sidebar options.
+ * @param {SidebarProps} [altTextSidebar] - The alternative text sidebar options.
+ * @param {() => Promise<AltText>} [generateAltText] - The function to generate alternative text.
  * @returns {JSX.Element} The rendered Upset component.
  */
 export const Upset: FC<UpsetProps> = ({

@@ -8,7 +8,7 @@ Deployment Status: [![Netlify Status](https://api.netlify.com/api/v1/badges/edb8
 
 UpSet is an interactive, web based visualization technique designed to analyze set-based data. UpSet visualizes both, set intersections and their properties, and the items (elements) in the dataset.
 
-Please see the <http://upset.app> for more info about UpSet.
+Please see the <https://upset.app> for more info about UpSet.
 
 This version is a re-implementation using modern web technologies of [the original UpSet](https://vdl.sci.utah.edu/publications/2014_infovis_upset/).
 
@@ -28,7 +28,256 @@ UpSet: Visualization of Intersecting Sets
 IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983--1992, doi:10.1109/TVCG.2014.2346248, 2014.
 ```
 
-## Documentation
+---
+
+## UpSet 2.0 as a React Component
+
+UpSet 2.0 can be imported as a React component using:
+
+```console
+npm install @visdesignlab/upset2-react
+```
+
+Note that UpSet 2.0 requires a react version of 16.0 or higher.
+
+Import the component using `import { Upset } from @visdesignlab/upset2-react` in your react component.
+
+### UpSet 2.0 Data
+
+#### Data structure
+
+The raw data structure for UpSet should be two data objects. One is the set membership data, and the other is the column type annotations.
+
+The `data` object should be an array of objects. Each object should contain all the set membership boolean values as well as any attributes.
+
+The `annotations` object should be an object with a nest object field `columns`. The `columns` field should contain each possible entry in the data, as well as the type for each entry. This should be every possible set as well as any attribute type.
+
+In the example below, the sets are `School`, `Blue Hair`, `Duff Fan`, `Evil`, `Male`, and `Power Plant`. The only attribute in this dataset is `Age`, which is a number. This is clear in the annotations object, which denotes this.
+
+```js
+const annotations = {
+  "columns": {
+    "Name": "label",
+    "School": "boolean",
+    "Blue Hair": "boolean",
+    "Duff Fan": "boolean",
+    "Evil": "boolean",
+    "Male": "boolean",
+    "Power Plant": "boolean",
+    "Age": "number"
+  }
+}
+```
+
+This data example shows only two characters from the Simpsons. Note that the fields directly correlate to the `annotations` object above.
+
+```js
+const rawData = [
+   {
+    "Name": "Homer",
+    "School": false,
+    "Blue Hair": false,
+    "Duff Fan": true,
+    "Evil": false,
+    "Male": true,
+    "Power Plant": true,
+    "Age": 40
+  },
+  {
+    "Name": "Marge",
+    "School": false,
+    "Blue Hair": true,
+    "Duff Fan": false,
+    "Evil": false,
+    "Male": false,
+    "Power Plant": false,
+    "Age": 36
+  },
+]
+```
+
+Set fields in `annotations` should be of the type `"boolean"`. Attribute fields should be of the type `"number"`. The item label should be of type `"label"`.
+
+The data and/or attributes objects can be JSON or traditional JS objects.
+
+#### Loading Data into the UpSet 2.0 component
+
+To load your raw data into UpSet 2.0, some additional processing is required. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments. The example below details a simple usecase of the process function.
+
+```JSX
+import { Upset, process } from '@visdesignlab/upset2-react';
+
+const main = () => {
+  const rawData = const data = [
+    {
+      "Name": "Homer",
+      "School": false,
+      "Blue Hair": false,
+      "Duff Fan": true,
+      "Evil": false,
+      "Male": true,
+      "Power Plant": true,
+      "Age": 40
+    },
+    {
+      "Name": "Marge",
+      "School": false,
+      "Blue Hair": true,
+      "Duff Fan": false,
+      "Evil": false,
+      "Male": false,
+      "Power Plant": false,
+      "Age": 36
+    },
+  ];
+
+  const annotations = {
+    columns: {
+      "Name": "label",
+      "School": "boolean",
+      "Blue Hair": "boolean",
+      "Duff Fan": "boolean",
+      "Evil": "boolean",
+      "Male": "boolean",
+      "Power Plant": "boolean",
+      "Age": "number"
+    }
+  };
+
+  const processedData = process(rawData, annotations);
+
+  return <Upset data={processedData} />;
+}
+```
+
+### UpSet 2.0 component options
+
+#### All options
+
+- `data`: The data for the Upset component. See [UpSet 2.0 Data](#upset-20-data) for more information.
+- `config` (optional): The configuration options for the Upset component. This can be partial. See [Configuration Options](#configuration-options) for more details.
+- `visualizeAttributes` (optional)(`string[]`): List of attribute names (strings) which should be loaded. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
+- `visualizeUpsetAttributes` (optional)(`boolean`): Whether or not to visualize UpSet generated attributes (`degree`, and `deviation`). Defaults to `false`.
+- `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option for users to re-add attributes which have been removed. Defaults to `false`.
+- `hideSettings` (optional)(`boolean`): Hide the aggregations/filter settings sidebar.
+- `parentHasHeight` (optional)(`boolean`): Indicates if the parent component has a fixed height. Defaults to `false`.
+- `yOffset` (optional)(`number`): Offset from the top of the viewport. Defaults to 0.
+- `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and has a provenance structure that can use the UpSet actions. Provenance is still tracked if nothing is provided.
+- `provVis` (optional): [Sidebar options](#sidebar-options) for the provenance visualization sidebar. See [Trrack-Vis](https://github.com/Trrack/trrackvis) for more information about Trrack provenance visualization.
+- `elementSidebar` (optional): [Sidebar options](#sidebar-options) for the element visualization sidebar. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
+- `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generatedAltText` function is provided.
+- `generateAltText` (optional)(`() => Promise<AltText>`): Async function which should return a generated AltText object. See [Alt Text Generation](#alt-text-generation) for more information about Alt Text generation.
+
+##### Configuration options
+
+If no configuration options are provided, the default will be:
+
+- No aggregation
+- Sort rows by `Size - Descending`
+- Sort visible sets by `Alphabetical`
+- Minimum degree filter: 0
+- Maximum degree filter: 6
+- Show the "no set" row
+- Hide empty rows
+
+Example of full configuration (grammar) JSON produced for default Simpsons dataset:
+
+```json
+{
+  "plotInformation": {
+    "description": "",
+    "sets": "",
+    "items": ""
+  },
+  "horizontal": false,
+  "firstAggregateBy": "None",
+  "firstOverlapDegree": 2,
+  "secondAggregateBy": "None",
+  "secondOverlapDegree": 2,
+  "sortVisibleBy": "Alphabetical",
+  "sortBy": "Size",
+  "sortByOrder": "Descending",
+  "filters": {
+    "maxVisible": 6,
+    "minVisible": 0,
+    "hideEmpty": true,
+    "hideNoSet": false
+  },
+  "visibleSets": [
+    "Set_School",
+    "Set_Blue Hair",
+    "Set_Duff Fan",
+    "Set_Evil",
+    "Set_Male",
+    "Set_Power Plant"
+  ],
+  "visibleAttributes": [
+    "Age"
+  ],
+  "bookmarkedIntersections": [],
+  "collapsed": [],
+  "plots": {
+    "scatterplots": [],
+    "histograms": []
+  },
+  "allSets": [
+    {
+      "name": "Set_School",
+      "size": 6
+    },
+    {
+      "name": "Set_Blue Hair",
+      "size": 3
+    },
+    {
+      "name": "Set_Duff Fan",
+      "size": 6
+    },
+    {
+      "name": "Set_Evil",
+      "size": 6
+    },
+    {
+      "name": "Set_Male",
+      "size": 18
+    },
+    {
+      "name": "Set_Power Plant",
+      "size": 5
+    }
+  ],
+  "selected": null
+}
+```
+
+##### Sidebar options
+
+SidebarProps type:
+
+```js
+interface SidebarProps {
+  open: boolean;
+  close: () => void;
+}
+```
+
+##### Alt Text Generation
+
+Alt Text generation requires the use of a custom or imported Alt-Text generation function. In [upset.multinet.app](https://upset.multinet.app), we are using the Multinet API, which exposes an api call to the [upset-alttxt](https://pypi.org/project/upset-alttxt/) python package. This Python package 
+
+#### Default Configuration
+
+The default configuration for UpSet 2.0 shows the Aggregation/Filtering settings sidebar, sort the plot by Size (Descending), and shows up to the first 3 attributes in the data.
+
+Example using Simpsons dataset:
+
+```js
+<Upset data={simpsonsCharacterData} />
+```
+
+![Default UpSet 2.0 plot configuration](/assets/default-plot-example.png)
+
+## Developer Docs
 
 Developer documentation can be found at [https://vdl.sci.utah.edu/upset2/](https://vdl.sci.utah.edu/upset2/).
 
@@ -38,7 +287,7 @@ For more information on documentation see the [Developer Documentation Guideline
 
 To deploy UpSet 2.0 locally it is necessary to install the Multinet infrastructure.
 
-### Multinet Installtion
+### Multinet Installation
 
 1. Clone [Multinet API](https://github.com/multinet-app/multinet-api), [Multinet Client](https://github.com/multinet-app/multinet-client), and [Multinet JS](https://github.com/multinet-app/multinetjs) into individual folders.
 2. Follow the installation instructions for Multinet API and Multinet Client.
@@ -71,8 +320,14 @@ This will launch a local server if there is not one already running on port 3000
 
 To add a test, add a `.spec.ts` file to `e2e-tests`. For information on how to use playwright, please see the [playwright documentation](https://playwright.dev/docs/writing-tests).
 
+## Storybook development
+
+Storybook can be used to test development of UpSet 2.0 as a react component. To run storybook, run `cd packages/upset` from the project root directory. Then, run `yarn storybook`. This will run `Upset.stories.tsx`, which opens a browser tab for the storybook. This will render the react component of UpSet with the simpsons dataset and stripped of any attribute or settings rendering.
+
+A new story can be added by adding a `{name}.stories.tsx` file to `packages/upset/stories/`. New data can be added to the `data` subfolder in the same directory.
+
 ## Developer Documentation Guidelines
 
-When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html).
+When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html). Also, please add testing via Playwright, outlined in [#end-to-end-e2e-testing](#end-to-end-e2e-testing).
 
 To build the documentation locally, use the command: `yarn doc`. The default file output is at `/docs`.

@@ -1,6 +1,6 @@
 {
   "name": "@visdesignlab/upset2-react",
-  "version": "0.1.0",
+  "version": "0.1.1-rc.0",
   "license": "MIT",
   "author": "Kiran Gadhave, Jake Wagoner, Nate Lanza",
   "description": "React component for UpSet2 visualization",
@@ -11,7 +11,7 @@
   },
   "publishConfig": {
     "access": "public",
-    "registry": "https://registry.npmjs.org"
+    "registry": "https://registry.npmjs.org/"
   },
   "homepage": "https://upset.multinet.app/",
   "main": "dist/index.js",

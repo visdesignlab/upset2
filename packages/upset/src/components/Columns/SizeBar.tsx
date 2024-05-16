@@ -16,7 +16,6 @@ type Props = {
 };
 
 const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
-const highlightColors = ['rgb(116, 173, 209)', 'rgb(94, 102, 171)', 'rgb(29, 41, 71)'];
 
 export const SizeBar: FC<Props> = ({ row, size }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
