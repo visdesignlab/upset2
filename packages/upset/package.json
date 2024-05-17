@@ -25,7 +25,6 @@
     "node": ">=10"
   },
   "scripts": {
-    "prepublish": "rm -rf ./dist && yarn run build",
     "start": "vite build --watch",
     "dev": "yarn run start",
     "build": "vite build",
