@@ -38,7 +38,7 @@
     "singleQuote": true,
     "trailingComma": "all"
   },
-  "packageManager": "yarn@1.22.17",
+  "packageManager": "yarn@1.22.19",
   "dependencies": {
     "@playwright/test": "^1.15.0",
     "@vitejs/plugin-react": "^4.0.4",
