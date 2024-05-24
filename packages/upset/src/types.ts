@@ -1,32 +1,6 @@
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { UpsetProvenance, UpsetActions } from './provenance';
 
-/**
-* Represents the alternative text for an Upset plot.
-*/
-export interface AltText {
-  /**
-  * The long description for the Upset plot.
-  */
-  longDescription: string;
-
-  /**
-  * The short description for the Upset plot.
-  */
-  shortDescription: string;
-
-  /**
-  * The technique description for the Upset plot.
-  */
-  techniqueDescription: string;
-
-  /**
-  * Optional warnings for the Upset plot.
-  * Not yet implemented by the API as of 4/22/24
-  */
-  warnings?: string;
-}
-
 export type ContextMenuItem = {
   /**
   * The label for the context menu item.

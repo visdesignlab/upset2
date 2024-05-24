@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row
+  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
+  AltText
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -297,29 +298,8 @@ const setSelectedAction = registry.register(
 );
 
 /**
- * Sets the plotInformation title string
- */
-const setTitleAction = registry.register(
-  'set-title',
-  (state: UpsetConfig, title) => {
-    state.title = title;
-    return state;
-  }
-)
-
-/**
- * Sets the plotInformation caption string
- */
-const setCaptionAction = registry.register(
-  'set-caption',
-  (state: UpsetConfig, caption) => {
-    state.caption = caption;
-    return state;
-  }
-);
-
-/**
  * Sets the alt text for the user
+ * @param {AltText} altText The alt text to set
  */
 const setUserAltTextAction = registry.register(
   'set-user-alt-text',
@@ -385,16 +365,8 @@ export function getActions(provenance: UpsetProvenance) {
       'Deselect intersection', 
       setSelectedAction(intersection)
     ),
-    setTitle: (title: string | null) => provenance.apply(
-      title ? `Set title to "${title}"` : "Cleared title",
-      setTitleAction(title)
-    ),
-    setCaption: (caption: string | null) => provenance.apply(
-      caption ? `Set caption to "${caption}"` : "Cleared caption",
-      setCaptionAction(caption)
-    ),
-    setUserAltText: (altText: string | null) => provenance.apply(
-      altText ? `Set user alt text to "${altText}"` : "Cleared user alt text",
+    setUserAltText: (altText: AltText | null) => provenance.apply(
+      altText ? `Set user alt text` : "Cleared user alt text",
       setUserAltTextAction(altText)
     ),
   };
