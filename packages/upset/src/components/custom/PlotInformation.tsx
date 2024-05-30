@@ -1,35 +1,33 @@
 import {
   Box,
-  Dialog,
-  IconButton,
+  Button,
+  Icon,
   TextField,
   Typography,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
+import EditIcon from '@mui/icons-material/Edit';
+import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
 import { useRecoilValue } from 'recoil';
 import { useContext, useState } from 'react';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../Root';
 
 
 
 /**
- * Properties of the modal
- * @param open Whether the modal is open
- * @param close Callback to close the modal
- * @param divider Divider component to put under the title
+ * Properties for the PlotInformationEditor component
+ * @param onSave Callback to run when saving the plot, in addition to saving the plot information
+ * @param divider Divider component to use between the title and the caption
  */
 type Props = {
-  open: boolean;
-  close: () => void;
-  divider: Element;
+  onSave?: () => void;
+  divider: JSX.Element;
 }
 
 /**
- * Modal for entering plot information
+ * Display & editor for plot information
  * @param Props @see @type Props
  */
-export const PlotInformationModal = ({open, close, divider}: Props) => {
+export const PlotInformation = ({onSave, divider}: Props) => {
   /**
    * Width of the titles for all the fields in %. 
    * Field entry boxes will occupy the rest of the space
@@ -61,6 +59,8 @@ export const PlotInformationModal = ({open, close, divider}: Props) => {
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
   const { actions } = useContext(ProvenanceContext);
 
+  const [editing, setEditing] = useState(false);
+
   /**
    * Generates plot information string
    * @returns string Plot information description
@@ -88,33 +88,78 @@ export const PlotInformationModal = ({open, close, divider}: Props) => {
   /**
    * Commits changes to the plot information if the new state is different from the old state.
    * If a commit occurs, records a trrack action. 
-   * Finally, closes the modal.
    */
-  const commitAndClose = () => { 
-    if (plotInformation !== plotInformationState)
+  const commitEdits = () => { 
+    if ( // Need to manually check for changes since the state is an object
+      plotInformation.caption !== plotInformationState.caption
+      || plotInformation.title !== plotInformationState.title
+      || plotInformation.description !== plotInformationState.description
+      || plotInformation.sets !== plotInformationState.sets
+      || plotInformation.items !== plotInformationState.items
+    )
       actions.setPlotInformation(plotInformation);
-    close();
+    if (onSave) onSave();
+    setEditing(false);
   };
 
   return (
-    <Dialog open={open} onClose={commitAndClose}>
-      <Box sx={{ padding: '20px', width: '25vw' }}>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            width: '95%',
-          }}
-        >
-          <Typography variant="h3" fontSize="1em" fontWeight="inherit">
-            Plot Information
-          </Typography>
-          <IconButton onClick={commitAndClose}>
-            <CloseIcon />
-          </IconButton>
-        </div>
+    !editing ? (
+      <Box
+        onClick={() => setEditing(true)}
+        sx={{ 
+          cursor: 'pointer',
+          border: '2px solid white', // Prevent resize on hover
+          padding: '.2em',
+          '&:hover': {
+            border: '2px inset #ddd', 
+          }
+        }}
+      >
+        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
+          {plotInformation.title ?? "[Title]"}
+          <Icon style={{float: 'right'}}>
+            <EditIcon />
+          </Icon>
+        </Typography>
         {divider}
+        <Typography>{plotInformation.caption ?? "[Caption]"}</Typography>
+        <br />
+        <Typography>{generatePlotInformationText()}</Typography>
+      </Box>
+    ) : (
+      <Box>
+        <Button 
+          color="primary" 
+          style={{float: 'right'}} 
+          onClick={commitEdits}
+        >Save</Button>
+        <Box>
+          <TextField fullWidth 
+            variant='standard'
+            style={{marginBottom: "5px"}}
+            value={plotInformation.title}
+            onChange={(e) => setPlotInformation({ ...plotInformation, title: e.target.value })}
+            placeholder='Title'
+            inputProps={{
+              disableUnderline: true,
+              style: {
+                padding: "1px", 
+                height: "1.4em", 
+                fontSize: "1.2em", 
+                fontWeight: "inherit",
+                border: "none",
+            }}}/>
+          <TextField fullWidth multiline
+            inputProps={{
+              rows: 3,
+              // We need to override the default overflow prop (hidden), then still deny x scrolling
+              style: {height: "4em", overflow: "auto", overflowX: "hidden"}
+            }}
+            value={plotInformation.caption}
+            onChange={(e) => setPlotInformation({ ...plotInformation, caption: e.target.value })}
+            placeholder='Caption'
+          />
+        </Box>
         <Box>
           <Box sx={plotInfoItem}>
             <Typography variant="h4" sx={plotInfoTitle}>
@@ -165,9 +210,8 @@ export const PlotInformationModal = ({open, close, divider}: Props) => {
               placeholder={`eg: ${placeholderText.items}`}
             />
           </Box>
-        </Box>
-        <Typography variant="body1">{generatePlotInformationText()}</Typography>
+        </Box>   
       </Box>
-    </Dialog>
+    )
   )
 }

@@ -4,32 +4,30 @@ import {
   Divider,
   Drawer,
   FormControlLabel,
-  Grid,
-  IconButton,
   Switch,
   TextField,
   Typography,
   css,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import {
   useState, useEffect, FC, useContext,
+  useMemo,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from './Root';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { AltText } from '../types';
+import { AltText } from '@visdesignlab/upset2-core/';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import '../index.css';
 import { HelpCircle } from './custom/HelpCircle';
-import { PlotInformationModal } from './PlotInformationModal';
+import { PlotInformation } from './custom/PlotInformation';
 
 type Props = {
   open: boolean;
   close: () => void;
   generateAltText: () => Promise<AltText>;
 }
-
+``
 const initialDrawerWidth = 450;
 
 /**
@@ -47,17 +45,16 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions } = useContext(ProvenanceContext);
   
   const currState = useRecoilValue(upsetConfigAtom);
-  const [userAltText, setUserAltText] = useState(currState.userAltText);
 
   const [altText, setAltText] = useState<AltText | null>(null);
   const [textGenErr, setTextGenErr] = useState(false);
-  const [useLong, setUseLong] = useState(false);
   
   // States for editing the alt text
   const [textHover, setTextHover] = useState(false);
   const [textEditing, setTextEditing] = useState(false);
-
-  const [plotInformationOpen, setPlotInformationOpen] = useState(false);
+  const [userLongText, setUserLongText] = useState(currState.userAltText?.longDescription);
+  const [userShortText, setUserShortText] = useState(currState.userAltText?.shortDescription);
+  const [useLong, setUseLong] = useState(false);
 
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
@@ -80,10 +77,17 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     
     generate();
   }, [currState]);
+
+  // Current alt text to display to the user
+  const displayAltText: string | undefined = useMemo(() => {
+    return useLong 
+    ? userLongText ?? altText?.longDescription 
+    : userShortText ?? altText?.shortDescription;
+  }, [useLong, userLongText, userShortText, altText]);
   
   const divider = <Divider
     css={css`
-      width: 95%;
+      width: 100%;
       margin: auto;
       margin-bottom: 1em;
     `}
@@ -109,95 +113,48 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       }}
     >
       <div css={css`width:${initialDrawerWidth}`}>
-        <div
-          css={css`
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          width: 95%;
-          `}
-        >
-          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
-            Title:&nbsp;
-          </Typography>
-          <TextField fullWidth 
-            variant='standard'
-            style={{marginBottom: "5px"}}
-            inputProps={{
-              disableUnderline: true,
-              style: {
-                padding: "1px", 
-                height: "1.4em", 
-                fontSize: "1.2em", 
-                fontWeight: "inherit",
-                border: "none",
-            }}}
-            // We only want to update the title when losing focus to prevent trrack spam
-            onBlur={(e) => {
-              if (e.target.value !== currState.title) {
-                actions.setTitle(e.target.value);
-              }
-            }}
-          />
-          <IconButton onClick={close}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-        {divider}
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
-          Caption:
-        </Typography>
-        {divider}
-        <TextField fullWidth multiline
-          inputProps={{
-              rows: 3,
-              // We need to override the default overflow prop (hidden), then still deny x scrolling
-              style: {height: "4em", overflow: "auto", overflowX: "hidden"}
-            }}
-          // We only want to update when losing focus to prevent trrack spam
-          onBlur={(e) => {
-            if (e.target.value !== currState.caption) {
-              actions.setCaption(e.target.value);
-            }
-          }}
-        />
+        <br />
+        <PlotInformation divider={divider} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
           Text Description:
         </Typography>
         {divider}
-        <Grid 
-          component="label" 
-          container 
-          direction="row" 
-          justifyContent="center" 
-          alignItems="center" 
-          spacing={1} 
-          width="100%"
-        >
-          <Grid item>Auto</Grid>
-            <Grid item>
-              <Switch
-                checked={!!userAltText || textEditing}
-                onChange={(ev) => {
-                  setTextEditing(ev.target.checked);
-                  if (!ev.target.checked) {
-                    actions.setUserAltText(undefined);
-                    setUserAltText(undefined);
-                  }
-                }}
-              />
-            </Grid>
-          <Grid item>Manual</Grid>
-        </Grid>
         <Box marginTop={2} css={css`overflow-y: auto;`}>
           {!textGenErr ? (<>
             <FormControlLabel
               style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
               sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="Show long description"
+              label="Manual Editing &nbsp;&nbsp;"
               control={
                 <Switch
-                  disabled={textEditing || !!userAltText}
+                  size="small"
+                  style={{marginRight: "10px"}}
+                  // !! converts to boolean
+                  checked={textEditing || !!userShortText || !!userLongText}
+                  onChange={(ev) => {
+                    setTextEditing(ev.target.checked);
+                    if (!ev.target.checked) {
+                      setUserShortText(undefined);
+                      setUserLongText(undefined);
+                      if (currState.userAltText)
+                        actions.setUserAltText(undefined);
+                    }
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+            <HelpCircle 
+              text={"When enabled, allows you to enter a custom alternative text description."}
+              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
+            />
+            <br />
+            <FormControlLabel
+              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
+              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
+              label="Long Description"
+              control={
+                <Switch
                   size="small"
                   checked={useLong}
                   onChange={(ev) => {
@@ -218,14 +175,15 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               style={{float: 'right'}} 
               onClick={() => {
                 setTextEditing(false);
-                if (userAltText !== currState.userAltText)
-                  actions.setUserAltText(userAltText);
+                if (currState.userAltText?.shortDescription !== userShortText 
+                    || currState.userAltText?.longDescription !== userLongText)  
+                  actions.setUserAltText({shortDescription: userShortText, longDescription: userLongText});
               }}
             >Save</Button>
             <br />
             <TextField multiline fullWidth
-              onChange={(e) => {setUserAltText(e.target.value)}}
-              value={userAltText ?? (useLong ? altText?.longDescription : altText?.shortDescription)} 
+              onChange={(e) => {useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}}
+              value={(displayAltText)} 
             />
             <br />
           </>) : (
@@ -235,7 +193,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 cursor: 'pointer',
                 padding: '3px',
                 borderRadius: '4px',
-                border: textHover ? '2px solid #ddd' : '2px solid #fff',
+                border: textHover ? '2px inset #ddd' : '2px solid #fff',
                 width: 'calc(100% - 10px)', // We have 10px of padding + border
               }}
               onMouseEnter={() => setTextHover(true)} 
@@ -243,15 +201,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               onClick={() => {setTextEditing(true)}}
             >
               <ReactMarkdownWrapper 
-                text={userAltText ?? (useLong ? altText?.longDescription : altText?.shortDescription) ?? ''}
+                text={displayAltText ?? "No description available."}
               />
             </div>
           )}
         </Box>
       </div>
-      <Button onClick={() => setPlotInformationOpen(true)} style={{marginBottom: '5rem',}}>Provide Plot Information</Button>
-      {/* @ts-ignore */}
-      <PlotInformationModal open={plotInformationOpen} close={() => setPlotInformationOpen(false)} divider={divider}></PlotInformationModal>
     </Drawer>
   );
 };
