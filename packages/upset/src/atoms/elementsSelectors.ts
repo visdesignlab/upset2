@@ -5,6 +5,11 @@ import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 
+/**
+ * Gets all elements in the intersection represented by the provided ID
+ * @param id - The ID of the intersection to get elements for.
+ * @returns The elements in the intersection, with properties for coloring and selection.
+ */
 export const elementSelector = selectorFamily<
   Item[],
   string | null | undefined
@@ -56,15 +61,19 @@ export const intersectionCountSelector = selectorFamily<
   },
 });
 
+/**
+ * Gets all elements in intersections represented by the provided IDs
+ * and the currently selected intersection
+ * @param ids - The IDs of the intersections to get elements for.
+ * @returns The elements in the intersections, with properties for coloring and selection. 
+ */
 export const elementItemMapSelector = selectorFamily<Item[], string[]>({
   key: 'element-item-map',
   get: (ids: string[]) => ({ get }) => {
     const currentIntersection = get(currentIntersectionSelector);
     const items: Item[] = [];
 
-    if (!currentIntersection) return [];
-
-    if (!ids.includes(currentIntersection.id)) {
+    if (currentIntersection && !ids.includes(currentIntersection.id)) {
       items.push(...get(elementSelector(currentIntersection.id)));
     }
 

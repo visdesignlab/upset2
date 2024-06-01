@@ -60,23 +60,15 @@ export function createScatterplotRow(specs: Scatterplot[]) {
         field: 'subset',
         legend: null,
         scale: { range: { field: 'color' } },
-        condition: {
-          test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
-          value: '#000',
-        },
       },
       opacity: {
         condition: [
           {
             test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
-            value: 0.05,
-          },
-          {
-            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
-            value: 0.8,
+            value: 0.4,
           },
         ],
-        value: 0.4,
+        value: 0.8,
       },
       order: {
         condition: {
