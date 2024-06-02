@@ -26,7 +26,7 @@ export const ElementVisualization = () => {
       <Box>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms) as any}
+            spec={generateVega(scatterplots, histograms)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}

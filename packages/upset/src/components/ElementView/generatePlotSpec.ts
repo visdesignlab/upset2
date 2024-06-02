@@ -1,6 +1,14 @@
 import { Histogram, Scatterplot } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
+/**
+ * Creates the spec for a single scatterplot.
+ * @param x - The attribute to plot on the x-axis.
+ * @param y - The attribute to plot on the y-axis.
+ * @param height - The height of the plot.
+ * @param width - The width of the plot.
+ * @returns The Vega-Lite spec for the scatterplot.
+ */
 export function createScatterplotSpec(
   x: {
     attribute: string;
@@ -38,13 +46,27 @@ export function createScatterplotSpec(
   };
 }
 
-export function createScatterplotRow(specs: Scatterplot[]) {
+/**
+ * Creates the spec for multiple scatterplots containing data from multiple subsets.
+= * @param specs - scatterplot objects with x and y attributes.
+ * @returns The Vega-Lite spec for the histogram.
+ */
+export function createScatterplotRow(specs: Scatterplot[]): VisualizationSpec[] {
   return specs.map((s) => ({
     width: 200,
     height: 200,
     mark: {
       type: 'point',
     },
+    params: [
+      {
+        name: 'brush',
+        select: {
+          type: 'interval',
+          clear: 'click',
+        },
+      }
+    ],
     encoding: {
       x: {
         field: s.x,
@@ -64,7 +86,15 @@ export function createScatterplotRow(specs: Scatterplot[]) {
       opacity: {
         condition: [
           {
-            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
+            param: 'brush',
+            empty: false,
+            value: 0.8,
+          },
+          {
+            test: {or: [
+              {not: {param: 'brush'}},
+              'datum["isCurrentSelected"] === true && datum["isCurrent"] === false'
+            ]},
             value: 0.4,
           },
         ],
@@ -72,7 +102,10 @@ export function createScatterplotRow(specs: Scatterplot[]) {
       },
       order: {
         condition: {
-          test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
+          test: {or: [
+            {param: 'brush', empty: false},
+            'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
+          ]},
           value: 1,
         },
         value: 0,
@@ -81,6 +114,13 @@ export function createScatterplotRow(specs: Scatterplot[]) {
   }));
 }
 
+/**
+ * Creates the spec for a single histogram.
+ * @param attribute - The attribute to plot.
+ * @param bins - The number of bins to use.
+ * @param frequency - Whether to plot frequency or density; true for frequency.
+ * @returns The Vega-Lite spec for the histogram.
+ */
 export function createHistogramSpec(
   attribute: string,
   bins: number,
@@ -127,7 +167,13 @@ export function createHistogramSpec(
   return base;
 }
 
-export function createHistogramRow(histograms: Histogram[]) {
+/**
+ * Creates the spec for multiple histograms containing data from multiple subsets.
+ * Currently used by the element view pane
+ * @param histograms The histograms to plot.
+ * @returns An array of Vega-Lite specs for the histograms.
+ */
+export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[] {
   return histograms.map(({ attribute, bins, frequency }) => {
     if (frequency) {
       return {
@@ -187,7 +233,7 @@ export function createHistogramRow(histograms: Histogram[]) {
 export function generateVega(
   scatterplots: Scatterplot[],
   histograms: Histogram[],
-) {
+): VisualizationSpec {
   const scatterplotSpecs = createScatterplotRow(scatterplots);
   const histogramSpecs = createHistogramRow(histograms);
   const base = {
@@ -204,5 +250,5 @@ export function generateVega(
     ],
   };
 
-  return base;
+  return base as VisualizationSpec;
 }
