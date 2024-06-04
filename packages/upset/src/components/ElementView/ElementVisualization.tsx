@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import { useState } from 'react';
-import { VegaLite } from 'react-vega';
+import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
 import { bookmarkedIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
@@ -19,6 +19,16 @@ export const ElementVisualization = () => {
 
   const onClose = () => setOpenAddPlot(false);
 
+  /**
+   * Saves brush bounds to state when the interactive brush is used.
+   * @param {string} _ Name of the signal: "brush"
+   * @param {unknown} value Should be an object mapping the names of the attributes being brushed over
+   *                        to an array of the bounds of the brush, but apparently Vega makes no guarantees.
+   */
+  const brushHandler: SignalListener = (_: string, value: unknown) => {
+    console.log(value);
+  };
+
   return (
     <Box>
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
@@ -31,6 +41,9 @@ export const ElementVisualization = () => {
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}
             actions={false}
+            signalListeners={{
+              "brush": brushHandler,
+            }}
           />
         )}
       </Box>

@@ -63,9 +63,9 @@ export function createScatterplotRow(specs: Scatterplot[]): VisualizationSpec[] 
         name: 'brush',
         select: {
           type: 'interval',
-          clear: 'click',
+          clear: 'mousedown',
         },
-      }
+      },
     ],
     encoding: {
       x: {
@@ -174,6 +174,17 @@ export function createHistogramSpec(
  * @returns An array of Vega-Lite specs for the histograms.
  */
 export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[] {
+  const params = [
+    {
+      name: 'brush',
+      select: {
+        type: 'interval',
+        encodings: ['x'],
+        clear: 'mousedown',
+      },
+    }
+  ];
+
   return histograms.map(({ attribute, bins, frequency }) => {
     if (frequency) {
       return {
@@ -184,17 +195,17 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
             density: attribute,
             groupby: ['subset', 'color'],
           },
-        ],
-        params: [
-          {
-            name: 'grid',
-            select: 'interval',
-            bind: 'scales',
+          {// Hacky way to get the correct name for the attribute & sync with other plots
+          // Otherwise, the attribute name is "value", so selections don't sync and the signal doesn't 
+          // include the name of the attribute being selected
+            calculate: 'datum["value"]',
+            as: attribute,
           },
         ],
+        params: params,
         mark: 'line',
         encoding: {
-          x: { field: 'value', type: 'quantitative', title: attribute },
+          x: { field: attribute, type: 'quantitative', title: attribute },
           y: { field: 'density', type: 'quantitative', title: 'probabiity' },
           color: {
             field: 'subset',
@@ -211,6 +222,7 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
       mark: {
         type: 'bar',
       },
+      params: params,
       encoding: {
         x: {
           bin: { maxBins: bins },
