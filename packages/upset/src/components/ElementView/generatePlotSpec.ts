@@ -102,10 +102,7 @@ export function createScatterplotRow(specs: Scatterplot[]): VisualizationSpec[] 
       },
       order: {
         condition: {
-          test: {or: [
-            {param: 'brush', empty: false},
-            'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
-          ]},
+          test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
           value: 1,
         },
         value: 0,
@@ -225,6 +222,7 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
       params: params,
       encoding: {
         x: {
+          // As long as the following line exists, the opacity condition below will not work 😵‍💫
           bin: { maxBins: bins },
           field: attribute,
         },
@@ -237,6 +235,14 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
           legend: null,
           scale: { range: { field: 'color' } },
         },
+        // This does not work as long as encoding.x.bin is set 😵‍💫
+        opacity: {
+          condition: {
+            param: 'brush',
+            value: 1,
+          },
+          value: 1, // Lower this if x.bin is unset to grey out unselected bins
+        }
       },
     };
   });
