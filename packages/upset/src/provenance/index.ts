@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
+  AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row, ElementSelection
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -297,6 +297,14 @@ const setSelectedAction = registry.register(
   },
 );
 
+const setElementSelectionAction = registry.register(
+  'select-elements',
+  (state: UpsetConfig, selectedIntervals) => {
+    state.elementSelection = selectedIntervals;
+    return state;
+  }
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -352,6 +360,13 @@ export function getActions(provenance: UpsetProvenance) {
         `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
         'Deselect intersection',
       setSelectedAction(intersection),
+    ),
+    setElementSelection: (elementIntervals: ElementSelection) => provenance.apply(
+      Object.keys(elementIntervals).length > 0 ?
+        `Selected elements based on the following keys: ${Object.keys(elementIntervals).join(' ')}`
+          : "Deselected elements",
+      setElementSelectionAction(elementIntervals)
+
     ),
   };
 }

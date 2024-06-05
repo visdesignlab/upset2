@@ -219,6 +219,8 @@ export type Plot = Scatterplot | Histogram;
 
 export type Bookmark = { id: string; label: string; size: number }
 
+export type ElementSelection = {[attName: string] : {max: number, min: number}};
+
 export type UpsetConfig = {
   plotInformation: PlotInformation;
   horizontal: boolean;
@@ -244,7 +246,15 @@ export type UpsetConfig = {
     histograms: Histogram[];
   };
   allSets: Column[];
+  /**
+   * The currently selected subset/intersection
+   */
   selected: Row | null;
+  /**
+   * The interval selection set in Element View. Maps the names of attributes
+   * to the maximum and minimum values of the selection over each attribute.
+   */
+  elementSelection: ElementSelection;
 };
 
 export type AccessibleDataEntry = {

@@ -95,7 +95,7 @@ export function createScatterplotRow(specs: Scatterplot[]): VisualizationSpec[] 
               {not: {param: 'brush'}},
               'datum["isCurrentSelected"] === true && datum["isCurrent"] === false'
             ]},
-            value: 0.4,
+            value: 0.3,
           },
         ],
         value: 0.8,
