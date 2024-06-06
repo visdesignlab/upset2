@@ -14,24 +14,22 @@ const defaultVisibleSets = 6;
  *
  * @component
  * @param {CoreUpsetData} data - The data for the Upset component.
- * @param {Partial<UpsetConfig>} [config={}] - The configuration options for the Upset component.
- * @param {string[]} [visualizeAttributes] - The list of attributes to load. Defaults to the first 3 attributes.
- * @param {boolean} [visualizeUpsetAttributes=false] - Whether or not to visualize Degree and Deviation.
- * @param {boolean} [allowAttributeRemoval=false] - Option for allowing attribute removal.
- * @param {boolean} [hideSettings] - Option for hiding the settings sidebar.
- * @param {boolean} [parentHasHeight=false] - Indicates if the parent has a fixed height.
- * @param {number} [yOffset=0] - The offset from the top of the viewport.
- * @param {Object} [extProvenance] - The external provenance data.
- * @param {SidebarProps} [provVis] - The provenance visualization options.
- * @param {SidebarProps} [elementSidebar] - The element sidebar options.
- * @param {SidebarProps} [altTextSidebar] - The alternative text sidebar options.
+ * @param {Partial<UpsetConfig>} [config={}] - The configuration options for the Upset component. This can be partial.
+ * @param {string[]} [visualizeAttributes] - List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
+ * @param {boolean} [visualizeUpsetAttributes=false] - Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
+ * @param {boolean} [allowAttributeRemoval=false] - Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
+ * @param {boolean} [hideSettings] - Hide the aggregations/filter settings sidebar.
+ * @param {boolean} [parentHasHeight=false] - Indicates if the parent component has a fixed height. If this is set to `false`, the plot will occupy the full viewport height. When set to `true`, the plot will fit entirely within the parent component. Defaults to `false`.
+ * @param {Object} [extProvenance] - External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
+ * @param {SidebarProps} [provVis] - The provenance visualization sidebar options.
+ * @param {SidebarProps} [elementSidebar] - The element sidebar options. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
+ * @param {SidebarProps} [altTextSidebar] - The alternative text sidebar options. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
  * @param {() => Promise<AltText>} [generateAltText] - The function to generate alternative text.
  * @returns {JSX.Element} The rendered Upset component.
  */
 export const Upset: FC<UpsetProps> = ({
   data,
   parentHasHeight = false,
-  yOffset = 0,
   config = {},
   visualizeDatasetAttributes,
   visualizeUpsetAttributes = false,
@@ -48,7 +46,7 @@ export const Upset: FC<UpsetProps> = ({
   const combinedConfig = useMemo(() => {
     const conf: UpsetConfig = { ...DefaultConfig, ...config };
 
-    const defaultNumAttributes = 3;
+    const DEFAULT_NUM_ATTRIBUTES = 3;
 
     if (conf.visibleSets.length === 0) {
       const setList = Object.entries(data.sets);
@@ -59,24 +57,18 @@ export const Upset: FC<UpsetProps> = ({
     const defaultAttributes = (visualizeUpsetAttributes) ? DefaultConfig.visibleAttributes : [];
 
     /**
-     * visualizeAttributes can either be undefined or an array of strings
-     * if visualizeAttributes is undefined, load the first 3 attributes by default
+     * visualizeAttributes can either be undefined or an array of strings.
+     * if visualizeAttributes is undefined, load the first 3 attributes by default, else load none
      */
     if (visualizeDatasetAttributes) {
       conf.visibleAttributes = [
         ...defaultAttributes,
         ...visualizeDatasetAttributes.filter((attr) => data.attributeColumns.includes(attr)),
       ];
-    }
-
-    /**
-     * if visualizeAttributes is an array of strings, load the specified attributes
-     * if visualizeAttributes is an empty array, load no attributes
-     */
-    else {
+    } else {
       conf.visibleAttributes = [
         ...defaultAttributes,
-        ...data.attributeColumns.slice(0, defaultNumAttributes),
+        ...data.attributeColumns.slice(0, DEFAULT_NUM_ATTRIBUTES),
       ];
     }
 
@@ -88,7 +80,7 @@ export const Upset: FC<UpsetProps> = ({
       <Box
         sx={{
           display: 'flex',
-          height: parentHasHeight ? '100%' : `calc(100vh - ${yOffset}px)`,
+          height: parentHasHeight ? '100%' : '100vh',
           width: '100%',
           fontFamily: 'Roboto, Arial',
         }}

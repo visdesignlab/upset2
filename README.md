@@ -50,9 +50,11 @@ The raw data structure for UpSet should be two data objects. One is the set memb
 
 The `data` object should be an array of objects. Each object should contain all the set membership boolean values as well as any attributes.
 
-The `annotations` object should be an object with a nest object field `columns`. The `columns` field should contain each possible entry in the data, as well as the type for each entry. This should be every possible set as well as any attribute type.
+The `annotations` object should be an object with a nested object field `columns`. The `columns` field should contain each possible column in the data, as well as the type for each column. This should be every possible set as well as any attribute type.
 
-In the example below, the sets are `School`, `Blue Hair`, `Duff Fan`, `Evil`, `Male`, and `Power Plant`. The only attribute in this dataset is `Age`, which is a number. This is clear in the annotations object, which denotes this.
+The column which is the name of the item should be of type `label`. This will be used to generate ids and name the subsets. *Note*: There should only be one `label` column. Any set membership should be a boolean type. Finally, any attribute should be a `number` type.
+
+In the example below, the item name is `Name`, noted by the `label` type. The sets are `School`, `Blue Hair`, `Duff Fan`, `Evil`, `Male`, and `Power Plant`. The only attribute in this dataset is `Age`, which is a number. This is clear in the annotations object, which denotes this.
 
 ```js
 const annotations = {
@@ -96,9 +98,7 @@ const rawData = [
 ]
 ```
 
-Set fields in `annotations` should be of the type `"boolean"`. Attribute fields should be of the type `"number"`. The item label should be of type `"label"`.
-
-The data and/or attributes objects can be JSON or traditional JS objects.
+The data and/or attributes objects can be JSON strings or traditional JS objects.
 
 #### Loading Data into the UpSet 2.0 component
 
@@ -156,16 +156,15 @@ const main = () => {
 
 - `data`: The data for the Upset component. See [UpSet 2.0 Data](#upset-20-data) for more information.
 - `config` (optional): The configuration options for the Upset component. This can be partial. See [Configuration Options](#configuration-options) for more details.
-- `visualizeAttributes` (optional)(`string[]`): List of attribute names (strings) which should be loaded. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
-- `visualizeUpsetAttributes` (optional)(`boolean`): Whether or not to visualize UpSet generated attributes (`degree`, and `deviation`). Defaults to `false`.
-- `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option for users to re-add attributes which have been removed. Defaults to `false`.
+- `visualizeAttributes` (optional)(`string[]`): List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
+- `visualizeUpsetAttributes` (optional)(`boolean`): Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
+- `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
 - `hideSettings` (optional)(`boolean`): Hide the aggregations/filter settings sidebar.
-- `parentHasHeight` (optional)(`boolean`): Indicates if the parent component has a fixed height. Defaults to `false`.
-- `yOffset` (optional)(`number`): Offset from the top of the viewport. Defaults to 0.
-- `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and has a provenance structure that can use the UpSet actions. Provenance is still tracked if nothing is provided.
+- `parentHasHeight` (optional)(`boolean`): Indicates if the parent component has a fixed height. If this is set to `false`, the plot will occupy the full viewport height. When set to `true`, the plot will fit entirely within the parent component. Defaults to `false`.
+- `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
 - `provVis` (optional): [Sidebar options](#sidebar-options) for the provenance visualization sidebar. See [Trrack-Vis](https://github.com/Trrack/trrackvis) for more information about Trrack provenance visualization.
 - `elementSidebar` (optional): [Sidebar options](#sidebar-options) for the element visualization sidebar. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
-- `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generatedAltText` function is provided.
+- `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
 - `generateAltText` (optional)(`() => Promise<AltText>`): Async function which should return a generated AltText object. See [Alt Text Generation](#alt-text-generation) for more information about Alt Text generation.
 
 ##### Configuration options
@@ -256,7 +255,14 @@ SidebarProps type:
 
 ```js
 interface SidebarProps {
+  /**
+   * Indicates whether the sidebar is open or closed.
+   */
   open: boolean;
+
+  /**
+   * Callback function to close the sidebar.
+   */
   close: () => void;
 }
 ```

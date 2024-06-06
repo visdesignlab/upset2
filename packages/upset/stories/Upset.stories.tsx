@@ -37,10 +37,13 @@ const Template = (args) => {
   }, []);
 
   return data ? (
-    <Upset data={data} visualizeDatasetAttributes={[]} hideSettings />
+    <div style={{ height: 300 }}>
+      <Upset data={data} parentHasHeight hideSettings allowAttributeRemoval visualizeDatasetAttributes={['Age']} visualizeUpsetAttributes={false} />
+    </div>
   ) : (
     <div>
       Loading
+      {' '}
       {args.dataset}
       {' '}
       dataset
