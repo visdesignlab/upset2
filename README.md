@@ -167,7 +167,9 @@ const main = () => {
 - `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
 - `generateAltText` (optional)(`() => Promise<AltText>`): Async function which should return a generated AltText object. See [Alt Text Generation](#alt-text-generation) for more information about Alt Text generation.
 
-##### Configuration options
+##### Configuration (Grammar) options
+
+The configuration (grammar) is used both as internal tracking for UpSet 2.0, and to generate the alt-text via Multinet's API. Other implementations which are attempting to generate text descriptions using the same API must generate a grammar containing the values below. Reference [upset-alt-txt-gen](https://github.com/visdesignlab/upset-alt-txt-gen) for more information about generating text descriptions.
 
 If no configuration options are provided, the default will be:
 
@@ -178,6 +180,72 @@ If no configuration options are provided, the default will be:
 - Maximum degree filter: 6
 - Show the "no set" row
 - Hide empty rows
+
+The configuration options are documented below:
+
+- `plotInformation`: An object which contains meta data abut the plot. The three keys are `description`, `sets`, and `items`. The values should be strings.
+  - `description`: A short description about the dataset. Ex: Movie genres and ratings
+  - `sets`: A very short description of what the sets are in the data. Ex: Movie Genres
+  - `items`: A very short description of what the items in the data are. Ex: Movies
+- `horizontal`: Boolean value describing whether or not the plot is horizontal. Defaults to `false`. *Note* this value is not used by UpSet 2.0 but may be used to generate text descriptions.
+- `firstAggregateBy`: Describes the first aggregation state. Defaults to `None`. Possible values:
+  - `None`: No first level of aggregation.
+  - `Sets`: Aggregate by which rows contain each set.
+  - `Degree`: Aggregate by the Degree (set membership count) of the rows.
+  - `Deviations`: Aggregate by positive and negative deviation.
+  - `Overlaps`: Aggregate by the minimum specified overlap degree.
+- `firstOverlapDegree`: Describes the first aggregation's degree of overlap required. This is only used if `firstAggregateBy` is set to `Overlaps`. Defaults to `2`.
+- `secondAggregateBy`: Describes the second (nested) aggregation state. Must be `None` if `firstAggregateBy` is set to `None`. If `firstAggregateBy` is *not* `None`, this value *cannot* be the same as `firstAggregateBy`. Possible values:
+  - `None`: No first level of aggregation.
+  - `Sets`: Aggregate by which rows contain each set.
+  - `Degree`: Aggregate by the Degree (set membership count) of the rows.
+  - `Deviations`: Aggregate by positive and negative deviation.
+  - `Overlaps`: Aggregate by the minimum specified overlap degree.
+- `secondOverlapDegree`:  Describes the second aggregation's degree of overlap required. This is only used if `secondAggregateBy` is set to `Overlaps`. Defaults to `2`.
+- `sortVisibleBy`: Describes the sorting of the visible sets (above the intersection matrix). Defaults to `Alphabetical`. Possible values:
+  - `Alphabetical`: Sort from A - Z. *Note* Only A - Z sorting is supported.
+  - `Ascending`: Sort based on size, low to high.
+  - `Descending`: Sort based on size, high to low.
+- `sortBy`: Describes the sorting of the subset rows. Defaults to `Size`. Possible values:
+  - `Size`: Sorts the plot by the subset size (cardinality) rows.
+  - `Degree`: Sorts the plot by the degree (set membership) of the rows.
+  - `Deviation`: Sorts the plot by the calculated deviation. See [the original 2014 paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/) for more information about deviation and how it is calculated.
+  - `Set_{Set Name}`: Sort the plot by Degree (Ascending), but always sort subsets containing the provided set first. For example, a dataset containing movie genres could be sorted by `Set_Comedy`.
+  - `Any attribute`: Sort the plot by the calculated mean of an attribute value. For example, if the dataset contains an attribute named `ReleaseDate`, sorting by `ReleaseDate` would use the calculated average release date for the items in the rows.
+- `sortByOrder`: The order to sort the plot. This is simply an order indicator, the actual sort type is defined in `sortBy`. Possible values:
+  - `Ascending`: Sort from low to high
+  - `Descending`: Sort from high to low
+  - `None`: This should only be used if `sortBy` sorts by a set (ex: `Set_Comedy`). This is because there is only one possible direction for this sorting method.
+- `filters`: An object that defines which subsets (rows) are shown in the UpSet plot.
+  - `maxVisible` (number): The maximum degree (set membership count) that a subset can have and still be shown. Defaults to `6`.
+  - `minVisible` (number): The minimum degree (set membership count) that a subset must have and still be shown. Defaults to `0`.
+  - `hideEmpty` (boolean): Whether or not to hide empty subset rows. Defaults to `true`.
+  - `hideNoSet` (boolean): Whether or not to hide the subset which is a member of *no* sets. Defaults to `false`.
+- `visibleSets` (string[]): List of which sets are visible and loaded into the UpSet plot. (Ex: ["Set_Comedy", "Set_Drama", "Set_Action"]).
+- `visibleAttributes` (string[]): List of which attributes are visible and loaded into the UpSet plot. (Ex: ["ReleaseDate", "AvgRating"]).
+- `bookmarkedIntersections`: List of which subsets (ids) are bookmarked. Each list entry should be an object with the following key-value pairs:
+  - `id` (string): Generated id for the subset. In UpSet 2.0, the id uses `~&~` as a set delimiter, and always prepends `Subset_`. Ex: `Subset_Action~&~Adventure~&~Comedy`
+  - `label` (string): Human readable label for the subset. Ex: `Action & Adventure & Comedy`
+  - `size` (number): The size of the subset.
+- `collapsed` (string[]): List of the aggregate rows which are currently collapsed. (Ex: `["Agg_Degree_1, Agg_Degree_4"]).
+- `plots`: Object for noting which plots are currently rendered in the element sidebar. Has two fields: `scatterplots` and `histograms`. Both are lists of the below object. *Note* This should not be included in your grammar unless it was generated with the UpSet 2.0 interface.
+  - keys:
+    - `id` (string): Generated id for the plot.
+    - `type` (string): Type of plot. Will always be scatterplot or histogram.
+    - `x` (string): Attribute for the x axis
+    - `y` (string): Attribute for the y axis
+    - `xScaleLog` (boolean): Whether or not to use a logoritihmic scale for the x axis.
+    - `yScaleLog` (boolean): Whether or not to use a logoritihmic scale for the y axis.
+- `allSets`: List of set objects for every set in the dataset. Each object requires the following fields:
+  - `name` (string): Set id. Prepend `Set_` to the set name. Ex: `Set_Action`.
+  - `size` (number): The size of the set.
+- `selected`: The currently selected row. This value should not be populated manually, as the data is specific to UpSet 2.0 and automatically generated.
+
+To export the grammar of an UpSet 2.0 plot programmatically, use the `exportState` function. This function has the following parameters:
+
+- `provenance`: The Trrack object for the provenance being used by the UpSet plot.
+- `data` (optional): The raw data used to generated the plot.
+- `rows` (optional): The processed row data generated by the UpSet data pipeline.
 
 Example of full configuration (grammar) JSON produced for default Simpsons dataset:
 
@@ -269,7 +337,7 @@ interface SidebarProps {
 
 ##### Alt Text Generation
 
-Alt Text generation requires the use of a custom or imported Alt-Text generation function. In [upset.multinet.app](https://upset.multinet.app), we are using the Multinet API, which exposes an api call to the [upset-alttxt](https://pypi.org/project/upset-alttxt/) python package. This Python package 
+Alt Text generation requires the use of a custom or imported Alt-Text generation function. In [upset.multinet.app](https://upset.multinet.app), we are using the Multinet API, which exposes an api call to the [upset-alttxt](https://pypi.org/project/upset-alttxt/) python package. This Python package
 
 #### Default Configuration
 
