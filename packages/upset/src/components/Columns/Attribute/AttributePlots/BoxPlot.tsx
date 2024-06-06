@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
-import { ScaleLinear } from 'd3';
+import { ScaleLinear } from 'd3-scale';
 import { SixNumberSummary } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 

@@ -1,6 +1,5 @@
 import { useRecoilValue } from 'recoil';
 
-import { css } from '@emotion/css';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
 import { MatrixRows } from './Rows/MatrixRows';
@@ -23,7 +22,7 @@ export const Body = () => {
               dimensions.body.rowHeight,
             )
 }
-          css={css`z-index: 10`}
+          style={{ zIndex: 10 }}
         >
           No intersections to display...
         </text> :

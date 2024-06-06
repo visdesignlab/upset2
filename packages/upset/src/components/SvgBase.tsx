@@ -1,5 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-
 import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -27,7 +25,7 @@ export const SvgBase: FC<Props> = ({ children, defaultSettings }) => {
         height: 100%;
         width: 100%;
         text.icon {
-          font-family: 'Font Awesome 5 Free';
+          font-family: Arial, sans-serif;
           font-weight: 700;
           font-size: 12px;
         }

@@ -1,4 +1,3 @@
-import { css } from "@emotion/css"
 import { Box, Card, CardActionArea, CardContent, CardMedia, Link, Typography } from "@mui/material"
 
 export const Home = () => {

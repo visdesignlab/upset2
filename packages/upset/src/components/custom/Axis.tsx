@@ -1,4 +1,4 @@
-import { ScaleLinear } from 'd3';
+import { ScaleLinear } from 'd3-scale';
 import React, { useMemo } from 'react';
 
 import translate from '../../utils/transform';
