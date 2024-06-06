@@ -16,6 +16,7 @@ export const ElementVisualization = () => {
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
+  const [brushing, setBrushing] = useState(false);
 
   const onClose = () => setOpenAddPlot(false);
 
@@ -35,7 +36,10 @@ export const ElementVisualization = () => {
     <Box>
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
-      <Box>
+      <Box
+        onMouseDown={() => setBrushing(true)}
+        onMouseUp={() => setBrushing(false)}
+      >
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
             spec={generateVega(scatterplots, histograms)}

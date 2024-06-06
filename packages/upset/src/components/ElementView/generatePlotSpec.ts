@@ -171,7 +171,7 @@ export function createHistogramSpec(
  * @returns An array of Vega-Lite specs for the histograms.
  */
 export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[] {
-  const params = [
+  const PARAMS = [
     {
       name: 'brush',
       select: {
@@ -182,34 +182,79 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
     }
   ];
 
+  const COLOR = {
+    field: 'subset',
+    legend: null,
+    scale: { range: { field: 'color' } },
+  };
+
   return histograms.map(({ attribute, bins, frequency }) => {
     if (frequency) {
       return {
         width: 200,
         height: 200,
-        transform: [
+        layer: [
           {
-            density: attribute,
-            groupby: ['subset', 'color'],
+            transform: [
+              {
+                density: attribute,
+                groupby: ['subset', 'color'],
+              },
+              {// Hacky way to get the correct name for the attribute & sync with other plots
+              // Otherwise, the attribute name is "value", so selections don't sync and the signal doesn't 
+              // include the name of the attribute being selected
+                calculate: 'datum["value"]',
+                as: attribute,
+              },
+            ],
+            params: PARAMS,
+            mark: 'line',
+            encoding: {
+              x: { field: attribute, type: 'quantitative', title: attribute },
+              y: { field: 'density', type: 'quantitative', title: 'probabiity' },
+              color: COLOR,
+              opacity: {
+                condition: [
+                  {
+                    param: 'brush',
+                    empty: false,
+                    value: 1,
+                  },
+                  {
+                    test: {or: [
+                      {not: {param: 'brush'}},
+                      'datum["isCurrentSelected"] === true && datum["isCurrent"] === false'
+                    ]},
+                    value: .4,
+                  },
+                ],
+                value: .4
+              },
+            },
           },
-          {// Hacky way to get the correct name for the attribute & sync with other plots
-          // Otherwise, the attribute name is "value", so selections don't sync and the signal doesn't 
-          // include the name of the attribute being selected
-            calculate: 'datum["value"]',
-            as: attribute,
-          },
-        ],
-        params: params,
-        mark: 'line',
-        encoding: {
-          x: { field: attribute, type: 'quantitative', title: attribute },
-          y: { field: 'density', type: 'quantitative', title: 'probabiity' },
-          color: {
-            field: 'subset',
-            legend: null,
-            scale: { range: { field: 'color' } },
-          },
-        },
+          {
+            transform: [
+              {
+                filter: {param: 'brush'}
+              },
+              {
+                density: attribute,
+                groupby: ['subset', 'color'],
+              },
+              {
+                calculate: 'datum["value"]',
+                as: attribute,
+              },
+            ],
+            mark: 'line',
+            encoding: {
+              x: { field: attribute, type: 'quantitative', title: attribute },
+              y: { field: 'density', type: 'quantitative', title: 'probabiity' },
+              color: COLOR,
+              opacity: {value: 1},
+            },
+          }
+        ]
       };
     }
 
@@ -218,7 +263,7 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
       height: 200,
       layer: [
         {
-          params: params,
+          params: PARAMS,
           mark: "bar",
           encoding: {
             x: {
@@ -229,11 +274,7 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
               aggregate: 'count',
               title: 'Frequency',
             },
-            color: {
-              field: 'subset',
-              legend: null,
-              scale: { range: { field: 'color' } },
-            },
+            color: COLOR,
             opacity: {value: .4},
           },
         },{
@@ -250,11 +291,7 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
               aggregate: 'count',
               title: 'Frequency',
             },
-            color: {
-              field: 'subset',
-              legend: null,
-              scale: { range: { field: 'color' } },
-            },
+            color: COLOR,
             opacity: {value: 1},
           }
         }
