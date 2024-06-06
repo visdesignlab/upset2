@@ -29,6 +29,8 @@ export const ElementVisualization = () => {
     console.log(value);
   };
 
+  console.log(JSON.stringify(generateVega(scatterplots, histograms)));
+
   return (
     <Box>
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>

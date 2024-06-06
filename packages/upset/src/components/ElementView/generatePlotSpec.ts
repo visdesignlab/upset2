@@ -216,34 +216,49 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
     return {
       width: 200,
       height: 200,
-      mark: {
-        type: 'bar',
-      },
-      params: params,
-      encoding: {
-        x: {
-          // As long as the following line exists, the opacity condition below will not work 😵‍💫
-          bin: { maxBins: bins },
-          field: attribute,
-        },
-        y: {
-          aggregate: 'count',
-          title: 'Frequency',
-        },
-        color: {
-          field: 'subset',
-          legend: null,
-          scale: { range: { field: 'color' } },
-        },
-        // This does not work as long as encoding.x.bin is set 😵‍💫
-        opacity: {
-          condition: {
-            param: 'brush',
-            value: 1,
+      layer: [
+        {
+          params: params,
+          mark: "bar",
+          encoding: {
+            x: {
+              bin: { maxBins: bins },
+              field: attribute,
+            },
+            y: {
+              aggregate: 'count',
+              title: 'Frequency',
+            },
+            color: {
+              field: 'subset',
+              legend: null,
+              scale: { range: { field: 'color' } },
+            },
+            opacity: {value: .4},
           },
-          value: 1, // Lower this if x.bin is unset to grey out unselected bins
+        },{
+          transform: [{
+            filter: {param: 'brush'}
+          }],
+          mark: "bar",
+          encoding: {
+            x: {
+              field: attribute,
+              bin: {maxBins: bins}
+            },
+            y: {
+              aggregate: 'count',
+              title: 'Frequency',
+            },
+            color: {
+              field: 'subset',
+              legend: null,
+              scale: { range: { field: 'color' } },
+            },
+            opacity: {value: 1},
+          }
         }
-      },
+      ],
     };
   });
 }
