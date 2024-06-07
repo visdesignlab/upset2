@@ -50,9 +50,9 @@ The raw data structure for UpSet should be two data objects. One is the set memb
 
 The `data` object should be an array of objects. Each object should contain all the set membership boolean values as well as any attributes.
 
-The `annotations` object should be an object with a nested object field `columns`. The `columns` field should contain each possible column in the data, as well as the type for each column. This should be every possible set as well as any attribute type.
+The `annotations` object should be an object with a nested object field `columns`. This field is a mapping of the column name to the column's data type. The `columns` field should contain an entry for each possible column in the data, as well as the type for each column.
 
-The column which is the name of the item should be of type `label`. This will be used to generate ids and name the subsets. *Note*: There should only be one `label` column. Any set membership should be a boolean type. Finally, any attribute should be a `number` type.
+The entry corresponding to the column which is the name of the item should be of type `label`. This will be used to generate ids and name the subsets. *Note*: There should only be one `label` column. Any entry for a set membership column should be a boolean type. Finally, any entry for an attribute column should be a `number` type.
 
 In the example below, the item name is `Name`, noted by the `label` type. The sets are `School`, `Blue Hair`, `Duff Fan`, `Evil`, `Male`, and `Power Plant`. The only attribute in this dataset is `Age`, which is a number. This is clear in the annotations object, which denotes this.
 
@@ -161,7 +161,7 @@ const main = () => {
 - `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
 - `hideSettings` (optional)(`boolean`): Hide the aggregations/filter settings sidebar.
 - `parentHasHeight` (optional)(`boolean`): Indicates if the parent component has a fixed height. If this is set to `false`, the plot will occupy the full viewport height. When set to `true`, the plot will fit entirely within the parent component. Defaults to `false`.
-- `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
+- `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and the Trrack object you provide has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible. The provided provenance object must have a type compatible with the [extProvenance](https://vdl.sci.utah.edu/upset2/interfaces/_visdesignlab_upset2_react.UpsetProps.html#extProvenance) UpSet 2.0 prop type.
 - `provVis` (optional): [Sidebar options](#sidebar-options) for the provenance visualization sidebar. See [Trrack-Vis](https://github.com/Trrack/trrackvis) for more information about Trrack provenance visualization.
 - `elementSidebar` (optional): [Sidebar options](#sidebar-options) for the element visualization sidebar. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
 - `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
@@ -337,7 +337,7 @@ interface SidebarProps {
 
 ##### Alt Text Generation
 
-Alt Text generation requires the use of a custom or imported Alt-Text generation function. In [upset.multinet.app](https://upset.multinet.app), we are using the Multinet API, which exposes an api call to the [upset-alttxt](https://pypi.org/project/upset-alttxt/) python package. This Python package
+Alt Text generation requires the use of a custom or imported Alt-Text generation function. In [upset.multinet.app](https://upset.multinet.app), we are using the Multinet API, which exposes an api call to the [upset-alttxt](https://pypi.org/project/upset-alttxt/) python package.
 
 #### Default Configuration
 

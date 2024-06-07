@@ -58,7 +58,7 @@ export const Upset: FC<UpsetProps> = ({
 
     /**
      * visualizeAttributes can either be undefined or an array of strings.
-     * if visualizeAttributes is undefined, load the first 3 attributes by default, else load none
+     * if visualizeAttributes is defined, load the attributes named within. Otherwise, load the first DEFAULT_NUM_ATTRIBUTES.
      */
     if (visualizeDatasetAttributes) {
       conf.visibleAttributes = [

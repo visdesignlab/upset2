@@ -18,7 +18,7 @@ jobs:
         run: cp README.md packages/upset/README.md
       - name: Extract tag name
         id: get_tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/} " >> $GITHUB_OUTPUT
+        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
       - name: Change directory and publish
         run: cd packages/upset && npm publish --tag ${{ steps.get_tag.outputs.TAG }}
         env:
