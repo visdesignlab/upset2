@@ -85,13 +85,21 @@ export type ContextMenuInfo = {
 }
 
 /**
+ * Raw data object for an UpSet plot.
+ * This is used to generate the processed data. Column annotations are inferred from the data types.
+ */
+export interface UpsetItem {
+  [key: string]: any;
+}
+
+/**
 * Represents the props for the Upset component.
 */
 export interface UpsetProps {
   /**
   * The data for the Upset component.
   */
-  data: CoreUpsetData;
+  data: CoreUpsetData | UpsetItem[];
 
   /**
   * Optional configuration for the Upset component.

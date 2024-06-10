@@ -6,6 +6,7 @@ import { RecoilRoot } from 'recoil';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
 import { UpsetProps } from '../types';
+import { processRawData } from '../utils/data';
 
 const defaultVisibleSets = 6;
 
@@ -13,7 +14,7 @@ const defaultVisibleSets = 6;
  * Renders the Upset component.
  *
  * @component
- * @param {CoreUpsetData} data - The data for the Upset component.
+ * @param {CoreUpsetData | UpsetItem[]} data - The data for the Upset component.
  * @param {Partial<UpsetConfig>} [config={}] - The configuration options for the Upset component. This can be partial.
  * @param {string[]} [visualizeAttributes] - List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
  * @param {boolean} [visualizeUpsetAttributes=false] - Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
@@ -41,6 +42,16 @@ export const Upset: FC<UpsetProps> = ({
   altTextSidebar,
   generateAltText,
 }) => {
+  // If the provided data is not already processed by UpSet core, process it
+  const processData = useMemo(() => {
+    // the CoreUpsetData will never be an Array, and the UpsetItem[] will always be an Array
+    if (data instanceof Array) {
+      return processRawData(data);
+    }
+
+    return data;
+  }, [data]);
+
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
   const combinedConfig = useMemo(() => {
@@ -49,7 +60,7 @@ export const Upset: FC<UpsetProps> = ({
     const DEFAULT_NUM_ATTRIBUTES = 3;
 
     if (conf.visibleSets.length === 0) {
-      const setList = Object.entries(data.sets);
+      const setList = Object.entries(processData.sets);
       conf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]); // get first 6 set names
       conf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
     }
@@ -63,17 +74,17 @@ export const Upset: FC<UpsetProps> = ({
     if (visualizeDatasetAttributes) {
       conf.visibleAttributes = [
         ...defaultAttributes,
-        ...visualizeDatasetAttributes.filter((attr) => data.attributeColumns.includes(attr)),
+        ...visualizeDatasetAttributes.filter((attr) => processData.attributeColumns.includes(attr)),
       ];
     } else {
       conf.visibleAttributes = [
         ...defaultAttributes,
-        ...data.attributeColumns.slice(0, DEFAULT_NUM_ATTRIBUTES),
+        ...processData.attributeColumns.slice(0, DEFAULT_NUM_ATTRIBUTES),
       ];
     }
 
     return conf;
-  }, [data, config]);
+  }, [config]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -87,7 +98,7 @@ export const Upset: FC<UpsetProps> = ({
       >
         <RecoilRoot>
           <Root
-            data={data}
+            data={processData}
             config={combinedConfig}
             allowAttributeRemoval={allowAttributeRemoval}
             hideSettings={hideSettings}

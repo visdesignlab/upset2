@@ -46,32 +46,13 @@ Import the component using `import { Upset } from @visdesignlab/upset2-react` in
 
 #### Data structure
 
-The raw data structure for UpSet should be two data objects. One is the set membership data, and the other is the column type annotations.
+The raw data structure for UpSet should be a list of set membership objects.
+
+##### Raw Data
 
 The `data` object should be an array of objects. Each object should contain all the set membership boolean values as well as any attributes.
 
-The `annotations` object should be an object with a nested object field `columns`. This field is a mapping of the column name to the column's data type. The `columns` field should contain an entry for each possible column in the data, as well as the type for each column.
-
-The entry corresponding to the column which is the name of the item should be of type `label`. This will be used to generate ids and name the subsets. *Note*: There should only be one `label` column. Any entry for a set membership column should be a boolean type. Finally, any entry for an attribute column should be a `number` type.
-
-In the example below, the item name is `Name`, noted by the `label` type. The sets are `School`, `Blue Hair`, `Duff Fan`, `Evil`, `Male`, and `Power Plant`. The only attribute in this dataset is `Age`, which is a number. This is clear in the annotations object, which denotes this.
-
-```js
-const annotations = {
-  "columns": {
-    "Name": "label",
-    "School": "boolean",
-    "Blue Hair": "boolean",
-    "Duff Fan": "boolean",
-    "Evil": "boolean",
-    "Male": "boolean",
-    "Power Plant": "boolean",
-    "Age": "number"
-  }
-}
-```
-
-This data example shows only two characters from the Simpsons. Note that the fields directly correlate to the `annotations` object above.
+This data example shows only two characters from the Simpsons.
 
 ```js
 const rawData = [
@@ -102,13 +83,75 @@ The data and/or attributes objects can be JSON strings or traditional JS objects
 
 #### Loading Data into the UpSet 2.0 component
 
-To load your raw data into UpSet 2.0, some additional processing is required. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments. The example below details a simple usecase of the process function.
+##### Loading Raw Data
+
+Data uploaded to UpSet must follow the [UpSet 2.0 Data Structure](#data-structure). Simply pass the data object to the Upset component in the `data` field.
+
+The example below is a simple usecase for loading raw data into UpSet 2.0.
+
+```js
+const main = () => {
+  const rawData = [
+    {
+      "Name": "Homer",
+      "School": false,
+      "Blue Hair": false,
+      "Duff Fan": true,
+      "Evil": false,
+      "Male": true,
+      "Power Plant": true,
+      "Age": 40
+    },
+    {
+      "Name": "Marge",
+      "School": false,
+      "Blue Hair": true,
+      "Duff Fan": false,
+      "Evil": false,
+      "Male": false,
+      "Power Plant": false,
+      "Age": 36
+    },
+  ];
+
+  return <Upset data={rawData} />;
+}
+```
+
+##### Pre-Processing Data
+
+If you want to pre-process your data to gain access to the data objects generated and use by UpSet, or are having issues with the raw data loading, you must use the [process function](https://vdl.sci.utah.edu/upset2/functions/_visdesignlab_upset2_core.process.html) from UpSet 2.0 Core. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments.
+
+The `data` object should be the same as raw data defined in [Data Structure](#raw-data).
+
+The `annotations` object should be an object with a nested object field `columns`. This field is a mapping of the column name to the column's data type. The `columns` field should contain an entry for each possible column in the data, as well as the type for each column.
+
+The entry corresponding to the column which is the name of the item should be of type `label`. This will be used to generate ids and name the subsets. *Note*: There should only be one `label` column. Any entry for a set membership column should be a boolean type. Finally, any entry for an attribute column should be a `number` type.
+
+In the example below, the item name is `Name`, noted by the `label` type. The sets are `School`, `Blue Hair`, `Duff Fan`, `Evil`, `Male`, and `Power Plant`. The only attribute in this dataset is `Age`, which is a number. This is clear in the annotations object, which denotes this.
+
+```js
+const annotations = {
+  "columns": {
+    "Name": "label",
+    "School": "boolean",
+    "Blue Hair": "boolean",
+    "Duff Fan": "boolean",
+    "Evil": "boolean",
+    "Male": "boolean",
+    "Power Plant": "boolean",
+    "Age": "number"
+  }
+}
+```
+
+The example below details a simple usecase of the process function.
 
 ```JSX
 import { Upset, process } from '@visdesignlab/upset2-react';
 
 const main = () => {
-  const rawData = const data = [
+  const rawData = [
     {
       "Name": "Homer",
       "School": false,
