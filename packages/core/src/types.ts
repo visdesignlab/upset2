@@ -219,7 +219,16 @@ export type Plot = Scatterplot | Histogram;
 
 export type Bookmark = { id: string; label: string; size: number }
 
-export type ElementSelection = {[attName: string] : {max: number, min: number}};
+/**
+ * Represents a selection of elements in the Element View.
+ * Maps attribute names to an array with the minimum and maximum
+ * values of the selection over each attribute.
+ * 
+ * This *needs* to match the data format outputted by Vega-Lite to
+ * the 'brush' signal in the Element View. TS will let you change
+ * it here, but that may lead to runtime errors.
+ */
+export type ElementSelection = {[attName: string] : number[]};
 
 export type UpsetConfig = {
   plotInformation: PlotInformation;

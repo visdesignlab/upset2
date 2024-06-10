@@ -365,8 +365,7 @@ export function getActions(provenance: UpsetProvenance) {
       Object.keys(elementIntervals).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(elementIntervals).join(' ')}`
           : "Deselected elements",
-      setElementSelectionAction(elementIntervals)
-
+      setElementSelectionAction(elementIntervals),
     ),
   };
 }
