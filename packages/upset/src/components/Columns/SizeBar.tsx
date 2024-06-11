@@ -37,22 +37,41 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     [0, dimensions.attribute.width],
   );
 
-  let fullBars = size > 0 ? Math.floor(size / sizeDomain) : size;
-  const rem = size % sizeDomain;
-
   if (size < 0 || sizeDomain < 0) return null;
 
-  if (fullBars >= 3) {
-    fullBars = 3;
+  const OFFSET = 6;
+
+  /**
+   * Calculates the number of size bars to display based on the size of the row.
+   * @param size Size of the row.
+   * @returns { fullBars: number, rem: number} 
+   *   fullBars  Number of full bars to display.
+   *   rem       Remaining size after full bars are displayed.
+   */
+  function calculateBars(size: number): { fullBars: number; rem: number } {
+    let fullBars = size > 0 ? Math.floor(size / sizeDomain) : size;
+    const rem = size % sizeDomain;
+
+    if (fullBars >= 3) {
+      fullBars = 3;
+    }
+
+    return { fullBars, rem };
   }
 
-  const offset = 6;
+  //const { fullBars: fullSelectBars, rem: remSelect } = calculateBars(selected);
 
+  const { fullBars, rem } = calculateBars(size);
   const rectArray: number[] = [];
   for (let i = 0; i < fullBars; ++i) {
     rectArray[i] = i;
   }
 
+  /**
+   * Gets the fill color for the size bar.
+   * @param index Index of the bar.
+   * @returns Fill color for the bar.
+   */
   function getFillColor(index: number) {
     // if the row is bookmarked, highlight the bar with the bookmark color
     if (row !== undefined && bookmarkedIntersections.some((bookmark) => bookmark.id === row.id)) {
@@ -82,17 +101,17 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     >
       {rectArray.map((arr) => (
         <rect
-          transform={translate(0, (arr * offset) / 2)}
+          transform={translate(0, (arr * OFFSET) / 2)}
           key={arr}
-          height={dimensions.size.plotHeight - arr * offset}
+          height={dimensions.size.plotHeight - arr * OFFSET}
           width={dimensions.attribute.width}
           fill={getFillColor(arr)}
         />
       ))}
       {fullBars < 3 && (
         <rect
-          transform={translate(0, (fullBars * offset) / 2)}
-          height={dimensions.size.plotHeight - fullBars * offset}
+          transform={translate(0, (fullBars * OFFSET) / 2)}
+          height={dimensions.size.plotHeight - fullBars * OFFSET}
           width={scale(rem)}
           fill={getFillColor(fullBars)}
         />
