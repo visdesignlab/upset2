@@ -17,17 +17,19 @@ import { ProvenanceContext } from '../Root';
  * Properties for the PlotInformationEditor component
  * @param onSave Callback to run when saving the plot, in addition to saving the plot information
  * @param divider Divider component to use between the title and the caption
+ * @param tabIndex Tab index for the plot information editor
  */
 type Props = {
   onSave?: () => void;
   divider: JSX.Element;
+  tabIndex?: number;
 }
 
 /**
  * Display & editor for plot information
  * @param Props @see @type Props
  */
-export const PlotInformation = ({onSave, divider}: Props) => {
+export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
   /**
    * Width of the titles for all the fields in %. 
    * Field entry boxes will occupy the rest of the space
@@ -105,6 +107,7 @@ export const PlotInformation = ({onSave, divider}: Props) => {
   return (
     !editing ? (
       <Box
+        tabIndex={tabIndex}
         onClick={() => setEditing(true)}
         sx={{ 
           cursor: 'pointer',
@@ -127,7 +130,7 @@ export const PlotInformation = ({onSave, divider}: Props) => {
         <Typography>{generatePlotInformationText()}</Typography>
       </Box>
     ) : (
-      <Box>
+      <Box tabIndex={tabIndex}>
         <Button 
           color="primary" 
           style={{float: 'right'}} 

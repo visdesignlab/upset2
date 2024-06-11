@@ -43,6 +43,13 @@ const Header = ({ data }: { data: any }) => {
   const visibleSets = provenance.getState().visibleSets;
   const hiddenSets = provenance.getState().allSets.filter((set: Column) => !visibleSets.includes(set.name));
 
+  /** 
+   * Number of tab indices in the alttext sidebar; used to calculate the tab index of the other buttons
+   * because alttext sidebar should get priority when open. Currently 3 because there are 3 tab indices
+   * in the sidebar, but this should be updated if more tab indices are added.
+   */
+  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 4 : 0);
+
   const handleImportModalClose = () => {
     setShowImportModal(false);
   }
@@ -178,10 +185,19 @@ const Header = ({ data }: { data: any }) => {
                 }
               }}
               aria-label={`${isAltTextSidebarOpen ? 'Close' : 'Open'} alt text sidebar`}
+              tabIndex={2}
               >
                 Text Description
               </Button>
-              <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+              <Link 
+                to={`/datatable${getQueryParam()}`} 
+                target="_blank" 
+                rel="noreferrer" 
+                onClick={dispatchState} 
+                style={{textDecoration: "none", color: "inherit"}} 
+                aria-label='Open raw and computed data as tables in a new tab'
+                tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
+              >
                 <Button
                   color="inherit"
                 >
@@ -194,6 +210,7 @@ const Header = ({ data }: { data: any }) => {
                 onClick={(e) => { handleAttributeClick(e) }}
                 aria-label="Open attributes selection menu"
                 aria-haspopup="menu"
+                tabIndex={4 + ALTTEXT_SIDEBAR_TABS}
               >
                 Attributes
               </Button>
@@ -208,6 +225,7 @@ const Header = ({ data }: { data: any }) => {
                   handleMenuClose();
                 }}
                 aria-label={`${isElementSidebarOpen ? 'Close' : 'Open'} element view sidebar`}
+                tabIndex={5 + ALTTEXT_SIDEBAR_TABS}
               >
                 Element View
               </Button>
@@ -229,6 +247,7 @@ const Header = ({ data }: { data: any }) => {
               }
             }}
             aria-label='Load data from Multinet'
+            tabIndex={6 + ALTTEXT_SIDEBAR_TABS}
           >
             Load Data
           </Button>
@@ -237,6 +256,7 @@ const Header = ({ data }: { data: any }) => {
            onKeyDown={(e) => handleMenuKeypress(e)}
            aria-label='Open additional options menu'
            aria-haspopup="menu"
+            tabIndex={7 + ALTTEXT_SIDEBAR_TABS}
           >
             <MoreVertIcon
               onClick={(e) => handleMenuClick(e.currentTarget)}

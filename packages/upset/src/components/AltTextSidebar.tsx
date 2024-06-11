@@ -114,7 +114,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     >
       <div css={css`width:${initialDrawerWidth}`}>
         <br />
-        <PlotInformation divider={divider} />
+        <PlotInformation divider={divider} tabIndex={6} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
           Text Description:
         </Typography>
@@ -131,6 +131,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   style={{marginRight: "10px"}}
                   // !! converts to boolean
                   checked={textEditing || !!userShortText || !!userLongText}
+                  tabIndex={5}
                   onChange={(ev) => {
                     setTextEditing(ev.target.checked);
                     if (!ev.target.checked) {
@@ -157,6 +158,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 <Switch
                   size="small"
                   checked={useLong}
+                  tabIndex={4}
                   onChange={(ev) => {
                     setUseLong(ev.target.checked);
                   }}
@@ -199,6 +201,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               onMouseEnter={() => setTextHover(true)} 
               onMouseLeave={() => setTextHover(false)} 
               onClick={() => {setTextEditing(true)}}
+              tabIndex={3}  
             >
               <ReactMarkdownWrapper 
                 text={displayAltText ?? "No description available."}
