@@ -228,7 +228,7 @@ export type Bookmark = { id: string; label: string; size: number }
  * the 'brush' signal in the Element View. TS will let you change
  * it here, but that may lead to runtime errors.
  */
-export type ElementSelection = {[attName: string] : number[]};
+export type ElementSelection = {[attName: string] : [number, number]};
 
 export type UpsetConfig = {
   plotInformation: PlotInformation;

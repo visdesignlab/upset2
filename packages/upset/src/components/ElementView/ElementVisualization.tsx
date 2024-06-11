@@ -1,7 +1,7 @@
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import { useContext, useRef, useState } from 'react';
-import { SignalListener, VegaLite, View } from 'react-vega';
+import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
 import { bookmarkedIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
@@ -12,6 +12,7 @@ import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { ElementSelection } from '@visdesignlab/upset2-core';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
+import { isArray } from 'vega';
 
 export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
@@ -38,13 +39,11 @@ export const ElementVisualization = () => {
     if ( // Validates that the signal is in the expected format; allows us to convert unknown to ElementSelection
       value === undefined 
       || typeof value !== "object"
-      || (Object.keys(value as Object).length > 0 
-        && !Object.values(value as Object).some((v) => 
-          !Array.isArray(v) 
-          || !(v.length === 2) 
-          || typeof v[0] !== "number" 
-          || typeof v[1] !== "number")
-      )
+      || Object.values(value as Object).some((v) => 
+            !Array.isArray(v) 
+            || !(v.length === 2) 
+            || typeof v[0] !== "number" 
+            || typeof v[1] !== "number")
     ) return;
 
     setElementSelection(value as ElementSelection);
@@ -64,23 +63,15 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms)}
+            // elementSelection should default to config.elementSelection (checked in the useState call above)
+            // but it's actually undefined here, so this is my fix :/
+            spec={generateVega(scatterplots, histograms, elementSelection ? undefined : config.elementSelection)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}
             actions={false}
             signalListeners={{
               "brush": brushHandler,
-            }}
-            onNewView={(view: View) => {
-              // elementSelection should default to config.elementSelection (checked in the useState call above)
-              // but it's actually undefined here, so this is my fix :/
-              const defaultSelection = elementSelection ?? config.elementSelection;
-              if (defaultSelection) {
-                view.signal('brush', defaultSelection);
-                console.log(view.signal('brush'));
-                view.runAsync().then((v: View) => {console.log(v.signal('brush'))});
-              }
             }}
           />
         )}

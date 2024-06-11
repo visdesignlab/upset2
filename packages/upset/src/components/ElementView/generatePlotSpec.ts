@@ -1,4 +1,4 @@
-import { Histogram, Scatterplot } from '@visdesignlab/upset2-core';
+import { ElementSelection, Histogram, Scatterplot } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
 /**
@@ -48,10 +48,31 @@ export function createScatterplotSpec(
 
 /**
  * Creates the spec for multiple scatterplots containing data from multiple subsets.
-= * @param specs - scatterplot objects with x and y attributes.
+ * @param specs - scatterplot objects with x and y attributes.
+ * @param selection Current brush selection
  * @returns The Vega-Lite spec for the histogram.
  */
-export function createScatterplotRow(specs: Scatterplot[]): VisualizationSpec[] {
+export function createScatterplotRow(specs: Scatterplot[], selection: ElementSelection | undefined): VisualizationSpec[] {
+  function convertSelection(s: Scatterplot, e: ElementSelection): ({ [key: string]: [number, number] } | undefined) {
+    let val;
+    if (e[s.x] && e[s.y]) {
+      val = {
+        x: e[s.x],
+        y: e[s.y],
+      }
+    } else if (e[s.x]) {
+      val = {
+        x: e[s.x],
+      }
+    } else if (e[s.y]) {
+      val = {
+        y: e[s.y],
+      }
+    } else val = undefined;
+    console.log(val);
+    return val;
+  }
+
   return specs.map((s) => ({
     width: 200,
     height: 200,
@@ -65,6 +86,7 @@ export function createScatterplotRow(specs: Scatterplot[]): VisualizationSpec[] 
           type: 'interval',
           clear: 'mousedown',
         },
+        value: selection ? convertSelection(s, selection) : undefined,
       },
     ],
     encoding: {
@@ -168,9 +190,10 @@ export function createHistogramSpec(
  * Creates the spec for multiple histograms containing data from multiple subsets.
  * Currently used by the element view pane
  * @param histograms The histograms to plot.
+ * @param selection Current brush selection
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[] {
+export function createHistogramRow(histograms: Histogram[], selection: ElementSelection | undefined): VisualizationSpec[] {
   const PARAMS = [
     {
       name: 'brush',
@@ -179,6 +202,7 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
         encodings: ['x'],
         clear: 'mousedown',
       },
+      value: selection,
     }
   ];
 
@@ -303,9 +327,12 @@ export function createHistogramRow(histograms: Histogram[]): VisualizationSpec[]
 export function generateVega(
   scatterplots: Scatterplot[],
   histograms: Histogram[],
+  selection? : ElementSelection
 ): VisualizationSpec {
-  const scatterplotSpecs = createScatterplotRow(scatterplots);
-  const histogramSpecs = createHistogramRow(histograms);
+  // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
+  const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;
+  const scatterplotSpecs = createScatterplotRow(scatterplots, newSelection);
+  const histogramSpecs = createHistogramRow(histograms, newSelection);
   const base = {
     data: {
       name: 'elements',
