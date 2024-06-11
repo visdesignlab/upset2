@@ -16,6 +16,8 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
+import { aggregateSelectedCount } from './functions';
+import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
 
 /** @jsxImportSource @emotion/react */
 /**
@@ -65,6 +67,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
+  const config = useRecoilValue(upsetConfigAtom);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -140,7 +143,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
         { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
         <BookmarkStar row={aggregateRow} />}
-        <SizeBar row={aggregateRow} size={aggregateRow.size} />
+        <SizeBar row={aggregateRow} size={aggregateRow.size} selected={aggregateSelectedCount(aggregateRow, config.elementSelection)} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>

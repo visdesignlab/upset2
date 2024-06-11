@@ -129,7 +129,7 @@ export const UNINCLUDED = 'unincluded';
 /**
  * Base Intersection type for subsets and aggregates.
  */
-type BaseIntersection = BaseElement & {
+export type BaseIntersection = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
 
