@@ -18,6 +18,7 @@ import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from './functions';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
+import { elementSelector } from '../../atoms/elementsSelectors';
 
 /** @jsxImportSource @emotion/react */
 /**
@@ -143,7 +144,12 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
         { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
         <BookmarkStar row={aggregateRow} />}
-        <SizeBar row={aggregateRow} size={aggregateRow.size} selected={aggregateSelectedCount(aggregateRow, config.elementSelection)} />
+        <SizeBar 
+          row={aggregateRow} 
+          size={aggregateRow.size} 
+          selected={aggregateSelectedCount(aggregateRow, config.elementSelection, 
+            (id: string) => {return useRecoilValue(elementSelector(id))}
+          )} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>
