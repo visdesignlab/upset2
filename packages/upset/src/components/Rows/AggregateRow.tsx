@@ -16,7 +16,7 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
-import { aggregateSelectedCount } from './functions';
+import { countAggregateSelected } from './functions';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
 import { elementSelector } from '../../atoms/elementsSelectors';
 
@@ -147,7 +147,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <SizeBar 
           row={aggregateRow} 
           size={aggregateRow.size} 
-          selected={aggregateSelectedCount(aggregateRow, config.elementSelection, 
+          selected={countAggregateSelected(aggregateRow, config.elementSelection, 
             (id: string) => {return useRecoilValue(elementSelector(id))}
           )} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />

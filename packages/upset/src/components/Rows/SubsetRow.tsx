@@ -14,7 +14,7 @@ import {
 import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
-import { subsetSelectedCount } from './functions';
+import { countSubsetSelected } from './functions';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
 import { elementSelector } from '../../atoms/elementsSelectors';
 
@@ -97,7 +97,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       <Matrix sets={visibleSets} subset={subset} />
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />}
-      <SizeBar size={subset.size} row={subset} selected={subsetSelectedCount(items, config.elementSelection)} />
+      <SizeBar size={subset.size} row={subset} selected={countSubsetSelected(items, config.elementSelection)} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );
