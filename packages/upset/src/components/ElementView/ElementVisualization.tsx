@@ -12,7 +12,6 @@ import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { ElementSelection } from '@visdesignlab/upset2-core';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
-import { isArray } from 'vega';
 
 export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
