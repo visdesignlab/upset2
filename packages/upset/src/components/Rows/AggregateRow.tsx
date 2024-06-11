@@ -147,7 +147,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <SizeBar 
           row={aggregateRow} 
           size={aggregateRow.size} 
-          selected={countAggregateSelected(aggregateRow, config.elementSelection, 
+          selected={countAggregateSelected(aggregateRow, config.elementSelection ?? {}, 
             (id: string) => {return useRecoilValue(elementSelector(id))}
           )} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
