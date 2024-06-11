@@ -9,16 +9,22 @@ import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { newShade } from '../../utils/colors';
 
-/** @jsxImportSource @emotion/react */
+/**
+ * A bar that represents the size of a row in the upset plot.
+ * @param size The size of the row.
+ * @param selected The number of selected items in the row.
+ * @param row Row object to display the size for. 
+ * @jsxImportSource @emotion/react 
+ */
 type Props = {
   size: number;
+  selected: number;
   row?: Row;
 };
 
 const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
-const highlightColors = ['rgb(116, 173, 209)', 'rgb(94, 102, 171)', 'rgb(29, 41, 71)'];
 
-export const SizeBar: FC<Props> = ({ row, size }) => {
+export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);

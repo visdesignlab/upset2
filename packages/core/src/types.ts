@@ -255,13 +255,9 @@ export type UpsetConfig = {
     histograms: Histogram[];
   };
   allSets: Column[];
-  /**
-   * The currently selected subset/intersection
-   */
   selected: Row | null;
   /**
-   * The interval selection set in Element View. Maps the names of attributes
-   * to the maximum and minimum values of the selection over each attribute.
+   * Selected elements (data points) in the Element View.
    */
   elementSelection: ElementSelection;
 };
