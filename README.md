@@ -231,34 +231,34 @@ The configuration options are documented below:
   - `sets`: A very short description of what the sets are in the data. Ex: Movie Genres
   - `items`: A very short description of what the items in the data are. Ex: Movies
 - `horizontal`: Boolean value describing whether or not the plot is horizontal. Defaults to `false`. *Note* this value is not used by UpSet 2.0 but may be used to generate text descriptions.
-- `firstAggregateBy`: Describes the first aggregation state. Defaults to `None`. Possible values:
-  - `None`: No first level of aggregation.
-  - `Sets`: Aggregate by which rows contain each set.
-  - `Degree`: Aggregate by the Degree (set membership count) of the rows.
-  - `Deviations`: Aggregate by positive and negative deviation.
-  - `Overlaps`: Aggregate by the minimum specified overlap degree.
+- `firstAggregateBy` (string): Describes the first aggregation state. Defaults to `"None"`. Possible values:
+  - `"None"`: No first level of aggregation.
+  - `"Sets"`: Aggregate by which rows contain each set.
+  - `"Degree"`: Aggregate by the Degree (set membership count) of the rows.
+  - `"Deviations"`: Aggregate by positive and negative deviation.
+  - `"Overlaps"`: Aggregate by the minimum specified overlap degree.
 - `firstOverlapDegree`: Describes the first aggregation's degree of overlap required. This is only used if `firstAggregateBy` is set to `Overlaps`. Defaults to `2`.
-- `secondAggregateBy`: Describes the second (nested) aggregation state. Must be `None` if `firstAggregateBy` is set to `None`. If `firstAggregateBy` is *not* `None`, this value *cannot* be the same as `firstAggregateBy`. Possible values:
-  - `None`: No first level of aggregation.
-  - `Sets`: Aggregate by which rows contain each set.
-  - `Degree`: Aggregate by the Degree (set membership count) of the rows.
-  - `Deviations`: Aggregate by positive and negative deviation.
-  - `Overlaps`: Aggregate by the minimum specified overlap degree.
+- `secondAggregateBy` (string): Describes the second (nested) aggregation state. Must be `"None"` if `firstAggregateBy` is set to `"None"`. If `firstAggregateBy` is *not* `"None"`, this value *cannot* be the same as `firstAggregateBy`. Possible values:
+  - `"None"`: No first level of aggregation.
+  - `"Sets"`: Aggregate by which rows contain each set.
+  - `"Degree"`: Aggregate by the Degree (set membership count) of the rows.
+  - `"Deviations"`: Aggregate by positive and negative deviation.
+  - `"Overlaps"`: Aggregate by the minimum specified overlap degree.
 - `secondOverlapDegree`:  Describes the second aggregation's degree of overlap required. This is only used if `secondAggregateBy` is set to `Overlaps`. Defaults to `2`.
-- `sortVisibleBy`: Describes the sorting of the visible sets (above the intersection matrix). Defaults to `Alphabetical`. Possible values:
-  - `Alphabetical`: Sort from A - Z. *Note* Only A - Z sorting is supported.
-  - `Ascending`: Sort based on size, low to high.
-  - `Descending`: Sort based on size, high to low.
-- `sortBy`: Describes the sorting of the subset rows. Defaults to `Size`. Possible values:
-  - `Size`: Sorts the plot by the subset size (cardinality) rows.
-  - `Degree`: Sorts the plot by the degree (set membership) of the rows.
-  - `Deviation`: Sorts the plot by the calculated deviation. See [the original 2014 paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/) for more information about deviation and how it is calculated.
+- `sortVisibleBy` (string): Describes the sorting of the visible sets (above the intersection matrix). Defaults to `"Alphabetical"`. Possible values:
+  - `"Alphabetical"`: Sort from A - Z. *Note* Only A - Z sorting is supported.
+  - `"Ascending"`: Sort based on size, low to high.
+  - `"Descending"`: Sort based on size, high to low.
+- `sortBy` (string): Describes the sorting of the subset rows. Defaults to `S"ize"`. Possible values:
+  - `"Size"`: Sorts the plot by the subset size (cardinality) rows.
+  - `"Degree"`: Sorts the plot by the degree (set membership) of the rows.
+  - `"Deviation"`: Sorts the plot by the calculated deviation. See [the original 2014 paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/) for more information about deviation and how it is calculated.
   - `Set_{Set Name}`: Sort the plot by Degree (Ascending), but always sort subsets containing the provided set first. For example, a dataset containing movie genres could be sorted by `Set_Comedy`.
-  - `Any attribute`: Sort the plot by the calculated mean of an attribute value. For example, if the dataset contains an attribute named `ReleaseDate`, sorting by `ReleaseDate` would use the calculated average release date for the items in the rows.
-- `sortByOrder`: The order to sort the plot. This is simply an order indicator, the actual sort type is defined in `sortBy`. Possible values:
-  - `Ascending`: Sort from low to high
-  - `Descending`: Sort from high to low
-  - `None`: This should only be used if `sortBy` sorts by a set (ex: `Set_Comedy`). This is because there is only one possible direction for this sorting method.
+  - `Any attribute`: Sort the plot by the calculated mean of an attribute value. For example, if the dataset contains an attribute named `ReleaseDate`, sorting by `"ReleaseDate"` would use the calculated average release date for the items in the rows.
+- `sortByOrder` (string): The order to sort the plot. This is simply an order indicator, the actual sort type is defined in `sortBy`. Possible values:
+  - `"Ascending"`: Sort from low to high
+  - `"Descending"`: Sort from high to low
+  - `"None"`: This should only be used if `sortBy` sorts by a set (ex: `Set_Comedy`). This is because there is only one possible direction for this sorting method.
 - `filters`: An object that defines which subsets (rows) are shown in the UpSet plot.
   - `maxVisible` (number): The maximum degree (set membership count) that a subset can have and still be shown. Defaults to `6`.
   - `minVisible` (number): The minimum degree (set membership count) that a subset must have and still be shown. Defaults to `0`.
