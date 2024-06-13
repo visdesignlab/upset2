@@ -1,5 +1,3 @@
-import '@fortawesome/fontawesome-free/css/all.css';
-
 import { css } from '@emotion/react';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -26,11 +24,6 @@ export const SvgBase: FC<Props> = ({ children, defaultSettings }) => {
       css={css`
         height: 100%;
         width: 100%;
-        text.icon {
-          font-family: 'Font Awesome 5 Free';
-          font-weight: 700;
-          font-size: 12px;
-        }
       `}
     >
       <svg id="upset-svg" height={height + 50 * margin} width={width + 2 * margin} xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" fontFamily="Roboto, Arial">

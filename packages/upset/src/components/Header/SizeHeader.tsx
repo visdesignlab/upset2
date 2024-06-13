@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { drag, select } from 'd3';
+import { drag } from 'd3-drag';
+import { select } from 'd3-selection';
 import {
   FC, useContext, useEffect, useRef, useState,
 } from 'react';

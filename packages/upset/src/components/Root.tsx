@@ -11,6 +11,7 @@ import { columnsAtom } from '../atoms/columnAtom';
 import { itemsAtom } from '../atoms/itemsAtoms';
 import { setsAtom } from '../atoms/setsAtoms';
 import { dataAtom } from '../atoms/dataAtom';
+import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemovalAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import {
@@ -24,6 +25,7 @@ import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
+import { AltText } from '../types';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -37,6 +39,8 @@ const baseStyle = css`
 type Props = {
   data: CoreUpsetData;
   config: UpsetConfig;
+  allowAttributeRemoval?: boolean;
+  hideSettings?: boolean;
   extProvenance?: {
     provenance: UpsetProvenance;
     actions: UpsetActions;
@@ -53,11 +57,11 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  generateAltText?: () => Promise<string>;
+  generateAltText?: () => Promise<AltText>;
 };
 
 export const Root: FC<Props> = ({
-  data, config, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
+  data, config, allowAttributeRemoval, hideSettings, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
@@ -68,6 +72,7 @@ export const Root: FC<Props> = ({
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
+  const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
   useEffect(() => {
     setState(config);
@@ -99,6 +104,8 @@ export const Root: FC<Props> = ({
     setAttributeColumns(data.attributeColumns);
     setAllColumns(data.columns);
     setData(data);
+    // if it is defined, pass through the provided value, else, default to true
+    setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
   }, [data]);
 
   // close all open context menus
@@ -119,6 +126,7 @@ export const Root: FC<Props> = ({
   return (
     // eslint-disable-next-line react/jsx-no-constructed-context-values
     <ProvenanceContext.Provider value={{ provenance, actions }}>
+      {!hideSettings &&
       <div
         css={css`
           flex: 0 0 auto;
@@ -127,7 +135,7 @@ export const Root: FC<Props> = ({
         `}
       >
         <Sidebar />
-      </div>
+      </div>}
       <h2
         id="desc"
         css={css`

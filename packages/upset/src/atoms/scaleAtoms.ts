@@ -1,4 +1,4 @@
-import { scaleLinear } from 'd3';
+import { scaleLinear } from 'd3-scale';
 import { selector } from 'recoil';
 
 import { maxDeviationSelector } from './maxAtoms';

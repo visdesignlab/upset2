@@ -1,10 +1,11 @@
-import { Meta, Story } from '@storybook/react';
-import { CoreUpsetData, test } from '@visdesignlab/upset2-core';
-import React, { useEffect, useState } from 'react';
+/* eslint-disable react/destructuring-assignment */
+import React from 'react';
+
+import moviesData from './data/movies/data.json';
 
 import { Upset } from '../src';
 
-const meta: Meta = {
+const meta = {
   title: 'Upset',
   component: Upset,
   argTypes: {
@@ -15,25 +16,25 @@ const meta: Meta = {
     },
   },
   parameters: {
-    controls: { expanded: true },
+    controls: { expanded: 'true' },
   },
 };
 
 export default meta;
 
-const Template: Story<{ dataset: string }> = (args) => {
-  const [data, setData] = useState<CoreUpsetData | null>(null);
-
-  useEffect(() => {
-    test().then((d) => setData(d));
-  }, []);
-
-  return data ? (
-    <Upset data={data} loadAttributes={3} />
-  ) : (
-    <div>Loading {args.dataset} dataset</div>
-  );
-};
+const Template = (args) => (moviesData ? (
+  <div style={{ height: 300 }}>
+    <Upset data={moviesData} hideSettings allowAttributeRemoval visualizeDatasetAttributes={['AvgRating']} visualizeUpsetAttributes={false} />
+  </div>
+) : (
+  <div>
+    Loading
+    {' '}
+    {args.dataset}
+    {' '}
+    dataset
+  </div>
+));
 
 // By passing using the Args format for exported stories,
 // you can control the props for a component for reuse in a test

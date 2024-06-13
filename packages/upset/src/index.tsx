@@ -11,3 +11,5 @@ export {
 export * from './utils/downloads';
 
 export * from './utils/exports';
+
+export { process } from '@visdesignlab/upset2-core';
