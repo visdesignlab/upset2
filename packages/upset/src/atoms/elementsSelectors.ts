@@ -1,6 +1,6 @@
 import { Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
 import { selectorFamily } from 'recoil';
-import { bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
+import { bookmarkedColorPalette, currentSelectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
@@ -24,7 +24,7 @@ export const elementSelector = selectorFamily<
     const intersections = flattenedOnlyRows(data, state);
     const row = intersections[id];
     const palette = get(bookmarkedColorPalette);
-    const currentIntersection = get(currentIntersectionSelector);
+    const currentIntersection = get(currentSelectionSelector);
 
     if (!row) return [];
 
@@ -70,7 +70,7 @@ export const intersectionCountSelector = selectorFamily<
 export const elementItemMapSelector = selectorFamily<Item[], string[]>({
   key: 'element-item-map',
   get: (ids: string[]) => ({ get }) => {
-    const currentIntersection = get(currentIntersectionSelector);
+    const currentIntersection = get(currentSelectionSelector);
     const items: Item[] = [];
 
     if (currentIntersection && !ids.includes(currentIntersection.id)) {

@@ -1,9 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row, ElementSelection
+  AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig,
+  Bookmark
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
+import { isNumericalAttQuery } from '@visdesignlab/upset2-core/src';
 
 export type Metadata = {
   [key: string]: unknown;
@@ -152,12 +154,12 @@ const removeMultipleVisibleAttributes = registry.register(
   },
 );
 
-const bookmarkIntersectionAction = registry.register(
+const bookmarkAction = registry.register(
   'bookmark-intersection',
   (state: UpsetConfig, newBookmark) => {
-    if (!state.bookmarkedIntersections.find((b) => b.id === newBookmark.id)) {
-      state.bookmarkedIntersections = [
-        ...state.bookmarkedIntersections,
+    if (!state.bookmarks.find((b) => b.id === newBookmark.id)) {
+      state.bookmarks = [
+        ...state.bookmarks,
         newBookmark,
       ];
     }
@@ -166,10 +168,10 @@ const bookmarkIntersectionAction = registry.register(
   },
 );
 
-const removeBookmarkIntersectionAction = registry.register(
+const removeBookmarkAction = registry.register(
   'remove-bookmark-intersection',
   (state: UpsetConfig, bookmark) => {
-    state.bookmarkedIntersections = state.bookmarkedIntersections.filter(
+    state.bookmarks = state.bookmarks.filter(
       (b) => b.id !== bookmark.id,
     );
 
@@ -290,19 +292,11 @@ const setPlotInformationAction = registry.register(
 );
 
 const setSelectedAction = registry.register(
-  'select-intersection',
-  (state: UpsetConfig, intersection) => {
-    state.selected = intersection;
+  'select',
+  (state: UpsetConfig, selection) => {
+    state.selected = selection;
     return state;
   },
-);
-
-const setElementSelectionAction = registry.register(
-  'select-elements',
-  (state: UpsetConfig, selectedIntervals) => {
-    state.elementSelection = selectedIntervals;
-    return state;
-  }
 );
 
 export function initializeProvenanceTracking(
@@ -345,8 +339,8 @@ export function getActions(provenance: UpsetProvenance) {
     removeAttribute: (attr: string) => provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
-    bookmarkIntersection: (id: string, label: string, size: number) => provenance.apply(`Bookmark ${label}`, bookmarkIntersectionAction({ id, label, size })),
-    unBookmarkIntersection: (id: string, label: string, size: number) => provenance.apply(`Unbookmark ${label}`, removeBookmarkIntersectionAction({ id, label, size })),
+    bookmark: (bookmark: Bookmark) => provenance.apply(`Bookmark ${bookmark.label}`, bookmarkAction(bookmark)),
+    unBookmark: (bookmark: Bookmark) => provenance.apply(`Unbookmark ${bookmark.label}`, removeBookmarkAction(bookmark)),
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
     removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
@@ -355,17 +349,15 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
-    setSelected: (intersection: Row) => provenance.apply(
-      intersection ?
-        `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
-        'Deselect intersection',
-      setSelectedAction(intersection),
-    ),
-    setElementSelection: (elementIntervals: ElementSelection) => provenance.apply(
-      Object.keys(elementIntervals).length > 0 ?
-        `Selected elements based on the following keys: ${Object.keys(elementIntervals).join(' ')}`
-          : "Deselected elements",
-      setElementSelectionAction(elementIntervals),
+    setSelected: (selection: Bookmark | null) => provenance.apply(
+      selection
+        ? isNumericalAttQuery(selection) 
+          ? Object.keys(selection).length > 0 
+            ? `Selected elements based on the following keys: ${Object.keys(selection).join(' ')}`
+            : "Cleared selection"
+          : `Select intersection "${selection.label.replaceAll('~&~', ' & ')}"`
+        : 'Cleared selection',
+      setSelectedAction(selection),
     ),
   };
 }

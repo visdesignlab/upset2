@@ -4,25 +4,28 @@ import { useContext, useRef, useState } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
-import { bookmarkedIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { elementItemMapSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
-import { ElementSelection } from '@visdesignlab/upset2-core';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
+import { NumericalAttQuery, isElementSelection } from '@visdesignlab/upset2-core';
+import { UpsetActions } from '../../provenance';
+import { numAttsToElemQuery, isNumericalAttQuery } from '@visdesignlab/upset2-core/src';
 
 export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
-  const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const config = useRecoilValue(upsetConfigAtom);
-  const [elementSelection, setElementSelection] = useState<ElementSelection>(config.elementSelection);
+  const [elementSelection, setElementSelection] = 
+    useState(isElementSelection(config.selected) ? config.selected : undefined);
   const timeout = useRef<number | null>(null);
   
   const onClose = () => setOpenAddPlot(false);
@@ -34,24 +37,15 @@ export const ElementVisualization = () => {
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
-    console.log("brushHandler", value);
-    if ( // Validates that the signal is in the expected format; allows us to convert unknown to ElementSelection
-      value === undefined 
-      || typeof value !== "object"
-      || Object.values(value as Object).some((v) => 
-            !Array.isArray(v) 
-            || !(v.length === 2) 
-            || typeof v[0] !== "number" 
-            || typeof v[1] !== "number")
-    ) return;
-
-    setElementSelection(value as ElementSelection);
+    if (!isNumericalAttQuery(value)) return;
+    const newSelection = numAttsToElemQuery(value as NumericalAttQuery);
+    setElementSelection(newSelection);
 
     if (timeout.current) {
       clearTimeout(timeout.current);
     }
     timeout.current = setTimeout(() => {
-      actions.setElementSelection(value as ElementSelection);
+      actions.setSelected(newSelection);
     }, 2000); // Delay for 2 seconds before saving the selection to the provenance state
   };
 
@@ -62,9 +56,9 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            // elementSelection should default to config.elementSelection (checked in the useState call above)
-            // but it's actually undefined here, so this is my fix :/
-            spec={generateVega(scatterplots, histograms, elementSelection ? undefined : config.elementSelection)}
+            spec={
+              generateVega(scatterplots, histograms, isElementSelection(elementSelection) ? elementSelection : undefined)
+            }
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}

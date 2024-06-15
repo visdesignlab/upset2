@@ -22,7 +22,7 @@ export const DefaultConfig: UpsetConfig = {
   },
   visibleSets: [],
   visibleAttributes: ['Degree', 'Deviation'],
-  bookmarkedIntersections: [],
+  bookmarks: [],
   collapsed: [],
   plots: {
     scatterplots: [],
