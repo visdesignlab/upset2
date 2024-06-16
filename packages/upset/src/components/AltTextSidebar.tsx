@@ -21,6 +21,7 @@ import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import '../index.css';
 import { HelpCircle } from './custom/HelpCircle';
 import { PlotInformation } from './custom/PlotInformation';
+import { UpsetActions } from '../provenance';
 
 type Props = {
   open: boolean;
@@ -42,7 +43,7 @@ const initialDrawerWidth = 450;
 * @returns {JSX.Element} The AltTextSidebar component.
 */
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   
   const currState = useRecoilValue(upsetConfigAtom);
 
@@ -80,10 +81,15 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   // Current alt text to display to the user
   const displayAltText: string | undefined = useMemo(() => {
+    if (textEditing) {
+      return useLong
+      ? userLongText ?? altText?.longDescription
+      : userShortText ?? altText?.shortDescription
+    }
     return useLong 
-    ? userLongText ?? altText?.longDescription 
-    : userShortText ?? altText?.shortDescription;
-  }, [useLong, userLongText, userShortText, altText]);
+    ? currState.useUserAlt ? userLongText : altText?.longDescription 
+    : currState.useUserAlt ? userShortText : altText?.shortDescription;
+  }, [useLong, userLongText, userShortText, altText, currState.useUserAlt]);
   
   const divider = <Divider
     css={css`
@@ -124,21 +130,17 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             <FormControlLabel
               style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
               sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="Manual Editing &nbsp;&nbsp;"
+              label="User Descriptions"
               control={
                 <Switch
                   size="small"
                   style={{marginRight: "10px"}}
-                  // !! converts to boolean
-                  checked={textEditing || !!userShortText || !!userLongText}
+                  checked={currState.useUserAlt || textEditing}
                   tabIndex={5}
                   onChange={(ev) => {
-                    setTextEditing(ev.target.checked);
+                    actions.setUseUserAltText(ev.target.checked);
                     if (!ev.target.checked) {
-                      setUserShortText(undefined);
-                      setUserLongText(undefined);
-                      if (currState.userAltText)
-                        actions.setUserAltText(undefined);
+                      setTextEditing(false);
                     }
                   }}
                 />
@@ -153,7 +155,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             <FormControlLabel
               style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
               sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="Long Description"
+              label="Long Description&nbsp;"
               control={
                 <Switch
                   size="small"
@@ -177,11 +179,20 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               style={{float: 'right'}} 
               onClick={() => {
                 setTextEditing(false);
+                actions.setUseUserAltText(true);
                 if (currState.userAltText?.shortDescription !== userShortText 
                     || currState.userAltText?.longDescription !== userLongText)  
-                  actions.setUserAltText({shortDescription: userShortText, longDescription: userLongText});
+                  actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
               }}
             >Save</Button>
+            <Button
+              color='warning'
+              style={{float: "right"}}
+              onClick={() => {
+                setUserLongText(altText?.longDescription);
+                setUserShortText(altText?.shortDescription);
+              }}
+            >Reset Descriptions</Button>
             <br />
             <TextField multiline fullWidth
               onChange={(e) => {useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}}

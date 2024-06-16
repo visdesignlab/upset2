@@ -309,6 +309,18 @@ const setUserAltTextAction = registry.register(
   }
 );
 
+/**
+ * Toggles whether the user alt text should be used
+ * @param {boolean} useUserAlt whether to use the user alttext
+ */
+const setUseUserAltTextAction = registry.register(
+  'set-use-user-alt-text',
+  (state: UpsetConfig, useUserAlt) => {
+    state.useUserAlt = useUserAlt;
+    return state;
+  }
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -368,6 +380,10 @@ export function getActions(provenance: UpsetProvenance) {
     setUserAltText: (altText: AltText | null) => provenance.apply(
       altText ? `Set user alt text` : "Cleared user alt text",
       setUserAltTextAction(altText)
+    ),
+    setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
+      useUserAlt ? "Enabled user alt text" : "Disabled user alt text",
+      setUseUserAltTextAction(useUserAlt),
     ),
   };
 }

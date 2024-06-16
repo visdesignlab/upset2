@@ -213,7 +213,8 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               placeholder={`eg: ${placeholderText.items}`}
             />
           </Box>
-        </Box>   
+        </Box>
+        <Typography>{generatePlotInformationText()}</Typography>
       </Box>
     )
   )
