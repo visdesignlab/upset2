@@ -217,7 +217,31 @@ export type Histogram = BasePlot & {
 
 export type Plot = Scatterplot | Histogram;
 
-export type Bookmark = { id: string; label: string; size: number } | ElementSelection;
+/**
+ * A bookmarked intersection or selection.
+ */
+export type Bookmark = { 
+  /**
+   * ID of the bookmark; should be unique
+   */
+  id: string; 
+  /**
+   * Display name of the bookmark
+   */
+  label: string;
+  /**
+   * The type of the bookmark; either an intersection or element query
+   */
+  type: 'intersection' | 'element';
+  /**
+   * The size of the bookmarked intersection; only valid for intersections
+   */ 
+  size?: number;
+  /**
+   * The parameters of the bookmark; only valid for element queries
+   */
+  selection?: NumericalAttQuery;
+};
 
 /**
  * Represents a selection of elements in the Element View.
@@ -229,24 +253,6 @@ export type Bookmark = { id: string; label: string; size: number } | ElementSele
  * it here, but that may lead to runtime errors.
  */
 export type NumericalAttQuery = {[attName: string] : [number, number]};
-
-/**
- * Wraps a RawElementSelection with an ID and display name for bookmarking and selecting
- */
-export type ElementSelection = {
-  /**
-   * ID of the selection; should be unique
-   */
-  id: string;
-  /**
-   * Display name of the selection
-   */
-  label: string;
-  /**
-   * Parameters of the selection
-   */
-  selection: NumericalAttQuery;
-}
 
 export type UpsetConfig = {
   plotInformation: PlotInformation;
@@ -274,8 +280,7 @@ export type UpsetConfig = {
   };
   allSets: Column[];
   /**
-   * The current selection query
-   * Can be an intersection or element query params
+   * The currently selected query
    */
   selected: Bookmark | null;
 };

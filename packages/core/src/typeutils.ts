@@ -1,4 +1,4 @@
-import { NumericalAttQuery, ElementSelection } from './types';
+import { Bookmark, NumericalAttQuery } from './types';
 
 /**
  * Validates that the given value is an ElementSelection.
@@ -13,24 +13,6 @@ export function isNumericalAttQuery(value: unknown): value is NumericalAttQuery 
           && v.length === 2
           && typeof v[0] === 'number'
           && typeof v[1] === 'number')
-  );
-}
-
-/**
- * Validates that the given value is an ElementSelection.
- * @param value The value to check.
- * @returns whether the value is an ElementSelection.
- */
-export function isElementSelection(value: unknown): value is ElementSelection {
-  return (
-    !!value
-    && typeof value === 'object'
-    && Object.hasOwn(value, 'id')
-    && typeof (value as {id: unknown}).id === 'string'
-    && Object.hasOwn(value, 'label')
-    && typeof (value as {label: unknown}).label === 'string'
-    && Object.hasOwn(value, 'selection')
-    && isNumericalAttQuery((value as {selection: unknown}).selection)
   );
 }
 
@@ -50,7 +32,7 @@ function hashString(str: string): number {
  * @param query The numerical attribute query.
  * @returns The element selection.
  */
-export function numAttsToElemQuery(query: NumericalAttQuery): ElementSelection {
+export function numAttsToBookmark(query: NumericalAttQuery): Bookmark {
   // hash the query to get a unique id
   let i = 1;
   for (const [key, value] of Object.entries(query)) {
@@ -60,6 +42,7 @@ export function numAttsToElemQuery(query: NumericalAttQuery): ElementSelection {
   return {
     id: i.toString(),
     label: `Atts: ${Object.keys(query).join(', ')}`,
+    type: 'element',
     selection: query,
   };
 }

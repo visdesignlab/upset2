@@ -11,9 +11,9 @@ import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
-import { NumericalAttQuery, isElementSelection } from '@visdesignlab/upset2-core';
+import { NumericalAttQuery } from '@visdesignlab/upset2-core';
 import { UpsetActions } from '../../provenance';
-import { numAttsToElemQuery, isNumericalAttQuery } from '@visdesignlab/upset2-core/src';
+import { isNumericalAttQuery, numAttsToBookmark } from '@visdesignlab/upset2-core/src';
 
 export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
@@ -25,7 +25,7 @@ export const ElementVisualization = () => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const config = useRecoilValue(upsetConfigAtom);
   const [elementSelection, setElementSelection] = 
-    useState<NumericalAttQuery | undefined>(isElementSelection(config.selected) ? config.selected.selection : undefined);
+    useState<NumericalAttQuery | undefined>(config.selected?.type === 'element' ? config.selected.selection : undefined);
   const timeout = useRef<number | null>(null);
   
   const onClose = () => setOpenAddPlot(false);
@@ -44,7 +44,7 @@ export const ElementVisualization = () => {
       clearTimeout(timeout.current);
     }
     timeout.current = setTimeout(() => {
-      actions.setSelected(numAttsToElemQuery(value));
+      actions.setSelected(numAttsToBookmark(value));
     }, 2000); // Delay for 2 seconds before saving the selection to the provenance state
   };
 

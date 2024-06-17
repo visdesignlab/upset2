@@ -1,5 +1,5 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { UpsetConfig, getRows } from '@visdesignlab/upset2-core';
+import { Bookmark, UpsetConfig, getRows } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
@@ -59,7 +59,18 @@ export const Body = ({ yOffset, data, config }: Props) => {
    * @returns A promise that resolves to the generated alt text.
    */
   async function generateAltText(): Promise<AltText> {
-    const state = provObject.provenance.getState();
+    let state = provObject.provenance.getState();
+
+    // TEMP fix for backwards compatability with alttext generator
+    let bookmarkedIntersections: Bookmark[] = [];
+    for (let b of state.bookmarks) {
+      if (b.type === "intersection") {
+        bookmarkedIntersections.push(b);
+      }
+    }
+    (state as UpsetConfig & {bookmarkedIntersections: Bookmark[]}).bookmarkedIntersections = bookmarkedIntersections;
+    // End temp fix- remove this when the alttext generator is updated to handle new config format
+
     const config = getAltTextConfig(state, data, getRows(data, state));
 
     if (config.firstAggregateBy !== "None") {

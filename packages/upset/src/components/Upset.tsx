@@ -1,6 +1,6 @@
 import { Box, ThemeProvider } from '@mui/material';
 import { UpsetConfig, DefaultConfig } from '@visdesignlab/upset2-core';
-import React, { FC, useMemo } from 'react';
+import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 
 import defaultTheme from '../utils/theme';
