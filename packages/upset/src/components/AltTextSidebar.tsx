@@ -69,19 +69,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
-    /**
-     * Generates & sets alttext
-     * @see https://stackoverflow.com/questions/37624144/is-there-a-way-to-short-circuit-async-await-flow
-     * @param {AbortSignal} signal
-     * @returns {Promise<void>}
-     */
-    async function generate({ signal }: {signal: AbortSignal}): Promise<void> {
+    async function generate(): Promise<void> {
       try {
         setAltText(await generateAltText());
         setTextGenErr(false);
-      } catch (e: any) {
-        if (e.name === 'AbortError') return;
-        const msg: string = e.message;
+      } catch (e) {
+        const msg: string = (e as Error).message;
         // We want the error message to display on the frontend
         setAltText({
           longDescription: msg,
@@ -92,9 +85,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       }
     }
 
-    const awaitingAltText = new AbortController();
-    generate({signal: awaitingAltText.signal});
-    return awaitingAltText.abort;
+    generate();
   }, [currState]);
 
   // this useEffect resets the plot information when the edit is toggled off
