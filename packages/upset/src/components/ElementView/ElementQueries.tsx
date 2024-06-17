@@ -5,30 +5,38 @@ import { Alert, Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { flattenedOnlyRows } from '@visdesignlab/upset2-core';
+import { Row, flattenedOnlyRows } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
-  bookmarkSelector,
-  currentSelectionSelector,
+  bookmarkedIntersectionSelector,
+  currentIntersectionSelector,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
-import { UpsetActions, UpsetProvenance } from '../../provenance';
 
 export const ElementQueries = () => {
-  const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
-  const selection = useRecoilValue(currentSelectionSelector);
+  const { provenance, actions } = useContext(ProvenanceContext);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const data = useRecoilValue(dataAtom);
   const rows = flattenedOnlyRows(data, provenance.getState());
-  const bookmarked = useRecoilValue(bookmarkSelector);
-  const selectionLabel = selection?.label || "";
+  const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll("~&~", " & ") || "";
+
+  /**
+   * Sets the currently selected intersection and fires
+   * a Trrack action to update the provenance graph.
+   * @param inter intersection to select
+   */
+  function setCurrentIntersection(inter: Row | null) {
+    actions.setSelected(inter);
+  }
 
   return (
     <>
-      {!selection && bookmarked.length === 0 && (
+      {!currentIntersection && bookmarked.length === 0 && (
         <Alert
           severity="info"
           variant="outlined"
@@ -50,36 +58,34 @@ export const ElementQueries = () => {
                 color: colorPallete[bookmark.id],
               },
               backgroundColor:
-                bookmark.id === selection?.id
+                bookmark.id === currentIntersection?.id
                   ? 'rgba(0,0,0,0.2)'
                   : 'default',
             })}
             key={bookmark.id}
-            aria-label={
-              `Bookmark ${bookmark.label}`
-            }
+            aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                if (selection?.id === bookmark.id) actions.setSelected(null);
-                else actions.setSelected(bookmark);
+                if (currentIntersection?.id === bookmark.id) setCurrentIntersection(null);
+                else setCurrentIntersection(rows[bookmark.id]);
               }
             }}
-            label={`${bookmark.label}`}
+            label={`${bookmark.label} - ${bookmark.size}`}
             icon={<SquareIcon fontSize={'1em' as any} />}
             deleteIcon={<StarIcon />}
             onClick={() => {
-              if (selection?.id === bookmark.id) actions.setSelected(null);
-              else actions.setSelected(bookmark);
+              if (currentIntersection?.id === bookmark.id) setCurrentIntersection(null);
+              else setCurrentIntersection(rows[bookmark.id]);
             }}
             onDelete={() => {
-              if (selection?.id === bookmark.id) {
-                actions.setSelected(null);
+              if (currentIntersection?.id === bookmark.id) {
+                setCurrentIntersection(null);
               }
-              actions.unBookmark(bookmark);
+              actions.unBookmarkIntersection(bookmark.id, bookmark.label, bookmark.size);
             }}
           />
         ))}
-        {selection && !bookmarked.find((b) => b.id === selection.id) && (
+        {currentIntersection && !bookmarked.find((b) => b.id === currentIntersection.id) && (
         <Chip
           sx={(theme) => ({
             margin: theme.spacing(0.5),
@@ -89,15 +95,23 @@ export const ElementQueries = () => {
             backgroundColor: 'rgba(0,0,0,0.2)',
           })}
           icon={<SquareIcon fontSize={'1em' as any} />}
-          aria-label={`Selection ${selectionLabel}`}
+          aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              actions.bookmark(selection);
+              actions.bookmarkIntersection(
+                currentIntersection.id,
+                currentIntersectionDisplayName,
+                currentIntersection.size,
+              );
             }
           }}
-          label={`${selectionLabel}`}
+          label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
           onDelete={() => {
-            actions.bookmark(selection);
+            actions.bookmarkIntersection(
+              currentIntersection.id,
+              currentIntersectionDisplayName,
+              currentIntersection.size,
+            );
           }}
           deleteIcon={<StarBorderIcon />}
         />

@@ -10,7 +10,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
-import { currentSelectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { elementSelector, intersectionCountSelector } from '../../atoms/elementsSelectors';
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
@@ -56,7 +56,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 /** @jsxImportSource @emotion/react */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
-  const currentIntersection = useRecoilValue(currentSelectionSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
   const intersectionCounter = useRecoilValue(
     intersectionCountSelector(currentIntersection?.id),
@@ -201,7 +201,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
                 downloadElementsAsCSV(
                   currentIntersectionElements,
                   columns,
-                  currentIntersection.label,
+                  currentIntersection.elementName,
                 );
               }
             }}

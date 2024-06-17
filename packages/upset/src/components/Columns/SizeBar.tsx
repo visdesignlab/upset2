@@ -2,7 +2,7 @@ import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { bookmarkedColorPalette, bookmarkSelector, currentSelectionSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';
@@ -27,8 +27,8 @@ const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
 export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
-  const currentIntersection = useRecoilValue(currentSelectionSelector);
-  const bookmarkedIntersections = useRecoilValue(bookmarkSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
 

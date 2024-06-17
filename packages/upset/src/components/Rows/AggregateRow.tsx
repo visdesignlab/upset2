@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { bookmarkSelector, currentSelectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
@@ -19,7 +19,6 @@ import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { countAggregateSelected } from './functions';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
 import { elementSelector } from '../../atoms/elementsSelectors';
-import { isNumericalAttQuery } from '@visdesignlab/upset2-core/src/typecheck';
 
 /** @jsxImportSource @emotion/react */
 /**
@@ -65,8 +64,8 @@ const secondLevelXOffset = 15;
 export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const currentIntersection = useRecoilValue(currentSelectionSelector);
-  const bookmarkedIntersections = useRecoilValue(bookmarkSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
   const config = useRecoilValue(upsetConfigAtom);
@@ -148,7 +147,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <SizeBar 
           row={aggregateRow} 
           size={aggregateRow.size} 
-          selected={countAggregateSelected(aggregateRow, isNumericalAttQuery(config.selected) ? config.selected ?? {} : {}, 
+          selected={countAggregateSelected(aggregateRow, config.elementSelection ?? {}, 
             (id: string) => {return useRecoilValue(elementSelector(id))}
           )} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />

@@ -6,7 +6,7 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { bookmarkSelector, currentSelectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -28,9 +28,9 @@ type Props = {
  */
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
-  const currentIntersection = useRecoilValue(currentSelectionSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const bookmarkedIntersections = useRecoilValue(bookmarkSelector);
+  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const config = useRecoilValue(upsetConfigAtom);
   const items = useRecoilValue(elementSelector(subset.id));
 

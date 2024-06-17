@@ -217,7 +217,7 @@ export type Histogram = BasePlot & {
 
 export type Plot = Scatterplot | Histogram;
 
-export type Bookmark = { id: string; label: string; size: number } | ElementSelection;
+export type Bookmark = { id: string; label: string; size: number }
 
 /**
  * Represents a selection of elements in the Element View.
@@ -228,25 +228,7 @@ export type Bookmark = { id: string; label: string; size: number } | ElementSele
  * the 'brush' signal in the Element View. TS will let you change
  * it here, but that may lead to runtime errors.
  */
-export type NumericalAttQuery = {[attName: string] : [number, number]};
-
-/**
- * Wraps a RawElementSelection with an ID and display name for bookmarking and selecting
- */
-export type ElementSelection = {
-  /**
-   * ID of the selection; should be unique
-   */
-  id: string;
-  /**
-   * Display name of the selection
-   */
-  label: string;
-  /**
-   * Parameters of the selection
-   */
-  selection: NumericalAttQuery;
-}
+export type ElementSelection = {[attName: string] : [number, number]};
 
 export type UpsetConfig = {
   plotInformation: PlotInformation;
@@ -266,18 +248,18 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
-  bookmarks: Bookmark[];
+  bookmarkedIntersections: Bookmark[];
   collapsed: string[];
   plots: {
     scatterplots: Scatterplot[];
     histograms: Histogram[];
   };
   allSets: Column[];
+  selected: Row | null;
   /**
-   * The current selection query
-   * Can be an intersection or element query params
+   * Selected elements (data points) in the Element View.
    */
-  selected: Bookmark | null;
+  elementSelection: ElementSelection;
 };
 
 export type AccessibleDataEntry = {

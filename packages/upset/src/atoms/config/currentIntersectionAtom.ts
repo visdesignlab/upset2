@@ -1,4 +1,4 @@
-import { Bookmark } from '@visdesignlab/upset2-core';
+import { Bookmark, Row } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
@@ -6,22 +6,22 @@ import { upsetConfigAtom } from './upsetConfigAtoms';
 
 
 /**
- * Represents the current selection,
+ * Represents the currently selected intersection,
  * which is tracked by & pulled from the upsetConfigAtom.
  * Defaults to undefined in some cases, which is equivalent to null,
  * ie no intersection is selected.
- * @returns {Bookmark | null | undefined} The currently selected intersection.
+ * @returns {Row | null | undefined} The currently selected intersection.
  */
-export const currentSelectionSelector = selector<Bookmark | null | undefined>({
+export const currentIntersectionSelector = selector<Row | null | undefined>({
   key: 'current-intersection',
   get: ({ get }) => get(upsetConfigAtom).selected,
   // No setter; this should be set by calling actions.setSelected(intersection)
 });
 
-export const bookmarkSelector = selector<Bookmark[]>({
+export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
   key: 'bookmarked-intersection',
   get: ({ get }) => {
-    const intersection = get(upsetConfigAtom).bookmarks;
+    const intersection = get(upsetConfigAtom).bookmarkedIntersections;
 
     return intersection;
   },
@@ -38,7 +38,7 @@ export const bookmarkedColorPalette = selector<{
   get: ({ get }) => {
     const colorPalette: { [i: string]: string } = {};
 
-    const bookmarks = get(bookmarkSelector);
+    const bookmarks = get(bookmarkedIntersectionSelector);
 
     [...bookmarks].forEach((inter, idx) => {
       colorPalette[inter.id] = queryColorPalette[idx] || '#000';

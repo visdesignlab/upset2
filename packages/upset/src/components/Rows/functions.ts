@@ -1,11 +1,11 @@
-import { Aggregate, BaseIntersection, RawElementSelection, Item } from "@visdesignlab/upset2-core";
+import { Aggregate, BaseIntersection, ElementSelection, Item } from "@visdesignlab/upset2-core";
 
 /**
  * Returns the number of selected items in the subset based on an element selection.
  * @param items     Items in the subset.
  * @param selection Parameters for the selection.
  */
-export function countSubsetSelected(items: Item[], selection: RawElementSelection): number {
+export function countSubsetSelected(items: Item[], selection: ElementSelection): number {
   let count = 0;
   for (const item of items) {
     for (const [key, value] of Object.entries(selection)) {
@@ -24,7 +24,7 @@ export function countSubsetSelected(items: Item[], selection: RawElementSelectio
  * @param selection The selection to use for counting.
  * @param getItems  Function to get items in a subset. The id param is the subset id.
  */
-export function countAggregateSelected(agg: Aggregate, selection: RawElementSelection, getItems: (id: string) => Item[]): number {
+export function countAggregateSelected(agg: Aggregate, selection: ElementSelection, getItems: (id: string) => Item[]): number {
   let total = 0;
   // Type cast isn't necessary here, but it's included for clarity.
   for (const [id, value] of Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate })) {
