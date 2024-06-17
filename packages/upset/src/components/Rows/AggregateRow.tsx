@@ -19,7 +19,7 @@ import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { countAggregateSelected } from './functions';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
 import { elementSelector } from '../../atoms/elementsSelectors';
-import { isNumericalAttQuery } from '@visdesignlab/upset2-core/src/typecheck';
+import { isNumericalAttQuery } from '@visdesignlab/upset2-core';
 
 /** @jsxImportSource @emotion/react */
 /**

@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import React, {
+import {
   createContext, FC, useEffect, useMemo,
 } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -24,6 +24,7 @@ import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
+import { AltText } from '../types';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -53,7 +54,7 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  generateAltText?: () => Promise<string>;
+  generateAltText?: () => Promise<AltText>;
 };
 
 export const Root: FC<Props> = ({
@@ -75,7 +76,7 @@ export const Root: FC<Props> = ({
   }, []);
 
   // Initialize Provenance and pass it setter to connect
-  const { provenance, actions } = useMemo(() => {
+  const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useMemo(() => {
     if (extProvenance) {
       const { provenance, actions } = extProvenance;
 

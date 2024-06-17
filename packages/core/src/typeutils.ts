@@ -1,4 +1,4 @@
-import { NumericalAttQuery, ElementSelection } from "./types";
+import { NumericalAttQuery, ElementSelection } from './types';
 
 /**
  * Validates that the given value is an ElementSelection.
@@ -8,12 +8,11 @@ import { NumericalAttQuery, ElementSelection } from "./types";
 export function isNumericalAttQuery(value: unknown): value is NumericalAttQuery {
   return (
     !!value
-    && typeof value === "object"
-    && Object.values(value).every((v) => 
-          Array.isArray(v) 
-          && v.length === 2 
-          && typeof v[0] === "number" 
-          && typeof v[1] === "number")
+    && typeof value === 'object'
+    && Object.values(value).every((v) => Array.isArray(v)
+          && v.length === 2
+          && typeof v[0] === 'number'
+          && typeof v[1] === 'number')
   );
 }
 
@@ -25,12 +24,12 @@ export function isNumericalAttQuery(value: unknown): value is NumericalAttQuery 
 export function isElementSelection(value: unknown): value is ElementSelection {
   return (
     !!value
-    && typeof value === "object"
-    && value.hasOwnProperty('id')
-    && typeof (value as {id: unknown}).id === "string"
-    && value.hasOwnProperty('label')
-    && typeof (value as {label: unknown}).label === "string"
-    && value.hasOwnProperty('selection')
+    && typeof value === 'object'
+    && Object.hasOwn(value, 'id')
+    && typeof (value as {id: unknown}).id === 'string'
+    && Object.hasOwn(value, 'label')
+    && typeof (value as {label: unknown}).label === 'string'
+    && Object.hasOwn(value, 'selection')
     && isNumericalAttQuery((value as {selection: unknown}).selection)
   );
 }
@@ -60,7 +59,7 @@ export function numAttsToElemQuery(query: NumericalAttQuery): ElementSelection {
   i = Math.round(Math.abs(i * 1e9));
   return {
     id: i.toString(),
-    label: `Atts: ${Object.keys(query).join(", ")}`,
-    selection: query
+    label: `Atts: ${Object.keys(query).join(', ')}`,
+    selection: query,
   };
 }

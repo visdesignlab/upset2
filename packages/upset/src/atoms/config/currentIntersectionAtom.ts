@@ -23,7 +23,8 @@ export const bookmarkSelector = selector<Bookmark[]>({
   get: ({ get }) => {
     const intersection = get(upsetConfigAtom).bookmarks;
 
-    return intersection;
+    // I don't know why get() returns undefined sometimes, but it does.
+    return intersection ?? [];
   },
 });
 

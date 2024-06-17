@@ -1,4 +1,4 @@
-import { ElementSelection, Histogram, Scatterplot } from '@visdesignlab/upset2-core';
+import { Histogram, NumericalAttQuery, Scatterplot } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
 /**
@@ -52,8 +52,8 @@ export function createScatterplotSpec(
  * @param selection Current brush selection
  * @returns The Vega-Lite spec for the histogram.
  */
-export function createScatterplotRow(specs: Scatterplot[], selection: ElementSelection | undefined): VisualizationSpec[] {
-  function convertSelection(s: Scatterplot, e: ElementSelection): ({ [key: string]: [number, number] } | undefined) {
+export function createScatterplotRow(specs: Scatterplot[], selection: NumericalAttQuery | undefined): VisualizationSpec[] {
+  function convertSelection(s: Scatterplot, e: NumericalAttQuery): ({ [key: string]: [number, number] } | undefined) {
     let val;
     if (e[s.x] && e[s.y]) {
       val = {
@@ -193,7 +193,7 @@ export function createHistogramSpec(
  * @param selection Current brush selection
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function createHistogramRow(histograms: Histogram[], selection: ElementSelection | undefined): VisualizationSpec[] {
+export function createHistogramRow(histograms: Histogram[], selection: NumericalAttQuery | undefined): VisualizationSpec[] {
   const PARAMS = [
     {
       name: 'brush',
@@ -327,7 +327,7 @@ export function createHistogramRow(histograms: Histogram[], selection: ElementSe
 export function generateVega(
   scatterplots: Scatterplot[],
   histograms: Histogram[],
-  selection? : ElementSelection
+  selection? : NumericalAttQuery
 ): VisualizationSpec {
   // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
   const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;

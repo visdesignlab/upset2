@@ -25,7 +25,7 @@ export const ElementVisualization = () => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const config = useRecoilValue(upsetConfigAtom);
   const [elementSelection, setElementSelection] = 
-    useState(isElementSelection(config.selected) ? config.selected : undefined);
+    useState<NumericalAttQuery | undefined>(isElementSelection(config.selected) ? config.selected.selection : undefined);
   const timeout = useRef<number | null>(null);
   
   const onClose = () => setOpenAddPlot(false);
@@ -38,14 +38,13 @@ export const ElementVisualization = () => {
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
     if (!isNumericalAttQuery(value)) return;
-    const newSelection = numAttsToElemQuery(value as NumericalAttQuery);
-    setElementSelection(newSelection);
+    setElementSelection(value);
 
     if (timeout.current) {
       clearTimeout(timeout.current);
     }
     timeout.current = setTimeout(() => {
-      actions.setSelected(newSelection);
+      actions.setSelected(numAttsToElemQuery(value));
     }, 2000); // Delay for 2 seconds before saving the selection to the provenance state
   };
 
@@ -57,7 +56,7 @@ export const ElementVisualization = () => {
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
             spec={
-              generateVega(scatterplots, histograms, isElementSelection(elementSelection) ? elementSelection : undefined)
+              generateVega(scatterplots, histograms, elementSelection)
             }
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
