@@ -217,7 +217,37 @@ export type Histogram = BasePlot & {
 
 export type Plot = Scatterplot | Histogram;
 
-export type Bookmark = { id: string; label: string; size: number }
+/**
+ * Base representation of a bookmarkable type
+ */
+export type Bookmark = {
+  /**
+   * The unique ID of the bookmark.
+   */
+  id: string;
+  /**
+   * The display name of the bookmark.
+   */
+  label: string;
+  /**
+   * Subtype of the bookmark; used to determine what fields are available at runtime
+   */
+  type: 'intersection' | 'elements';
+};
+
+/**
+ * A bookmarked intersection.
+ */
+export type BookmarkedIntersection = Bookmark & { 
+  /**
+   * The size of the bookmarked intersection.
+   */
+  size: number;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'intersection';
+}
 
 /**
  * Represents a selection of elements in the Element View.
@@ -229,6 +259,20 @@ export type Bookmark = { id: string; label: string; size: number }
  * it here, but that may lead to runtime errors.
  */
 export type ElementSelection = {[attName: string] : [number, number]};
+
+/**
+ * Represents a bookmarked element selection, created in the Element View.
+ */
+export type BookmarkedSelection = Bookmark & {
+  /**
+   * The selection parameters
+   */
+  selection: ElementSelection;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'elements';
+}
 
 export type UpsetConfig = {
   plotInformation: PlotInformation;
@@ -248,6 +292,11 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
+  /**
+   * Bookmarked selections.
+   * These can be intersections or element selections. 
+   * For backwards compatibility, this field name has not been changed to reflect new bookmark types
+   */
   bookmarkedIntersections: Bookmark[];
   collapsed: string[];
   plots: {
@@ -335,6 +384,42 @@ export function isRowAggregate(row: Row): row is Aggregate {
  */
 export function isRowSubset(row: Row): row is Subset {
   return row.type === 'Subset';
+}
+
+
+/**
+ * Checks if a bookmark is a BookmarkedIntersection.
+ * @param b - The bookmark to check.
+ * @returns True if the bookmark is a BookmarkedIntersection, false otherwise.
+ */
+export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersection {
+  return b.type === 'intersection';
+}
+
+
+/**
+ * Checks if a bookmark is a BookmarkedSelection.
+ * @param b - The bookmark to check.
+ * @returns True if the bookmark is a BookmarkedSelection, false otherwise.
+ */
+export function isBookmarkedSelection(b: Bookmark): b is BookmarkedSelection {
+  return b.type === 'elements';
+}
+
+/**
+ * Validates that the given value is an ElementSelection.
+ * @param value The value to check.
+ * @returns whether the value is an ElementSelection.
+ */
+export function isElementSelection(value: unknown): value is ElementSelection {
+  return (
+    !!value
+    && typeof value === 'object'
+    && Object.values(value).every((v) => Array.isArray(v)
+          && v.length === 2
+          && typeof v[0] === 'number'
+          && typeof v[1] === 'number')
+  );
 }
 
 /**

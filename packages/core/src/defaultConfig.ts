@@ -30,4 +30,5 @@ export const DefaultConfig: UpsetConfig = {
   },
   allSets: [],
   selected: null,
+  elementSelection: {},
 };

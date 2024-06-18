@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row, ElementSelection
+  AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row, ElementSelection,
+  Bookmark
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -345,8 +346,8 @@ export function getActions(provenance: UpsetProvenance) {
     removeAttribute: (attr: string) => provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
-    bookmarkIntersection: (id: string, label: string, size: number) => provenance.apply(`Bookmark ${label}`, bookmarkIntersectionAction({ id, label, size })),
-    unBookmarkIntersection: (id: string, label: string, size: number) => provenance.apply(`Unbookmark ${label}`, removeBookmarkIntersectionAction({ id, label, size })),
+    bookmarkIntersection: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, bookmarkIntersectionAction(b)),
+    unBookmarkIntersection: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkIntersectionAction(b)),
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
     removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
@@ -355,7 +356,7 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
-    setSelected: (intersection: Row) => provenance.apply(
+    setSelected: (intersection: Row | null) => provenance.apply(
       intersection ?
         `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
         'Deselect intersection',

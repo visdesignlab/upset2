@@ -21,9 +21,9 @@ export const currentIntersectionSelector = selector<Row | null | undefined>({
 export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
   key: 'bookmarked-intersection',
   get: ({ get }) => {
-    const intersection = get(upsetConfigAtom).bookmarkedIntersections;
+    const bookmarks = get(upsetConfigAtom).bookmarkedIntersections;
 
-    return intersection;
+    return bookmarks;
   },
 });
 

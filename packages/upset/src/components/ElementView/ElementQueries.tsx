@@ -5,7 +5,7 @@ import { Alert, Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { Row, flattenedOnlyRows } from '@visdesignlab/upset2-core';
+import { BookmarkedIntersection, Row, flattenedOnlyRows, isBookmarkedIntersection } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
   bookmarkedIntersectionSelector,
@@ -14,9 +14,10 @@ import {
 } from '../../atoms/config/currentIntersectionAtom';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
+import { UpsetActions, UpsetProvenance } from '../../provenance';
 
 export const ElementQueries = () => {
-  const { provenance, actions } = useContext(ProvenanceContext);
+  const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
@@ -63,14 +64,18 @@ export const ElementQueries = () => {
                   : 'default',
             })}
             key={bookmark.id}
-            aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
+            aria-label={`Bookmarked intersection ${bookmark.label}` + 
+              (isBookmarkedIntersection(bookmark) ? `, size ${bookmark.size}` : '')
+            }
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 if (currentIntersection?.id === bookmark.id) setCurrentIntersection(null);
                 else setCurrentIntersection(rows[bookmark.id]);
               }
             }}
-            label={`${bookmark.label} - ${bookmark.size}`}
+            label={isBookmarkedIntersection(bookmark)
+              ? `${bookmark.label} - ${bookmark.size}` : `${bookmark.label}`
+            }
             icon={<SquareIcon fontSize={'1em' as any} />}
             deleteIcon={<StarIcon />}
             onClick={() => {
@@ -81,7 +86,7 @@ export const ElementQueries = () => {
               if (currentIntersection?.id === bookmark.id) {
                 setCurrentIntersection(null);
               }
-              actions.unBookmarkIntersection(bookmark.id, bookmark.label, bookmark.size);
+              actions.unBookmarkIntersection({id: bookmark.id, label: bookmark.label, type: bookmark.type});
             }}
           />
         ))}
@@ -98,20 +103,22 @@ export const ElementQueries = () => {
           aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
-              actions.bookmarkIntersection(
-                currentIntersection.id,
-                currentIntersectionDisplayName,
-                currentIntersection.size,
-              );
+              actions.bookmarkIntersection<BookmarkedIntersection>({
+                id: currentIntersection.id,
+                label: currentIntersectionDisplayName,
+                size: currentIntersection.size,
+                type: 'intersection'
+            });
             }
           }}
           label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
           onDelete={() => {
-            actions.bookmarkIntersection(
-              currentIntersection.id,
-              currentIntersectionDisplayName,
-              currentIntersection.size,
-            );
+            actions.bookmarkIntersection<BookmarkedIntersection>({
+              id: currentIntersection.id,
+              label: currentIntersectionDisplayName,
+              size: currentIntersection.size,
+              type: 'intersection',
+          });
           }}
           deleteIcon={<StarBorderIcon />}
         />
