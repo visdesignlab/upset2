@@ -10,8 +10,9 @@ import { elementItemMapSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
-import { ElementSelection } from '@visdesignlab/upset2-core';
+import { ElementSelection, isElementSelection } from '@visdesignlab/upset2-core';
 import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
+import { UpsetActions } from '../../provenance';
 
 export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
@@ -20,7 +21,7 @@ export const ElementVisualization = () => {
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const config = useRecoilValue(upsetConfigAtom);
   const [elementSelection, setElementSelection] = useState<ElementSelection>(config.elementSelection);
   const timeout = useRef<number | null>(null);
@@ -34,24 +35,15 @@ export const ElementVisualization = () => {
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
-    console.log("brushHandler", value);
-    if ( // Validates that the signal is in the expected format; allows us to convert unknown to ElementSelection
-      value === undefined 
-      || typeof value !== "object"
-      || Object.values(value as Object).some((v) => 
-            !Array.isArray(v) 
-            || !(v.length === 2) 
-            || typeof v[0] !== "number" 
-            || typeof v[1] !== "number")
-    ) return;
+    if (!isElementSelection(value)) return;
 
-    setElementSelection(value as ElementSelection);
+    setElementSelection(value);
 
     if (timeout.current) {
       clearTimeout(timeout.current);
     }
     timeout.current = setTimeout(() => {
-      actions.setElementSelection(value as ElementSelection);
+      actions.setElementSelection(value);
     }, 2000); // Delay for 2 seconds before saving the selection to the provenance state
   };
 
