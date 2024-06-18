@@ -1,8 +1,8 @@
 import { CoreUpsetData, process } from '@visdesignlab/upset2-core';
 import { atom, selector } from 'recoil';
 
-import { api } from './authAtoms';
 import { queryParamAtom } from './queryParamAtom';
+import { getColumnTypes, getTable } from '../api/data';
 
 export const dataSelector = selector<CoreUpsetData | null>({
   key: 'upset-data',
@@ -14,15 +14,13 @@ export const dataSelector = selector<CoreUpsetData | null>({
     let rows;
     try {
       rows = (
-        await api.table(workspace, table, {
-          limit: Number.MAX_SAFE_INTEGER,
-        })
+        await getTable(workspace, table)
       ).results;
     } catch (e) {
       return null;
     }
 
-    const annotations = await api.columnTypes(workspace, table);
+    const annotations = await getColumnTypes(workspace, table);
     
     return process(rows as any, { columns: annotations } as any);
   },
