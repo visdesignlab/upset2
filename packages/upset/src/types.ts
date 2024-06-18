@@ -133,6 +133,6 @@ export interface UpsetProps {
   /**
   * Generates alternative text for the Upset component.
   */
-  generateAltText?: () => Promise<string>;
+  generateAltText?: () => Promise<AltText>;
 }
 
