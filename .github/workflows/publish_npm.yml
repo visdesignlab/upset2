@@ -20,6 +20,6 @@ jobs:
         id: get_tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
       - name: Change directory and publish
-        run: cd packages/upset && npm publish --tag ${{ steps.get_tag.outputs.TAG }}
+        run: cd packages/upset && npm publish --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
