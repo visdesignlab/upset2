@@ -9,10 +9,11 @@ import { useContext, useEffect } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
-import { api } from '../atoms/authAtoms';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
 import { loadingAtom } from '../atoms/loadingAtom';
 import { Backdrop, CircularProgress } from '@mui/material';
+import { updateMultinetSession } from '../api/session';
+import { generateAltText } from '../api/generateAltText';
 
 type Props = {
   yOffset: number;
@@ -20,7 +21,7 @@ type Props = {
   config?: UpsetConfig;
 };
 
-export const Body = ({ yOffset, data, config }: Props) => {
+export const Body = ({ data, config }: Props) => {
   const { workspace, table, sessionId } = useRecoilValue(queryParamAtom);
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
@@ -46,7 +47,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
 
   useEffect(() => {
     provObject.provenance.currentChange(() => {
-      api.updateSession(workspace || '', parseInt(sessionId || ''), 'table', provObject.provenance.exportObject());
+      updateMultinetSession(workspace || '', sessionId || '', provObject.provenance.exportObject());
     })
   }, [provObject.provenance, sessionId, workspace]);
 
@@ -58,7 +59,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
    * @throws Error with descriptive message if an error occurs while generating the alttxt
    * @returns A promise that resolves to the generated alt text.
    */
-  async function generateAltText(): Promise<AltText> {
+  async function getAltText(): Promise<AltText> {
     const state = provObject.provenance.getState();
     const config = getAltTextConfig(state, data, getRows(data, state));
 
@@ -72,7 +73,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
 
     let response;
     try {
-      response = await api.generateAltText(true, config);
+      response = await generateAltText(config);
     } catch (e: any) {
       if (e.response.status === 500) {
         throw Error("Server error while generating alt text. Please try again later. If the issue persists, please contact an UpSet developer at vdl-faculty@sci.utah.edu.");
@@ -106,14 +107,12 @@ export const Body = ({ yOffset, data, config }: Props) => {
           </Backdrop>
           <Upset
             data={data}
-            loadAttributes={3}
-            yOffset={yOffset === -1 ? 0 : yOffset}
             extProvenance={provObject}
             config={config}
             provVis={provVis}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
-            generateAltText={generateAltText}
+            generateAltText={getAltText}
           />
         </div>
       }
