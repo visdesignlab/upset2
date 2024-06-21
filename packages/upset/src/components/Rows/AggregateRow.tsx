@@ -17,7 +17,7 @@ import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { countAggregateSelected } from './functions';
-import { elementSelectionSelector, elementSelector } from '../../atoms/elementsSelectors';
+import { configElementsSelector, elementSelector } from '../../atoms/elementsSelectors';
 
 /** @jsxImportSource @emotion/react */
 /**
@@ -67,7 +67,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
-  const elementSelection = useRecoilValue(elementSelectionSelector);
+  const elementSelection = useRecoilValue(configElementsSelector);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {

@@ -89,8 +89,8 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
  * Gets the current selection of elements
  * @returns The current selection of elements
  */
-export const elementSelectionSelector = selector<ElementSelection>({
-  key: 'element-selection',
+export const configElementsSelector = selector<ElementSelection>({
+  key: 'config-element-selection',
   get: ({ get }) => {
     const state = get(upsetConfigAtom);
     return state.elementSelection;
