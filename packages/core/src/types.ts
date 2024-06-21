@@ -423,6 +423,33 @@ export function isElementSelection(value: unknown): value is ElementSelection {
 }
 
 /**
+ * Checks if two element selections are equal
+ * @param a The first element selection
+ * @param b The second element selection
+ * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
+ * @returns Whether a and b are equal
+ */
+export function elementSelectionsEqual(a: ElementSelection, b: ElementSelection, decimalPlaces = 4): boolean {
+  const keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+
+  const round = 10 ** decimalPlaces;
+
+  function prep(num: number): number {
+    return Math.round(num * round);
+  }
+
+  for (const key of keys) {
+    if (!b.hasOwnProperty(key)) return false;
+    if (prep(a[key][0]) !== prep(b[key][0])) return false;
+    if (prep(a[key][1]) !== prep(b[key][1])) return false;
+  }
+
+  return true;
+
+}
+
+/**
  * Calculates the degree of set membership based on the provided membership object.
  * The degree of set membership is the number of sets in which the subset is comprised of.
  *

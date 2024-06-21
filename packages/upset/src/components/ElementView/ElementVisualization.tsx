@@ -9,7 +9,7 @@ import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plot
 import { elementItemMapSelector, configElementsSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
-import { isElementSelection } from '@visdesignlab/upset2-core';
+import { elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
 import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -51,7 +51,9 @@ export const ElementVisualization = () => {
       // Necessary to make <div> focusable so it can receive focus events
       tabIndex={-1}
       // Since we now have focus whenever a plot is clicked, this will always fire when clicking off
-      onBlur={() => {actions.setElementSelection(currentSelection)}}
+      onBlur={() => {
+        if (!elementSelectionsEqual(currentSelection, savedSelection)) actions.setElementSelection(currentSelection);
+      }}
     >
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
