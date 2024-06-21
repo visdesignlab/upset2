@@ -9,7 +9,7 @@ import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plot
 import { elementItemMapSelector, configElementsSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
-import { elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
+import { elementSelectionToBookmark, elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
 import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -38,7 +38,7 @@ export const ElementVisualization = () => {
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
-    setCurrentSelection(value);
+    setCurrentSelection(elementSelectionToBookmark(value));
   };
 
   return (
@@ -52,7 +52,8 @@ export const ElementVisualization = () => {
       tabIndex={-1}
       // Since we now have focus whenever a plot is clicked, this will always fire when clicking off
       onBlur={() => {
-        if (!elementSelectionsEqual(currentSelection, savedSelection)) actions.setElementSelection(currentSelection);
+        if (!elementSelectionsEqual(currentSelection?.selection, savedSelection?.selection)) 
+          actions.setElementSelection(currentSelection);
       }}
     >
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
@@ -60,7 +61,7 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms, savedSelection)}
+            spec={generateVega(scatterplots, histograms, savedSelection?.selection)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}

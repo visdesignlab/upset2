@@ -1,3 +1,5 @@
+import { hashString } from "./utils";
+
 export type ColumnName = string;
 
 export type Column = {
@@ -308,7 +310,7 @@ export type UpsetConfig = {
   /**
    * Selected elements (data points) in the Element View.
    */
-  elementSelection: ElementSelection;
+  elementSelection: BookmarkedSelection | null;
 };
 
 export type AccessibleDataEntry = {
@@ -424,17 +426,23 @@ export function isElementSelection(value: unknown): value is ElementSelection {
 
 /**
  * Checks if two element selections are equal
+ * {} is considered == to undefined 
  * @param a The first element selection
  * @param b The second element selection
  * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
  * @returns Whether a and b are equal
  */
-export function elementSelectionsEqual(a: ElementSelection, b: ElementSelection, decimalPlaces = 4): boolean {
+export function elementSelectionsEqual(a: ElementSelection | undefined, b: ElementSelection | undefined, decimalPlaces = 4): boolean {
+  // We want undefined == {}
+  if (!a || Object.keys(a).length == 0) {
+    return (!b || Object.keys(b).length == 0);
+  }
+  if (!a || !b) return false;
+  
   const keys = Object.keys(a);
   if (keys.length !== Object.keys(b).length) return false;
 
   const round = 10 ** decimalPlaces;
-
   function prep(num: number): number {
     return Math.round(num * round);
   }
@@ -447,6 +455,28 @@ export function elementSelectionsEqual(a: ElementSelection, b: ElementSelection,
 
   return true;
 
+}
+
+/**
+ * Converts an element selection to a bookmark.
+ * Generates the ID by hashing the selection and 
+ * labels the bookmark with the selection attributes.
+ * @param selection The numerical attribute query.
+ * @returns The element selection.
+ */
+export function elementSelectionToBookmark(selection: ElementSelection): BookmarkedSelection {
+  // hash the query to get a unique id
+  let i = 1;
+  for (const [key, value] of Object.entries(selection)) {
+    i *= hashString(key) * value[0] * value[1];
+  }
+  i = Math.round(Math.abs(i * 1e9));
+  return {
+    id: i.toString(),
+    label: `Atts: ${Object.keys(selection).join(', ')}`,
+    type: 'elements',
+    selection: selection,
+  };
 }
 
 /**

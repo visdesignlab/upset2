@@ -5,7 +5,8 @@ import { Aggregate, BaseIntersection, ElementSelection, Item } from "@visdesignl
  * @param items     Items in the subset.
  * @param selection Parameters for the selection.
  */
-export function countSubsetSelected(items: Item[], selection: ElementSelection): number {
+export function countSubsetSelected(items: Item[], selection: ElementSelection | undefined): number {
+  if (!selection) return 0;
   let count = 0;
   for (const item of items) {
     for (const [key, value] of Object.entries(selection)) {
@@ -24,7 +25,7 @@ export function countSubsetSelected(items: Item[], selection: ElementSelection):
  * @param selection The selection to use for counting.
  * @param getItems  Function to get items in a subset. The id param is the subset id.
  */
-export function countAggregateSelected(agg: Aggregate, selection: ElementSelection, getItems: (id: string) => Item[]): number {
+export function countAggregateSelected(agg: Aggregate, selection: ElementSelection | undefined, getItems: (id: string) => Item[]): number {
   let total = 0;
   // Type cast isn't necessary here, but it's included for clarity.
   for (const [id, value] of Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate })) {
