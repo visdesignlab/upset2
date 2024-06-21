@@ -54,7 +54,7 @@ export function createScatterplotSpec(
  */
 export function createScatterplotRow(specs: Scatterplot[], selection: ElementSelection | undefined): VisualizationSpec[] {
   function convertSelection(s: Scatterplot, e: ElementSelection): ({ [key: string]: [number, number] } | undefined) {
-    let val;
+    let val: ({ [key: string]: [number, number] } | undefined);
     if (e[s.x] && e[s.y]) {
       val = {
         x: e[s.x],
@@ -63,13 +63,14 @@ export function createScatterplotRow(specs: Scatterplot[], selection: ElementSel
     } else if (e[s.x]) {
       val = {
         x: e[s.x],
+        y: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
       }
     } else if (e[s.y]) {
       val = {
         y: e[s.y],
+        x: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
       }
     } else val = undefined;
-    console.log(val);
     return val;
   }
 
@@ -86,7 +87,7 @@ export function createScatterplotRow(specs: Scatterplot[], selection: ElementSel
           type: 'interval',
           clear: 'mousedown',
         },
-        value: selection ? convertSelection(s, selection) : undefined,
+        ...(selection && {value: convertSelection(s, selection)}),
       },
     ],
     encoding: {
@@ -202,7 +203,7 @@ export function createHistogramRow(histograms: Histogram[], selection: ElementSe
         encodings: ['x'],
         clear: 'mousedown',
       },
-      value: selection,
+      ...(selection && {value: selection}),
     }
   ];
 
