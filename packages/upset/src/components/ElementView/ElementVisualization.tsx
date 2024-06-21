@@ -2,15 +2,16 @@ import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import { useContext, useRef, useState } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { bookmarkedIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { elementItemMapSelector, elementSelectionSelector } from '../../atoms/elementsSelectors';
+import { elementItemMapSelector, configElementsSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
-import { ProvenanceContext } from '../Root';
 import { isElementSelection } from '@visdesignlab/upset2-core';
+import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
+import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
 export const ElementVisualization = () => {
@@ -20,10 +21,13 @@ export const ElementVisualization = () => {
   const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const savedSelection = useRecoilValue(elementSelectionSelector);
-  const timeout = useRef<number | null>(null);
-  
+  const savedSelection = useRecoilValue(configElementsSelector);
+  // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
+  const [currentSelection, setCurrentSelection] = useRecoilState(elementSelectionAtom);
+  const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
+  // Necessary to allow functions to be called on the <div> element itself
+  const thisComponent = useRef<HTMLDivElement>(null);
+
   const onClose = () => setOpenAddPlot(false);
 
   /**
@@ -34,17 +38,21 @@ export const ElementVisualization = () => {
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
-
-    if (timeout.current) {
-      clearTimeout(timeout.current);
-    }
-    timeout.current = setTimeout(() => {
-      actions.setElementSelection(value);
-    }, 2000); // Delay for 2 seconds before saving the selection to the provenance state
+    setCurrentSelection(value);
   };
 
   return (
-    <Box>
+    <Box
+      // These attributes facilitate saving the current selection when the user clicks outside the plot.
+      // Necessary to give the <div> focus; focus doesn't bubble up from the VegaLite component but click does
+      onClick={() => {thisComponent.current?.focus()}}
+      // Necessary to allow us to focus the <div> programmatically
+      ref={thisComponent}
+      // Necessary to make <div> focusable so it can receive focus events
+      tabIndex={-1}
+      // Since we now have focus whenever a plot is clicked, this will always fire when clicking off
+      onBlur={() => {actions.setElementSelection(currentSelection)}}
+    >
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{ overflowX: 'auto' }}>

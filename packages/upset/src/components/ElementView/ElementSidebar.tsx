@@ -6,7 +6,7 @@ import {
   Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
@@ -15,6 +15,9 @@ import { elementSelector, intersectionCountSelector } from '../../atoms/elements
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
+import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
+import { UpsetActions } from '../../provenance';
+import { ProvenanceContext } from '../Root';
 
 type Props = {
   open: boolean,
@@ -68,6 +71,9 @@ export const ElementSidebar = ({ open, close }: Props) => {
   const columns = useRecoilValue(columnsAtom);
 
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
+
+  const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const currentSelection = useRecoilValue(elementSelectionAtom);
 
   useEffect(() => {
     setHideElementSidebar(!open);
@@ -162,6 +168,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         <IconButton
           onClick={() => {
             setHideElementSidebar(true);
+            actions.setElementSelection(currentSelection);
             close();
           }}
           aria-label="Close the sidebar"
