@@ -1,5 +1,5 @@
-import { Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
-import { selectorFamily } from 'recoil';
+import { ElementSelection, Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
+import { selector, selectorFamily } from 'recoil';
 import { bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
@@ -82,5 +82,17 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
     });
 
     return items;
+  },
+});
+
+/**
+ * Gets the current selection of elements
+ * @returns The current selection of elements
+ */
+export const elementSelectionSelector = selector<ElementSelection>({
+  key: 'element-selection',
+  get: ({ get }) => {
+    const state = get(upsetConfigAtom);
+    return state.elementSelection;
   },
 });

@@ -6,12 +6,11 @@ import { useRecoilValue } from 'recoil';
 
 import { bookmarkedIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { elementItemMapSelector } from '../../atoms/elementsSelectors';
+import { elementItemMapSelector, elementSelectionSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
-import { ElementSelection, isElementSelection } from '@visdesignlab/upset2-core';
-import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
+import { isElementSelection } from '@visdesignlab/upset2-core';
 import { UpsetActions } from '../../provenance';
 
 export const ElementVisualization = () => {
@@ -22,8 +21,7 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const config = useRecoilValue(upsetConfigAtom);
-  const [elementSelection, setElementSelection] = useState<ElementSelection>(config.elementSelection);
+  const savedSelection = useRecoilValue(elementSelectionSelector);
   const timeout = useRef<number | null>(null);
   
   const onClose = () => setOpenAddPlot(false);
@@ -36,8 +34,6 @@ export const ElementVisualization = () => {
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
-
-    setElementSelection(value);
 
     if (timeout.current) {
       clearTimeout(timeout.current);
@@ -54,9 +50,7 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            // elementSelection should default to config.elementSelection (checked in the useState call above)
-            // but it's actually undefined here, so this is my fix :/
-            spec={generateVega(scatterplots, histograms, elementSelection ? undefined : config.elementSelection)}
+            spec={generateVega(scatterplots, histograms, savedSelection)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}

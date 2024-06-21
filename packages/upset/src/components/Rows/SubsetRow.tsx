@@ -15,8 +15,7 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
 import { countSubsetSelected } from './functions';
-import { upsetConfigAtom } from '../../atoms/config/upsetConfigAtoms';
-import { elementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionSelector, elementSelector } from '../../atoms/elementsSelectors';
 
 type Props = {
   subset: Subset;
@@ -31,7 +30,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
-  const config = useRecoilValue(upsetConfigAtom);
+  const selectedElements = useRecoilValue(elementSelectionSelector);
   const items = useRecoilValue(elementSelector(subset.id));
 
   // Use trrack action for current intersection
@@ -97,7 +96,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       <Matrix sets={visibleSets} subset={subset} />
       {bookmarkedIntersections.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />}
-      <SizeBar size={subset.size} row={subset} selected={countSubsetSelected(items, config.elementSelection ?? {})} />
+      <SizeBar size={subset.size} row={subset} selected={countSubsetSelected(items, selectedElements ?? {})} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );
