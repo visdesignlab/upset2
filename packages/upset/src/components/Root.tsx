@@ -24,6 +24,7 @@ import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
+import { AltText } from '../types';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -53,7 +54,7 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  generateAltText?: () => Promise<string>;
+  generateAltText?: () => Promise<AltText>;
 };
 
 export const Root: FC<Props> = ({
