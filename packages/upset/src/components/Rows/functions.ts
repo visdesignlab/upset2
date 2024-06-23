@@ -9,13 +9,10 @@ export function countSubsetSelected(items: Item[], selection: ElementSelection |
   if (!selection) return 0;
   let count = 0;
   for (const item of items) {
-    for (const [key, value] of Object.entries(selection)) {
-      if (typeof item[key] === 'number' &&
+    if (Object.entries(selection).every(([key, value]) => {
+      return typeof item[key] === 'number' &&
         item[key] as number >= value[0] && item[key] as number <= value[1]
-      ) {
-        count++;
-      }
-    }
+    })) count++;
   } return count;
 }
 
