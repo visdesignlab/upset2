@@ -6,7 +6,7 @@ import { Aggregate, BaseIntersection, ElementSelection, Item } from "@visdesignl
  * @param selection Parameters for the selection.
  */
 export function countSubsetSelected(items: Item[], selection: ElementSelection | undefined): number {
-  if (!selection) return 0;
+  if (!selection || Object.keys(selection).length === 0) return 0;
   let count = 0;
   for (const item of items) {
     if (Object.entries(selection).every(([key, value]) => {
