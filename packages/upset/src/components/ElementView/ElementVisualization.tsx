@@ -25,6 +25,7 @@ export const ElementVisualization = () => {
   // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
   const [currentSelection, setCurrentSelection] = useRecoilState(elementSelectionAtom);
   const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const timeout = useRef<number | null>(null);
   // Necessary to allow functions to be called on the <div> element itself
   const thisComponent = useRef<HTMLDivElement>(null);
 
@@ -38,7 +39,12 @@ export const ElementVisualization = () => {
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
-    setCurrentSelection(elementSelectionToBookmark(value));
+
+    if (timeout.current)
+      clearTimeout(timeout.current);
+    // We debounce the update to prevent re-rendering the size bars every time the handler fires
+    timeout.current = setTimeout(() =>
+      setCurrentSelection(elementSelectionToBookmark(value)), 50);
   };
 
   return (

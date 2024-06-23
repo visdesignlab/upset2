@@ -15,7 +15,8 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
 import { countSubsetSelected } from './functions';
-import { configElementsSelector, elementSelector } from '../../atoms/elementsSelectors';
+import { elementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 
 type Props = {
   subset: Subset;
@@ -30,7 +31,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
-  const selectedElements = useRecoilValue(configElementsSelector);
+  const selectedElements = useRecoilValue(elementSelectionAtom);
   const items = useRecoilValue(elementSelector(subset.id));
 
   // Use trrack action for current intersection
