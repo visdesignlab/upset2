@@ -2,7 +2,7 @@ import { Bookmark, Row } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
-import { upsetConfigAtom } from './upsetConfigAtoms';
+import { elementSelectionAtom, upsetConfigAtom } from './upsetConfigAtoms';
 
 
 /**
@@ -63,4 +63,24 @@ export const nextColorSelector = selector<string>({
     }
     return queryColorPalette[currentLength];
   },
+});
+
+/**
+ * The color to use for the current element selection stored in the elementSelectionAtom
+ */
+export const elementColorSelector = selector<string>({
+  key: 'element-selection-atom-color',
+  get: ({ get }) => {
+    const selection = get(elementSelectionAtom);
+    const bookmarkColors = get(bookmarkedColorPalette);
+    const palette = get(bookmarkedColorPalette);
+
+    if (Object.keys(bookmarkColors).includes(selection?.id ?? '')) {
+      return bookmarkColors[selection?.id ?? ''];
+    }
+
+    return get(currentIntersectionSelector) 
+      ? queryColorPalette[Object.values(palette).length + 1] 
+      : get(nextColorSelector);
+  }
 });
