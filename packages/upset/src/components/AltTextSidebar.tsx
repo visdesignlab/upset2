@@ -101,6 +101,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   
   return (
     <Drawer
+      aria-hidden={!open}
       anchor="right"
       open={open}
       onClose={close}
