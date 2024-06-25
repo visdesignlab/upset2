@@ -45,10 +45,9 @@ const Header = ({ data }: { data: any }) => {
 
   /** 
    * Number of tab indices in the alttext sidebar; used to calculate the tab index of the other buttons
-   * because alttext sidebar should get priority when open. Currently 3 because there are 3 tab indices
-   * in the sidebar, but this should be updated if more tab indices are added.
+   * because alttext sidebar should get priority when open. This should be updated if more tab indices are added.
    */
-  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 4 : 0);
+  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 10 : 0);
 
   const handleImportModalClose = () => {
     setShowImportModal(false);

@@ -11,22 +11,28 @@ import { useRecoilValue } from 'recoil';
 import { useContext, useState } from 'react';
 import { ProvenanceContext } from '../Root';
 
-
-
 /**
- * Properties for the PlotInformationEditor component
- * @param onSave Callback to run when saving the plot, in addition to saving the plot information
- * @param divider Divider component to use between the title and the caption
- * @param tabIndex Tab index for the plot information editor
+ * Props for the PlotInformation component.
  */
 type Props = {
+  /**
+   * Callback function triggered when the save button is clicked.
+   * @returns void
+   */
   onSave?: () => void;
+  /**
+   * The JSX element to be used as a divider.
+   */
   divider: JSX.Element;
-  tabIndex?: number;
+  /**
+   * The starting tab index for the component. Uses up to 5 additional indices
+   */
+  tabIndex: number;
 }
 
 /**
- * Display & editor for plot information
+ * Display & editor for plot information.
+ * Uses up to 5 tab indices, starting from @parm tabIndex
  * @param Props @see @type Props
  */
 export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
@@ -120,9 +126,11 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
       >
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
           {plotInformation.title ?? "[Title]"}
-          <Icon style={{float: 'right'}}>
-            <EditIcon />
-          </Icon>
+          <Button aria-label='Edit Plot Information' style={{float: 'right', position: 'relative', bottom: '7px'}} tabIndex={tabIndex + 1}>
+            <Icon style={{overflow: 'visible'}}>
+              <EditIcon />
+            </Icon>
+          </Button>
         </Typography>
         {divider}
         <Typography>{plotInformation.caption ?? "[Caption]"}</Typography>
@@ -132,12 +140,15 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
     ) : (
       <Box tabIndex={tabIndex}>
         <Button 
+          tabIndex={tabIndex + 6} 
           color="primary" 
           style={{float: 'right'}} 
           onClick={commitEdits}
         >Save</Button>
         <Box>
-          <TextField fullWidth 
+          <TextField
+            tabIndex={tabIndex + 1} 
+            fullWidth 
             variant='standard'
             style={{marginBottom: "5px"}}
             value={plotInformation.title}
@@ -152,7 +163,9 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
                 fontWeight: "inherit",
                 border: "none",
             }}}/>
-          <TextField fullWidth multiline
+          <TextField 
+            tabIndex={tabIndex + 2}
+            fullWidth multiline
             inputProps={{
               rows: 3,
               // We need to override the default overflow prop (hidden), then still deny x scrolling
@@ -169,6 +182,7 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               Dataset Description:
             </Typography>
             <TextField
+              tabIndex={tabIndex + 3}
               onChange={(e) => setPlotInformation({ ...plotInformation, description: e.target.value })}
               sx={{ width: 100 - fieldTitleWidth + '%' }}
               multiline
@@ -186,6 +200,7 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               Sets:
             </Typography>
             <TextField
+              tabIndex={tabIndex + 4}
               onChange={(e) => setPlotInformation({ ...plotInformation, sets: e.target.value })}
               sx={{ width: 100 - fieldTitleWidth + '%' }}
               multiline
@@ -203,6 +218,7 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               Items:
             </Typography>
             <TextField
+              tabIndex={tabIndex + 5}
               onChange={(e) => setPlotInformation({ ...plotInformation, items: e.target.value })}
               sx={{ width: 100 - fieldTitleWidth + '%' }}
               multiline
