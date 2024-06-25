@@ -15,12 +15,11 @@ import { loadingAtom } from '../atoms/loadingAtom';
 import { Backdrop, CircularProgress } from '@mui/material';
 
 type Props = {
-  yOffset: number;
   data: any;
   config?: UpsetConfig;
 };
 
-export const Body = ({ yOffset, data, config }: Props) => {
+export const Body = ({ data, config }: Props) => {
   const { workspace, table, sessionId } = useRecoilValue(queryParamAtom);
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
@@ -67,7 +66,7 @@ export const Body = ({ yOffset, data, config }: Props) => {
     }
 
     if (!['Size', 'Degree', 'Deviation'].includes(config.sortBy)) {
-      throw new Error("Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.");
+      throw new Error(`Alt text generation is not yet supported for ${config.sortBy.includes("Set_") ? 'set' : 'attribute'} sorting. To generate an alt text, sort by Size, Degree, or Deviation.`);
     }
 
     let response;
@@ -106,14 +105,14 @@ export const Body = ({ yOffset, data, config }: Props) => {
           </Backdrop>
           <Upset
             data={data}
-            loadAttributes={3}
-            yOffset={yOffset === -1 ? 0 : yOffset}
             extProvenance={provObject}
             config={config}
             provVis={provVis}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
             generateAltText={generateAltText}
+            visualizeUpsetAttributes
+            allowAttributeRemoval
           />
         </div>
       }

@@ -1,10 +1,11 @@
+import { DSVRowArray } from 'd3-dsv';
+
 import {
-  DSVRowArray, max, mean, median, min, quantile,
-} from 'd3';
+ max, mean, median, min, quantile,
+} from 'd3-array';
 
 import {
   AttributeList,
-  BaseIntersection,
   ColumnDefs,
   ColumnName,
   CoreUpsetData,

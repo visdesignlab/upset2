@@ -1,4 +1,4 @@
-import { ScaleLinear } from 'd3';
+import { ScaleLinear } from 'd3-scale';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 

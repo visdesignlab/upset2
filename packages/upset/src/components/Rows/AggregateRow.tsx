@@ -71,6 +71,10 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     width -= dimensions.body.aggregateOffset;
   }
 
+  /**
+   * Truncates the element name if it is longer than 14 characters and the aggregateBy value is 'Overlaps'.
+   * Otherwise, description is the element name.
+   */
   const desc =
     aggregateRow.elementName.length < 14 ||
     aggregateRow.aggregateBy !== 'Overlaps'
@@ -79,8 +83,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
 
   return (
     <g
-      onClick={() => aggregateRow && 
-        (currentIntersection?.id === aggregateRow.id ? 
+      id={aggregateRow.id}
+      onClick={() => aggregateRow &&
+        (currentIntersection?.id === aggregateRow.id ?
           actions.setSelected(null) : actions.setSelected(aggregateRow))}
       css={mousePointer}
     >

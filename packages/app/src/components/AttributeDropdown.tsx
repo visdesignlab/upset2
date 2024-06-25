@@ -69,7 +69,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
 
   const attributeItemCount: { [attr: string]: number | string } = {};
 
-  const attributes = data ? [...data.attributeColumns, ...DefaultConfig.visibleAttributes]: [...DefaultConfig.visibleAttributes];
+  const attributes = data ? [...DefaultConfig.visibleAttributes, ...data.attributeColumns]: [...DefaultConfig.visibleAttributes];
     
 
   if (data) {

@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 import { FC, useContext } from 'react';
-import { ScaleLinear } from 'd3';
+import { ScaleLinear } from 'd3-scale';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';

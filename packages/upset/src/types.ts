@@ -1,6 +1,47 @@
 import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { UpsetProvenance, UpsetActions } from './provenance';
 
+/**
+ * Props for providing functions to open and close any sidebar.
+ */
+export interface SidebarProps {
+  /**
+   * Indicates whether the sidebar is open or closed.
+   */
+  open: boolean;
+
+  /**
+   * Callback function to close the sidebar.
+   */
+  close: () => void;
+}
+
+/**
+* Represents the alternative text for an Upset plot.
+*/
+export interface AltText {
+  /**
+  * The long description for the Upset plot.
+  */
+  longDescription: string;
+
+  /**
+  * The short description for the Upset plot.
+  */
+  shortDescription: string;
+
+  /**
+  * The technique description for the Upset plot.
+  */
+  techniqueDescription: string;
+
+  /**
+  * Optional warnings for the Upset plot.
+  * Not yet implemented by the API as of 4/22/24
+  */
+  warnings?: string;
+}
+
 export type ContextMenuItem = {
   /**
   * The label for the context menu item.
@@ -44,18 +85,21 @@ export type ContextMenuInfo = {
 }
 
 /**
+ * Raw data object for an UpSet plot.
+ * This is used to generate the processed data. Column annotations are inferred from the data types.
+ */
+export interface UpsetItem {
+  [key: string]: string | number | boolean;
+}
+
+/**
 * Represents the props for the Upset component.
 */
 export interface UpsetProps {
   /**
-  * Specifies whether the parent component has a fixed height.
-  */
-  parentHasHeight?: boolean;
-
-  /**
   * The data for the Upset component.
   */
-  data: CoreUpsetData;
+  data: CoreUpsetData | UpsetItem[];
 
   /**
   * Optional configuration for the Upset component.
@@ -63,12 +107,44 @@ export interface UpsetProps {
   config?: Partial<UpsetConfig>;
 
   /**
-  * The number of attributes to load.
+  * List of attribute names (strings) which should be visualized.
+  * Defaults to the first 3 if no value is provided.
+  * If an empty list is provided, displays no attributes.
   */
-  loadAttributes?: number;
+  visualizeDatasetAttributes?: string[];
 
   /**
-  * External provenance information for the Upset component.
+   * Whether or not to visualize UpSet generated attributes (`degree` and `deviation`).
+   * Defaults to `false`.
+   */
+  visualizeUpsetAttributes?: boolean;
+
+  /**
+   * Whether or not to allow the user to remove attribute columns.
+   * This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal.
+   * Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers.
+   * Defaults to `false`.
+   */
+  allowAttributeRemoval?: boolean;
+
+  /**
+   * Hide the aggregations/filter settings sidebar.
+   */
+  hideSettings?: boolean;
+
+  /**
+  * Indicates if the parent component has a fixed height.
+  * If this is set to `false`, the plot will occupy the full viewport height.
+  * When set to `true`, the plot will fit entirely within the parent component.
+  * Defaults to `false`.
+  */
+  parentHasHeight?: boolean;
+
+  /**
+  * External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions.
+  * This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0.
+  * Provenance is still tracked if nothing is provided.
+  * Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
   */
   extProvenance?: {
     provenance: UpsetProvenance;
@@ -76,37 +152,24 @@ export interface UpsetProps {
   };
 
   /**
-  * The vertical offset for the Upset component.
+  * Sidebar options for the provVis component.
   */
-  yOffset?: number;
+  provVis?: SidebarProps;
 
   /**
-  * Visualization settings for the provenance component.
+  * Sidebar options for the element sidebar component.
+  * This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
   */
-  provVis?: {
-    open: boolean;
-    close: () => void;
-  };
+  elementSidebar?: SidebarProps;
 
   /**
-  * Sidebar settings for the element component.
+  * Sidebar options for the alt text sidebar component.
+  * This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
   */
-  elementSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
+  altTextSidebar?: SidebarProps;
 
   /**
-  * Sidebar settings for the alt text component.
+  * Async function which should return a generated AltText object.
   */
-  altTextSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
-
-  /**
-  * Generates alternative text for the Upset component.
-  */
-  generateAltText?: () => Promise<string>;
+  generateAltText?: () => Promise<AltText>;
 }
-
