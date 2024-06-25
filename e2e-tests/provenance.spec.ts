@@ -39,8 +39,8 @@ test('Selection History', async ({ page }) => {
   await page.getByLabel('Open additional options menu').click();
   await page.getByLabel('Open history tree sidebar').click();
 
-  const schoolIntersection = page.locator('.css-1kek4un-Y > g:nth-child(3) > rect').first();
-  const duffFanIntersection = page.locator('g:nth-child(7) > .css-1kek4un-Y > g:nth-child(3) > rect').first();
+  const schoolIntersection = page.locator('#Subset_School > g:nth-child(3) > rect');
+  const duffFanIntersection = page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3) > rect');
 
   // Testing history for a subset selection & deselection
   await page.locator('g > circle').first().click();
@@ -58,16 +58,14 @@ test('Selection History', async ({ page }) => {
   // Check that selections are maintained after de-aggregation
   await schoolIntersection.click();
   await page.getByRole('radio', { name: 'None' }).check();
-  await page.locator('.css-zf6412').click();
+  await schoolIntersection.click();
   await expect(page.getByText('Deselect intersection').nth(2)).toBeVisible();
 
   // Check that selections can be reverted & start a new history tree branch
   await page.locator('g:nth-child(10) > circle').click();
-  await page.locator('.css-zf6412').click();
-  await await duffFanIntersection.click();
-  await expect(page.getByText('Deselect intersection')).toBeVisible();
-  await expect(page.getByText('Select intersection "School')).toBeVisible();
-
+  await schoolIntersection.click();
+  await duffFanIntersection.click();
+  await expect(page.getByLabel('History Sidebar').getByText('Select intersection "School"')).toBeVisible();
   // Check that deselection triggered by element view unbookmarking is reflected in history tree.
   // Also tests that the bookmarking & unbookmarking is trracked
   await page.getByLabel('Open element view sidebar').click();
@@ -77,9 +75,9 @@ test('Selection History', async ({ page }) => {
   await page.getByLabel('Open history tree sidebar').click();
 
   await expect(page.getByText('Unbookmark Duff Fan & Male')).toBeVisible();
-  await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
+  await expect(page.getByText('Deselect intersection')).toBeVisible();
   await expect(page.getByText('Bookmark Duff Fan & Male', { exact: true })).toBeVisible();
-  await expect(page.getByText('Select intersection "School')).toBeVisible();
+  await expect(page.getByLabel('History Sidebar').getByText('Select intersection "School"')).toBeVisible();
 });
 
 /**

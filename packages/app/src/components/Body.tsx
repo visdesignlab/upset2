@@ -16,7 +16,6 @@ import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
 
 type Props = {
-  yOffset: number;
   data: any;
   config?: UpsetConfig;
 };
@@ -113,6 +112,8 @@ export const Body = ({ data, config }: Props) => {
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
             generateAltText={getAltText}
+            visualizeUpsetAttributes
+            allowAttributeRemoval
           />
         </div>
       }

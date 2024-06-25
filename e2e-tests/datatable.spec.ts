@@ -42,11 +42,11 @@ test('Datatable', async ({ page }) => {
   // Test downloads
   // //////////////////
   const page1 = await page1Promise;
-  const heading1 = await page1.getByRole('heading', { name: 'UpSet Data Table' });
+  const heading1 = await page1.getByRole('heading', { name: 'Intersection Data' });
   await expect(heading1).toBeVisible();
 
   const downloadPromise = page1.waitForEvent('download');
-  const downloadButton = await page1.locator('div').filter({ hasText: /^UpSet Data TableDownload$/ }).getByRole('button');
+  const downloadButton = await page1.locator('div').filter({ hasText: /^Intersection DataDownload$/ }).getByRole('button');
   await expect(downloadButton).toBeVisible();
   await downloadButton.click();
   const download = await downloadPromise;
@@ -71,7 +71,7 @@ test('Datatable', async ({ page }) => {
   // //////////////////
   // Test that the tables exist
   // //////////////////
-  const datatable = await page1.getByText('IntersectionSizeSchool & Male3Unincluded3Male3Duff Fan & Male & Power Plant3Evil & Male2Evil & Male & Power Plant2Duff Fan & Male2Blue Hair2School1School & Evil & Male1Rows per page:101–10 of');
+  const datatable = await page1.getByText('IntersectionSizeDeviationAgeSchool & Male35.199.33Unincluded35.1930.33Male3-9.4257.33Duff Fan & Male & Power Plant310.5838.33Evil & Male21.0343.50Evil & Male & Power Plant26.4161.50Duff Fan & Male21.0340.00Blue Hair27.2956.00School11.738.00School & Evil & Male11.7311.00Rows per page:101–10 of');
   await expect(datatable).toBeVisible();
   const visibleSets = await page1.getByText('SetSizeSchool6Blue Hair3Duff Fan6Evil6Male18Power Plant5Rows per page:101–6 of');
   await expect(visibleSets).toBeVisible();

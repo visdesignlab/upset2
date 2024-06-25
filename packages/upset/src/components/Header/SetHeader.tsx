@@ -1,4 +1,4 @@
-import { ScaleLinear } from 'd3';
+import { ScaleLinear } from 'd3-scale';
 import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { a, useTransition } from 'react-spring';

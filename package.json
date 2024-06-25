@@ -38,13 +38,13 @@
     "singleQuote": true,
     "trailingComma": "all"
   },
-  "packageManager": "yarn@1.22.17",
+  "packageManager": "yarn@1.22.19",
   "dependencies": {
+    "@playwright/test": "^1.15.0",
     "@vitejs/plugin-react": "^4.0.4",
     "eslint-config-react-app": "^7.0.1",
     "vite": "^4.4.9",
     "vite-plugin-dts": "^3.5.1",
-    "vite-tsconfig-paths": "^4.2.0",
-    "@playwright/test": "^1.15.0"
+    "vite-tsconfig-paths": "^4.2.0"
   }
 }

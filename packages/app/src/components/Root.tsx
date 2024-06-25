@@ -79,7 +79,7 @@ export const Root = ({provenance, actions, data, config}: Props) => {
                     <Header data={data}/>
                 </Box>
                 {data === null && <Home />}
-                <Body yOffset={headerHeight} data={data} config={config}/>
+                <Body data={data} config={config}/>
                 <Footer />
             </div>
         </ProvenanceContext.Provider>
