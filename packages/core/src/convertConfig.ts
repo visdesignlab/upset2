@@ -1,5 +1,6 @@
 import { AggregateBy, Bookmark, BookmarkedSelection, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot, 
   SortByOrder, SortVisibleBy, UpsetConfig } from "@visdesignlab/upset2-core";
+import { isUpsetConfig } from "./types";
 
 /**
  * Developer notes:
@@ -15,7 +16,7 @@ import { AggregateBy, Bookmark, BookmarkedSelection, Column, ColumnName, Histogr
  *      with the previous version (which the current version will become) and converts it to the current version.
  *    - The only statement within the case body should assign param `config` to the result of your conversion function.
  *    - Do not use break statements in the switch, as conversions should be applied cumulatively & in order.
- * 6. Update isUpsetConfig to reflect your changes to UpsetConfig.
+ * 6. Update isUpsetConfig (in types.ts) to reflect your changes to UpsetConfig.
  * 7. Bump the version number in the UpsetConfig type, all package.json files, the README, and defaultConfig.ts.
  */
 
@@ -48,37 +49,14 @@ export function convertConfig(config: unknown): UpsetConfig {
 function preVersionConversion(config: PreVersionConfig): UpsetConfig {
   let result = {...config, version: '0.1.0', bookmarks: config.bookmarkedIntersections};
   delete (result as UpsetConfig & {bookmarkedIntersections?: any}).bookmarkedIntersections;
-  return result as UpsetConfig;
-}
 
-/**
- * Determines if the given object is a valid UpsetConfig using the CURRENT version.
- * This needs to be updated each time a new version is added.
- * @param config The object to check.
- * @returns {boolean} Whether the object is a valid UpsetConfig.
- */
-function isUpsetConfig(config: unknown): config is UpsetConfig {
-  return !!config
-  && typeof config === 'object'
-  && Object.hasOwn(config, 'plotInformation')
-  && Object.hasOwn(config, 'horizontal')
-  && Object.hasOwn(config, 'firstAggregateBy')
-  && Object.hasOwn(config, 'firstOverlapDegree')
-  && Object.hasOwn(config, 'secondAggregateBy')
-  && Object.hasOwn(config, 'secondOverlapDegree')
-  && Object.hasOwn(config, 'sortVisibleBy')
-  && Object.hasOwn(config, 'sortBy')
-  && Object.hasOwn(config, 'sortByOrder')
-  && Object.hasOwn(config, 'filters')
-  && Object.hasOwn(config, 'visibleSets')
-  && Object.hasOwn(config, 'visibleAttributes')
-  && Object.hasOwn(config, 'bookmarks')
-  && Object.hasOwn(config, 'collapsed')
-  && Object.hasOwn(config, 'plots')
-  && Object.hasOwn(config, 'allSets')
-  && Object.hasOwn(config, 'selected')
-  && Object.hasOwn(config, 'elementSelection')
-  && Object.hasOwn(config, 'version');
+  if (
+    result.elementSelection 
+    && typeof result.elementSelection === 'object' 
+    && Object.keys(result.elementSelection).length === 0
+  ) result.elementSelection = null;
+
+  return result as UpsetConfig;
 }
 
 /**
