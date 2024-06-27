@@ -8,7 +8,7 @@ import { useRecoilValue } from 'recoil';
 import { BookmarkedIntersection, Row, flattenedOnlyRows, isBookmarkedIntersection } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
-  bookmarkedIntersectionSelector,
+  bookmarkSelector,
   currentIntersectionSelector,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
@@ -23,7 +23,7 @@ export const ElementQueries = () => {
   const nextColor = useRecoilValue(nextColorSelector);
   const data = useRecoilValue(dataAtom);
   const rows = flattenedOnlyRows(data, provenance.getState());
-  const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll("~&~", " & ") || "";
 
   /**

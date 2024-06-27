@@ -3,7 +3,6 @@ import { useEffect, useMemo } from 'react';
 import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
-import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';

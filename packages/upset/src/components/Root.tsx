@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
-import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import React, {
+import { convertConfig, CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
   createContext, FC, useEffect, useMemo,
 } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -85,7 +85,8 @@ export const Root: FC<Props> = ({
       const { provenance, actions } = extProvenance;
 
       provenance.currentChange(() => {
-        setState(provenance.getState());
+        // Old provenance nodes may be using a different config version, so convert it if need be
+        setState(convertConfig(provenance.getState()));
       });
 
       provenance.done();

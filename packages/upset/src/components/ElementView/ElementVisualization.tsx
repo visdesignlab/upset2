@@ -4,7 +4,7 @@ import { useContext, useRef, useState } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { bookmarkedIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { elementItemMapSelector, configElementsSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
@@ -18,7 +18,7 @@ export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
-  const bookmarked = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
   const savedSelection = useRecoilValue(configElementsSelector);

@@ -276,6 +276,15 @@ export type BookmarkedSelection = Bookmark & {
   type: 'elements';
 }
 
+/**
+ * A configuration object for an UpSet plot.
+ * @version 0.1.0
+ * @privateRemarks
+ * Each breaking update to this config MUST be accompanied by an update to the config converter 
+ * in `convertConfig.ts`. Full instructions are provided in the converter file. A breaking update
+ * is a change in the name or type of an existing field, or the removal of a field. Adding new fields
+ * is not considered breaking.
+ */
 export type UpsetConfig = {
   plotInformation: PlotInformation;
   horizontal: boolean;
@@ -295,11 +304,9 @@ export type UpsetConfig = {
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
   /**
-   * Bookmarked selections.
-   * These can be intersections or element selections. 
-   * For backwards compatibility, this field name has not been changed to reflect new bookmark types
+   * Bookmarked selections, can be intersections or element selections. 
    */
-  bookmarkedIntersections: Bookmark[];
+  bookmarks: Bookmark[];
   collapsed: string[];
   plots: {
     scatterplots: Scatterplot[];
@@ -311,6 +318,7 @@ export type UpsetConfig = {
    * Selected elements (data points) in the Element View.
    */
   elementSelection: BookmarkedSelection | null;
+  version: '0.1.0';
 };
 
 export type AccessibleDataEntry = {

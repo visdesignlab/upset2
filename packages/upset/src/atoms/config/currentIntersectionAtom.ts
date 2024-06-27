@@ -18,10 +18,10 @@ export const currentIntersectionSelector = selector<Row | null | undefined>({
   // No setter; this should be set by calling actions.setSelected(intersection)
 });
 
-export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
-  key: 'bookmarked-intersection',
+export const bookmarkSelector = selector<Bookmark[]>({
+  key: 'bookmarks',
   get: ({ get }) => {
-    const bookmarks = get(upsetConfigAtom).bookmarkedIntersections;
+    const bookmarks = get(upsetConfigAtom).bookmarks;
 
     return bookmarks;
   },
@@ -38,7 +38,7 @@ export const bookmarkedColorPalette = selector<{
   get: ({ get }) => {
     const colorPalette: { [i: string]: string } = {};
 
-    const bookmarks = get(bookmarkedIntersectionSelector);
+    const bookmarks = get(bookmarkSelector);
 
     [...bookmarks].forEach((inter, idx) => {
       colorPalette[inter.id] = queryColorPalette[idx] || '#000';

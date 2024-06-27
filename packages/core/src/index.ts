@@ -4,4 +4,5 @@ export * from './aggregate';
 export * from './sort';
 export * from './filter';
 export * from './render';
-export * from './DefaultConfig';
+export * from './defaultConfig';
+export * from './convertConfig';
