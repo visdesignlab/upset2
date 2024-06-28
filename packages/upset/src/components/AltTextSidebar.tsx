@@ -97,6 +97,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       margin: auto;
       margin-bottom: 1em;
     `}
+    aria-hidden={true}
   />
   
   return (
@@ -121,6 +122,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     >
       <div css={css`width:${initialDrawerWidth}`}>
         <br />
+        <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
+          Accessibility Sidebar
+        </Typography>
+        {divider}
         <PlotInformation divider={divider} tabIndex={6} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
           Text Description:
