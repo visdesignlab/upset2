@@ -128,7 +128,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         {divider}
         <PlotInformation divider={divider} tabIndex={6} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          Text Description:
+          {currState.useUserAlt ? "User Description" : "Description"}
         </Typography>
         {divider}
         <Box marginTop={2} css={css`overflow-y: auto;`}>
