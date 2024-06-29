@@ -51,7 +51,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const [textGenErr, setTextGenErr] = useState(false);
   
   // States for editing the alt text
-  const [textHover, setTextHover] = useState(false);
   const [textEditing, setTextEditing] = useState(false);
   const [userLongText, setUserLongText] = useState(currState.userAltText?.longDescription);
   const [userShortText, setUserShortText] = useState(currState.userAltText?.shortDescription);
@@ -126,7 +125,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           Accessibility Sidebar
         </Typography>
         {divider}
-        <PlotInformation divider={divider} tabIndex={6} />
+        <PlotInformation divider={divider} tabIndex={10} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
           {currState.useUserAlt ? "User Description" : "Description"}
         </Typography>
@@ -142,7 +141,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   size="small"
                   style={{marginRight: "10px"}}
                   checked={currState.useUserAlt || textEditing}
-                  tabIndex={5}
+                  tabIndex={9}
                   onChange={(ev) => {
                     actions.setUseUserAltText(ev.target.checked);
                     if (!ev.target.checked) {
@@ -166,7 +165,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 <Switch
                   size="small"
                   checked={useLong}
-                  tabIndex={4}
+                  tabIndex={8}
                   onChange={(ev) => {
                     setUseLong(ev.target.checked);
                   }}
@@ -190,6 +189,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                     || currState.userAltText?.longDescription !== userLongText)  
                   actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
               }}
+              tabIndex={7}
             >Save</Button>
             <Button
               color='warning'
@@ -198,11 +198,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 setUserLongText(altText?.longDescription);
                 setUserShortText(altText?.shortDescription);
               }}
+              tabIndex={6}
             >Reset Descriptions</Button>
             <br />
             <TextField multiline fullWidth
               onChange={(e) => {useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}}
-              value={(displayAltText)} 
+              value={(displayAltText)}
+              tabIndex={5}
             />
             <br />
           </>) : (
@@ -212,17 +214,22 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 cursor: 'pointer',
                 padding: '3px',
                 borderRadius: '4px',
-                border: textHover ? '2px inset #ddd' : '2px solid #fff',
                 width: 'calc(100% - 10px)', // We have 10px of padding + border
               }}
-              onMouseEnter={() => setTextHover(true)} 
-              onMouseLeave={() => setTextHover(false)} 
-              onClick={() => {setTextEditing(true)}}
+              onClick={() => setTextEditing(true)}
               tabIndex={3}  
             >
               <ReactMarkdownWrapper 
                 text={displayAltText ?? "No description available."}
               />
+              <Button
+                style={{
+                  width: '100%',
+                  textAlign: 'center',
+                }}
+                onClick={() => setTextEditing(true)}
+                tabIndex={4}
+              >Edit Text Description</Button>
             </div>
           )}
         </Box>
