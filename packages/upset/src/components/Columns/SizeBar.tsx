@@ -111,6 +111,9 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
 
   // Compute vars for selected size bars
   const { fullBars: fullSelectBars, rem: remSelect } = calculateBars(selected);
+  // X-coord for the end of the selected bar
+  let selectedWidth = scale(remSelect);
+  if (selected > 0 && selectedWidth === 0) selectedWidth = dimensions.attribute.width;
 
   // Calculate all rectangles for the size bar
   const rectArray: Rect[] = [];
@@ -133,7 +136,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
       rectArray.push({
         transform: translate(0, (fullSelectBars * OFFSET) / 2),
         height: dimensions.size.plotHeight - fullSelectBars * OFFSET,
-        width: scale(remSelect),
+        width: selectedWidth,
         fillColor: darkenColor(fullSelectBars, elementSelectionColor),
       });
   }
@@ -156,6 +159,24 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
           fill={rect.fillColor}
         />
       ))}
+      {fullSelectBars < 3 && selected > 0 && (<>
+        <polygon
+          points={
+            `${selectedWidth},${0} ` +
+            `${selectedWidth - 5},${-5} ` +
+            `${selectedWidth + 5},${-5}` 
+          }
+          fill={elementSelectionColor}
+        />
+        <line
+          stroke="white"
+          strokeWidth="1px"
+          x1={selectedWidth}
+          x2={selectedWidth}
+          y1={0}
+          y2={dimensions.body.rowHeight}
+        />
+      </>)}
       {fullBars === 3 && (
         <>
           <line
