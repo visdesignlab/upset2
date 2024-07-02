@@ -1,11 +1,6 @@
 import { selector } from 'recoil';
 import { upsetConfigAtom } from './upsetConfigAtoms';
-
-type PlotInformation = {
-    description: string;
-    sets: string;
-    items: string;
-}
+import { PlotInformation } from '@visdesignlab/upset2-core';
 
 export const plotInformationSelector = selector<PlotInformation>({
   key: 'meta-data',

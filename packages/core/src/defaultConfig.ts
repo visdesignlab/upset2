@@ -1,10 +1,13 @@
 import { UpsetConfig } from './types';
 
 export const DefaultConfig: UpsetConfig = {
+  // Calls to the alttext API may error if these are not set
   plotInformation: {
     description: '',
     sets: '',
     items: '',
+    caption: '[Caption]',
+    title: '[Title]',
   },
   horizontal: false,
   firstAggregateBy: 'None',
@@ -30,4 +33,5 @@ export const DefaultConfig: UpsetConfig = {
   },
   allSets: [],
   selected: null,
+  useUserAlt: false,
 };

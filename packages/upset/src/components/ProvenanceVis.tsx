@@ -23,6 +23,7 @@ export const ProvenanceVis = ({ open, close }: Props) => {
 
   return (
     <Drawer
+      aria-hidden={!open}
       anchor="right"
       open={open}
       onClose={close}
