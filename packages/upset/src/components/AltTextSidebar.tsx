@@ -89,6 +89,14 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     ? currState.useUserAlt ? userLongText : altText?.longDescription 
     : currState.useUserAlt ? userShortText : altText?.shortDescription;
   }, [useLong, userLongText, userShortText, altText, currState.useUserAlt]);
+
+  /**
+   * Sets the user alttext for the currently selected length (long or short)
+   * @param text the text to set the currently selected user alttext to
+   */
+  function setUserText(text: string): void {
+    useLong ? setUserLongText(text) : setUserShortText(text);
+  }
   
   const divider = <Divider
     css={css`
@@ -127,7 +135,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         {divider}
         <PlotInformation divider={divider} tabIndex={10} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          {currState.useUserAlt ? "User Description" : "Description"}
+          {(currState.useUserAlt ? "User " : "") + (useLong ? "Long " : "Short ") + "Description"}
         </Typography>
         {divider}
         <Box marginTop={2} css={css`overflow-y: auto;`}>
@@ -143,7 +151,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   checked={currState.useUserAlt || textEditing}
                   tabIndex={9}
                   onChange={(ev) => {
-                    actions.setUseUserAltText(ev.target.checked);
+                    if (currState.useUserAlt !== ev.target.checked)
+                      actions.setUseUserAltText(ev.target.checked);
                     if (!ev.target.checked) {
                       setTextEditing(false);
                     }
@@ -202,7 +211,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             >Reset Descriptions</Button>
             <br />
             <TextField multiline fullWidth
-              onChange={(e) => {useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}}
+              onChange={(e) => setUserText(e.target.value)}
               value={(displayAltText)}
               tabIndex={5}
             />
@@ -216,7 +225,11 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 borderRadius: '4px',
                 width: 'calc(100% - 10px)', // We have 10px of padding + border
               }}
-              onClick={() => setTextEditing(true)}
+              onClick={() => {
+                setTextEditing(true);
+                if (!(useLong ? userLongText : userShortText) && displayAltText)
+                  setUserText(displayAltText);
+              }}
               tabIndex={3}  
             >
               <ReactMarkdownWrapper 
