@@ -89,14 +89,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     ? currState.useUserAlt ? userLongText : altText?.longDescription 
     : currState.useUserAlt ? userShortText : altText?.shortDescription;
   }, [useLong, userLongText, userShortText, altText, currState.useUserAlt]);
-
-  /**
-   * Sets the user alttext for the currently selected length (long or short)
-   * @param text the text to set the currently selected user alttext to
-   */
-  function setUserText(text: string): void {
-    useLong ? setUserLongText(text) : setUserShortText(text);
-  }
   
   const divider = <Divider
     css={css`
@@ -193,7 +185,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               style={{float: 'right'}} 
               onClick={() => {
                 setTextEditing(false);
-                actions.setUseUserAltText(true);
+                if (!currState.useUserAlt)
+                  actions.setUseUserAltText(true);
                 if (currState.userAltText?.shortDescription !== userShortText 
                     || currState.userAltText?.longDescription !== userLongText)  
                   actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
@@ -211,7 +204,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             >Reset Descriptions</Button>
             <br />
             <TextField multiline fullWidth
-              onChange={(e) => setUserText(e.target.value)}
+              onChange={(e) => useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}
               value={(displayAltText)}
               tabIndex={5}
             />
@@ -227,8 +220,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               }}
               onClick={() => {
                 setTextEditing(true);
-                if (!(useLong ? userLongText : userShortText) && displayAltText)
-                  setUserText(displayAltText);
+                if (!currState.userAltText?.shortDescription)
+                  setUserShortText(altText?.shortDescription);
+                if (!currState.userAltText?.longDescription)
+                  setUserLongText(altText?.longDescription);
               }}
               tabIndex={3}  
             >
