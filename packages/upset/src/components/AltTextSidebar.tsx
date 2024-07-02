@@ -217,6 +217,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 padding: '3px',
                 borderRadius: '4px',
                 width: 'calc(100% - 10px)', // We have 10px of padding + border
+                paddingBottom: '90px', // Necessary to keep it above the footer
               }}
               onClick={() => {
                 setTextEditing(true);
