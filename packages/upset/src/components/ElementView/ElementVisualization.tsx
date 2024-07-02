@@ -44,7 +44,7 @@ export const ElementVisualization = () => {
       clearTimeout(timeout.current);
     // We debounce the update to prevent re-rendering the size bars every time the handler fires
     timeout.current = setTimeout(() =>
-      setCurrentSelection(elementSelectionToBookmark(value)), 50);
+      setCurrentSelection(elementSelectionToBookmark(value)), 250);
   };
 
   return (
