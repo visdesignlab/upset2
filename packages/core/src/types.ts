@@ -217,6 +217,16 @@ export type Histogram = BasePlot & {
 
 export type Plot = Scatterplot | Histogram;
 
+// eslint-disable-next-line no-shadow
+export enum AttributePlotType {
+  BoxPlot = 'Box Plot',
+  DotPlot = 'Dot Plot',
+  StripPlot = 'Strip Plot',
+  ViolinPlot = 'Violin Plot',
+}
+
+export type AttributePlots = Record<string, `${AttributePlotType}`>;
+
 export type Bookmark = { id: string; label: string; size: number }
 
 export type UpsetConfig = {
@@ -237,6 +247,7 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
   bookmarkedIntersections: Bookmark[];
   collapsed: string[];
   plots: {

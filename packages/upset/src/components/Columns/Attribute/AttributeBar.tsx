@@ -10,8 +10,10 @@ import { useScale } from '../../../hooks/useScale';
 import translate from '../../../utils/transform';
 import { BoxPlot } from './AttributePlots/BoxPlot';
 import { DotPlot } from './AttributePlots/DotPlot';
+import { StripPlot } from './AttributePlots/StripPlot';
 import { itemsAtom } from '../../../atoms/itemsAtoms';
 import { DeviationBar } from '../DeviationBar';
+import { attributePlotsSelector } from '../../../atoms/config/plotAtoms';
 
 /**
  * Attribute bar props
@@ -48,17 +50,48 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const items = useRecoilValue(itemsAtom);
   const values = getValuesFromRow(row, attribute, items);
 
+  const attributePlots = useRecoilValue(attributePlotsSelector);
+
   if (typeof summary !== 'number' && (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined)) {
     return null;
   }
 
+  /*
+   * Get the attribute plot to render based on the selected attribute plot type
+   * @returns {JSX.Element} The JSX element of the attribute
+   */
+  function getAttributePlotToRender() {
+    // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
+    // eslint-disable-next-line consistent-return
+    if (Object.keys(attributePlots).includes(attribute)) {
+      const [attr, plot] = Object.entries(attributePlots).filter(([key, _]) => key === attribute)[0];
+
+      if (attr === attribute) {
+        // render a dotplot for all rows <= 5
+        if (row.size <= 5) {
+          return <DotPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
+        }
+
+        switch (plot) {
+          case 'Box Plot':
+            return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
+          case 'Strip Plot':
+            return <StripPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
+          default:
+            return <DotPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
+        }
+      }
+    }
+    return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
+  }
+
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
-      { typeof summary === 'number' ?
-        <DeviationBar deviation={summary} /> :
-        row.size > 5
-          ? <BoxPlot scale={scale} summary={summary} />
-          : <DotPlot scale={scale} values={values} attribute={attribute} summary={summary} isAggregate={isRowAggregate(row)} row={row} />}
+      {
+        typeof summary === 'number' ?
+          <DeviationBar deviation={summary} /> :
+          getAttributePlotToRender()
+      }
     </g>
   );
 };

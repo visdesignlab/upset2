@@ -152,6 +152,14 @@ const removeMultipleVisibleAttributes = registry.register(
   },
 );
 
+const updateAttributePlotType = registry.register(
+  'update-attribute-plot-type',
+  (state: UpsetConfig, { attr, plotType }) => {
+    state.attributePlots[attr] = plotType;
+    return state;
+  },
+);
+
 const bookmarkIntersectionAction = registry.register(
   'bookmark-intersection',
   (state: UpsetConfig, newBookmark) => {
@@ -337,6 +345,7 @@ export function getActions(provenance: UpsetProvenance) {
     removeAttribute: (attr: string) => provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
+    updateAttributePlotType: (attr: string, plotType: string) => provenance.apply(`Update ${attr} plot type to ${plotType}`, updateAttributePlotType({ attr, plotType })),
     bookmarkIntersection: (id: string, label: string, size: number) => provenance.apply(`Bookmark ${label}`, bookmarkIntersectionAction({ id, label, size })),
     unBookmarkIntersection: (id: string, label: string, size: number) => provenance.apply(`Unbookmark ${label}`, removeBookmarkIntersectionAction({ id, label, size })),
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),

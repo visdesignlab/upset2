@@ -83,6 +83,14 @@ export const Upset: FC<UpsetProps> = ({
       ];
     }
 
+    // for every visible attribute other than deviaiton and degree, add 'Box Plot' to their attribute plot type
+    conf.visibleAttributes.forEach((attr) => {
+      if (attr !== 'Degree' && attr !== 'Deviation' && !conf.attributePlots[attr]) {
+        conf.attributePlots = { ...conf.attributePlots, [attr]: 'Box Plot' };
+        console.log(conf.attributePlots);
+      }
+    });
+
     return conf;
   }, [config]);
 

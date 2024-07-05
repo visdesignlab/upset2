@@ -1,4 +1,4 @@
-import { UpsetConfig } from './types';
+import { AttributePlotType, UpsetConfig } from './types';
 
 export const DefaultConfig: UpsetConfig = {
   plotInformation: {
@@ -22,6 +22,7 @@ export const DefaultConfig: UpsetConfig = {
   },
   visibleSets: [],
   visibleAttributes: ['Degree', 'Deviation'],
+  attributePlots: {},
   bookmarkedIntersections: [],
   collapsed: [],
   plots: {
