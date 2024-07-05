@@ -87,7 +87,6 @@ export const Upset: FC<UpsetProps> = ({
     conf.visibleAttributes.forEach((attr) => {
       if (attr !== 'Degree' && attr !== 'Deviation' && !conf.attributePlots[attr]) {
         conf.attributePlots = { ...conf.attributePlots, [attr]: 'Box Plot' };
-        console.log(conf.attributePlots);
       }
     });
 
