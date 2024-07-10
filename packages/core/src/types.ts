@@ -222,7 +222,6 @@ export enum AttributePlotType {
   BoxPlot = 'Box Plot',
   DotPlot = 'Dot Plot',
   StripPlot = 'Strip Plot',
-  ViolinPlot = 'Violin Plot',
 }
 
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
