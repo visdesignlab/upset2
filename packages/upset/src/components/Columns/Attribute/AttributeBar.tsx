@@ -78,7 +78,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           case 'Strip Plot':
             return <StripPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
           default:
-            return <DotPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
+            return <DotPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} jitter />;
         }
       }
     }
