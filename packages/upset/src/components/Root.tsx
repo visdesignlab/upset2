@@ -75,7 +75,7 @@ export const Root: FC<Props> = ({
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
   useEffect(() => {
-    setState(config);
+    setState(convertConfig(config));
     setData(data);
   }, []);
 
