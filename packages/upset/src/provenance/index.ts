@@ -154,7 +154,7 @@ const removeMultipleVisibleAttributes = registry.register(
 );
 
 const addBookmarkAction = registry.register(
-  'bookmark-intersection',
+  'add-bookmark',
   (state: UpsetConfig, newBookmark) => {
     if (!state.bookmarks.find((b) => b.id === newBookmark.id)) {
       state.bookmarks = [
@@ -168,7 +168,7 @@ const addBookmarkAction = registry.register(
 );
 
 const removeBookmarkAction = registry.register(
-  'remove-bookmark-intersection',
+  'remove-bookmark',
   (state: UpsetConfig, bookmark) => {
     state.bookmarks = state.bookmarks.filter(
       (b) => b.id !== bookmark.id,
@@ -346,8 +346,8 @@ export function getActions(provenance: UpsetProvenance) {
     removeAttribute: (attr: string) => provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
-    bookmarkIntersection: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
-    unBookmarkIntersection: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
+    addBookmark: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
+    removeBookmark: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
     removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
