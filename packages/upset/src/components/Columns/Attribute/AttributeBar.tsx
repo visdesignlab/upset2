@@ -1,9 +1,8 @@
 import {
   Aggregate, SixNumberSummary, Items, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
-
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import { useScale } from '../../../hooks/useScale';
@@ -34,6 +33,9 @@ type Props = {
   row: Subset | Aggregate;
 };
 
+// Threshold for when to render a dot plot regardless of selected plot type
+const DOT_PLOT_THRESHOLD = 5;
+
 const getValuesFromRow = (row: Subset | Aggregate, attribute: string, items: Items): number[] => {
   if (isRowAggregate(row)) {
     return Object.values(row.items.values).map((item) => getValuesFromRow(item, attribute, items)).flat();
@@ -60,26 +62,23 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
    * Get the attribute plot to render based on the selected attribute plot type
    * @returns {JSX.Element} The JSX element of the attribute
    */
-  function getAttributePlotToRender() {
+  function getAttributePlotToRender(): React.JSX.Element {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
-    // eslint-disable-next-line consistent-return
     if (Object.keys(attributePlots).includes(attribute)) {
-      const [attr, plot] = Object.entries(attributePlots).filter(([key, _]) => key === attribute)[0];
+      const plot = attributePlots[attribute];
 
-      if (attr === attribute) {
-        // render a dotplot for all rows <= 5
-        if (row.size <= 5) {
-          return <DotPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
-        }
+      // render a dotplot for all rows <= 5
+      if (row.size <= DOT_PLOT_THRESHOLD) {
+        return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
+      }
 
-        switch (plot) {
-          case 'Box Plot':
-            return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
-          case 'Strip Plot':
-            return <StripPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} />;
-          default:
-            return <DotPlot scale={scale} values={values} attribute={attribute} summary={summary as SixNumberSummary} isAggregate={isRowAggregate(row)} row={row} jitter />;
-        }
+      switch (plot) {
+        case 'Box Plot':
+          return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
+        case 'Strip Plot':
+          return <StripPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
+        default:
+          return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} jitter />;
       }
     }
     return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;

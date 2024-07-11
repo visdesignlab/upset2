@@ -1,40 +1,68 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3-scale';
-import { Aggregate, SixNumberSummary, Subset } from '@visdesignlab/upset2-core';
+import { Aggregate, Subset } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { visibleAttributesSelector } from '../../../../atoms/config/visibleAttributes';
 
+/**
+ * Props for the DotPlot component.
+ */
 type Props = {
+  /**
+   * The scale for mapping attribute values to x-axis positions.
+   */
   scale: ScaleLinear<number, number, never>;
+  /**
+   * Array of attribute values to plot.
+   */
   values: number[];
+  /**
+   * The attribute name.
+   */
   attribute: string;
-  summary: SixNumberSummary;
+  /**
+   * Indicates whether the attribute is an aggregate.
+   */
   isAggregate: boolean;
+  /**
+   * The row object. Rows can be either Subsets or Aggregates.
+   */
   row: Subset | Aggregate;
+  /**
+   * Whether to jitter the dots
+   */
   jitter?: boolean;
 };
 
-// Dot plot component for the attributes plots
+/**
+ * Renders a Dot Plot for a given attribute.
+ *
+ * @component
+ * @param {Props} props - The component props.
+ * @param {number} props.scale - The scale for mapping attribute values to x-axis positions.
+ * @param {number[]} props.values - The array of attribute values to plot.
+ * @param {string} props.attribute - The attribute name.
+ * @param {boolean} props.isAggregate - Indicates whether the row is an aggregate.
+ * @param {Row} props.row - The row object. Rows can be either Subsets or Aggregates.
+ * @param {boolean} props.jitter - Whether to jitter the dots.
+ * @returns {JSX.Element} The rendered dot plot.
+ */
 export const DotPlot: FC<Props> = ({
-  scale, values, attribute, summary, isAggregate, row, jitter = false,
+  scale, values, attribute, isAggregate, row, jitter = false,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attributes = useRecoilValue(visibleAttributesSelector);
 
-  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
-    return null;
-  }
-
   /**
    * Generates a y offset for the provided index.
-   * Seeded based on row size so that jitter is consistent between renders, and also varies between rows.
-   * Rows of the same size will have the same jitter.
+   * Seeded based on row size and length of row id so that jitter is consistent between renders, and also varies between rows.
+   * Rows of the same size AND same id string length will have the same jitter.
    * @param index The index of the dot being rendered
    * @returns y offset for the dot based on the index and row size
    */
   function getJitterForIndex(index: number) {
-    const seed = row.size + index;
+    const seed = row.size + row.id.length + index;
 
     /**
      * Generates a random number between 0 and 1 using a seed value.
@@ -60,6 +88,7 @@ export const DotPlot: FC<Props> = ({
         y={-(dimensions.attribute.plotHeight / 2)}
       />
       {values.map((value, idx) => (
+        // There is no unique identifier for the attribute values other than index, so it is used as key
         // eslint-disable-next-line react/no-array-index-key
         <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={jitter ? getJitterForIndex(idx) : 0} r={dimensions.attribute.dotSize} fill="black" opacity="0.2" />
       ))}

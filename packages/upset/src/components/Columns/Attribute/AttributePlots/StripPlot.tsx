@@ -1,29 +1,53 @@
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3-scale';
-import { Aggregate, SixNumberSummary, Subset } from '@visdesignlab/upset2-core';
+import { Aggregate, Subset } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { visibleAttributesSelector } from '../../../../atoms/config/visibleAttributes';
 
+/**
+ * Props for the StripPlot component.
+ */
 type Props = {
+  /**
+   * The scale for mapping attribute values to x-axis positions.
+   */
   scale: ScaleLinear<number, number, never>;
+  /**
+   * Array of attribute values to plot.
+   */
   values: number[];
+  /**
+   * The attribute name.
+   */
   attribute: string;
-  summary: SixNumberSummary;
+  /**
+   * Indicates whether the attribute is an aggregate.
+   */
   isAggregate: boolean;
+  /**
+   * The row object. Rows can be either Subsets or Aggregates.
+   */
   row: Subset | Aggregate;
 };
 
-// Dot plot component for the attributes plots
+/**
+ * Renders a strip plot for a given attribute.
+ *
+ * @component
+ * @param {Props} props - The component props.
+ * @param {number} props.scale - The scale for mapping attribute values to x-axis positions.
+ * @param {number[]} props.values - The array of attribute values to plot.
+ * @param {string} props.attribute - The attribute name.
+ * @param {boolean} props.isAggregate - Indicates whether the row is an aggregate.
+ * @param {Row} props.row - The row object. Rows can be either Subsets or Aggregates.
+ * @returns {JSX.Element} The rendered strip plot.
+ */
 export const StripPlot: FC<Props> = ({
-  scale, values, attribute, summary, isAggregate, row,
+  scale, values, attribute, isAggregate, row,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attributes = useRecoilValue(visibleAttributesSelector);
-
-  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
-    return null;
-  }
 
   return (
     <g>
@@ -36,12 +60,10 @@ export const StripPlot: FC<Props> = ({
         y={-(dimensions.attribute.plotHeight / 2)}
       />
       {values.map((value, idx) => (
-        // eslint-disable-next-line react/no-array-index-key
-        // <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={0} r={dimensions.attribute.dotSize} fill="black" opacity="0.4" />
-
         // vertical line for x position, go top to bottom
         <line
-        // eslint-disable-next-line react/no-array-index-key
+          // There is no unique identifier for the attribute values other than index, so it is used as key
+          // eslint-disable-next-line react/no-array-index-key
           key={`${row.id} + ${idx}`}
           x1={scale(value)}
           x2={scale(value)}

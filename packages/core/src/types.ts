@@ -217,6 +217,11 @@ export type Histogram = BasePlot & {
 
 export type Plot = Scatterplot | Histogram;
 
+/**
+ * Represents the different types of attribute plots.
+ * Enum value is used here so that the values can be used as keys in upset package.
+*/
+// linter is saying this is already declared on line 226 (the line it is first declared...)
 // eslint-disable-next-line no-shadow
 export enum AttributePlotType {
   BoxPlot = 'Box Plot',
@@ -224,6 +229,10 @@ export enum AttributePlotType {
   StripPlot = 'Strip Plot',
 }
 
+/**
+ * Represents the different types of attribute plots.
+ * Enum values (AttributePlotType) behave better in a Record object than in traditional dict types.
+ */
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
 export type Bookmark = { id: string; label: string; size: number }
