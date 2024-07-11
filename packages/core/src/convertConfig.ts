@@ -50,6 +50,10 @@ function preVersionConversion(config: PreVersionConfig): UpsetConfig {
   let result = {...config, version: '0.1.0', bookmarks: config.bookmarkedIntersections};
   delete (result as UpsetConfig & {bookmarkedIntersections?: any}).bookmarkedIntersections;
 
+  for (const bookmark of result.bookmarks) {
+    bookmark.type = "intersection";
+  }  
+
   if (
     result.elementSelection 
     && typeof result.elementSelection === 'object' 
