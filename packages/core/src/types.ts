@@ -227,6 +227,7 @@ export enum AttributePlotType {
   BoxPlot = 'Box Plot',
   DotPlot = 'Dot Plot',
   StripPlot = 'Strip Plot',
+  DensityPlot = 'Density Plot',
 }
 
 /**

@@ -10,6 +10,7 @@ import translate from '../../../utils/transform';
 import { BoxPlot } from './AttributePlots/BoxPlot';
 import { DotPlot } from './AttributePlots/DotPlot';
 import { StripPlot } from './AttributePlots/StripPlot';
+import { DensityPlot } from './AttributePlots/DensityPlot';
 import { itemsAtom } from '../../../atoms/itemsAtoms';
 import { DeviationBar } from '../DeviationBar';
 import { attributePlotsSelector } from '../../../atoms/config/plotAtoms';
@@ -77,6 +78,8 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
         case 'Strip Plot':
           return <StripPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
+        case 'Density Plot':
+          return <DensityPlot values={values} attribute={attribute} row={row} />;
         default:
           return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} jitter />;
       }
