@@ -1,9 +1,9 @@
 import { BookmarkedSelection, Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
-import { bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
+import { bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
-import { upsetConfigAtom } from './config/upsetConfigAtoms';
+import { elementSelectionAtom, upsetConfigAtom } from './config/upsetConfigAtoms';
 
 /**
  * Gets all elements in the intersection represented by the provided ID
@@ -65,7 +65,7 @@ export const intersectionCountSelector = selectorFamily<
  * Gets all elements in intersections represented by the provided IDs
  * and the currently selected intersection
  * @param ids - The IDs of the intersections to get elements for.
- * @returns The elements in the intersections, with properties for coloring and selection. 
+ * @returns The elements in the intersections
  */
 export const elementItemMapSelector = selectorFamily<Item[], string[]>({
   key: 'element-item-map',
@@ -95,4 +95,27 @@ export const configElementsSelector = selector<BookmarkedSelection | null>({
     const state = get(upsetConfigAtom);
     return state.elementSelection;
   },
+});
+
+/**
+ * Returns all items that are in a bookmarked intersection OR the currently selected intersection
+ * AND are within the bounds of the current element selection.
+ */
+export const selectedItemsSelector = selector<Item[]>({
+  key: 'selected-elements',
+  get: ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
+    const selection = get(elementSelectionAtom)?.selection;
+    if (!selection) return [];
+
+    let result: Item[] = [];
+    for (const item of items) {
+      if (Object.entries(selection).every(([key, value]) => {
+        return typeof item[key] === 'number' &&
+          item[key] as number >= value[0] && item[key] as number <= value[1]
+      })) { result.push(item); }
+    }
+    return result;
+  }
 });

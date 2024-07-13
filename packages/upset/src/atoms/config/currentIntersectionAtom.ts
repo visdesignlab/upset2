@@ -18,6 +18,9 @@ export const currentIntersectionSelector = selector<Row | null | undefined>({
   // No setter; this should be set by calling actions.setSelected(intersection)
 });
 
+/**
+ * Selector for bookmarks from the config atom
+ */
 export const bookmarkSelector = selector<Bookmark[]>({
   key: 'bookmarks',
   get: ({ get }) => {
