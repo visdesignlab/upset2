@@ -47,33 +47,43 @@ export function createScatterplotSpec(
 }
 
 /**
- * Creates the spec for multiple scatterplots containing data from multiple subsets.
- * @param specs - scatterplot objects with x and y attributes.
- * @param selection Current brush selection
- * @returns The Vega-Lite spec for the histogram.
+ * Converts an ElementSelection from a different Vega plot to the format necessary to display correctly on this plot.
+ * The scatterplot wants selections defined as x and y ranges and doesn't accept axis names instead,
+ * so we convert the axis names to x and y ranges.
+ * @param plot   The scatterplot that we need a selection value for
+ * @param select The element selection to use to generate the selection value
+ * @returns An object which can be assigned to the 'value' field of a vega param in scatterplot s
+ *          to display the selection represented by e
  */
-export function createScatterplotRow(specs: Scatterplot[], selection: ElementSelection | undefined): VisualizationSpec[] {
-  function convertSelection(s: Scatterplot, e: ElementSelection): ({ [key: string]: [number, number] } | undefined) {
-    let val: ({ [key: string]: [number, number] } | undefined);
-    if (e[s.x] && e[s.y]) {
-      val = {
-        x: e[s.x],
-        y: e[s.y],
-      }
-    } else if (e[s.x]) {
-      val = {
-        x: e[s.x],
-        y: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
-      }
-    } else if (e[s.y]) {
-      val = {
-        y: e[s.y],
-        x: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
-      }
-    } else val = undefined;
-    return val;
-  }
+function convertSelection(plot: Scatterplot, select: ElementSelection): ElementSelection | undefined {
+  let val: ElementSelection | undefined;
+  if (select[plot.x] && select[plot.y]) {
+    val = {
+      x: select[plot.x],
+      y: select[plot.y],
+    }
+  } else if (select[plot.x]) {
+    val = {
+      x: select[plot.x],
+      y: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
+    }
+  } else if (select[plot.y]) {
+    val = {
+      y: select[plot.y],
+      x: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
+    }
+  } else val = undefined;
+  return val;
+}
 
+/**
+ * Creates the spec for multiple scatterplots containing data from multiple subsets.
+ * @param specs       Scatterplot objects with x and y attributes.
+ * @param selection   The current brush selection, if extant
+ * @param selectColor The color to use for brushed points
+ * @returns The Vega-Lite spec for the scatterplots.
+ */
+export function createScatterplotRow(specs: Scatterplot[], selection: ElementSelection | undefined, selectColor: string): VisualizationSpec[] {
   return specs.map((s) => ({
     width: 200,
     height: 200,
@@ -87,6 +97,7 @@ export function createScatterplotRow(specs: Scatterplot[], selection: ElementSel
           type: 'interval',
           clear: 'mousedown',
         },
+        // We only add the 'value' field if selection is defined
         ...(selection && {value: convertSelection(s, selection)}),
       },
     ],
@@ -102,6 +113,11 @@ export function createScatterplotRow(specs: Scatterplot[], selection: ElementSel
         scale: { zero: false, type: s.yScaleLog ? 'log' : 'linear' },
       },
       color: {
+        condition:{
+          param: 'brush',
+          empty: false,
+          value: selectColor,
+        },
         field: 'subset',
         legend: null,
         scale: { range: { field: 'color' } },
@@ -136,9 +152,9 @@ export function createScatterplotRow(specs: Scatterplot[], selection: ElementSel
 
 /**
  * Creates the spec for a single histogram.
- * @param attribute - The attribute to plot.
- * @param bins - The number of bins to use.
- * @param frequency - Whether to plot frequency or density; true for frequency.
+ * @param attribute The attribute to plot.
+ * @param bins      The number of bins to use.
+ * @param frequency Whether to plot frequency or density; true for frequency.
  * @returns The Vega-Lite spec for the histogram.
  */
 export function createHistogramSpec(
@@ -191,7 +207,7 @@ export function createHistogramSpec(
  * Creates the spec for multiple histograms containing data from multiple subsets.
  * Currently used by the element view pane
  * @param histograms The histograms to plot.
- * @param selection Current brush selection
+ * @param selection  Current brush selection
  * @returns An array of Vega-Lite specs for the histograms.
  */
 export function createHistogramRow(histograms: Histogram[], selection: ElementSelection | undefined): VisualizationSpec[] {
@@ -328,11 +344,12 @@ export function createHistogramRow(histograms: Histogram[], selection: ElementSe
 export function generateVega(
   scatterplots: Scatterplot[],
   histograms: Histogram[],
+  selectColor: string,
   selection? : ElementSelection
 ): VisualizationSpec {
   // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
   const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;
-  const scatterplotSpecs = createScatterplotRow(scatterplots, newSelection);
+  const scatterplotSpecs = createScatterplotRow(scatterplots, newSelection, selectColor);
   const histogramSpecs = createHistogramRow(histograms, newSelection);
   const base = {
     data: {

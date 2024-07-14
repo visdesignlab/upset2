@@ -4,7 +4,7 @@ import { useContext, useRef, useState } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
-import { bookmarkSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { elementItemMapSelector, configElementsSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
@@ -22,6 +22,7 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
   const savedSelection = useRecoilValue(configElementsSelector);
+  const selectColor = useRecoilValue(elementColorSelector);
   // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
   const [currentSelection, setCurrentSelection] = useRecoilState(elementSelectionAtom);
   const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
@@ -67,7 +68,7 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms, savedSelection?.selection)}
+            spec={generateVega(scatterplots, histograms, selectColor, savedSelection?.selection)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}
