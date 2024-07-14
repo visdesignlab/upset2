@@ -56,8 +56,6 @@ export const ElementVisualization = () => {
     }, 250);
   };
 
-  console.log("config", savedSelection, "atom", currentSelection);
-
   return (
     <Box
       // These attributes facilitate saving the current selection when the user clicks outside the plot.
