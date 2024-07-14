@@ -52,7 +52,6 @@ export const ElementQueries = () => {
       if (currentSelection?.id === bookmark.id) setCurrentSelection(null);
       else setCurrentSelection(bookmark);
     }
-    
   }
 
   return (

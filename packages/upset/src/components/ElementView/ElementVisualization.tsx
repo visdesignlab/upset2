@@ -44,9 +44,19 @@ export const ElementVisualization = () => {
     if (timeout.current)
       clearTimeout(timeout.current);
     // We debounce the update to prevent re-rendering the size bars every time the handler fires
-    timeout.current = setTimeout(() =>
-      setCurrentSelection(Object.keys(value).length > 0 ? elementSelectionToBookmark(value) : null), 250);
+    timeout.current = setTimeout(() => {
+      if (Object.keys(value).length > 0) {
+        setCurrentSelection(elementSelectionToBookmark(value));
+      } else {
+        setCurrentSelection(null);
+        // We update the trrack state here or else the re-render triggered on the previous line
+        // will re-select from the config saved state 
+        actions.setElementSelection(null);
+      }
+    }, 250);
   };
+
+  console.log("config", savedSelection, "atom", currentSelection);
 
   return (
     <Box
