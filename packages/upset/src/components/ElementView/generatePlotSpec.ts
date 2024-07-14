@@ -210,7 +210,10 @@ export function createHistogramSpec(
  * @param selection  Current brush selection
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function createHistogramRow(histograms: Histogram[], selection: ElementSelection | undefined): VisualizationSpec[] {
+export function createHistogramRow(
+  histograms: Histogram[], 
+  selection: ElementSelection | undefined)
+: VisualizationSpec[] {
   const PARAMS = [
     {
       name: 'brush',
@@ -235,15 +238,15 @@ export function createHistogramRow(histograms: Histogram[], selection: ElementSe
         width: 200,
         height: 200,
         layer: [
-          {
+          { // This layer displays the overall probability lines for selected/bookmarked intersections
             transform: [
               {
                 density: attribute,
                 groupby: ['subset', 'color'],
               },
-              {// Hacky way to get the correct name for the attribute & sync with other plots
-              // Otherwise, the attribute name is "value", so selections don't sync and the signal doesn't 
-              // include the name of the attribute being selected
+              { // Hacky way to get the correct name for the attribute & sync with other plots
+                // Otherwise, the attribute name is "value", so selections don't sync and the signal sent 
+                // by selecting on this plot doesn''t include the name of the attribute being selected
                 calculate: 'datum["value"]',
                 as: attribute,
               },
@@ -273,7 +276,7 @@ export function createHistogramRow(histograms: Histogram[], selection: ElementSe
               },
             },
           },
-          {
+          { // This layer displays probability lines for selected elements, grouped by subset
             transform: [
               {
                 filter: {param: 'brush'}
@@ -294,7 +297,7 @@ export function createHistogramRow(histograms: Histogram[], selection: ElementSe
               color: COLOR,
               opacity: {value: 1},
             },
-          }
+          },
         ]
       };
     }
