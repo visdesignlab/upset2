@@ -768,11 +768,13 @@ export function elementSelectionsEqual(a: ElementSelection | undefined, b: Eleme
  */
 export function elementSelectionToBookmark(selection: ElementSelection): BookmarkedSelection {
   // hash the query to get a unique id
+  const norm = (i : number) => Math.abs(Math.round(i));
+
   let i = 1;
   for (const [key, value] of Object.entries(selection)) {
-    i *= hashString(key) * value[0] * value[1];
+    i *= norm(hashString(key)) * norm(value[0]) * norm(value[1]);
   }
-  i = Math.round(Math.abs(i * 1e9));
+  i = norm(i);
   return {
     id: i.toString(),
     label: `Atts: ${Object.keys(selection).join(', ')}`,
