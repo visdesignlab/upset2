@@ -1,4 +1,4 @@
-import { ElementSelection, Histogram, Scatterplot } from '@visdesignlab/upset2-core';
+import { ElementSelection, Histogram, isHistogram, isScatterplot, Scatterplot } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
 /**
@@ -47,30 +47,24 @@ export function createScatterplotSpec(
 }
 
 /**
- * Converts an ElementSelection from a different Vega plot to the format necessary to display correctly on this plot.
- * The scatterplot wants selections defined as x and y ranges and doesn't accept axis names instead,
- * so we convert the axis names to x and y ranges.
- * @param plot   The scatterplot that we need a selection value for
+ * Converts an elementselection to a value for a vega param.
+ * Plots want x and y ranges instead of attribute ranges, so we need to convert the selection to match.
+ * If this plot's axis don't match the selection attributes, we return undefined to avoid conflicting selections.
+ * @param plot   The plot that we need a selection value for
  * @param select The element selection to use to generate the selection value
- * @returns An object which can be assigned to the 'value' field of a vega param in scatterplot s
- *          to display the selection represented by e
+ * @returns An object which can be assigned to the 'value' field of a vega param in the plot
+ *          to display the selection in the plot.
  */
-function convertSelection(plot: Scatterplot, select: ElementSelection): ElementSelection | undefined {
+function convertSelection(plot: Scatterplot | Histogram, select: ElementSelection): ElementSelection | undefined {
   let val: ElementSelection | undefined;
-  if (select[plot.x] && select[plot.y]) {
+  if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
     val = {
       x: select[plot.x],
       y: select[plot.y],
     }
-  } else if (select[plot.x]) {
+  } else if (isHistogram(plot) && Object.keys(select).length === 1 && select[plot.attribute]) {
     val = {
-      x: select[plot.x],
-      y: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
-    }
-  } else if (select[plot.y]) {
-    val = {
-      y: select[plot.y],
-      x: [-Number.MAX_SAFE_INTEGER, Number.MAX_SAFE_INTEGER]
+      x: select[plot.attribute],
     }
   } else val = undefined;
   return val;
@@ -214,17 +208,18 @@ export function createHistogramRow(
   histograms: Histogram[], 
   selection: ElementSelection | undefined)
 : VisualizationSpec[] {
-  const PARAMS = [
-    {
-      name: 'brush',
-      select: {
-        type: 'interval',
-        encodings: ['x'],
-        clear: 'mousedown',
-      },
-      ...(selection && {value: selection}),
-    }
-  ];
+  function makeParams(plot: Histogram) {
+    return [
+      {
+        name: 'brush',
+        select: {
+          type: 'interval',
+          encodings: ['x'],
+          clear: 'mousedown',
+        },
+        ...(selection && {value: convertSelection(plot, selection)}),
+      }
+  ]};
 
   const COLOR = {
     field: 'subset',
@@ -232,8 +227,8 @@ export function createHistogramRow(
     scale: { range: { field: 'color' } },
   };
 
-  return histograms.map(({ attribute, bins, frequency }) => {
-    if (frequency) {
+  return histograms.map((h) => {
+    if (h.frequency) {
       return {
         width: 200,
         height: 200,
@@ -241,20 +236,20 @@ export function createHistogramRow(
           { // This layer displays the overall probability lines for selected/bookmarked intersections
             transform: [
               {
-                density: attribute,
+                density: h.attribute,
                 groupby: ['subset', 'color'],
               },
               { // Hacky way to get the correct name for the attribute & sync with other plots
                 // Otherwise, the attribute name is "value", so selections don't sync and the signal sent 
                 // by selecting on this plot doesn''t include the name of the attribute being selected
                 calculate: 'datum["value"]',
-                as: attribute,
+                as: h.attribute,
               },
             ],
-            params: PARAMS,
+            params: makeParams(h),
             mark: 'line',
             encoding: {
-              x: { field: attribute, type: 'quantitative', title: attribute },
+              x: { field: h.attribute, type: 'quantitative', title: h.attribute },
               y: { field: 'density', type: 'quantitative', title: 'probabiity' },
               color: COLOR,
               opacity: {
@@ -282,17 +277,17 @@ export function createHistogramRow(
                 filter: {param: 'brush'}
               },
               {
-                density: attribute,
+                density: h.attribute,
                 groupby: ['subset', 'color'],
               },
               {
                 calculate: 'datum["value"]',
-                as: attribute,
+                as: h.attribute,
               },
             ],
             mark: 'line',
             encoding: {
-              x: { field: attribute, type: 'quantitative', title: attribute },
+              x: { field: h.attribute, type: 'quantitative', title: h.attribute },
               y: { field: 'density', type: 'quantitative', title: 'probabiity' },
               color: COLOR,
               opacity: {value: 1},
@@ -307,12 +302,12 @@ export function createHistogramRow(
       height: 200,
       layer: [
         {
-          params: PARAMS,
+          params: makeParams(h),
           mark: "bar",
           encoding: {
             x: {
-              bin: { maxBins: bins },
-              field: attribute,
+              bin: { maxBins: h.bins },
+              field: h.attribute,
             },
             y: {
               aggregate: 'count',
@@ -328,8 +323,8 @@ export function createHistogramRow(
           mark: "bar",
           encoding: {
             x: {
-              field: attribute,
-              bin: {maxBins: bins}
+              field: h.attribute,
+              bin: {maxBins: h.bins}
             },
             y: {
               aggregate: 'count',
