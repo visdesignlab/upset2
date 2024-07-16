@@ -26,7 +26,8 @@ export const ElementVisualization = () => {
   // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
   const [currentSelection, setCurrentSelection] = useRecoilState(elementSelectionAtom);
   const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const timeout = useRef<number | null>(null);
+  const draftSelection = useRef(currentSelection?.selection);
+  
   // Necessary to allow functions to be called on the <div> element itself
   const thisComponent = useRef<HTMLDivElement>(null);
 
@@ -40,27 +41,25 @@ export const ElementVisualization = () => {
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
-
-    if (timeout.current)
-      clearTimeout(timeout.current);
-    // We debounce the update to prevent re-rendering the size bars every time the handler fires
-    timeout.current = setTimeout(() => {
-      if (Object.keys(value).length > 0) {
-        setCurrentSelection(elementSelectionToBookmark(value));
-      } else {
-        setCurrentSelection(null);
-        // We update the trrack state here or else the re-render triggered on the previous line
-        // will re-select from the config saved state 
-        actions.setElementSelection(null);
-      }
-    }, 250);
+    draftSelection.current = value;
   };
 
   return (
     <Box
-      // These attributes facilitate saving the current selection when the user clicks outside the plot.
-      // Necessary to give the <div> focus; focus doesn't bubble up from the VegaLite component but click does
-      onClick={() => {thisComponent.current?.focus()}}
+      // These attributes facilitate saving to the config state when the user clicks off the plot
+      onClick={() => {
+        // Necessary to give the <div> focus; focus doesn't bubble up from the VegaLite component but click does
+        thisComponent.current?.focus();
+        // Since onClick fires onMouseUp, this is a great time to save to the atom
+        if (draftSelection.current && Object.keys(draftSelection.current).length > 0) {
+          setCurrentSelection(elementSelectionToBookmark(draftSelection.current));
+        } else {
+          setCurrentSelection(null);
+          // We update the trrack state here or else the re-render triggered on the previous line
+          // will re-select from the config saved state 
+          actions.setElementSelection(null);
+        }
+      }}
       // Necessary to allow us to focus the <div> programmatically
       ref={thisComponent}
       // Necessary to make <div> focusable so it can receive focus events
