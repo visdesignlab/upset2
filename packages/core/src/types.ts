@@ -767,8 +767,8 @@ export function elementSelectionsEqual(a: ElementSelection | undefined, b: Eleme
  * @returns The element selection.
  */
 export function elementSelectionToBookmark(selection: ElementSelection): BookmarkedSelection {
-  // hash the query to get a unique id
-  const norm = (i : number) => Math.abs(Math.round(i));
+  // Normalizing prevents floating point error from causing different hashes
+  const norm = (i : number) => Math.abs(Math.round(i * 10000));
 
   let i = 1;
   for (const [key, value] of Object.entries(selection)) {
