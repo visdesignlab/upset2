@@ -84,7 +84,7 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms, selectColor, currentSelection?.selection)}
+            spec={generateVega(scatterplots, histograms, selectColor, savedSelection?.selection)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}
