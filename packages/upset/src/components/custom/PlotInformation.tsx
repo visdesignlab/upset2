@@ -59,8 +59,8 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
 
   const placeholderText = {
     description: 'description of this dataset, eg: "movie genres and ratings"',
-    sets: 'name for the sets in this dataset, eg: "movie genres"',
-    items: 'name for the items in this dataset, eg: "movies"',
+    sets: 'name for the setsc in this data, eg: "movie genres"',
+    items: 'name for the items in this data, eg: "movies"',
   };
 
   const plotInformationState = useRecoilValue(plotInformationSelector);
@@ -185,7 +185,7 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
         <Box>
           <Box sx={plotInfoItem}>
             <Typography variant="h4" sx={plotInfoTitle}>
-              Dataset Description:
+              This upset plot shows:
             </Typography>
             <TextField
               tabIndex={tabIndex + 3}
@@ -197,14 +197,13 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               fullWidth
               maxRows={8}
               placeholder={`${placeholderText.description}`}
-              aria-label={`${placeholderText.description}`}
             />
           </Box>
         </Box>
         <Box>
           <Box sx={plotInfoItem}>
             <Typography variant="h4" sx={plotInfoTitle}>
-              Sets:
+              The sets are:
             </Typography>
             <TextField
               tabIndex={tabIndex + 4}
@@ -216,14 +215,13 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               fullWidth
               maxRows={8}
               placeholder={`${placeholderText.sets}`}
-              aria-label={`${placeholderText.sets}`}
             />
           </Box>
         </Box>
         <Box>
           <Box sx={plotInfoItem}>
             <Typography variant="h4" sx={plotInfoTitle}>
-              Items:
+              The items are:
             </Typography>
             <TextField
               tabIndex={tabIndex + 5}
@@ -235,7 +233,6 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               fullWidth
               maxRows={8}
               placeholder={`${placeholderText.items}`}
-              aria-label={`${placeholderText.items}`}
             />
           </Box>
         </Box>
