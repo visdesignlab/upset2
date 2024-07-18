@@ -59,7 +59,7 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
 
   const placeholderText = {
     description: 'description of this dataset, eg: "movie genres and ratings"',
-    sets: 'name for the setsc in this data, eg: "movie genres"',
+    sets: 'name for the sets in this data, eg: "movie genres"',
     items: 'name for the items in this data, eg: "movies"',
   };
 
