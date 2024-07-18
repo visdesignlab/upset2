@@ -124,14 +124,20 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
           }
         }}
       >
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
-          {plotInformation.title ?? "[Title]"}
-          <Button aria-label='Edit Plot Information' style={{float: 'right', position: 'relative', bottom: '7px'}} tabIndex={tabIndex + 1}>
+        <div style={{height: '1.6em'}}>
+          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
+            {plotInformation.title ?? "[Title]"}
+          </Typography>
+          <Button 
+            aria-label='Edit Plot Information' 
+            style={{float: 'right', position: 'relative', bottom: '40px'}} 
+            tabIndex={tabIndex + 1}
+          >
             <Icon style={{overflow: 'visible'}}>
               <EditIcon />
             </Icon>
           </Button>
-        </Typography>
+        </div>
         {divider}
         <Typography>{plotInformation.caption ?? "[Caption]"}</Typography>
         <br />
