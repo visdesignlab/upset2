@@ -14,6 +14,10 @@ import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
+/**
+ * Displays a matrix of plots representing the elements in the current intersection selection & bookmarks.
+ * @returns 
+ */
 export const ElementVisualization = () => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const scatterplots = useRecoilValue(scatterplotsSelector);
@@ -51,7 +55,11 @@ export const ElementVisualization = () => {
         // Necessary to give the <div> focus; focus doesn't bubble up from the VegaLite component but click does
         thisComponent.current?.focus();
         // Since onClick fires onMouseUp, this is a great time to save to the atom
-        if (draftSelection.current && Object.keys(draftSelection.current).length > 0) {
+        if (
+          draftSelection.current 
+          && Object.keys(draftSelection.current).length > 0 
+          && !elementSelectionsEqual(draftSelection.current, currentSelection?.selection)
+        ) {
           setCurrentSelection(elementSelectionToBookmark(draftSelection.current));
         } else {
           setCurrentSelection(null);
@@ -59,6 +67,7 @@ export const ElementVisualization = () => {
           // will re-select from the config saved state 
           actions.setElementSelection(null);
         }
+        draftSelection.current = undefined;
       }}
       // Necessary to allow us to focus the <div> programmatically
       ref={thisComponent}
@@ -66,7 +75,7 @@ export const ElementVisualization = () => {
       tabIndex={-1}
       // Since we now have focus whenever a plot is clicked, this will always fire when clicking off
       onBlur={() => {
-        if (!elementSelectionsEqual(currentSelection?.selection, savedSelection?.selection)) 
+        if (!elementSelectionsEqual(currentSelection?.selection, savedSelection?.selection))
           actions.setElementSelection(currentSelection);
       }}
     >
@@ -75,7 +84,7 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms, selectColor, savedSelection?.selection)}
+            spec={generateVega(scatterplots, histograms, selectColor, currentSelection?.selection)}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}

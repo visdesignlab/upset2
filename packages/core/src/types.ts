@@ -756,7 +756,6 @@ export function elementSelectionsEqual(a: ElementSelection | undefined, b: Eleme
   }
 
   return true;
-
 }
 
 /**

@@ -2,6 +2,30 @@ import { ElementSelection, Histogram, isHistogram, isScatterplot, Scatterplot } 
 import { VisualizationSpec } from 'react-vega';
 
 /**
+ * Converts an elementselection to a value for a vega param.
+ * Plots want x and y ranges instead of attribute ranges, so we need to convert the selection to match.
+ * If this plot's axis don't match the selection attributes, we return undefined to avoid conflicting selections.
+ * @param plot   The plot that we need a selection value for
+ * @param select The element selection to use to generate the selection value
+ * @returns An object which can be assigned to the 'value' field of a vega param in the plot
+ *          to display the selection in the plot.
+ */
+function convertSelection(plot: Scatterplot | Histogram, select: ElementSelection): ElementSelection | undefined {
+  let val: ElementSelection | undefined;
+  if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
+    val = {
+      x: select[plot.x],
+      y: select[plot.y],
+    }
+  } else if (isHistogram(plot) && Object.keys(select).length === 1 && select[plot.attribute]) {
+    val = {
+      x: select[plot.attribute],
+    }
+  } else val = undefined;
+  return val;
+}
+
+/**
  * Creates the spec for a single scatterplot.
  * @param x - The attribute to plot on the x-axis.
  * @param y - The attribute to plot on the y-axis.
@@ -47,44 +71,26 @@ export function createScatterplotSpec(
 }
 
 /**
- * Converts an elementselection to a value for a vega param.
- * Plots want x and y ranges instead of attribute ranges, so we need to convert the selection to match.
- * If this plot's axis don't match the selection attributes, we return undefined to avoid conflicting selections.
- * @param plot   The plot that we need a selection value for
- * @param select The element selection to use to generate the selection value
- * @returns An object which can be assigned to the 'value' field of a vega param in the plot
- *          to display the selection in the plot.
- */
-function convertSelection(plot: Scatterplot | Histogram, select: ElementSelection): ElementSelection | undefined {
-  let val: ElementSelection | undefined;
-  if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
-    val = {
-      x: select[plot.x],
-      y: select[plot.y],
-    }
-  } else if (isHistogram(plot) && Object.keys(select).length === 1 && select[plot.attribute]) {
-    val = {
-      x: select[plot.attribute],
-    }
-  } else val = undefined;
-  return val;
-}
-
-/**
  * Creates the spec for multiple scatterplots containing data from multiple subsets.
  * @param specs       Scatterplot objects with x and y attributes.
  * @param selection   The current brush selection, if extant
  * @param selectColor The color to use for brushed points
  * @returns The Vega-Lite spec for the scatterplots.
  */
-export function createScatterplotRow(specs: Scatterplot[], selection: ElementSelection | undefined, selectColor: string): VisualizationSpec[] {
+export function createScatterplotRow(
+  specs: Scatterplot[], 
+  selection: ElementSelection | undefined, 
+  selectColor: string
+): VisualizationSpec[] {
   return specs.map((s) => ({
     width: 200,
     height: 200,
     mark: {
       type: 'point',
     },
-    params: [
+    // We only add the 'params' field if this object has a selection OR if there is no selection
+    // This works around a Vega bug where providing the value field to a param doesn't always work in concatenated plots
+    ...((!selection || (selection && convertSelection(s, selection))) && {params: [
       {
         name: 'brush',
         select: {
@@ -92,9 +98,9 @@ export function createScatterplotRow(specs: Scatterplot[], selection: ElementSel
           clear: 'mousedown',
         },
         // We only add the 'value' field if selection is defined
-        ...(selection && {value: convertSelection(s, selection)}),
+        ...(selection && convertSelection(s, selection) && {value: convertSelection(s, selection)}),
       },
-    ],
+    ]}),
     encoding: {
       x: {
         field: s.x,
@@ -217,9 +223,9 @@ export function createHistogramRow(
           encodings: ['x'],
           clear: 'mousedown',
         },
-        ...(selection && {value: convertSelection(plot, selection)}),
+        ...(selection && convertSelection(plot, selection) && {value: convertSelection(plot, selection)}),
       }
-  ]};
+  ];};
 
   const COLOR = {
     field: 'subset',
@@ -250,7 +256,7 @@ export function createHistogramRow(
             mark: 'line',
             encoding: {
               x: { field: h.attribute, type: 'quantitative', title: h.attribute },
-              y: { field: 'density', type: 'quantitative', title: 'probabiity' },
+              y: { field: 'density', type: 'quantitative', title: 'Probability' },
               color: COLOR,
               opacity: {
                 condition: [
@@ -288,7 +294,7 @@ export function createHistogramRow(
             mark: 'line',
             encoding: {
               x: { field: h.attribute, type: 'quantitative', title: h.attribute },
-              y: { field: 'density', type: 'quantitative', title: 'probabiity' },
+              y: { field: 'density', type: 'quantitative',},
               color: COLOR,
               opacity: {value: 1},
             },
