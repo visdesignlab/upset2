@@ -127,7 +127,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         {divider}
         <PlotInformation divider={divider} tabIndex={10} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          {(currState.useUserAlt ? "User " : "") + (useLong ? "Long " : "Short ") + "Description"}
+          Description
         </Typography>
         {divider}
         <Box marginTop={2} css={css`overflow-y: auto;`}>
@@ -135,7 +135,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             <FormControlLabel
               style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
               sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="User Descriptions"
+              label="View User Description(s)"
               control={
                 <Switch
                   size="small"
@@ -155,13 +155,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             />
             <HelpCircle 
               text={"When enabled, allows you to enter a custom alternative text description."}
-              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
+              margin={{left: 12, top: 0, right: 0, bottom: 0}}
             />
             <br />
             <FormControlLabel
               style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
               sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="Long Description&nbsp;"
+              label="Display Long Description"
               control={
                 <Switch
                   size="small"
