@@ -106,7 +106,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       open={open}
       onClose={close}
       variant="persistent"
-      aria-label="Alt Text Sidebar"
+      aria-label="Accessibility Sidebar"
       sx={{
         width: (open) ? initialDrawerWidth : 0,
         flexShrink: 0,
