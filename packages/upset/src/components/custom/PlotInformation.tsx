@@ -58,9 +58,9 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
   };
 
   const placeholderText = {
-    description: 'movie genres and ratings',
-    sets: 'movie genres (dataset columns)',
-    items: 'movies (dataset rows)',
+    description: 'description of this dataset, eg: "movie genres and ratings"',
+    sets: 'name for the sets in this dataset, eg: "movie genres"',
+    items: 'name for the items in this dataset, eg: "movies"',
   };
 
   const plotInformationState = useRecoilValue(plotInformationSelector);
@@ -196,7 +196,8 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               value={plotInformation.description}
               fullWidth
               maxRows={8}
-              placeholder={`eg: ${placeholderText.description}`}
+              placeholder={`${placeholderText.description}`}
+              aria-label={`${placeholderText.description}`}
             />
           </Box>
         </Box>
@@ -214,7 +215,8 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               value={plotInformation.sets}
               fullWidth
               maxRows={8}
-              placeholder={`eg: ${placeholderText.sets}`}
+              placeholder={`${placeholderText.sets}`}
+              aria-label={`${placeholderText.sets}`}
             />
           </Box>
         </Box>
@@ -232,7 +234,8 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
               value={plotInformation.items}
               fullWidth
               maxRows={8}
-              placeholder={`eg: ${placeholderText.items}`}
+              placeholder={`${placeholderText.items}`}
+              aria-label={`${placeholderText.items}`}
             />
           </Box>
         </Box>
