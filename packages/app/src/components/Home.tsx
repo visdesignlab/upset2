@@ -11,7 +11,7 @@ export const Home = () => {
                     <Typography variant="body1" color="text.secondary">
                         You haven't loaded data, you can't access the workspace you are attemping to view, or you are not logged in. 
                         To log in, click the account icon in the top right corner.
-                        To load stored data or upload new data, visit <Link href="https://multinet.app" aria-label="Navigate to Multinet homepage" color="secondary.dark">multinet.app</Link>.
+                        To load stored data or upload new data, visit <Link href="https://multinet.app" aria-label="Multinet homepage" color="secondary.dark">multinet.app</Link>.
                     </Typography>
                     <Typography variant="h5" color="text.primary" sx={{marginTop: "1rem"}}>
                         Examples

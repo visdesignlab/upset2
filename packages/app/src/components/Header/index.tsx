@@ -194,7 +194,7 @@ const Header = ({ data }: { data: any }) => {
                 rel="noreferrer" 
                 onClick={dispatchState} 
                 style={{textDecoration: "none", color: "inherit"}} 
-                aria-label='Data Tables (raw and computed) in a new tab'
+                aria-label='Data Tables (raw and computed)'
                 tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
               >
                 <Button
@@ -265,7 +265,7 @@ const Header = ({ data }: { data: any }) => {
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit" aria-label="Import UpSet JSON state file">
                 Import State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="State File Download: UpSet JSON">
+              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="UpSet JSON state file download">
                 Export State
               </MenuItem>
               <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))} aria-label="Download UpSet JSON state file with table data included">
