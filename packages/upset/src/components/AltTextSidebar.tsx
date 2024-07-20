@@ -48,7 +48,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const currState = useRecoilValue(upsetConfigAtom);
 
   const [altText, setAltText] = useState<AltText | null>(null);
-  const [textGenErr, setTextGenErr] = useState(false);
+  const [textGenErr, setTextGenErr] = useState<string | false>(false);
   
   // States for editing the alt text
   const [textEditing, setTextEditing] = useState(false);
@@ -65,13 +65,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         setTextGenErr(false);
       } catch (e) {
         const msg: string = (e as Error).message;
-        // We want the error message to display on the frontend
-        setAltText({
-          longDescription: msg,
-          shortDescription: msg,
-          techniqueDescription: msg,
-        });
-        setTextGenErr(true);
+        setTextGenErr(msg);
       }
     }
     
@@ -178,7 +172,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               text={"When enabled, displays the long text description for this plot instead of the short version."}
               margin={{left: 12, top: 0, right: 0, bottom: 0}} 
             />
-          </>) : null}
+          </>) : (
+            <Typography variant="body1" color="error">{textGenErr}</Typography>
+          )}
           {textEditing ? (<>
             <Button 
               color="primary" 
@@ -230,9 +226,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             >
               <ReactMarkdownWrapper 
                 text={
-                  displayAltText ?? currState.useUserAlt 
+                  displayAltText ?? (currState.useUserAlt 
                     ? "No user-generated description available." 
-                    : "No description available."
+                    : "No description available.")
                 }
               />
               <Button
