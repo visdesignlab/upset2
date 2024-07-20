@@ -229,7 +229,11 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               tabIndex={3}  
             >
               <ReactMarkdownWrapper 
-                text={displayAltText ?? "No description available."}
+                text={
+                  displayAltText ?? currState.useUserAlt 
+                    ? "No user-generated description available." 
+                    : "No description available."
+                }
               />
               <Button
                 style={{
