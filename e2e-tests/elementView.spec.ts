@@ -37,7 +37,7 @@ test('Element View', async ({ page }) => {
   await row.dispatchEvent('click');
 
   // Open element view
-  await page.getByLabel('Open element view sidebar').click();
+  await page.getByLabel('Element View Sidebar Toggle').click();
 
   // test expansion buttons
   await page.getByLabel('Expand the sidebar in full').click();

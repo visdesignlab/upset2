@@ -41,7 +41,7 @@ test.beforeEach(async ({ page }) => {
 test('Alt Text', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
-  const altTextSidebarButton = await page.getByLabel('Alt Text Sidebar Toggle', { exact: true });
+  const altTextSidebarButton = await page.getByLabel('Alt Text Sidebar', { exact: true });
   await expect(altTextSidebarButton).toBeVisible();
   await altTextSidebarButton.click();
 

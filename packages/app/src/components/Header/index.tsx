@@ -183,7 +183,7 @@ const Header = ({ data }: { data: any }) => {
                   setIsAltTextSidebarOpen(true);
                 }
               }}
-              aria-label='Alt Text Sidebar Toggle'
+              aria-label='Alt Text Sidebar'
               tabIndex={2}
               >
                 Text Description
@@ -280,7 +280,7 @@ const Header = ({ data }: { data: any }) => {
                   setIsProvVisOpen(true); 
                   handleMenuClose();
                 }}
-                aria-label="History tree sidebar toggle"  
+                aria-label="History tree sidebar"  
               >
                   Show History
               </MenuItem>
