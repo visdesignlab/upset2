@@ -11,6 +11,7 @@ import { isUpsetConfig } from "./types";
  * 2. Make your changes to UpsetConfig in types.ts
  * 3. Change the return type of the most recent version conversion function to the old type that you copied.
  * 4. Implement a version conversion function that takes the old type and returns the new type (UpsetConfig).
+ *    This function must modify the input config in place.
  * 5. Add a new case to the switch statement in convertConfig.
  *    - The case version number should be the current version number, as your conversion function starts 
  *      with the previous version (which the current version will become) and converts it to the current version.
@@ -22,14 +23,15 @@ import { isUpsetConfig } from "./types";
 
 /**
  * Converts a config, of any version, to the current version.
+ * This is done in-place, so the input config will be modified and returned.
  * @param config The config to convert.
  * @throws {Error} If the config is not an object or programmer error leads to an invalid config at return.
- * @returns {UpsetConfig}
+ * @returns {UpsetConfig} The converted config; the same object as the input config.
  */
 export function convertConfig(config: unknown): UpsetConfig {
   if (typeof config !== 'object' || !config) throw new Error('Config must be an object');
   // Special case for pre-versioning configs
-  if (!Object.hasOwn(config, 'version')) config = preVersionConversion(config as PreVersionConfig);
+  if (!Object.hasOwn(config, 'version')) preVersionConversion(config as PreVersionConfig);
 
   switch ((config as {version: string}).version) {
     case '0.1.0':
@@ -47,20 +49,16 @@ export function convertConfig(config: unknown): UpsetConfig {
  * @returns The converted config.
  */
 function preVersionConversion(config: PreVersionConfig): UpsetConfig {
-  let result = {...config, version: '0.1.0', bookmarks: config.bookmarkedIntersections};
-  delete (result as UpsetConfig & {bookmarkedIntersections?: any}).bookmarkedIntersections;
+  (config as unknown as UpsetConfig).version = '0.1.0';
+  (config as unknown as UpsetConfig).elementSelection = null;
+  (config as unknown as UpsetConfig).bookmarks = config.bookmarkedIntersections;
+  delete (config as any).bookmarkedIntersections;
 
-  for (const bookmark of result.bookmarks) {
+  for (const bookmark of (config as unknown as UpsetConfig).bookmarks) {
     bookmark.type = "intersection";
-  }  
+  }
 
-  if (
-    result.elementSelection 
-    && typeof result.elementSelection === 'object' 
-    && Object.keys(result.elementSelection).length === 0
-  ) result.elementSelection = null;
-
-  return result as UpsetConfig;
+  return config as unknown as UpsetConfig;
 }
 
 /**
