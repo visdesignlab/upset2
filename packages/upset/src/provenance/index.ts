@@ -2,9 +2,13 @@
 import {
   AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
   Bookmark, BookmarkedSelection,
+  convertConfig,
+  ColumnName,
+  Histogram,
+  Scatterplot,
 } from '@visdesignlab/upset2-core';
 
-import { Registry, initializeTrrack } from '@trrack/core';
+import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
 
 export type Metadata = {
   [key: string]: unknown;
@@ -12,7 +16,29 @@ export type Metadata = {
 
 const registry = Registry.create();
 
-const firstAggAction = registry.register(
+/**
+ * Registers a new action that uses a StateChangeFunction with the provenance registry while also guaranteeing
+ * that old upset config types (from outdated Trrack graph imports) 
+ * are converted to the new upset config type before being passed to the function.
+ * One type parameter is required for the payload argument received by the action function.
+ * @param type Action type, string
+ * @param func Action function
+ * @typeparam DoActionPayload The type of the payload argument received by the action function (required)
+ * @typeparam UndoActionType The type of the undo action (optional)
+ * @typeparam UndoActionPayload The type of the payload argument received by the undo action function (optional)
+ * @returns An action creator that can be passed to provenance.apply
+ */
+function register<DoActionPayload, UndoActionType extends string = string, UndoActionPayload = any>(
+  type: string, 
+  func: StateChangeFunction<UpsetConfig, DoActionPayload>
+): ReturnType<typeof registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>> {
+  return registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>(
+    type, 
+    (state, payload) => func(convertConfig(state), payload)
+  );
+}
+
+const firstAggAction = register<AggregateBy>(
   'first-agg',
   (state, aggBy) => {
     state.firstAggregateBy = aggBy;
@@ -24,7 +50,7 @@ const firstAggAction = registry.register(
   },
 );
 
-const firstOverlapAction = registry.register(
+const firstOverlapAction = register<number>(
   'first-overlap',
   (state, overlap) => {
     state.firstOverlapDegree = overlap;
@@ -32,7 +58,7 @@ const firstOverlapAction = registry.register(
   },
 );
 
-const secondAggAction = registry.register(
+const secondAggAction = register<AggregateBy>(
   'second-agg',
   (state, aggBy) => {
     state.secondAggregateBy = aggBy;
@@ -41,7 +67,7 @@ const secondAggAction = registry.register(
   },
 );
 
-const secondOverlapAction = registry.register(
+const secondOverlapAction = register<number>(
   'second-overlap',
   (state, overlap) => {
     state.secondOverlapDegree = overlap;
@@ -49,7 +75,7 @@ const secondOverlapAction = registry.register(
   },
 );
 
-const sortVisibleSetsAction = registry.register(
+const sortVisibleSetsAction = register<SortVisibleBy>(
   'sort-visible-by',
   (state, sort) => {
     state.sortVisibleBy = sort;
@@ -57,7 +83,7 @@ const sortVisibleSetsAction = registry.register(
   },
 );
 
-const sortByAction = registry.register(
+const sortByAction = register<{sort: string, sortByOrder: SortByOrder}>(
   'sort-by',
   (state, { sort, sortByOrder }) => {
     state.sortBy = sort;
@@ -67,7 +93,7 @@ const sortByAction = registry.register(
   },
 );
 
-const maxVisibleAction = registry.register(
+const maxVisibleAction = register<number>(
   'max-visible',
   (state, maxVisible) => {
     state.filters.maxVisible = maxVisible;
@@ -75,7 +101,7 @@ const maxVisibleAction = registry.register(
   },
 );
 
-const minVisibleAction = registry.register(
+const minVisibleAction = register<number>(
   'min-visible',
   (state, minVisible) => {
     state.filters.minVisible = minVisible;
@@ -83,7 +109,7 @@ const minVisibleAction = registry.register(
   },
 );
 
-const hideEmptyAction = registry.register(
+const hideEmptyAction = register<boolean>(
   'hide-empty',
   (state, hide) => {
     state.filters.hideEmpty = hide;
@@ -91,7 +117,7 @@ const hideEmptyAction = registry.register(
   },
 );
 
-const hideNoSetAction = registry.register(
+const hideNoSetAction = register<boolean>(
   'hide-no-set',
   (state, hide) => {
     state.filters.hideNoSet = hide;
@@ -99,7 +125,7 @@ const hideNoSetAction = registry.register(
   },
 );
 
-const addToVisibleAction = registry.register(
+const addToVisibleAction = register<ColumnName>(
   'add-to-visible',
   (state: UpsetConfig, newSet) => {
     const newSets = new Set([...state.visibleSets, newSet]);
@@ -108,7 +134,7 @@ const addToVisibleAction = registry.register(
   },
 );
 
-const removeFromVisibleAction = registry.register(
+const removeFromVisibleAction = register<ColumnName>(
   'remove-from-visible',
   (state: UpsetConfig, newSet) => {
     state.visibleSets = state.visibleSets.filter((v) => v !== newSet);
@@ -116,7 +142,7 @@ const removeFromVisibleAction = registry.register(
   },
 );
 
-const addToVisibleAttributeAction = registry.register(
+const addToVisibleAttributeAction = register<ColumnName>(
   'add-to-visible-attribute',
   (state, attribute) => {
     const newAttributes = new Set([...state.visibleAttributes, attribute]);
@@ -125,7 +151,7 @@ const addToVisibleAttributeAction = registry.register(
   },
 );
 
-const addMultipleVisibleAttributes = registry.register(
+const addMultipleVisibleAttributes = register<ColumnName[]>(
   'add-multiple-visible-attributes',
   (state, attributes) => {
     state.visibleAttributes = attributes;
@@ -133,9 +159,9 @@ const addMultipleVisibleAttributes = registry.register(
   },
 );
 
-const removeFromVisibleAttributes = registry.register(
+const removeFromVisibleAttributes = register<ColumnName>(
   'remove-from-visible-attributes',
-  (state: UpsetConfig, attribute) => {
+  (state, attribute) => {
     state.visibleAttributes = state.visibleAttributes.filter(
       (v) => v !== attribute,
     );
@@ -143,19 +169,19 @@ const removeFromVisibleAttributes = registry.register(
   },
 );
 
-const removeMultipleVisibleAttributes = registry.register(
+const removeMultipleVisibleAttributes = register<ColumnName[]>(
   'remove-multiple-visible-attributes',
-  (state: UpsetConfig, attribute) => {
+  (state, attributes) => {
     state.visibleAttributes = state.visibleAttributes.filter(
-      (v) => !attribute.includes(v),
+      (v) => !attributes.includes(v),
     );
     return state;
   },
 );
 
-const addBookmarkAction = registry.register(
+const addBookmarkAction = register<Bookmark>(
   'add-bookmark',
-  (state: UpsetConfig, newBookmark) => {
+  (state, newBookmark) => {
     if (!state.bookmarks.find((b) => b.id === newBookmark.id)) {
       state.bookmarks = [
         ...state.bookmarks,
@@ -167,7 +193,7 @@ const addBookmarkAction = registry.register(
   },
 );
 
-const removeBookmarkAction = registry.register(
+const removeBookmarkAction = register<Bookmark>(
   'remove-bookmark',
   (state: UpsetConfig, bookmark) => {
     state.bookmarks = state.bookmarks.filter(
@@ -178,7 +204,7 @@ const removeBookmarkAction = registry.register(
   },
 );
 
-const addPlotAction = registry.register(
+const addPlotAction = register<Scatterplot | Histogram>(
   'add-plot',
   (state, plot) => {
     switch (plot.type) {
@@ -189,16 +215,16 @@ const addPlotAction = registry.register(
         state.plots.scatterplots = [...state.plots.scatterplots, plot];
         break;
       default:
-        throw new Error(`Unknown plot type: ${plot.type}`);
+        throw new Error(`Unknown plot type`);
     }
 
     return state;
   },
 );
 
-const removePlotAction = registry.register(
+const removePlotAction = register<Scatterplot | Histogram>(
   'remove-plot',
-  (state: UpsetConfig, plot) => {
+  (state, plot) => {
     switch (plot.type) {
       case 'Histogram':
         state.plots.histograms = state.plots.histograms.filter(
@@ -211,16 +237,16 @@ const removePlotAction = registry.register(
         );
         break;
       default:
-        throw new Error(`Unknown plot type: ${plot.type}`);
+        throw new Error(`Unknown plot type`);
     }
 
     return state;
   },
 );
 
-const replaceStateAction = registry.register(
+const replaceStateAction = register<UpsetConfig>(
   'set-state',
-  (state: UpsetConfig, newState: UpsetConfig) => {
+  (state, newState) => {
     const replacement = JSON.parse(JSON.stringify(newState));
 
     Object.entries(state).forEach(([entry, val]) => {
@@ -249,7 +275,7 @@ const replaceStateAction = registry.register(
   },
 );
 
-const addCollapsedAction = registry.register(
+const addCollapsedAction = register<string>(
   'add-collapsed',
   (state, id) => {
     const newCollapsed = new Set([...state.collapsed, id]);
@@ -258,7 +284,7 @@ const addCollapsedAction = registry.register(
   },
 );
 
-const removeCollapsedAction = registry.register(
+const removeCollapsedAction = register<string>(
   'remove-collapsed',
   (state: UpsetConfig, id) => {
     state.collapsed = state.collapsed.filter((v) => v !== id);
@@ -266,7 +292,7 @@ const removeCollapsedAction = registry.register(
   },
 );
 
-const collapseAllAction = registry.register(
+const collapseAllAction = register<string[]>(
   'collapse-all',
   (state, ids) => {
     state.collapsed = ids.sort();
@@ -274,7 +300,7 @@ const collapseAllAction = registry.register(
   },
 );
 
-const expandAllAction = registry.register(
+const expandAllAction = register<string[]>(
   'expand-all',
   (state: UpsetConfig, newCollapsed) => {
     state.collapsed = [...newCollapsed];
@@ -282,7 +308,7 @@ const expandAllAction = registry.register(
   },
 );
 
-const setPlotInformationAction = registry.register(
+const setPlotInformationAction = register<PlotInformation>(
   'set-plot-information',
   (state: UpsetConfig, plotInformation) => {
     state.plotInformation = plotInformation;
@@ -290,7 +316,7 @@ const setPlotInformationAction = registry.register(
   },
 );
 
-const setSelectedAction = registry.register(
+const setSelectedAction = register<Row | null>(
   'select-intersection',
   (state: UpsetConfig, intersection) => {
     state.selected = intersection;
@@ -298,7 +324,7 @@ const setSelectedAction = registry.register(
   },
 );
 
-const setElementSelectionAction = registry.register(
+const setElementSelectionAction = register<BookmarkedSelection | null>(
   'select-elements',
   (state: UpsetConfig, bookmarkedSelection) => {
     state.elementSelection = bookmarkedSelection;
@@ -335,7 +361,7 @@ export function getActions(provenance: UpsetProvenance) {
     secondAggregateBy: (aggBy: AggregateBy) => provenance.apply(`Second aggregate by ${aggBy}`, secondAggAction(aggBy)),
     secondOverlapBy: (overlap: number) => provenance.apply(`Second overlap by ${overlap}`, secondOverlapAction(overlap)),
     sortVisibleBy: (sort: SortVisibleBy) => provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
-    sortBy: (sort: string, sortByOrder?: SortByOrder) => provenance.apply(`Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`, sortByAction({ sort, sortByOrder })),
+    sortBy: (sort: string, sortByOrder: SortByOrder) => provenance.apply(`Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`, sortByAction({ sort, sortByOrder })),
     setMaxVisible: (val: number) => provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
     setMinVisible: (val: number) => provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
     setHideEmpty: (val: boolean) => provenance.apply(val ? 'Hide empty intersections' : 'Show empty intersections', hideEmptyAction(val)),
@@ -362,7 +388,7 @@ export function getActions(provenance: UpsetProvenance) {
         'Deselect intersection',
       setSelectedAction(intersection),
     ),
-    setElementSelection: (selection: BookmarkedSelection | null | undefined) => provenance.apply(
+    setElementSelection: (selection: BookmarkedSelection | null) => provenance.apply(
       selection && Object.keys(selection.selection).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
           : "Deselected elements",
