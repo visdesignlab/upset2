@@ -377,8 +377,11 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'selected')
     && Object.hasOwn(config, 'elementSelection')
     && Object.hasOwn(config, 'version')
-  )) 
+  )) {
+    console.warn('Upset config is missing required fields');
     return false;
+  }
+    
 
   // Put fields we've confirmed exist into vars to avoid repeating necessary casts
   const { plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
@@ -387,71 +390,216 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 
   // Check that the fields are of the correct type
   // Start with plot info
-  return typeof plotInformation === 'object'
-    && Object.hasOwn(plotInformation, 'description')
-    && Object.hasOwn(plotInformation, 'sets')
-    && Object.hasOwn(plotInformation, 'items')
-    && typeof (plotInformation as PlotInformation).description === 'string'
-    && typeof (plotInformation as PlotInformation).sets === 'string'
-    && typeof (plotInformation as PlotInformation).items === 'string'
-    // horizontal
-    && typeof horizontal === 'boolean'
-    // firstAggregateBy
-    && isAggregateBy(firstAggregateBy)
-    // firstOverlapDegree
-    && typeof firstOverlapDegree === 'number'
-    // secondAggregateBy
-    && isAggregateBy(secondAggregateBy)
-    // secondOverlapDegree
-    && typeof secondOverlapDegree === 'number'
-    // sortVisibleBy
-    && (sortVisibleBy === 'Alphabetical'
-      || sortVisibleBy === 'Ascending'
-      || sortVisibleBy === 'Descending')
-    // sortBy
-    && typeof sortBy === 'string'
-    // sortByOrder
-    && (sortByOrder === 'Ascending'
-      || sortByOrder === 'Descending')
-    // filters
-    && typeof filters === 'object'
-    && Object.hasOwn(filters, 'maxVisible')
-    && Object.hasOwn(filters, 'minVisible')
-    && Object.hasOwn(filters, 'hideEmpty')
-    && Object.hasOwn(filters, 'hideNoSet')
-    && typeof filters.maxVisible === 'number'
-    && typeof filters.minVisible === 'number'
-    && typeof filters.hideEmpty === 'boolean'
-    && typeof filters.hideNoSet === 'boolean'
-    // visibleSets
-    && Array.isArray(visibleSets)
-    && visibleSets.every(s => typeof s === 'string')
-    // visibleAttributes
-    && Array.isArray(visibleAttributes)
-    && visibleAttributes.every(a => typeof a === 'string')
-    // bookmarks
-    && Array.isArray(bookmarks)
-    && bookmarks.every(b => isBookmark(b))
-    // collapsed
-    && Array.isArray(collapsed)
-    && collapsed.every(c => typeof c === 'string')
-    // plots
-    && typeof plots === 'object'
-    && Object.hasOwn(plots, 'scatterplots')
-    && Object.hasOwn(plots, 'histograms')
-    && Array.isArray(plots.scatterplots)
-    && Array.isArray(plots.histograms)
-    && plots.scatterplots.every(s => isScatterplot(s))
-    && plots.histograms.every(h => isHistogram(h))
-    // allSets
-    && Array.isArray(allSets)
-    && allSets.every(s => isColumn(s))
-    // selected
-    && (selected === null || isRow(selected))
-    // elementSelection
-    && (elementSelection === null || isBookmarkedSelection(elementSelection))
-    // version
-    && version === '0.1.0';
+  if (typeof plotInformation !== 'object') {
+    console.warn('Upset config error: Plot information is not an object');
+    return false;
+  }
+  if (!Object.hasOwn(plotInformation, 'description')) {
+    console.warn('Upset config error: Plot information missing description');
+    return false;
+  }
+  if (!Object.hasOwn(plotInformation, 'sets')) {
+    console.warn('Upset config error: Plot information missing sets');
+    return false;
+  }
+  if (!Object.hasOwn(plotInformation, 'items')) {
+    console.warn('Upset config error: Plot information missing items');
+    return false;
+  }
+  if (typeof (plotInformation as PlotInformation).description !== 'string') {
+    console.warn('Upset config error: Plot description is not a string');
+    return false;
+  }
+  if (typeof (plotInformation as PlotInformation).sets !== 'string') {
+    console.warn('Upset config error: Plot sets is not a string');
+    return false;
+  }
+  if (typeof (plotInformation as PlotInformation).items !== 'string') {
+    console.warn('Upset config error: Plot items is not a string');
+    return false;
+  }
+  
+  // horizontal
+  if (typeof horizontal !== 'boolean') {
+    console.warn('Upset config error: Horizontal is not a boolean');
+    return false;
+  }
+
+  // firstAggregateBy
+  if (!isAggregateBy(firstAggregateBy)) {
+    console.warn('Upset config error: Invalid first aggregate by');
+    return false;
+  }
+
+  // firstOverlapDegree
+  if (typeof firstOverlapDegree !== 'number') {
+    console.warn('Upset config error: First overlap degree is not a number');
+    return false;
+  }
+
+  // secondAggregateBy
+  if (!isAggregateBy(secondAggregateBy)) {
+    console.warn('Upset config error: Invalid second aggregate by');
+    return false;
+  }
+
+  // secondOverlapDegree
+  if (typeof secondOverlapDegree !== 'number') {
+    console.warn('Upset config error: Second overlap degree is not a number');
+    return false;
+  }
+
+  // sortVisibleBy
+  if (!(sortVisibleBy === 'Alphabetical'|| sortVisibleBy === 'Ascending'
+    || sortVisibleBy === 'Descending')) {
+    console.warn('Upset config error: Invalid sort visible by');
+    return false;
+  }
+
+  // sortBy
+  if (typeof sortBy !== 'string') {
+    console.warn('Upset config error: Sort by is not a string');
+    return false;
+  }
+
+  // sortByOrder
+  if (!(sortByOrder === 'Ascending' || sortByOrder === 'Descending')) {
+    console.warn('Upset config error: Invalid sort by order');
+    return false;
+  }
+
+  // filters
+  if (typeof filters !== 'object') {
+    console.warn('Upset config error: Filters is not an object');
+    return false;
+  }
+  if (!Object.hasOwn(filters, 'maxVisible')) {
+    console.warn('Upset config error: Filters missing max visible');
+    return false;
+  }
+  if (!Object.hasOwn(filters, 'minVisible')) {
+    console.warn('Upset config error: Filters missing min visible');
+    return false;
+  }
+  if (!Object.hasOwn(filters, 'hideEmpty')) {
+    console.warn('Upset config error: Filters missing hide empty');
+    return false;
+  }
+  if (!Object.hasOwn(filters, 'hideNoSet')) {
+    console.warn('Upset config error: Filters missing hide no set');
+    return false;
+  }
+  if (typeof filters.maxVisible !== 'number') {
+    console.warn('Upset config error: Max visible is not a number');
+    return false;
+  }
+  if (typeof filters.minVisible !== 'number') {
+    console.warn('Upset config error: Min visible is not a number');
+    return false;
+  }
+  if (typeof filters.hideEmpty !== 'boolean') {
+    console.warn('Upset config error: Hide empty is not a boolean');
+    return false;
+  }
+  if (typeof filters.hideNoSet !== 'boolean') {
+    console.warn('Upset config error: Hide no set is not a boolean');
+    return false;
+  }
+  // visibleSets
+  if (!Array.isArray(visibleSets)) {
+    console.warn('Upset config error: Visible sets is not an array');
+    return false;
+  }
+  if (!visibleSets.every(s => typeof s === 'string')) {
+    console.warn('Upset config error: Visible sets contains non-strings');
+    return false;
+  }
+  // visibleAttributes
+  if (!Array.isArray(visibleAttributes)) {
+    console.warn('Upset config error: Visible attributes is not an array');
+    return false;
+  }
+  if (!visibleAttributes.every(a => typeof a === 'string')) {
+    console.warn('Upset config error: Visible attributes contains non-strings');
+    return false;
+  }
+  // bookmarks
+  if (!Array.isArray(bookmarks)) {
+    console.warn('Upset config error: Bookmarks is not an array');
+    return false;
+  }
+  if (!bookmarks.every(b => isBookmark(b))) {
+    console.warn('Upset config error: Bookmarks contains invalid bookmarks');
+    return false;
+  }
+  // collapsed
+  if (!Array.isArray(collapsed)) {
+    console.warn('Upset config error: Collapsed is not an array');
+    return false;
+  }
+  if (!collapsed.every(c => typeof c === 'string')) {
+    console.warn('Upset config error: Collapsed contains non-strings');
+    return false;
+  }
+  // plots
+  if (typeof plots !== 'object') {
+    console.warn('Upset config error: Plots is not an object');
+    return false;
+  }
+  if (!Object.hasOwn(plots, 'scatterplots')) {
+    console.warn('Upset config error: Plots missing scatterplots');
+    return false;
+  }
+  if (!Object.hasOwn(plots, 'histograms')) {
+    console.warn('Upset config error: Plots missing histograms');
+    return false;
+  }
+  if (!Array.isArray(plots.scatterplots)) {
+    console.warn('Upset config error: Scatterplots is not an array');
+    return false;
+  }
+  if (!Array.isArray(plots.histograms)) {
+    console.warn('Upset config error: Histograms is not an array');
+    return false;
+  }
+  if (!plots.scatterplots.every(s => isScatterplot(s))) {
+    console.warn('Upset config error: Scatterplots contains invalid scatterplots');
+    return false;
+  }
+  if (!plots.histograms.every(h => isHistogram(h))) {
+    console.warn('Upset config error: Histograms contains invalid histograms');
+    return false;
+  }
+
+  // allSets
+  if (!Array.isArray(allSets)) {
+    console.warn('Upset config error: All sets is not an array');
+    return false;
+  }
+  if (!allSets.every(s => isColumn(s))) {
+    console.warn('Upset config error: All sets contains invalid sets');
+    return false;
+  }
+
+  // selected
+  if (!(selected === null || isRow(selected))) {
+    console.warn('Upset config error: Selected is not a row');
+    return false;
+  }
+
+  // elementSelection
+  if (!(elementSelection === null || isBookmarkedSelection(elementSelection))) {
+    console.warn('Upset config error: Element selection is not a bookmarked selection');
+    return false;
+  }
+
+  // version
+  if (version !== '0.1.0') {
+    console.warn('Upset config error: Invalid version');
+    return false;
+  }
+
+  return true;
 }
 
 /**
