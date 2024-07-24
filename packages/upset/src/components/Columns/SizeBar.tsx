@@ -55,6 +55,8 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
 
   // Opacity for the selection color
   const SELECTION_OPACITY = .6;
+  // Offset in px for each nested bar
+  const OFFSET = 6;
 
   /**
    * Darkens a size bar color according to its nesting index.
@@ -65,7 +67,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
    * @param color The initial color of the bar; to be darkened.
    */
   function darkenColor(index: number, color: string): string {
-    return index === 0 ? color : newShade(color, -(12 + (index * 2)));
+    return index === 0 ? color : newShade(color, -(12 + (index * 3)));
   }
 
   /**
@@ -82,7 +84,8 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     }
 
     // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
-    if (currentIntersection && selected === 0 && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
+    if (currentIntersection && selected === 0 && currentIntersection?.id === row?.id) { 
+      // if currently selected, use the highlight colors
       return nextColor;
     }
     return colors[index];
@@ -102,6 +105,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     if (fullBars >= 3) {
       fullBars = 3;
     }
+    if (rem === 0 && fullBars > 0) fullBars--;
 
     return { fullBars, rem };
   }
@@ -112,7 +116,6 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     [0, dimensions.attribute.width],
   );
   if (size < 0 || sizeDomain < 0) return null;
-  const OFFSET = 6;
   const { fullBars, rem } = calculateBars(size);
 
   // Compute vars for selected size bars
@@ -120,6 +123,9 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   // X-coord for the end of the selected bar
   let selectedWidth = scale(remSelect);
   if (selected > 0 && selectedWidth === 0) selectedWidth = dimensions.attribute.width;
+  // X-coord for the end of the size bar
+  let sizeWidth = scale(rem);
+  if (size > 0 && sizeWidth === 0) sizeWidth = dimensions.attribute.width;
 
   // Calculate all rectangles for the size bar
   const rectArray: Rect[] = [];
@@ -138,7 +144,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
       rectArray.push({
         transform: translate(0, (fullBars * OFFSET) / 2),
         height: dimensions.size.plotHeight - fullBars * OFFSET,
-        width: scale(rem),
+        width: sizeWidth,
         fillColor: getFillColor(fullBars),
         opacity: 1,
       });
@@ -151,6 +157,48 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         fillColor: darkenColor(fullSelectBars, elementSelectionColor),
         opacity: SELECTION_OPACITY,
       });
+  }
+
+  /**
+   * Creates a vertical line capped by a bordered tick
+   * @param x     Distance in pixels from the left edge of the size bar
+   * @param color Tick color (line & border are always white)
+   * @param index Bar index, used to determine vertical position; should be fullBars or fullSelectBars
+   * @returns SVG elements for the line and tick
+   */
+  function lineAndTick(x: number, color: string, index: number): JSX.Element {
+    return (<>
+      {/* White border for selection tick */}
+      <polygon
+          points={
+            `${x},${1} ` +
+            `${x - 7},${-6} ` +
+            `${x + 7},${-6}` 
+          }
+          fill="white"
+          transform={translate(0, (index * OFFSET) / 2)} 
+        />
+        {/* Selection tick */}
+        <polygon
+          points={
+            `${x},${0} ` +
+            `${x - 5},${-5} ` +
+            `${x + 5},${-5}` 
+          }
+          fill={color}
+          transform={translate(0, (index * OFFSET) / 2)}
+        />
+        {/* Vertical white line */}
+        <line
+          stroke="white"
+          strokeWidth="1px"
+          x1={x}
+          x2={x}
+          // y1 is the top of the selection bar, y2 is the bottom of the row
+          y1={index * OFFSET / 2}
+          y2={dimensions.size.plotHeight}
+        />
+    </>)
   }
 
   return (
@@ -173,38 +221,19 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         />
       ))}
       {/* Tick & line at end of element selection bar */}
-      {fullSelectBars < 3 && selected > 0 && (<>
-        {/* White border for selection tick */}
-        <polygon
-          points={
-            `${selectedWidth},${1} ` +
-            `${selectedWidth - 7},${-6} ` +
-            `${selectedWidth + 7},${-6}` 
-          }
-          fill="white"
-          transform={translate(0, (fullSelectBars * OFFSET) / 2)} 
-        />
-        {/* Selection tick */}
-        <polygon
-          points={
-            `${selectedWidth},${0} ` +
-            `${selectedWidth - 5},${-5} ` +
-            `${selectedWidth + 5},${-5}` 
-          }
-          fill={elementSelectionColor}
-          transform={translate(0, (fullSelectBars * OFFSET) / 2)}
-        />
-        {/* Vertical white line */}
-        <line
-          stroke="white"
-          strokeWidth="1px"
-          x1={selectedWidth}
-          x2={selectedWidth}
-          // y1 is the top of the selection bar, y2 is the bottom of the row
-          y1={fullSelectBars * OFFSET / 2}
-          y2={dimensions.size.plotHeight}
-        />
-      </>)}
+      {fullSelectBars < 3 && selected > 0 && 
+        lineAndTick(selectedWidth, elementSelectionColor, fullSelectBars)
+      }
+      {/* Tick & line at end of size bar */}
+      {fullBars < 3 
+        && (
+          (currentIntersection && currentIntersection?.id === row?.id)
+          || (row && bookmarks.some((bookmark) => bookmark.id === row.id))
+        )
+        && lineAndTick(sizeWidth, 
+          (row && bookmarks.some((bookmark) => bookmark.id === row.id)) ? bookmarkedColorPallete[row.id] : nextColor, 
+        fullBars)
+      }
       {fullBars === 3 && (
         <>
           <line
@@ -229,7 +258,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         textAnchor="start"
         dominantBaseline="middle"
         transform={translate(
-          (fullBars > 0 ? dimensions.attribute.width : scale(rem)) + 5,
+          (fullBars > 0 ? dimensions.attribute.width : sizeWidth) + 5,
           dimensions.body.rowHeight / 2,
         )}
       >
