@@ -38,6 +38,8 @@ type Rect = {
   width: number;
   /** Hex fill color */
   fillColor: string;
+  /** Opacity of the bar, 0-1 */
+  opacity: number;
 }
 
 const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
@@ -50,6 +52,9 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
+
+  // Opacity for the selection color
+  const SELECTION_OPACITY = .6;
 
   /**
    * Darkens a size bar color according to its nesting index.
@@ -125,7 +130,8 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         transform: translate(0, (i * OFFSET) / 2),
         height: dimensions.size.plotHeight - i * OFFSET,
         width: dimensions.attribute.width,
-        fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i)
+        fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i),
+        opacity: i < fullSelectBars ? SELECTION_OPACITY : 1,
       })
     // Partial standard bar
     else if (i === fullBars)
@@ -134,6 +140,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         height: dimensions.size.plotHeight - fullBars * OFFSET,
         width: scale(rem),
         fillColor: getFillColor(fullBars),
+        opacity: 1,
       });
     // Partial element selection bar
     if (i === fullSelectBars)
@@ -142,6 +149,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         height: dimensions.size.plotHeight - fullSelectBars * OFFSET,
         width: selectedWidth,
         fillColor: darkenColor(fullSelectBars, elementSelectionColor),
+        opacity: SELECTION_OPACITY,
       });
   }
 
@@ -161,6 +169,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
           width={rect.width}
           height={rect.height}
           fill={rect.fillColor}
+          fillOpacity={rect.opacity}
         />
       ))}
       {fullSelectBars < 3 && selected > 0 && (<>
