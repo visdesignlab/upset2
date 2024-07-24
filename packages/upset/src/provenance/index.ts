@@ -19,8 +19,8 @@ const registry = Registry.create();
 /**
  * Registers a new action that uses a StateChangeFunction with the provenance registry while also guaranteeing
  * that old upset config types (from outdated Trrack graph imports) 
- * are converted to the new upset config type before being passed to the function.
- * One type parameter is required for the payload argument received by the action function.
+ * are converted to the new upset config type before being passed to the StateChangeFunction.
+ * One type parameter is required; for the payload argument received by the action function.
  * @param type Action type, string
  * @param func Action function
  * @typeparam DoActionPayload The type of the payload argument received by the action function (required)

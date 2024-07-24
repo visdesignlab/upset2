@@ -64,19 +64,20 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   }
 
   /**
-   * Gets the fill color for the size bar.
+   * Gets the fill color for the size bar. Returns a bookmark color if the row is bookmarked or selected
+   * and has no selected elements; otherwise, returns grey
    * @param index Index of the bar.
    * @returns Fill color for the bar.
    */
   function getFillColor(index: number): string {
     // if the row is bookmarked, highlight the bar with the bookmark color
-    if (row !== undefined && bookmarks.some((bookmark) => bookmark.id === row.id)) {
+    if (row && selected === 0 && bookmarks.some((bookmark) => bookmark.id === row.id)) {
       // darken the color for advanced scale sub-bars
       return darkenColor(index, bookmarkedColorPallete[row.id]);
     }
 
     // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
-    if (currentIntersection && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
+    if (currentIntersection && selected === 0 && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
       return nextColor;
     }
     return colors[index];
@@ -118,6 +119,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   // Calculate all rectangles for the size bar
   const rectArray: Rect[] = [];
   for (let i = 0; i < 3; ++i) {
+    // Full bars, which may be the selection color if the selection size is greater than the full bar size
     if (i < fullBars)
       rectArray.push({
         transform: translate(0, (i * OFFSET) / 2),
@@ -125,6 +127,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         width: dimensions.attribute.width,
         fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i)
       })
+    // Partial standard bar
     else if (i === fullBars)
       rectArray.push({
         transform: translate(0, (fullBars * OFFSET) / 2),
@@ -132,6 +135,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         width: scale(rem),
         fillColor: getFillColor(fullBars),
       });
+    // Partial element selection bar
     if (i === fullSelectBars)
       rectArray.push({
         transform: translate(0, (fullSelectBars * OFFSET) / 2),
