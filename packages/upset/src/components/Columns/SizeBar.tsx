@@ -172,7 +172,19 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
           fillOpacity={rect.opacity}
         />
       ))}
+      {/* Tick & line at end of element selection bar */}
       {fullSelectBars < 3 && selected > 0 && (<>
+        {/* White border for selection tick */}
+        <polygon
+          points={
+            `${selectedWidth},${1} ` +
+            `${selectedWidth - 7},${-6} ` +
+            `${selectedWidth + 7},${-6}` 
+          }
+          fill="white"
+          transform={translate(0, (fullSelectBars * OFFSET) / 2)} 
+        />
+        {/* Selection tick */}
         <polygon
           points={
             `${selectedWidth},${0} ` +
@@ -180,14 +192,17 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
             `${selectedWidth + 5},${-5}` 
           }
           fill={elementSelectionColor}
+          transform={translate(0, (fullSelectBars * OFFSET) / 2)}
         />
+        {/* Vertical white line */}
         <line
           stroke="white"
           strokeWidth="1px"
           x1={selectedWidth}
           x2={selectedWidth}
-          y1={0}
-          y2={dimensions.body.rowHeight}
+          // y1 is the top of the selection bar, y2 is the bottom of the row
+          y1={fullSelectBars * OFFSET / 2}
+          y2={dimensions.size.plotHeight}
         />
       </>)}
       {fullBars === 3 && (
