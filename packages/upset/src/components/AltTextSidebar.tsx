@@ -74,6 +74,18 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const [userShortText, setUserShortText] = useState(currState.userAltText?.shortDescription);
   const [useLong, setUseLong] = useState(false);
 
+  /**
+   * Handler for when the save button is clicked
+   */
+  function saveButtonClick() {
+    setTextEditing(false);
+    if (!currState.useUserAlt)
+      actions.setUseUserAltText(true);
+    if (currState.userAltText?.shortDescription !== userShortText 
+        || currState.userAltText?.longDescription !== userLongText)  
+      actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
+  }
+
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
@@ -194,14 +206,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             <Button 
               color="primary" 
               style={{float: 'right'}} 
-              onClick={() => {
-                setTextEditing(false);
-                if (!currState.useUserAlt)
-                  actions.setUseUserAltText(true);
-                if (currState.userAltText?.shortDescription !== userShortText 
-                    || currState.userAltText?.longDescription !== userLongText)  
-                  actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
-              }}
+              onClick={saveButtonClick}
               tabIndex={7}
             >Save</Button>
             <Button
