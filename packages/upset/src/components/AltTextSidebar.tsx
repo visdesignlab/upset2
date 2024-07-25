@@ -28,7 +28,7 @@ type Props = {
   close: () => void;
   generateAltText: () => Promise<AltText>;
 }
-``
+
 const initialDrawerWidth = 450;
 
 /**
