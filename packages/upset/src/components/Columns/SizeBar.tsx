@@ -1,5 +1,5 @@
 import { Row } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, elementColorSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
@@ -53,10 +53,14 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const nextColor = useRecoilValue(nextColorSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
 
+  //// Constants
+
   // Opacity for the selection color
   const SELECTION_OPACITY = .6;
   // Offset in px for each nested bar
   const OFFSET = 6;
+
+  /// Functions
 
   /**
    * Darkens a size bar color according to its nesting index.
@@ -110,55 +114,6 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     return { fullBars, rem };
   }
 
-  // Compute vars for size bars
-  const scale = useScale(
-    [0, sizeDomain],
-    [0, dimensions.attribute.width],
-  );
-  if (size < 0 || sizeDomain < 0) return null;
-  const { fullBars, rem } = calculateBars(size);
-
-  // Compute vars for selected size bars
-  const { fullBars: fullSelectBars, rem: remSelect } = calculateBars(selected);
-  // X-coord for the end of the selected bar
-  let selectedWidth = scale(remSelect);
-  if (selected > 0 && selectedWidth === 0) selectedWidth = dimensions.attribute.width;
-  // X-coord for the end of the size bar
-  let sizeWidth = scale(rem);
-  if (size > 0 && sizeWidth === 0) sizeWidth = dimensions.attribute.width;
-
-  // Calculate all rectangles for the size bar
-  const rectArray: Rect[] = [];
-  for (let i = 0; i < 3; ++i) {
-    // Full bars, which may be the selection color if the selection size is greater than the full bar size
-    if (i < fullBars)
-      rectArray.push({
-        transform: translate(0, (i * OFFSET) / 2),
-        height: dimensions.size.plotHeight - i * OFFSET,
-        width: dimensions.attribute.width,
-        fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i),
-        opacity: i < fullSelectBars ? SELECTION_OPACITY : 1,
-      })
-    // Partial standard bar
-    else if (i === fullBars)
-      rectArray.push({
-        transform: translate(0, (fullBars * OFFSET) / 2),
-        height: dimensions.size.plotHeight - fullBars * OFFSET,
-        width: sizeWidth,
-        fillColor: getFillColor(fullBars),
-        opacity: 1,
-      });
-    // Partial element selection bar
-    if (i === fullSelectBars)
-      rectArray.push({
-        transform: translate(0, (fullSelectBars * OFFSET) / 2),
-        height: dimensions.size.plotHeight - fullSelectBars * OFFSET,
-        width: selectedWidth,
-        fillColor: darkenColor(fullSelectBars, elementSelectionColor),
-        opacity: SELECTION_OPACITY,
-      });
-  }
-
   /**
    * Creates a vertical line capped by a bordered tick
    * @param x     Distance in pixels from the left edge of the size bar
@@ -200,6 +155,70 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
         />
     </>)
   }
+
+  /// Hooks
+
+  // Compute vars for size bars
+  const scale = useScale(
+    [0, sizeDomain],
+    [0, dimensions.attribute.width],
+  );
+  
+  const { fullBars, rem } = useMemo(() => calculateBars(size), [size, calculateBars]);
+  const { fullBars: fullSelectBars, rem: remSelect } = useMemo(() => calculateBars(selected), [selected, calculateBars]);
+  
+  // X-coord for the end of the selected bar
+  const selectedWidth = useMemo(() => {
+    let result = scale(remSelect);
+    if (selected > 0 && result === 0) result = dimensions.attribute.width;
+    return result;
+  }, [remSelect, selected, dimensions.attribute.width, scale]);
+  // X-coord for the end of the size bar
+  const sizeWidth = useMemo(() => {
+    let result = scale(rem);
+    if (size > 0 && result === 0) result = dimensions.attribute.width;
+    return result;
+  }, [rem, size, dimensions.attribute.width, scale]);
+
+  // Calculate all rectangles for the size bar
+  const rectArray = useMemo(() => {
+    const result: Rect[] = [];
+    for (let i = 0; i < 3; ++i) {
+      // Full bars, which may be the selection color if the selection size is greater than the full bar size
+      if (i < fullBars)
+        result.push({
+          transform: translate(0, (i * OFFSET) / 2),
+          height: dimensions.size.plotHeight - i * OFFSET,
+          width: dimensions.attribute.width,
+          fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i),
+          opacity: i < fullSelectBars ? SELECTION_OPACITY : 1,
+        })
+      // Partial standard bar
+      else if (i === fullBars)
+        result.push({
+          transform: translate(0, (fullBars * OFFSET) / 2),
+          height: dimensions.size.plotHeight - fullBars * OFFSET,
+          width: sizeWidth,
+          fillColor: getFillColor(fullBars),
+          opacity: 1,
+        });
+      // Partial element selection bar
+      if (i === fullSelectBars)
+        result.push({
+          transform: translate(0, (fullSelectBars * OFFSET) / 2),
+          height: dimensions.size.plotHeight - fullSelectBars * OFFSET,
+          width: selectedWidth,
+          fillColor: darkenColor(fullSelectBars, elementSelectionColor),
+          opacity: SELECTION_OPACITY,
+        });
+    }
+    return result;
+  }, [
+    fullBars, OFFSET, dimensions.size.plotHeight, dimensions.attribute.width, fullSelectBars, darkenColor,
+    elementSelectionColor, getFillColor, SELECTION_OPACITY, translate, sizeWidth, selectedWidth
+  ]);
+
+  if (size < 0 || sizeDomain < 0) return null;
 
   return (
     <g
