@@ -107,6 +107,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
 
   return (
     <Drawer
+      aria-hidden={!open}
       sx={{
         width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
         flexShrink: 0,

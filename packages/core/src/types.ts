@@ -15,10 +15,20 @@ export type Meta = {
   columns: ColumnDefs;
 };
 
+/**
+ * Textual information about the plot; included in the UpsetConfig
+ */
 export type PlotInformation = {
-  description: string;
-  sets: string;
-  items: string;
+  /** User-generated plot description */
+  description?: string;
+  /** User-generated name to use for sets in the plot (ie "genres") */
+  sets?: string;
+  /** User-generated name for items in the dataset (ie "movies") */
+  items?: string;
+  /** User-defined plot title */
+  title?: string;
+  /** User-defined plot caption (for sighted users) */
+  caption?: string;
 };
 
 export type RowType =
@@ -277,6 +287,32 @@ export type BookmarkedSelection = Bookmark & {
 }
 
 /**
+ * Represents the alternative text for an Upset plot.
+*/
+export type AltText = {
+  /**
+  * The long description for the Upset plot.
+  */
+  longDescription: string;
+
+  /**
+  * The short description for the Upset plot.
+  */
+  shortDescription: string;
+
+  /**
+  * The technique description for the Upset plot.
+  */
+  techniqueDescription?: string;
+
+  /**
+  * Optional warnings for the Upset plot.
+  * Not yet implemented by the API as of 4/22/24
+  */
+  warnings?: string;
+}
+
+/**
  * A configuration object for an UpSet plot.
  * @version 0.1.0
  * @privateRemarks
@@ -319,6 +355,8 @@ export type UpsetConfig = {
    */
   elementSelection: BookmarkedSelection | null;
   version: '0.1.0';
+  useUserAlt: boolean;
+  userAltText: AltText | null;
 };
 
 export type AccessibleDataEntry = {
@@ -377,6 +415,8 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'selected')
     && Object.hasOwn(config, 'elementSelection')
     && Object.hasOwn(config, 'version')
+    && Object.hasOwn(config, 'useUserAlt')
+    && Object.hasOwn(config, 'userAltText')
   )) {
     console.warn('Upset config is missing required fields');
     return false;
@@ -386,7 +426,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // Put fields we've confirmed exist into vars to avoid repeating necessary casts
   const { plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, bookmarks, collapsed, plots, allSets,
-    selected, elementSelection, version } = config as UpsetConfig;
+    selected, elementSelection, version, useUserAlt, userAltText } = config as UpsetConfig;
 
   // Check that the fields are of the correct type
   // Start with plot info
@@ -599,6 +639,18 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     return false;
   }
 
+  // useUserAlt
+  if (typeof useUserAlt !== 'boolean') {
+    console.warn('Upset config error: Use user alt is not a boolean');
+    return false;
+  }
+
+  // userAltText
+  if (userAltText !== null && !isAltText(userAltText)) {
+    console.warn('Upset config error: User alt text is not correct');
+    return false;
+  }
+
   return true;
 }
 
@@ -658,6 +710,22 @@ export function isRowSubset(row: Row): row is Subset {
  */
 export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersection {
   return b.type === 'intersection';
+}
+
+/**
+ * Type guard for AltText
+ * @param val The value to check
+ * @returns {boolean} whether val is an AltText
+ */
+export function isAltText(val: unknown): val is AltText {
+  return (
+    !!val
+    && typeof val === 'object'
+    && Object.hasOwn(val, 'longDescription')
+    && Object.hasOwn(val, 'shortDescription')
+    && typeof (val as AltText).longDescription === 'string'
+    && typeof (val as AltText).shortDescription === 'string'
+  )
 }
 
 /**

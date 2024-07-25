@@ -44,6 +44,14 @@ const Header = ({ data }: { data: any }) => {
   const visibleSets = provenance.getState().visibleSets;
   const hiddenSets = provenance.getState().allSets.filter((set: Column) => !visibleSets.includes(set.name));
 
+  /** 
+   * Number of keyboard tab indices in the alttext sidebar; used to calculate the tab index of the other buttons
+   * because alttext sidebar should get priority when open. This should be updated if more tab indices are added.
+   * "Tab indicies" refers to the number of tabIndex properties on elements in the sidebar
+   * @see AltTextSidebar to count the number of tab indices used
+   */
+  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 17 : 0);
+
   const handleImportModalClose = () => {
     setShowImportModal(false);
   }
@@ -178,11 +186,20 @@ const Header = ({ data }: { data: any }) => {
                   setIsAltTextSidebarOpen(true);
                 }
               }}
-              aria-label={`${isAltTextSidebarOpen ? 'Close' : 'Open'} alt text sidebar`}
+              aria-label='Alt Text Sidebar'
+              tabIndex={2}
               >
-                Alt-Text
+                Text Description
               </Button>
-              <Link to={`/datatable${getQueryParam()}`} target="_blank" rel="noreferrer" onClick={dispatchState} style={{textDecoration: "none", color: "inherit"}} aria-label='Open raw and computed data as tables in a new tab'>
+              <Link 
+                to={`/datatable${getQueryParam()}`} 
+                target="_blank" 
+                rel="noreferrer" 
+                onClick={dispatchState} 
+                style={{textDecoration: "none", color: "inherit"}} 
+                aria-label='Data Tables (raw and computed)'
+                tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
+              >
                 <Button
                   color="inherit"
                 >
@@ -193,8 +210,9 @@ const Header = ({ data }: { data: any }) => {
               <Button
                 color="inherit"
                 onClick={(e) => { handleAttributeClick(e) }}
-                aria-label="Open attributes selection menu"
+                aria-label="Attributes selection menu"
                 aria-haspopup="menu"
+                tabIndex={4 + ALTTEXT_SIDEBAR_TABS}
               >
                 Attributes
               </Button>
@@ -208,7 +226,8 @@ const Header = ({ data }: { data: any }) => {
 
                   handleMenuClose();
                 }}
-                aria-label={`${isElementSidebarOpen ? 'Close' : 'Open'} element view sidebar`}
+                aria-label="Element View Sidebar Toggle"
+                tabIndex={5 + ALTTEXT_SIDEBAR_TABS}
               >
                 Element View
               </Button>
@@ -230,14 +249,16 @@ const Header = ({ data }: { data: any }) => {
               }
             }}
             aria-label='Load data from Multinet'
+            tabIndex={6 + ALTTEXT_SIDEBAR_TABS}
           >
             Load Data
           </Button>
           <Button
            sx={{ minWidth: "24px" }}
            onKeyDown={(e) => handleMenuKeypress(e)}
-           aria-label='Open additional options menu'
+           aria-label="Additional options menu"
            aria-haspopup="menu"
+            tabIndex={7 + ALTTEXT_SIDEBAR_TABS}
           >
             <MoreVertIcon
               onClick={(e) => handleMenuClick(e.currentTarget)}
@@ -247,13 +268,13 @@ const Header = ({ data }: { data: any }) => {
               <MenuItem onClick={() => setShowImportModal(true) } color="inherit" aria-label="Import UpSet JSON state file">
                 Import State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="Download UpSet JSON state file">
+              <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="UpSet JSON state file download">
                 Export State
               </MenuItem>
               <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))} aria-label="Download UpSet JSON state file with table data included">
                 Export State + Data
               </MenuItem>
-              <MenuItem onClick={() => downloadSVG()} aria-label="Download the UpSet plot as an SVG">
+              <MenuItem onClick={() => downloadSVG()} aria-label="SVG Download of this upset plot">
                 Download SVG
               </MenuItem>
               <MenuItem onClick={() => {
@@ -262,7 +283,7 @@ const Header = ({ data }: { data: any }) => {
                   setIsProvVisOpen(true); 
                   handleMenuClose();
                 }}
-                aria-label='Open history tree sidebar'  
+                aria-label="History tree sidebar"  
               >
                   Show History
               </MenuItem>
@@ -273,7 +294,7 @@ const Header = ({ data }: { data: any }) => {
             onClick={(e) => {
               handleLoginOpen(e);
             }}
-            aria-label="Open login menu"
+            aria-label="Login menu"
             aria-haspopup="menu"
           >
             <Avatar sx={{ width: "32px", height: "32px" }} alt="User login status icon" variant="circular">

@@ -52,6 +52,8 @@ function preVersionConversion(config: PreVersionConfig): UpsetConfig {
   (config as unknown as UpsetConfig).version = '0.1.0';
   (config as unknown as UpsetConfig).elementSelection = null;
   (config as unknown as UpsetConfig).bookmarks = config.bookmarkedIntersections;
+  (config as unknown as UpsetConfig).useUserAlt = false;
+  (config as unknown as UpsetConfig).userAltText = null;
   delete (config as any).bookmarkedIntersections;
 
   for (const bookmark of (config as unknown as UpsetConfig).bookmarks) {

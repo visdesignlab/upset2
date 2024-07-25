@@ -6,6 +6,7 @@ import {
   ColumnName,
   Histogram,
   Scatterplot,
+  AltText,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -331,6 +332,29 @@ const setElementSelectionAction = register<BookmarkedSelection | null>(
     return state;
   }
 );
+/**
+ * Sets the alt text for the user
+ * @param {AltText} altText The alt text to set
+ */
+const setUserAltTextAction = register<AltText | null>(
+  'set-user-alt-text',
+  (state: UpsetConfig, altText) => {
+    state.userAltText = altText;
+    return state;
+  }
+);
+
+/**
+ * Toggles whether the user alt text should be used
+ * @param {boolean} useUserAlt whether to use the user alttext
+ */
+const setUseUserAltTextAction = register<boolean>(
+  'set-use-user-alt-text',
+  (state: UpsetConfig, useUserAlt) => {
+    state.useUserAlt = useUserAlt;
+    return state;
+  }
+);
 
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
@@ -393,6 +417,14 @@ export function getActions(provenance: UpsetProvenance) {
         `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
           : "Deselected elements",
       setElementSelectionAction(selection),
+    ),
+    setUserAltText: (altText: AltText | null) => provenance.apply(
+      altText ? `Set user alt text` : "Cleared user alt text",
+      setUserAltTextAction(altText)
+    ),
+    setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
+      useUserAlt ? "Enabled user alt text" : "Disabled user alt text",
+      setUseUserAltTextAction(useUserAlt),
     ),
   };
 }

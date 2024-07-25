@@ -28,7 +28,7 @@ const Footer = () => {
                         color="inherit"
                         size="medium"
                         disableElevation
-                        aria-label="Open About Us modal"
+                        aria-label="About Us"
                         aria-haspopup="dialog"
                         onClick={() => setAboutModal(true)}
                     >
@@ -39,7 +39,7 @@ const Footer = () => {
                         href="https://github.com/visdesignlab/upset2/issues"
                         target="_blank"
                         rel="noreferrer"
-                        aria-label="Open GitHub issues for this project"
+                        aria-label="GitHub issues for this project"
                     >
                         <Button
                             variant="contained"
@@ -59,7 +59,7 @@ const Footer = () => {
                         size="medium"
                         disableElevation
                         startIcon={<AccessibilityNew />}
-                        aria-label="Open Accessibility Statement modal"
+                        aria-label="Accessibility Statement"
                         aria-haspopup="dialog"
                         tabIndex={1}
                         onClick={() => setAccessibilityStatement(true)}
