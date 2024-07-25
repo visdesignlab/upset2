@@ -32,7 +32,7 @@ type Props = {
 
 /**
  * Display & editor for plot information.
- * Uses up to 5 tab indices, starting from @parm tabIndex
+ * Uses up to 5 tab indices, starting from @param tabIndex
  * @param Props @see @type Props
  */
 export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
