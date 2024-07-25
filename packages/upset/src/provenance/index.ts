@@ -4,8 +4,6 @@ import {
   Bookmark, BookmarkedSelection,
   convertConfig,
   ColumnName,
-  Histogram,
-  Scatterplot,
   AltText,
 } from '@visdesignlab/upset2-core';
 
@@ -205,7 +203,7 @@ const removeBookmarkAction = register<Bookmark>(
   },
 );
 
-const addPlotAction = register<Scatterplot | Histogram>(
+const addPlotAction = register<Plot>(
   'add-plot',
   (state, plot) => {
     switch (plot.type) {
@@ -223,7 +221,7 @@ const addPlotAction = register<Scatterplot | Histogram>(
   },
 );
 
-const removePlotAction = register<Scatterplot | Histogram>(
+const removePlotAction = register<Plot>(
   'remove-plot',
   (state, plot) => {
     switch (plot.type) {

@@ -1,4 +1,4 @@
-import { ElementSelection, Histogram, isHistogram, isScatterplot, Scatterplot } from '@visdesignlab/upset2-core';
+import { ElementSelection, Histogram, isHistogram, isScatterplot, Plot, Scatterplot } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
 /**
@@ -10,7 +10,7 @@ import { VisualizationSpec } from 'react-vega';
  * @returns An object which can be assigned to the 'value' field of a vega param in the plot
  *          to display the selection in the plot.
  */
-function convertSelection(plot: Scatterplot | Histogram, select: ElementSelection): ElementSelection | undefined {
+function convertSelection(plot: Plot, select: ElementSelection): ElementSelection | undefined {
   let val: ElementSelection | undefined;
   if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
     val = {
