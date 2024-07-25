@@ -97,7 +97,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       else return userShortText ?? altText?.shortDescription
     else if (useLong) return currState.useUserAlt ? userLongText : altText?.longDescription 
     else return currState.useUserAlt ? userShortText : altText?.shortDescription;
-  }, [useLong, userLongText, userShortText, altText, currState.useUserAlt]);
+  }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription, currState.useUserAlt]);
   
   const divider = <Divider
     css={css`
