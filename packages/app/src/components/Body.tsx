@@ -5,7 +5,7 @@ import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from './Root';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
@@ -48,6 +48,18 @@ export const Body = ({ data, config }: Props) => {
       api.updateSession(workspace || '', parseInt(sessionId || ''), 'table', provObject.provenance.exportObject());
     })
   }, [provObject.provenance, sessionId, workspace]);
+
+  const [userEditPerms, setUserEditPerms] = useState(false);
+
+  useEffect(() => {
+    api.getCurrentUserWorkspacePermissions(workspace || '').then((r) => {
+      // https://api.multinet.app/swagger/?format=openapi#/definitions/PermissionsReturn for possible permissions returns
+      if (r.permission_label === 'owner' || r.permission_label === 'maintainer') {
+        setUserEditPerms(true);
+      }
+    });
+  }, [workspace]);
+
 
   /**
    * Generates alt text for a plot based on the current state and configuration.
@@ -105,8 +117,9 @@ export const Body = ({ data, config }: Props) => {
           </Backdrop>
           <Upset
             data={data}
-            extProvenance={provObject}
             config={config}
+            userEditPerms={userEditPerms}
+            extProvenance={provObject}
             provVis={provVis}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}

@@ -26,6 +26,7 @@ import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
+import { userEditPermsAtom } from '../atoms/config/multinetAtoms';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -36,9 +37,14 @@ const baseStyle = css`
   padding: 0.25em;
 `;
 
+/**
+ * Props for the root component.
+ * @see UpsetProps for information about these props
+ */
 type Props = {
   data: CoreUpsetData;
   config: UpsetConfig;
+  userEditPerms?: boolean;
   allowAttributeRemoval?: boolean;
   hideSettings?: boolean;
   extProvenance?: {
@@ -61,7 +67,7 @@ type Props = {
 };
 
 export const Root: FC<Props> = ({
-  data, config, allowAttributeRemoval, hideSettings, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
+  data, config, userEditPerms = true, allowAttributeRemoval, hideSettings, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
@@ -73,11 +79,19 @@ export const Root: FC<Props> = ({
   const setData = useSetRecoilState(dataAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
+  const setUserEditPerms = useSetRecoilState(userEditPermsAtom);
 
   useEffect(() => {
     setState(config);
     setData(data);
   }, []);
+
+  /**
+   * Update the user edit permissions when the prop changes (ie: user login).
+   */
+  useEffect(() => {
+    setUserEditPerms(userEditPerms);
+  }, [userEditPerms]);
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {

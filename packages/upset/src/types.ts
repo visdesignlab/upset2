@@ -107,6 +107,11 @@ export interface UpsetProps {
   config?: Partial<UpsetConfig>;
 
   /**
+   * Indicates if the user is an admin or owner of the workspace. This is used to determine if the user can make edits to the plot information. Defaults to true.
+   */
+  userEditPerms?: boolean;
+
+  /**
   * List of attribute names (strings) which should be visualized.
   * Defaults to the first 3 if no value is provided.
   * If an empty list is provided, displays no attributes.
