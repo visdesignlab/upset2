@@ -3,7 +3,10 @@ import { deepCopy } from "./utils";
 
 /**
  * Determines if the given object is a valid UpsetConfig using the CURRENT version.
- * This needs to be updated each time a new version is added.
+ * @privateRemarks 
+ * This needs to be updated each time a new version is added. Since it's intended to be an exhaustive 
+ * type guard against unknown types coming in, you cannot make any assumptions about the shape of the input config-
+ * exhastively check every property of new fields that you add to the config.
  * @param config The object to check.
  * @returns {boolean} Whether the object is a valid UpsetConfig.
  */

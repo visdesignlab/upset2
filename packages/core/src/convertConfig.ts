@@ -15,9 +15,9 @@ import { isUpsetConfig } from "./typecheck";
  * 5. Add a new case to the switch statement in convertConfig.
  *    - The case version number should be the current version number, as your conversion function starts 
  *      with the previous version (which the current version will become) and converts it to the current version.
- *    - The only statement within the case body should assign param `config` to the result of your conversion function.
+ *    - The only statement within the case body should run your conversion function on the `config` var.
  *    - Do not use break statements in the switch, as conversions should be applied cumulatively & in order.
- * 6. Update isUpsetConfig (in types.ts) to reflect your changes to UpsetConfig.
+ * 6. Update isUpsetConfig (in typecheck.ts) to reflect your changes to UpsetConfig.
  * 7. Bump the version number in the UpsetConfig type, all package.json files, the README, and defaultConfig.ts.
  */
 
