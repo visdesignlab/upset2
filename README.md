@@ -209,6 +209,7 @@ const main = () => {
 - `elementSidebar` (optional): [Sidebar options](#sidebar-options) for the element visualization sidebar. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
 - `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
 - `generateAltText` (optional)(`() => Promise<AltText>`): Async function which should return a generated AltText object. See [Alt Text Generation](#alt-text-generation) for more information about Alt Text generation.
+- `userEditPerms` (optional)(boolean): Whether or not the user has permissions to edit the Text Description plot information and descriptions. Defaults to `true`.
 
 ##### Configuration (Grammar) options
 

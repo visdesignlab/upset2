@@ -16,6 +16,7 @@ const defaultVisibleSets = 6;
  * @component
  * @param {CoreUpsetData | UpsetItem[]} data - The data for the Upset component.
  * @param {Partial<UpsetConfig>} [config={}] - The configuration options for the Upset component. This can be partial.
+ * @param {boolean} [userEditPerms=true] - Indicates if the user is an admin or owner of the workspace. This is used to determine if the user can make edits to the plot information. Defaults to true.
  * @param {string[]} [visualizeAttributes] - List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
  * @param {boolean} [visualizeUpsetAttributes=false] - Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
  * @param {boolean} [allowAttributeRemoval=false] - Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
@@ -30,12 +31,13 @@ const defaultVisibleSets = 6;
  */
 export const Upset: FC<UpsetProps> = ({
   data,
-  parentHasHeight = false,
   config = {},
+  userEditPerms = true,
   visualizeDatasetAttributes,
   visualizeUpsetAttributes = false,
   allowAttributeRemoval = false,
   hideSettings,
+  parentHasHeight = false,
   extProvenance,
   provVis,
   elementSidebar,
@@ -100,6 +102,7 @@ export const Upset: FC<UpsetProps> = ({
           <Root
             data={processData}
             config={combinedConfig}
+            userEditPerms={userEditPerms}
             allowAttributeRemoval={allowAttributeRemoval}
             hideSettings={hideSettings}
             extProvenance={extProvenance}
