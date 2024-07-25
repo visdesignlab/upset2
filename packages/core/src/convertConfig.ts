@@ -1,6 +1,6 @@
 import { AggregateBy, Bookmark, BookmarkedSelection, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot, 
   SortByOrder, SortVisibleBy, UpsetConfig } from "@visdesignlab/upset2-core";
-import { isUpsetConfig } from "./types";
+import { isUpsetConfig } from "./typecheck";
 
 /**
  * Developer notes:
@@ -39,8 +39,7 @@ export function convertConfig(config: unknown): UpsetConfig {
   }
 
   if (!isUpsetConfig(config)) throw new Error('Invalid config output from conversion');
-
-  return config;
+  else return config;
 }
 
 /**
