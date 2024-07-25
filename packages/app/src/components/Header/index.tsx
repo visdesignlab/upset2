@@ -44,8 +44,10 @@ const Header = ({ data }: { data: any }) => {
   const hiddenSets = provenance.getState().allSets.filter((set: Column) => !visibleSets.includes(set.name));
 
   /** 
-   * Number of tab indices in the alttext sidebar; used to calculate the tab index of the other buttons
+   * Number of keyboard tab indices in the alttext sidebar; used to calculate the tab index of the other buttons
    * because alttext sidebar should get priority when open. This should be updated if more tab indices are added.
+   * "Tab indicies" refers to the number of tabIndex properties on elements in the sidebar
+   * @see AltTextSidebar to count the number of tab indices used
    */
   const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 17 : 0);
 
