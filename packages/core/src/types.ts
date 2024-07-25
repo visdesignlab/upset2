@@ -2,6 +2,10 @@ import { hashString } from "./utils";
 
 export type ColumnName = string;
 
+/**
+ * Base type for a column in the plot
+ * @privateRemarks typechecked by isColumn in typecheck.ts; changes here must be reflected there
+ */
 export type Column = {
   name: string;
   size: number;
@@ -17,6 +21,7 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
+ * @privateRemarks This is typechecked in isUpsetConfig; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
@@ -102,6 +107,7 @@ export type Attributes = AttributeList & {
 
 /**
  * Represents a base element.
+ * @privateRemarks typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
  */
 export type BaseElement = {
   /**
@@ -140,6 +146,7 @@ export const UNINCLUDED = 'unincluded';
 
 /**
  * Base Intersection type for subsets and aggregates.
+ * @privateRemarks typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
  */
 export type BaseIntersection = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
@@ -147,8 +154,16 @@ export type BaseIntersection = BaseElement & {
 
 export type Sets = { [set_id: string]: BaseIntersection };
 
+/**
+ * A single subset
+ * @privateRemarks typechecked by isSubset in typecheck.ts; changes here must be reflected there
+ */
 export type Subset = BaseIntersection;
 
+/**
+ * A list of subsets & their order
+ * @privateRemarks typechecked by isSubsets in typecheck.ts; changes here must be reflected there
+ */
 export type Subsets = {
   values: { [subset_id: string]: Subset };
   order: string[];
@@ -166,6 +181,11 @@ export const aggregateByList = [
   'Overlaps',
   'None',
 ] as const;
+
+/**
+ * Ways the upset plot can be aggregated
+ * @privateRemarks typechecked by isAggregateBy in typecheck.ts; changes here must be reflected there
+ */
 export type AggregateBy = typeof aggregateByList[number];
 
 export type SortByOrder = 'Ascending' | 'Descending';
@@ -173,6 +193,10 @@ export type SortByOrder = 'Ascending' | 'Descending';
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
 export type SortVisibleBy = typeof sortVisibleByList[number];
 
+/**
+ * An aggregate row in the plot
+ * @privateRemarks typechecked by isAggregate in typecheck.ts; changes here must be reflected there
+ */
 export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
@@ -192,6 +216,10 @@ export type Aggregates = {
 
 export type Rows = Subsets | Aggregates;
 
+/**
+ * A row in the plot
+ * @privateRemarks typechecked by isRow in typecheck.ts; changes here must be reflected there
+ */
 export type Row = Subset | Aggregate;
 
 export type ColumnTypes = {
@@ -212,6 +240,10 @@ export type BasePlot = {
   id: string;
 };
 
+/**
+ * Information defining an element view scatterplot
+ * @privateRemarks Typechecked by isScatterplot in typecheck.ts; changes here must be reflected there.
+ */
 export type Scatterplot = BasePlot & {
   type: 'Scatterplot';
   x: string;
@@ -220,6 +252,10 @@ export type Scatterplot = BasePlot & {
   yScaleLog?: boolean;
 };
 
+/**
+ * Information defining an element view histogram.
+ * @privateRemarks Typechecked by isHistogram in typecheck.ts; changes here must be reflected there
+ */
 export type Histogram = BasePlot & {
   type: 'Histogram';
   attribute: string;
@@ -231,6 +267,7 @@ export type Plot = Scatterplot | Histogram;
 
 /**
  * Base representation of a bookmarkable type
+ * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
 export type Bookmark = {
   /**
@@ -266,14 +303,15 @@ export type BookmarkedIntersection = Bookmark & {
  * Maps attribute names to an array with the minimum and maximum
  * values of the selection over each attribute.
  * 
- * This *needs* to match the data format outputted by Vega-Lite to
- * the 'brush' signal in the Element View. TS will let you change
- * it here, but that may lead to runtime errors.
+ * @privateRemarks
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in the Element View.
+ * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
  */
 export type ElementSelection = {[attName: string] : [number, number]};
 
 /**
  * Represents a bookmarked element selection, created in the Element View.
+ * @privateRemarks typechecked by isBookmarkedSelection in typecheck.ts; changes here must be reflected there
  */
 export type BookmarkedSelection = Bookmark & {
   /**
@@ -288,6 +326,7 @@ export type BookmarkedSelection = Bookmark & {
 
 /**
  * Represents the alternative text for an Upset plot.
+ * @privateRemarks typechecked by isAltText in typecheck.ts; changes here must be reflected there
 */
 export type AltText = {
   /**
@@ -317,9 +356,8 @@ export type AltText = {
  * @version 0.1.0
  * @privateRemarks
  * Each breaking update to this config MUST be accompanied by an update to the config converter 
- * in `convertConfig.ts`. Full instructions are provided in the converter file. A breaking update
- * is a change in the name or type of an existing field, or the removal of a field. Adding new fields
- * is not considered breaking.
+ * in `convertConfig.ts`. Full instructions are provided in the converter file.
+ * ANY update to this config must be accompanied by a change to the isUpsetConfig function in typecheck.ts
  */
 export type UpsetConfig = {
   plotInformation: PlotInformation;
