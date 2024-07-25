@@ -1,70 +1,90 @@
 import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
   Box,
   Button,
   Divider,
   Drawer,
-  IconButton,
+  FormControlLabel,
+  Switch,
   TextField,
   Typography,
   css,
 } from '@mui/material';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import CloseIcon from '@mui/icons-material/Close';
 import {
   useState, useEffect, FC, useContext,
+  useMemo,
 } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Edit } from '@mui/icons-material';
 import { ProvenanceContext } from './Root';
-import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
-import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { AltText } from '../types';
+import { AltText } from '@visdesignlab/upset2-core/';
+import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
+import '../index.css';
+import { HelpCircle } from './custom/HelpCircle';
+import { PlotInformation } from './custom/PlotInformation';
+import { UpsetActions } from '../provenance';
 
+/**
+ * Props for the AltTextSidebar component.
+ */
+/**
+ * Props for the AltTextSidebar component.
+ */
 type Props = {
+  /**
+   * Indicates whether the sidebar is open or closed.
+   */
   open: boolean;
+
+  /**
+   * Called when the sidebar is closed.
+   */
   close: () => void;
+
+  /**
+   * Asynchronous function to generate the text description.
+   * @returns A promise that resolves to an `AltText` object.
+   */
   generateAltText: () => Promise<AltText>;
 }
 
-const plotInfoItem = {
-  display: 'flex',
-  width: '100%',
-  justifyContent: 'space-between',
-  margin: '0.25em 0',
-  minHeight: '4em',
-};
-
-const plotInfoTitle = {
-  fontSize: '1em',
-  fontWeight: 'inherit',
-  color: 'GrayText',
-  width: '30%',
-};
-
 const initialDrawerWidth = 450;
 
+/**
+* Displays a sidebar for generating alternative text
+* and editing the alt text, caption, title, and plot information.
+*
+* @component
+* @param {Props} props - The component props.
+* @param {boolean} props.open - Indicates whether the sidebar is open or closed.
+* @param {() => void} props.close - Callback function to close the sidebar.
+* @param {() => Promise<AltText>} props.generateAltText - Callback function to generate alternative text for the plot.
+* @returns {JSX.Element} The AltTextSidebar component.
+*/
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
-  const { actions } = useContext(ProvenanceContext);
-  const plotInformationState = useRecoilValue(plotInformationSelector);
-
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  
   const currState = useRecoilValue(upsetConfigAtom);
 
   const [altText, setAltText] = useState<AltText | null>(null);
-  const [textGenErr, setTextGenErr] = useState(false);
+  const [textGenErr, setTextGenErr] = useState<string | false>(false);
+  
+  // States for editing the alt text
+  const [textEditing, setTextEditing] = useState(false);
+  const [userLongText, setUserLongText] = useState(currState.userAltText?.longDescription);
+  const [userShortText, setUserShortText] = useState(currState.userAltText?.shortDescription);
   const [useLong, setUseLong] = useState(false);
-  const [isEditable, setIsEditable] = useState(false);
 
-  const [plotInformation, setPlotInformation] = useState(plotInformationState);
-
-  const placeholderText = {
-    description: 'movie genres and ratings',
-    sets: 'movie genres (dataset columns)',
-    items: 'movies (dataset rows)',
-  };
+  /**
+   * Handler for when the save button is clicked
+   */
+  function saveButtonClick() {
+    setTextEditing(false);
+    if (!currState.useUserAlt)
+      actions.setUseUserAltText(true);
+    if (currState.userAltText?.shortDescription !== userShortText 
+        || currState.userAltText?.longDescription !== userLongText)  
+      actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
+  }
 
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
@@ -75,65 +95,39 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         setTextGenErr(false);
       } catch (e) {
         const msg: string = (e as Error).message;
-        // We want the error message to display on the frontend
-        setAltText({
-          longDescription: msg,
-          shortDescription: msg,
-          techniqueDescription: msg,
-        });
-        setTextGenErr(true);
+        setTextGenErr(msg);
       }
     }
-
+    
     generate();
   }, [currState]);
 
-  // this useEffect resets the plot information when the edit is toggled off
-  useEffect(() => {
-    if (!isEditable) {
-      setPlotInformation(plotInformationState);
-    }
-  }, [isEditable]);
-
-  // this useEffect sets the plot information state to match the trrack state
-  useEffect(() => {
-    // this will prevent the state from being reset while the user is editing the form values
-    if (!isEditable) {
-      setPlotInformation(plotInformationState);
-    }
-  });
-
-  const generatePlotInformationText = () => {
-    // return default string if there are no values filled in
-    if (Object.values(plotInformation).filter((a) => a.length > 0).length === 0) {
-      return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
-    }
-
-    let str: string = '';
-    if (plotInformation.description !== '') {
-      str += `This UpSet plot shows ${plotInformation.description}. `;
-    }
-    if (plotInformation.sets !== '') {
-      str += `The sets are ${plotInformation.sets}. `;
-    }
-    if (plotInformation.items !== '') {
-      str += `The items are ${plotInformation.items}.`;
-    }
-
-    return str;
-  };
-
-  const handleEditableChange = () => {
-    setIsEditable(!isEditable);
-  };
-
+  // Current alt text to display to the user
+  const displayAltText: string | undefined = useMemo(() => {
+    if (textEditing)
+      if (useLong) return userLongText ?? altText?.longDescription
+      else return userShortText ?? altText?.shortDescription
+    else if (useLong) return currState.useUserAlt ? userLongText : altText?.longDescription 
+    else return currState.useUserAlt ? userShortText : altText?.shortDescription;
+  }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription, currState.useUserAlt]);
+  
+  const divider = <Divider
+    css={css`
+      width: 100%;
+      margin: auto;
+      margin-bottom: 1em;
+    `}
+    aria-hidden={true}
+  />
+  
   return (
     <Drawer
+      aria-hidden={!open}
       anchor="right"
       open={open}
       onClose={close}
       variant="persistent"
-      aria-label="Alt Text Sidebar"
+      aria-label="Accessibility Sidebar"
       sx={{
         width: (open) ? initialDrawerWidth : 0,
         flexShrink: 0,
@@ -147,111 +141,129 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       }}
     >
       <div css={css`width:${initialDrawerWidth}`}>
-        <div
-          css={css`
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 95%;
-          `}
-        >
-          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
-            Alt Text
-          </Typography>
-          <IconButton onClick={close}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Divider
-          css={css`
-            width: 95%;
-            margin: auto;
-            margin-bottom: 1em;
-          `}
-        />
-        <Box>
-          <Accordion>
-            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <Typography variant="h3" fontSize="1em" fontWeight="inherit">
-                Plot Information
-              </Typography>
-            </AccordionSummary>
-            <AccordionDetails>
-              {/* edit icon here which triggers the isEditable state */}
-              <IconButton
-                aria-label="Toggle editable descriptions"
-                onClick={handleEditableChange}
-              >
-                <Edit />
-              </IconButton>
-              <Box>
-                <Box sx={plotInfoItem}>
-                  <Typography variant="h4" sx={plotInfoTitle}>
-                    Dataset Description:
-                  </Typography>
-                  <TextField
-                    onChange={(e) => setPlotInformation({ ...plotInformation, description: e.target.value })}
-                    sx={{ width: '70%' }}
-                    multiline
-                    InputLabelProps={{ shrink: true }}
-                    value={plotInformation.description}
-                    fullWidth
-                    maxRows={8}
-                    disabled={!isEditable}
-                    placeholder={`eg: ${placeholderText.description}`}
-                  />
-                </Box>
-              </Box>
-              <Box>
-                <Box sx={plotInfoItem}>
-                  <Typography variant="h4" sx={plotInfoTitle}>
-                    Sets:
-                  </Typography>
-                  <TextField
-                    onChange={(e) => setPlotInformation({ ...plotInformation, sets: e.target.value })}
-                    sx={{ width: '70%' }}
-                    multiline
-                    InputLabelProps={{ shrink: true }}
-                    value={plotInformation.sets}
-                    fullWidth
-                    maxRows={8}
-                    disabled={!isEditable}
-                    placeholder={`eg: ${placeholderText.sets}`}
-                  />
-                </Box>
-              </Box>
-              <Box>
-                <Box sx={plotInfoItem}>
-                  <Typography variant="h4" sx={plotInfoTitle}>
-                    Items:
-                  </Typography>
-                  <TextField
-                    onChange={(e) => setPlotInformation({ ...plotInformation, items: e.target.value })}
-                    sx={{ width: '70%' }}
-                    multiline
-                    InputLabelProps={{ shrink: true }}
-                    value={plotInformation.items}
-                    fullWidth
-                    maxRows={8}
-                    disabled={!isEditable}
-                    placeholder={`eg: ${placeholderText.items}`}
-                  />
-                </Box>
-              </Box>
-              <Typography variant="body1">{generatePlotInformationText()}</Typography>
-              { isEditable && <Button color="error" onClick={handleEditableChange}>Cancel</Button>}
-              { isEditable && <Button onClick={() => { actions.setPlotInformation(plotInformation); setIsEditable(false); }}>Save</Button> }
-            </AccordionDetails>
-          </Accordion>
-        </Box>
-        <Box marginTop={2}>
-          <div css={css`overflow-y: auto; padding-bottom: 4rem;`}>
-            {useLong && !textGenErr && <Button onClick={() => setUseLong(false)}>Show Less</Button>}
-            <ReactMarkdownWrapper text={altText ? useLong ? altText.longDescription : altText.shortDescription : ''} />
-            {!useLong && !textGenErr && <Button onClick={() => setUseLong(true)}>Show More</Button>}
-          </div>
+        <br />
+        <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
+          Accessibility Sidebar
+        </Typography>
+        {divider}
+        <PlotInformation divider={divider} tabIndex={10} />
+        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
+          Description
+        </Typography>
+        {divider}
+        <Box marginTop={2} css={css`overflow-y: auto;`}>
+          {!textGenErr ? (<>
+            <FormControlLabel
+              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
+              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
+              label="View User Description(s)"
+              control={
+                <Switch
+                  size="small"
+                  style={{marginRight: "10px"}}
+                  checked={currState.useUserAlt || textEditing}
+                  tabIndex={9}
+                  onChange={(ev) => {
+                    if (currState.useUserAlt !== ev.target.checked)
+                      actions.setUseUserAltText(ev.target.checked);
+                    if (!ev.target.checked) {
+                      setTextEditing(false);
+                    }
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+            <HelpCircle 
+              text={"When enabled, allows you to enter a custom alternative text description."}
+              margin={{left: 12, top: 0, right: 0, bottom: 0}}
+            />
+            <br />
+            <FormControlLabel
+              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
+              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
+              label="Display Long Description"
+              control={
+                <Switch
+                  size="small"
+                  checked={useLong}
+                  tabIndex={8}
+                  onChange={(ev) => {
+                    setUseLong(ev.target.checked);
+                  }}
+                />
+              }
+              labelPlacement="start"
+            />
+            <HelpCircle 
+              text={"When enabled, displays the long text description for this plot instead of the short version."}
+              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
+            />
+          </>) : (
+            <Typography variant="body1" color="error">{textGenErr}</Typography>
+          )}
+          {textEditing ? (<>
+            <Button 
+              color="primary" 
+              style={{float: 'right'}} 
+              onClick={saveButtonClick}
+              tabIndex={7}
+            >Save</Button>
+            <Button
+              color='warning'
+              style={{float: "right"}}
+              onClick={() => {
+                setUserLongText(altText?.longDescription);
+                setUserShortText(altText?.shortDescription);
+              }}
+              tabIndex={6}
+            >Reset Descriptions</Button>
+            <br />
+            <TextField multiline fullWidth
+              onChange={(e) => useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}
+              value={(displayAltText)}
+              tabIndex={5}
+            />
+            <br />
+          </>) : (
+            <div 
+              style={{
+                overflowY: 'auto',
+                cursor: 'pointer',
+                padding: '3px',
+                borderRadius: '4px',
+                width: 'calc(100% - 10px)', // We have 10px of padding + border
+                paddingBottom: '90px', // Necessary to keep it above the footer
+              }}
+              onClick={() => {
+                setTextEditing(true);
+                if (!currState.userAltText?.shortDescription)
+                  setUserShortText(altText?.shortDescription);
+                if (!currState.userAltText?.longDescription)
+                  setUserLongText(altText?.longDescription);
+              }}
+              tabIndex={3}  
+            >
+              <ReactMarkdownWrapper 
+                text={
+                  displayAltText ?? (currState.useUserAlt 
+                    ? "No user-generated description available." 
+                    : "No description available.")
+                }
+              />
+              <Button
+                style={{
+                  width: '100%',
+                  textAlign: 'center',
+                }}
+                onClick={() => setTextEditing(true)}
+                tabIndex={4}
+              >Edit Text Description</Button>
+            </div>
+          )}
         </Box>
       </div>
     </Drawer>
   );
 };
+      

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
-  AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
+  AggregateBy, Plot, PlotInformation, SortBy, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
+  AltText
 } from '@visdesignlab/upset2-core';
 
 import { Registry, initializeTrrack } from '@trrack/core';
@@ -297,6 +298,30 @@ const setSelectedAction = registry.register(
   },
 );
 
+/**
+ * Sets the alt text for the user
+ * @param {AltText} altText The alt text to set
+ */
+const setUserAltTextAction = registry.register(
+  'set-user-alt-text',
+  (state: UpsetConfig, altText) => {
+    state.userAltText = altText;
+    return state;
+  }
+);
+
+/**
+ * Toggles whether the user alt text should be used
+ * @param {boolean} useUserAlt whether to use the user alttext
+ */
+const setUseUserAltTextAction = registry.register(
+  'set-use-user-alt-text',
+  (state: UpsetConfig, useUserAlt) => {
+    state.useUserAlt = useUserAlt;
+    return state;
+  }
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -352,6 +377,14 @@ export function getActions(provenance: UpsetProvenance) {
         `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
         'Deselect intersection',
       setSelectedAction(intersection),
+    ),
+    setUserAltText: (altText: AltText | null) => provenance.apply(
+      altText ? `Set user alt text` : "Cleared user alt text",
+      setUserAltTextAction(altText)
+    ),
+    setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
+      useUserAlt ? "Enabled user alt text" : "Disabled user alt text",
+      setUseUserAltTextAction(useUserAlt),
     ),
   };
 }
