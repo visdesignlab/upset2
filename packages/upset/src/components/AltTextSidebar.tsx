@@ -23,9 +23,27 @@ import { HelpCircle } from './custom/HelpCircle';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
 
+/**
+ * Props for the AltTextSidebar component.
+ */
+/**
+ * Props for the AltTextSidebar component.
+ */
 type Props = {
+  /**
+   * Indicates whether the sidebar is open or closed.
+   */
   open: boolean;
+
+  /**
+   * Called when the sidebar is closed.
+   */
   close: () => void;
+
+  /**
+   * Asynchronous function to generate the text description.
+   * @returns A promise that resolves to an `AltText` object.
+   */
   generateAltText: () => Promise<AltText>;
 }
 
