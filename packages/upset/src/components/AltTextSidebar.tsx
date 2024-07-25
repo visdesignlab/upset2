@@ -92,14 +92,11 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   // Current alt text to display to the user
   const displayAltText: string | undefined = useMemo(() => {
-    if (textEditing) {
-      return useLong
-      ? userLongText ?? altText?.longDescription
-      : userShortText ?? altText?.shortDescription
-    }
-    return useLong 
-    ? currState.useUserAlt ? userLongText : altText?.longDescription 
-    : currState.useUserAlt ? userShortText : altText?.shortDescription;
+    if (textEditing)
+      if (useLong) return userLongText ?? altText?.longDescription
+      else return userShortText ?? altText?.shortDescription
+    else if (useLong) return currState.useUserAlt ? userLongText : altText?.longDescription 
+    else return currState.useUserAlt ? userShortText : altText?.shortDescription;
   }, [useLong, userLongText, userShortText, altText, currState.useUserAlt]);
   
   const divider = <Divider
