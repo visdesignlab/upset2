@@ -13,10 +13,20 @@ export type Meta = {
   columns: ColumnDefs;
 };
 
+/**
+ * Textual information about the plot; included in the UpsetConfig
+ */
 export type PlotInformation = {
-  description: string;
-  sets: string;
-  items: string;
+  /** User-generated plot description */
+  description?: string;
+  /** User-generated name to use for sets in the plot (ie "genres") */
+  sets?: string;
+  /** User-generated name for items in the dataset (ie "movies") */
+  items?: string;
+  /** User-defined plot title */
+  title?: string;
+  /** User-defined plot caption (for sighted users) */
+  caption?: string;
 };
 
 export type RowType =
@@ -238,6 +248,32 @@ export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
 export type Bookmark = { id: string; label: string; size: number }
 
+/**
+* Represents the alternative text for an Upset plot.
+*/
+export type AltText = {
+  /**
+  * The long description for the Upset plot.
+  */
+  longDescription: string;
+
+  /**
+  * The short description for the Upset plot.
+  */
+  shortDescription: string;
+
+  /**
+  * The technique description for the Upset plot.
+  */
+  techniqueDescription?: string;
+
+  /**
+  * Optional warnings for the Upset plot.
+  * Not yet implemented by the API as of 4/22/24
+  */
+  warnings?: string;
+}
+
 export type UpsetConfig = {
   plotInformation: PlotInformation;
   horizontal: boolean;
@@ -265,6 +301,8 @@ export type UpsetConfig = {
   };
   allSets: Column[];
   selected: Row | null;
+  useUserAlt: boolean;
+  userAltText?: AltText;
 };
 
 export type AccessibleDataEntry = {

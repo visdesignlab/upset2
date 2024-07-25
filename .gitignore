@@ -162,3 +162,4 @@ sketch
 /docs/
 
 # End of https://www.toptal.com/developers/gitignore/api/react,node,joed
+.turbo/cookies/0.cookie

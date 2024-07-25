@@ -36,8 +36,8 @@ test.beforeEach(async ({ page }) => {
  */
 test('Selection History', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
-  await page.getByLabel('Open additional options menu').click();
-  await page.getByLabel('Open history tree sidebar').click();
+  await page.getByLabel('Additional options menu').click();
+  await page.getByLabel('History tree sidebar').click();
 
   const schoolIntersection = page.locator('#Subset_School > g:nth-child(3) > rect');
   const duffFanIntersection = page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3) > rect');
@@ -68,11 +68,11 @@ test('Selection History', async ({ page }) => {
   await expect(page.getByLabel('History Sidebar').getByText('Select intersection "School"')).toBeVisible();
   // Check that deselection triggered by element view unbookmarking is reflected in history tree.
   // Also tests that the bookmarking & unbookmarking is trracked
-  await page.getByLabel('Open element view sidebar').click();
+  await page.getByLabel('Element View Sidebar Toggle').click();
   await page.locator('svg[data-testid="StarBorderIcon"]').click();
   await page.locator('span.MuiChip-label+svg[data-testid="StarIcon"]').click();
-  await page.getByLabel('Open additional options menu').click();
-  await page.getByLabel('Open history tree sidebar').click();
+  await page.getByLabel('Additional options menu').click();
+  await page.getByLabel('History tree sidebar').click();
 
   await expect(page.getByText('Unbookmark Duff Fan & Male')).toBeVisible();
   await expect(page.getByText('Deselect intersection')).toBeVisible();
@@ -86,8 +86,8 @@ test('Selection History', async ({ page }) => {
  */
 test('Overlap History', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
-  await page.getByLabel('Open additional options menu').click();
-  await page.getByLabel('Open history tree sidebar').click();
+  await page.getByLabel('Additional options menu').click();
+  await page.getByLabel('History tree sidebar').click();
 
   // Ensure that duplicate actions aren't recorded for decreasing first degree
   await page.getByRole('radio', { name: 'Overlaps' }).check();
