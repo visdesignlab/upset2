@@ -240,6 +240,9 @@ export function createHistogramRow(
         height: 200,
         transform: [
           {
+            filter: {param: 'brush'},
+          },
+          {
             density: h.attribute,
             groupby: ['subset', 'color'],
           },
