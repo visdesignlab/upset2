@@ -238,68 +238,25 @@ export function createHistogramRow(
       return {
         width: 200,
         height: 200,
-        layer: [
-          { // This layer displays the overall probability lines for selected/bookmarked intersections
-            transform: [
-              {
-                density: h.attribute,
-                groupby: ['subset', 'color'],
-              },
-              { // Hacky way to get the correct name for the attribute & sync with other plots
-                // Otherwise, the attribute name is "value", so selections don't sync and the signal sent 
-                // by selecting on this plot doesn''t include the name of the attribute being selected
-                calculate: 'datum["value"]',
-                as: h.attribute,
-              },
-            ],
-            params: makeParams(h),
-            mark: 'line',
-            encoding: {
-              x: { field: h.attribute, type: 'quantitative', title: h.attribute },
-              y: { field: 'density', type: 'quantitative', title: 'Probability' },
-              color: COLOR,
-              opacity: {
-                condition: [
-                  {
-                    param: 'brush',
-                    empty: false,
-                    value: 1,
-                  },
-                  {
-                    test: {or: [
-                      {not: {param: 'brush'}},
-                      'datum["isCurrentSelected"] === true && datum["isCurrent"] === false'
-                    ]},
-                    value: .4,
-                  },
-                ],
-                value: .4
-              },
-            },
+        transform: [
+          {
+            density: h.attribute,
+            groupby: ['subset', 'color'],
           },
-          { // This layer displays probability lines for selected elements, grouped by subset
-            transform: [
-              {
-                filter: {param: 'brush'}
-              },
-              {
-                density: h.attribute,
-                groupby: ['subset', 'color'],
-              },
-              {
-                calculate: 'datum["value"]',
-                as: h.attribute,
-              },
-            ],
-            mark: 'line',
-            encoding: {
-              x: { field: h.attribute, type: 'quantitative', title: h.attribute },
-              y: { field: 'density', type: 'quantitative',},
-              color: COLOR,
-              opacity: {value: 1},
-            },
+          { // Hacky way to get the correct name for the attribute & sync with other plots
+            // Otherwise, the attribute name is "value", so selections don't sync and the signal sent 
+            // by selecting on this plot doesn't include the name of the attribute being selected
+            calculate: 'datum["value"]',
+            as: h.attribute,
           },
-        ]
+        ],
+        params: makeParams(h),
+        mark: 'line',
+        encoding: {
+          x: { field: h.attribute, type: 'quantitative', title: h.attribute },
+          y: { field: 'density', type: 'quantitative', title: 'Probability' },
+          color: COLOR,
+        },
       };
     }
 
