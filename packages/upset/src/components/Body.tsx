@@ -4,10 +4,13 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
 import { MatrixRows } from './Rows/MatrixRows';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
+import { QueryBySet } from './custom/QueryBySet/QueryBySet';
+import { queryBySetsInterfaceAtom } from '../atoms/queryBySetsAtoms';
 
 export const Body = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(flattenedRowsSelector);
+  const queryBySetInterface = useRecoilValue(queryBySetsInterfaceAtom);
 
   return (
     <g transform={translate(0, dimensions.header.totalHeight + 5)}>
@@ -26,7 +29,12 @@ export const Body = () => {
         >
           No intersections to display...
         </text> :
-        <MatrixRows rows={rows} />}
+        (
+          <g>
+            { queryBySetInterface && <QueryBySet /> }
+            <MatrixRows rows={rows} />
+          </g>
+        )}
     </g>
   );
 };

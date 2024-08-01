@@ -2,7 +2,9 @@ import { Row } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
+import {
+  bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionSelector, nextColorSelector,
+} from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';
@@ -13,11 +15,12 @@ import { newShade } from '../../utils/colors';
 type Props = {
   size: number;
   row?: Row;
+  color?: string;
 };
 
 const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
 
-export const SizeBar: FC<Props> = ({ row, size }) => {
+export const SizeBar: FC<Props> = ({ row, size, color }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -47,6 +50,9 @@ export const SizeBar: FC<Props> = ({ row, size }) => {
   }
 
   function getFillColor(index: number) {
+    if (color) {
+      return color;
+    }
     // if the row is bookmarked, highlight the bar with the bookmark color
     if (row !== undefined && bookmarkedIntersections.some((bookmark) => bookmark.id === row.id)) {
       // darken the color for advanced scale sub-bars

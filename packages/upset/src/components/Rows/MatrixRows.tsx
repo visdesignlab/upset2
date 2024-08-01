@@ -8,6 +8,7 @@ import translate from '../../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
+import { queryBySetsInterfaceAtom } from '../../atoms/queryBySetsAtoms';
 
 type Props = {
   rows: RenderRow[];
@@ -28,6 +29,7 @@ export function rowRenderer(row: Row) {
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
+  const queryBySetsInterface = useRecoilValue(queryBySetsInterfaceAtom);
 
   const shouldRender = (row: Row) => {
     const parentId = row.parent;
@@ -48,13 +50,16 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   let yTransform = 0;
 
-  // calculates the y-transform for a given row
-  const calculateYTransform = (row: Row) => {
-    if (shouldRender(row)) {
+  /**
+  * Calculates the y-transform for a given row
+  * If queryBySetsInterface is true, all rows are shifted down by the height of the interface
+  */
+  const calculateYTransform = (row: Row, index: number) => {
+    if (shouldRender(row) && index > 0) {
       yTransform += dimensions.body.rowHeight;
     }
 
-    return yTransform;
+    return yTransform + (queryBySetsInterface ? dimensions.setQuery.height + dimensions.setQuery.spacer : 0);
   };
 
   const rowTransitions = useTransition(
@@ -76,7 +81,7 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
       return {
         id,
         row,
-        y: (index > 0) ? calculateYTransform(row) : 0,
+        y: calculateYTransform(row, index),
       };
     }),
     {

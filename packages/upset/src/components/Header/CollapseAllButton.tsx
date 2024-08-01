@@ -2,7 +2,7 @@ import { css, SvgIcon, Tooltip } from '@mui/material';
 import { DoubleArrow } from '@mui/icons-material';
 import { getRows, isRowAggregate } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
-import { useContext, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import Group from '../custom/Group';
 import { mousePointer } from '../../utils/styles';
 import { ProvenanceContext } from '../Root';
@@ -11,6 +11,8 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { dataAtom } from '../../atoms/dataAtom';
 
 const iconSize = 16;
+
+const xOffset = 5;
 
 const hidden = 'none';
 
@@ -24,8 +26,9 @@ export const CollapseAllButton = () => {
   const { provenance, actions } = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const rows = getRows(data, provenance.getState());
   const [allCollapsed, setAllCollapsed] = useState(false);
+
+  const rows = useMemo(() => getRows(data, provenance.getState()), [data, provenance.getState()]);
 
   const toggleCollapseAll = () => {
     const ids: string[] = [];
@@ -54,8 +57,8 @@ export const CollapseAllButton = () => {
   };
 
   return (
-    <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
-      <Tooltip title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
+    <Group tx={iconSize + xOffset} ty={dimensions.header.totalHeight - (iconSize * 2)} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
+      <Tooltip placement="top" title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
         <g>
           <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0} />
           <g
