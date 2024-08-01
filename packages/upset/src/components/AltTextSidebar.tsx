@@ -9,6 +9,7 @@ import {
   css,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   useState, useEffect, FC, useContext,
   useMemo,
@@ -32,7 +33,7 @@ type Props = {
   open: boolean;
 
   /**
-   * Called when the sidebar is closed.
+   * Callback to close the sidebar.
    */
   close: () => void;
 
@@ -58,7 +59,6 @@ const initialDrawerWidth = 450;
 */
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  
   const currState = useRecoilValue(upsetConfigAtom);
 
   const [altText, setAltText] = useState<AltText | null>(null);
@@ -123,6 +123,16 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     `}
     aria-hidden={true}
   />
+
+  /**
+   * Number of tab indicies used by the PlotInformation component
+   * @see PlotInformation to count the number of tab indices used
+   */
+  const PLOT_INFO_TABS = 7;
+  /**
+   * The tab index, in this component, of the plot information component
+   */
+  const PLOT_INFO_TAB_INDEX = 9;
   
   return (
     <Drawer
@@ -146,11 +156,27 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     >
       <div css={css`width:${initialDrawerWidth}`}>
         <br />
-        <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
-          Text Descriptions
-        </Typography>
+        <Box>
+          <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
+            Text Descriptions
+          </Typography>
+          <Button
+            onClick={close}
+            aria-label='Close Text Descriptions Sidebar'
+            tabIndex={PLOT_INFO_TAB_INDEX + PLOT_INFO_TABS}
+            style={{
+              display: 'inline',
+              width: 'auto',
+              position: 'absolute',
+              top: '20px',
+              right: '10px',
+            }}
+          >
+            <Icon><CloseIcon/></Icon>
+          </Button>
+        </Box>
         {divider}
-        <PlotInformation divider={divider} tabIndex={9} />
+        <PlotInformation divider={divider} tabIndex={PLOT_INFO_TAB_INDEX} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
           Alt Text Description
         </Typography>
