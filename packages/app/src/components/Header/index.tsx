@@ -185,10 +185,10 @@ const Header = ({ data }: { data: any }) => {
                   setIsAltTextSidebarOpen(true);
                 }
               }}
-              aria-label='Alt Text Sidebar'
+              aria-label='Text Descriptions (Alt Text) Sidebar'
               tabIndex={2}
               >
-                Text Description
+                Text Descriptions
               </Button>
               <Link 
                 to={`/datatable${getQueryParam()}`} 

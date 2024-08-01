@@ -147,12 +147,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       <div css={css`width:${initialDrawerWidth}`}>
         <br />
         <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
-          Accessibility Sidebar
+          Text Descriptions
         </Typography>
         {divider}
         <PlotInformation divider={divider} tabIndex={9} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          Description
+          Alt Text Description
         </Typography>
         {divider}
         <Box css={css`overflow-y: auto;`}>
