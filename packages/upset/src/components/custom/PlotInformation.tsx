@@ -129,7 +129,7 @@ export const PlotInformation = ({onSave, divider, tabIndex}: Props) => {
             {plotInformation.title ?? "[Title]"}
           </Typography>
           <Button 
-            aria-label='Edit Plot Information' 
+            aria-label='Plot Information Editor' 
             style={{float: 'right', position: 'relative', bottom: '40px'}} 
             tabIndex={tabIndex + 1}
           >

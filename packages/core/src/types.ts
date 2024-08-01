@@ -236,12 +236,12 @@ export type AltText = {
   /**
   * The long description for the Upset plot.
   */
-  longDescription: string;
+  longDescription: string | null;
 
   /**
   * The short description for the Upset plot.
   */
-  shortDescription: string;
+  shortDescription: string | null;
 
   /**
   * The technique description for the Upset plot.
