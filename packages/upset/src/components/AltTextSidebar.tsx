@@ -3,12 +3,13 @@ import {
   Button,
   Divider,
   Drawer,
-  FormControlLabel,
-  Switch,
+  Icon,
   TextField,
   Typography,
   css,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 import {
   useState, useEffect, FC, useContext,
   useMemo,
@@ -19,13 +20,9 @@ import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { AltText } from '@visdesignlab/upset2-core/';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import '../index.css';
-import { HelpCircle } from './custom/HelpCircle';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
 
-/**
- * Props for the AltTextSidebar component.
- */
 /**
  * Props for the AltTextSidebar component.
  */
@@ -36,7 +33,7 @@ type Props = {
   open: boolean;
 
   /**
-   * Called when the sidebar is closed.
+   * Callback to close the sidebar.
    */
   close: () => void;
 
@@ -62,7 +59,6 @@ const initialDrawerWidth = 450;
 */
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  
   const currState = useRecoilValue(upsetConfigAtom);
 
   const [altText, setAltText] = useState<AltText | null>(null);
@@ -86,6 +82,17 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
   }
 
+  /**
+   * Sets text editing to true and sets default user alttexts if necessary
+   */
+  function enableTextEditing() {
+    setTextEditing(true);
+    if (!currState.userAltText?.shortDescription)
+      setUserShortText(altText?.shortDescription);
+    if (!currState.userAltText?.longDescription)
+      setUserLongText(altText?.longDescription);
+  }
+
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
@@ -104,12 +111,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   // Current alt text to display to the user
   const displayAltText: string | undefined = useMemo(() => {
-    if (textEditing)
-      if (useLong) return userLongText ?? altText?.longDescription
-      else return userShortText ?? altText?.shortDescription
-    else if (useLong) return currState.useUserAlt ? userLongText : altText?.longDescription 
-    else return currState.useUserAlt ? userShortText : altText?.shortDescription;
-  }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription, currState.useUserAlt]);
+      if (useLong) return userLongText ?? altText?.longDescription ?? ""
+      else return userShortText ?? altText?.shortDescription ?? "";
+  }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription]);
   
   const divider = <Divider
     css={css`
@@ -119,6 +123,16 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     `}
     aria-hidden={true}
   />
+
+  /**
+   * Number of tab indicies used by the PlotInformation component
+   * @see PlotInformation to count the number of tab indices used
+   */
+  const PLOT_INFO_TABS = 7;
+  /**
+   * The tab index, in this component, of the plot information component
+   */
+  const PLOT_INFO_TAB_INDEX = 9;
   
   return (
     <Drawer
@@ -127,7 +141,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       open={open}
       onClose={close}
       variant="persistent"
-      aria-label="Accessibility Sidebar"
+      aria-label="Alt Text and Plot Information Sidebar"
       sx={{
         width: (open) ? initialDrawerWidth : 0,
         flexShrink: 0,
@@ -142,125 +156,109 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     >
       <div css={css`width:${initialDrawerWidth}`}>
         <br />
-        <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
-          Accessibility Sidebar
-        </Typography>
+        <Box>
+          <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
+            Text Descriptions
+          </Typography>
+          <Button
+            onClick={close}
+            aria-label='Close Text Descriptions Sidebar'
+            tabIndex={PLOT_INFO_TAB_INDEX + PLOT_INFO_TABS}
+            style={{
+              display: 'inline',
+              width: 'auto',
+              position: 'absolute',
+              top: '20px',
+              right: '10px',
+            }}
+          >
+            <Icon><CloseIcon/></Icon>
+          </Button>
+        </Box>
         {divider}
-        <PlotInformation divider={divider} tabIndex={10} />
+        <PlotInformation divider={divider} tabIndex={PLOT_INFO_TAB_INDEX} />
         <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          Description
+          Alt Text Description
         </Typography>
         {divider}
-        <Box marginTop={2} css={css`overflow-y: auto;`}>
-          {!textGenErr ? (<>
-            <FormControlLabel
-              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
-              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="View User Description(s)"
-              control={
-                <Switch
-                  size="small"
-                  style={{marginRight: "10px"}}
-                  checked={currState.useUserAlt || textEditing}
-                  tabIndex={9}
-                  onChange={(ev) => {
-                    if (currState.useUserAlt !== ev.target.checked)
-                      actions.setUseUserAltText(ev.target.checked);
-                    if (!ev.target.checked) {
-                      setTextEditing(false);
-                    }
-                  }}
-                />
-              }
-              labelPlacement="start"
-            />
-            <HelpCircle 
-              text={"When enabled, allows you to enter a custom alternative text description."}
-              margin={{left: 12, top: 0, right: 0, bottom: 0}}
-            />
-            <br />
-            <FormControlLabel
-              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
-              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="Display Long Description"
-              control={
-                <Switch
-                  size="small"
-                  checked={useLong}
-                  tabIndex={8}
-                  onChange={(ev) => {
-                    setUseLong(ev.target.checked);
-                  }}
-                />
-              }
-              labelPlacement="start"
-            />
-            <HelpCircle 
-              text={"When enabled, displays the long text description for this plot instead of the short version."}
-              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
-            />
-          </>) : (
+        <Box css={css`overflow-y: auto;`}>
+          {textGenErr && !userLongText && !userShortText ? (
             <Typography variant="body1" color="error">{textGenErr}</Typography>
-          )}
-          {textEditing ? (<>
-            <Button 
-              color="primary" 
-              style={{float: 'right'}} 
-              onClick={saveButtonClick}
-              tabIndex={7}
-            >Save</Button>
-            <Button
-              color='warning'
-              style={{float: "right"}}
-              onClick={() => {
-                setUserLongText(altText?.longDescription);
-                setUserShortText(altText?.shortDescription);
-              }}
-              tabIndex={6}
-            >Reset Descriptions</Button>
-            <br />
-            <TextField multiline fullWidth
-              onChange={(e) => useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}
-              value={(displayAltText)}
-              tabIndex={5}
-            />
-            <br />
-          </>) : (
-            <div 
-              style={{
-                overflowY: 'auto',
-                cursor: 'pointer',
-                padding: '3px',
-                borderRadius: '4px',
-                width: 'calc(100% - 10px)', // We have 10px of padding + border
-                paddingBottom: '90px', // Necessary to keep it above the footer
-              }}
-              onClick={() => {
-                setTextEditing(true);
-                if (!currState.userAltText?.shortDescription)
-                  setUserShortText(altText?.shortDescription);
-                if (!currState.userAltText?.longDescription)
-                  setUserLongText(altText?.longDescription);
-              }}
-              tabIndex={3}  
-            >
-              <ReactMarkdownWrapper 
-                text={
-                  displayAltText ?? (currState.useUserAlt 
-                    ? "No user-generated description available." 
-                    : "No description available.")
-                }
-              />
+          ) : (
+            textEditing ? (<>
+              <Button 
+                color="primary" 
+                style={{float: 'right'}} 
+                onClick={saveButtonClick}
+                id="saveAltTextButton"
+                tabIndex={7}
+              >Save</Button>
               <Button
-                style={{
-                  width: '100%',
-                  textAlign: 'center',
+                color='warning'
+                style={{float: "right"}}
+                onClick={() => {
+                  setUserLongText(altText?.longDescription);
+                  setUserShortText(altText?.shortDescription);
                 }}
-                onClick={() => setTextEditing(true)}
-                tabIndex={4}
-              >Edit Text Description</Button>
-            </div>
+                tabIndex={8}
+              >Reset Descriptions</Button>
+              <br />
+              <TextField multiline fullWidth
+                onChange={(e) => useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}
+                value={(displayAltText)}
+                tabIndex={6}
+                aria-flowto='saveAltTextButton'
+              />
+              <br />
+            </>) : (
+              <Box 
+                style={{
+                  
+                }}
+                sx={{
+                  '&:hover': {
+                  border: '2px inset #ddd', 
+                  },
+                  overflowY: 'auto',
+                  cursor: 'pointer',
+                  borderRadius: '4px',
+                  border: '2px solid white',
+                  width: 'calc(100% - 10px)', // We have 10px of padding + border
+                }}
+                onClick={enableTextEditing}
+                tabIndex={3}  
+              >
+                <Button
+                  style={{
+                    display: 'inline-block',
+                    width: '24px',
+                    float: 'right',
+                  }}
+                  onClick={enableTextEditing}
+                  tabIndex={5}
+                  aria-label="Alt Text Description Editor"
+                >
+                  <Icon style={{overflow: 'visible'}}>
+                    <EditIcon />
+                  </Icon>
+                </Button>
+                <ReactMarkdownWrapper 
+                  text={displayAltText}
+                />
+              </Box>
+            )
           )}
+          <Button
+            onClick={() => setUseLong(!useLong)}
+            tabIndex={4}
+            style={{
+              width: '100%', 
+              textAlign: 'center',
+              marginBottom: '90px', // Necessary to keep it above the footer
+            }}
+          >
+            {useLong ? "Show Less" : "Show More"}
+          </Button>
         </Box>
       </div>
     </Drawer>
