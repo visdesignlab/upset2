@@ -1,8 +1,8 @@
 import { useRecoilValue } from 'recoil';
 
 import { css } from '@emotion/react';
-import { Edit } from '@mui/icons-material';
-import { SvgIcon } from '@mui/material';
+import { Check, Edit } from '@mui/icons-material';
+import { SvgIcon, Tooltip } from '@mui/material';
 import {
   useContext, useEffect, useMemo, useState,
 } from 'react';
@@ -21,6 +21,7 @@ import { ProvenanceContext } from '../../Root';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
+const CHECK_ICON_SIZE = 16;
 
 export type Membership = {
   [key: string]: SetMembershipStatus;
@@ -78,6 +79,7 @@ export const QueryBySet = () => {
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
+  // initialize membership with all visible sets set to 'May'
   useEffect(() => {
     const initialMembership: Membership = {};
     visibleSets.forEach((set) => {
@@ -87,10 +89,24 @@ export const QueryBySet = () => {
     setMembership(initialMembership);
   }, []);
 
+  // update membership when visible sets change
+  useEffect(() => {
+    const newMembership: Membership = {};
+    visibleSets.forEach((set) => {
+      newMembership[set] = membership[set] || 'May';
+    });
+
+    setMembership(newMembership);
+  }, [visibleSets]);
+
   function handleEditQueryTitle() {
     // TODO: Address better handling of editing query title
     // eslint-disable-next-line no-alert
     setQueryName(prompt('Edit Query Title', queryName) || 'Query');
+  }
+
+  function addQuery(): void {
+    // provenance action? should there be a config state for this?
   }
 
   /**
@@ -111,11 +127,13 @@ export const QueryBySet = () => {
   /**
    * Generates and returns the query string.
    * Ex: intersections of sets [Evil] and [Power Plant] but excluding sets [School] and[Blue Hair] and [Duff Fan] and [Male]
+   * This is done in chunks based on the order of the string above
    * @returns The query string.
    */
   function getQueryResultString() {
     const membershipValues = Object.values(membership);
 
+    // Edge cases for all columns the same
     if (membershipValues.every((status) => status === 'No')) {
       return 'the intersection that does not intersect with any selected set';
     }
@@ -126,11 +144,16 @@ export const QueryBySet = () => {
       return 'all intersections of all selected sets';
     }
 
+    // base string. All results must begin with this
     let queryResultString = 'intersections of ';
 
+    // 'May' sets have no string representation and so are ignored
     const yesSets = Object.entries(membership).filter(([_, status]) => status === 'Yes');
     const noSets = Object.entries(membership).filter(([_, status]) => status === 'No');
 
+    /**
+     * YES SETS
+     */
     if (yesSets.length > 0) {
       if (yesSets.length === 1) {
         queryResultString += 'set ';
@@ -146,6 +169,9 @@ export const QueryBySet = () => {
       }
     });
 
+    /**
+     * NO SETS
+     */
     if (noSets.length > 0) {
       if (yesSets.length > 0) {
         queryResultString += ' but excluding set';
@@ -250,6 +276,25 @@ export const QueryBySet = () => {
           </g>
         </g>
       </g>
+      {/* Add query button */}
+      <g
+        transform={translate(dimensions.matrixColumn.width +
+          dimensions.bookmarkStar.gap, dimensions.body.rowHeight + CHECK_ICON_SIZE / 4)}
+      >
+        <Tooltip title="Add Query">
+          <g>
+            <rect
+              height={CHECK_ICON_SIZE}
+              width={CHECK_ICON_SIZE}
+              fill="transparent"
+              onClick={() => addQuery()}
+            />
+            <SvgIcon height={CHECK_ICON_SIZE} width={CHECK_ICON_SIZE}>
+              <Check />
+            </SvgIcon>
+          </g>
+        </Tooltip>
+      </g>
       {/* Query size bar */}
       <g transform={translate(0, dimensions.body.rowHeight)}>
         <SizeBar size={getQuerySize()} color="rgb(161, 217, 155)" />
@@ -264,7 +309,22 @@ export const QueryBySet = () => {
           dimensions.body.rowHeight * 2.5,
         )}
       >
-        <text>{getQueryResultString()}</text>
+        <foreignObject
+          width={
+            dimensions.setQuery.width -
+            (dimensions.matrixColumn.width + // gap from side to sizebar
+            dimensions.bookmarkStar.gap +
+            dimensions.bookmarkStar.width +
+            dimensions.bookmarkStar.gap)
+          }
+          height={dimensions.setQuery.height - dimensions.body.rowHeight * 2.5}
+        >
+          <p
+            css={css`text-wrap: normal; margin: 0; padding: 0;`}
+          >
+            {getQueryResultString()}
+          </p>
+        </foreignObject>
       </g>
     </g>
   );

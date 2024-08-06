@@ -50,6 +50,7 @@ export const SizeBar: FC<Props> = ({ row, size, color }) => {
   }
 
   function getFillColor(index: number) {
+    // if color is provided, simply return that
     if (color) {
       return color;
     }
