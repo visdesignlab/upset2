@@ -11,11 +11,10 @@ import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
-import { elementSelector, intersectionCountSelector } from '../../atoms/elementsSelectors';
+import { elementSelector, intersectionCountSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
-import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 import { UpsetActions } from '../../provenance';
 import { ProvenanceContext } from '../Root';
 
@@ -74,7 +73,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
 
   const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const currentSelection = useRecoilValue(elementSelectionAtom);
+  const currentSelection = useRecoilValue(selectedElementSelector);
 
   useEffect(() => {
     setHideElementSidebar(!open);

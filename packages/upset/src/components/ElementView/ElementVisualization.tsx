@@ -1,16 +1,15 @@
 import { Button } from '@mui/material';
 import { Box } from '@mui/system';
-import { useContext, useRef, useState } from 'react';
+import { useContext, useMemo, useRef, useState } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { elementItemMapSelector, configElementsSelector } from '../../atoms/elementsSelectors';
+import { elementItemMapSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { elementSelectionToBookmark, elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
-import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
@@ -25,16 +24,17 @@ export const ElementVisualization = () => {
   const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   
-  const savedSelection = useRecoilValue(configElementsSelector);
+  const currentSelection = useRecoilValue(selectedElementSelector);
   const selectColor = useRecoilValue(elementColorSelector);
   // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
-  const [currentSelection, setCurrentSelection] = useRecoilState(elementSelectionAtom);
   const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
   const draftSelection = useRef(currentSelection?.selection);
-  
-  // Necessary to allow functions to be called on the <div> element itself
-  const thisComponent = useRef<HTMLDivElement>(null);
 
+  const vegaSpec = useMemo(
+    () => generateVega(scatterplots, histograms, selectColor, currentSelection?.selection),
+    [scatterplots, histograms, selectColor, currentSelection?.selection]
+  );
+  
   const onClose = () => setOpenAddPlot(false);
 
   /**
@@ -50,33 +50,18 @@ export const ElementVisualization = () => {
 
   return (
     <Box
-      // These attributes facilitate saving to the config state when the user clicks off the plot
       onClick={() => {
-        // Necessary to give the <div> focus; focus doesn't bubble up from the VegaLite component but click does
-        thisComponent.current?.focus();
-        // Since onClick fires onMouseUp, this is a great time to save to the atom
+        // Since onClick fires onMouseUp, this is a great time to save
         if (
           draftSelection.current 
           && Object.keys(draftSelection.current).length > 0 
           && !elementSelectionsEqual(draftSelection.current, currentSelection?.selection)
         ) {
-          setCurrentSelection(elementSelectionToBookmark(draftSelection.current));
+          actions.setElementSelection(elementSelectionToBookmark(draftSelection.current));
         } else {
-          setCurrentSelection(null);
-          // We update the trrack state here or else the re-render triggered on the previous line
-          // will re-select from the config saved state 
           actions.setElementSelection(null);
         }
         draftSelection.current = undefined;
-      }}
-      // Necessary to allow us to focus the <div> programmatically
-      ref={thisComponent}
-      // Necessary to make <div> focusable so it can receive focus events
-      tabIndex={-1}
-      // Since we now have focus whenever a plot is clicked, this will always fire when clicking off
-      onBlur={() => {
-        if (!elementSelectionsEqual(currentSelection?.selection, savedSelection?.selection))
-          actions.setElementSelection(currentSelection);
       }}
     >
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
@@ -84,7 +69,7 @@ export const ElementVisualization = () => {
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
-            spec={generateVega(scatterplots, histograms, selectColor, savedSelection?.selection)}
+            spec={vegaSpec}
             data={{
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}

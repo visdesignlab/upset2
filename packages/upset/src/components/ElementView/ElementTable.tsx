@@ -5,9 +5,8 @@ import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { attributeAtom } from '../../atoms/attributeAtom';
-import { elementSelector, selectedItemsSelector } from '../../atoms/elementsSelectors';
+import { elementSelector, selectedElementSelector, selectedItemsSelector } from '../../atoms/elementsSelectors';
 import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
-import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 
 /**
  * Hook to generate rows for the DataGrid
@@ -40,7 +39,7 @@ function useColumns(columns: string[]) {
 
 export const ElementTable: FC = () => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const currentSelection = useRecoilValue(elementSelectionAtom);
+  const currentSelection = useRecoilValue(selectedElementSelector);
   const attributeColumns = useRecoilValue(attributeAtom);
   const elements = currentSelection?.selection 
     ? useRecoilValue(selectedItemsSelector)
