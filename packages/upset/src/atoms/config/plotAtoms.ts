@@ -24,3 +24,8 @@ export const plotsSelector = selector({
     ...get(histogramSelector),
   ],
 });
+
+export const attributePlotsSelector = selector({
+  key: 'attribute-plot',
+  get: ({ get }) => get(upsetConfigAtom).attributePlots,
+});
