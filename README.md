@@ -38,7 +38,7 @@ UpSet 2.0 can be imported as a React component using:
 npm install @visdesignlab/upset2-react
 ```
 
-Note that UpSet 2.0 requires a react version of 16.0 or higher.
+Note that UpSet 2.0 requires a react version of 18.0 or higher.
 
 Import the component using `import { Upset } from @visdesignlab/upset2-react` in your react component.
 
