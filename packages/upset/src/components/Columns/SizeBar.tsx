@@ -1,74 +1,229 @@
 import { Row } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import {
-  bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionSelector, nextColorSelector,
-} from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, elementColorSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { newShade } from '../../utils/colors';
 
-/** @jsxImportSource @emotion/react */
+/**
+ * A bar that represents the size of a row in the upset plot.
+ * @param size The size of the row.
+ * @param selected The number of selected items in the row.
+ * @param selectedColor The color to use for the element selection in this bar, if extant
+ * @param row Row object to display the size for. 
+ * @jsxImportSource @emotion/react 
+ */
 type Props = {
+  /** Row size (element count) */
   size: number;
+  /** Number of selected items in the row; should be <= size */
+  selected: number;
+  /** Row object which the size is being displayed for */
   row?: Row;
   color?: string;
 };
 
+/**
+ * A rectangle in the size bar. Used to create an svg <rect> element
+ */
+type Rect = {
+  /** SVG transform */
+  transform: string;
+  /** Bar height */
+  height: number;
+  /** Bar width */
+  width: number;
+  /** Hex fill color */
+  fillColor: string;
+  /** Opacity of the bar, 0-1 */
+  opacity: number;
+}
+
 const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
 
-export const SizeBar: FC<Props> = ({ row, size, color }) => {
+export const SizeBar: FC<Props> = ({ row, size, selected, color }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarks = useRecoilValue(bookmarkSelector);
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
+  const elementSelectionColor = useRecoilValue(elementColorSelector);
 
-  const scale = useScale(
-    [0, sizeDomain],
-    [0, dimensions.attribute.width],
-  );
+  //// Constants
 
-  let fullBars = size > 0 ? Math.floor(size / sizeDomain) : size;
-  const rem = size % sizeDomain;
+  // Opacity for the selection color
+  const SELECTION_OPACITY = .6;
+  // Offset in px for each nested bar
+  const OFFSET = 6;
 
-  if (size < 0 || sizeDomain < 0) return null;
+  /// Functions
 
-  if (fullBars >= 3) {
-    fullBars = 3;
+  /**
+   * Darkens a size bar color according to its nesting index.
+   * Used to darken the interior size bars when more than one size bar is necessary.
+   * @param index Index of the size bar: 0 is the lowermost/first bar, not nested.
+   *   In a size bar with no nested bars, the only index is 0.
+   *   If index is 0, the initial color is returned unmodified.
+   * @param color The initial color of the bar; to be darkened.
+   */
+  function darkenColor(index: number, color: string): string {
+    return index === 0 ? color : newShade(color, -(12 + (index * 3)));
   }
 
-  const offset = 6;
-
-  const rectArray: number[] = [];
-  for (let i = 0; i < fullBars; ++i) {
-    rectArray[i] = i;
-  }
-
-  function getFillColor(index: number) {
+  /**
+   * Gets the fill color for the size bar. Returns a bookmark color if the row is bookmarked or selected
+   * and has no selected elements; otherwise, returns grey
+   * @param index Index of the bar.
+   * @returns Fill color for the bar.
+   */
+  function getFillColor(index: number): string {
     // if color is provided, simply return that
     if (color) {
       return color;
     }
     // if the row is bookmarked, highlight the bar with the bookmark color
-    if (row !== undefined && bookmarkedIntersections.some((bookmark) => bookmark.id === row.id)) {
+    if (row && selected === 0 && bookmarks.some((bookmark) => bookmark.id === row.id)) {
       // darken the color for advanced scale sub-bars
-      if (index !== 0) {
-        return newShade(bookmarkedColorPallete[row.id], -(12 + (index * 2)));
-      }
-      return bookmarkedColorPallete[row.id];
+      return darkenColor(index, bookmarkedColorPallete[row.id]);
     }
 
     // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
-    if (currentIntersection && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
+    if (currentIntersection && selected === 0 && currentIntersection?.id === row?.id) { 
+      // if currently selected, use the highlight colors
       return nextColor;
     }
     return colors[index];
   }
+
+  /**
+   * Calculates the number of size bars to display based on the size of the row.
+   * @param size Size of the row.
+   * @returns { fullBars: number, rem: number} 
+   *   fullBars  Number of full bars to display.
+   *   rem       Remaining size after full bars are displayed.
+   */
+  function calculateBars(size: number): { fullBars: number; rem: number } {
+    let fullBars = size > 0 ? Math.floor(size / sizeDomain) : size;
+    const rem = size % sizeDomain;
+
+    if (fullBars >= 3) {
+      fullBars = 3;
+    }
+    if (rem === 0 && fullBars > 0) fullBars--;
+
+    return { fullBars, rem };
+  }
+
+  /**
+   * Creates a vertical line capped by a bordered tick
+   * @param x     Distance in pixels from the left edge of the size bar
+   * @param color Tick color (line & border are always white)
+   * @param index Bar index, used to determine vertical position; should be fullBars or fullSelectBars
+   * @returns SVG elements for the line and tick
+   */
+  function lineAndTick(x: number, color: string, index: number): JSX.Element {
+    return (<>
+      {/* White border for selection tick */}
+      <polygon
+          points={
+            `${x},${1} ` +
+            `${x - 7},${-6} ` +
+            `${x + 7},${-6}` 
+          }
+          fill="white"
+          transform={translate(0, (index * OFFSET) / 2)} 
+        />
+        {/* Selection tick */}
+        <polygon
+          points={
+            `${x},${0} ` +
+            `${x - 5},${-5} ` +
+            `${x + 5},${-5}` 
+          }
+          fill={color}
+          transform={translate(0, (index * OFFSET) / 2)}
+        />
+        {/* Vertical white line */}
+        <line
+          stroke="white"
+          strokeWidth="1px"
+          x1={x}
+          x2={x}
+          // y1 is the top of the selection bar, y2 is the bottom of the row
+          y1={index * OFFSET / 2}
+          y2={dimensions.size.plotHeight}
+        />
+    </>)
+  }
+
+  /// Hooks
+
+  // Compute vars for size bars
+  const scale = useScale(
+    [0, sizeDomain],
+    [0, dimensions.attribute.width],
+  );
+  
+  const { fullBars, rem } = useMemo(() => calculateBars(size), [size, calculateBars]);
+  const { fullBars: fullSelectBars, rem: remSelect } = useMemo(() => calculateBars(selected), [selected, calculateBars]);
+  
+  // X-coord for the end of the selected bar
+  const selectedWidth = useMemo(() => {
+    let result = scale(remSelect);
+    if (selected > 0 && result === 0) result = dimensions.attribute.width;
+    return result;
+  }, [remSelect, selected, dimensions.attribute.width, scale]);
+  // X-coord for the end of the size bar
+  const sizeWidth = useMemo(() => {
+    let result = scale(rem);
+    if (size > 0 && result === 0) result = dimensions.attribute.width;
+    return result;
+  }, [rem, size, dimensions.attribute.width, scale]);
+
+  // Calculate all rectangles for the size bar
+  const rectArray = useMemo(() => {
+    const result: Rect[] = [];
+    for (let i = 0; i < 3; ++i) {
+      // Full bars, which may be the selection color if the selection size is greater than the full bar size
+      if (i < fullBars)
+        result.push({
+          transform: translate(0, (i * OFFSET) / 2),
+          height: dimensions.size.plotHeight - i * OFFSET,
+          width: dimensions.attribute.width,
+          fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i),
+          opacity: i < fullSelectBars ? SELECTION_OPACITY : 1,
+        })
+      // Partial standard bar
+      else if (i === fullBars)
+        result.push({
+          transform: translate(0, (fullBars * OFFSET) / 2),
+          height: dimensions.size.plotHeight - fullBars * OFFSET,
+          width: sizeWidth,
+          fillColor: getFillColor(fullBars),
+          opacity: 1,
+        });
+      // Partial element selection bar
+      if (i === fullSelectBars)
+        result.push({
+          transform: translate(0, (fullSelectBars * OFFSET) / 2),
+          height: dimensions.size.plotHeight - fullSelectBars * OFFSET,
+          width: selectedWidth,
+          fillColor: darkenColor(fullSelectBars, elementSelectionColor),
+          opacity: SELECTION_OPACITY,
+        });
+    }
+    return result;
+  }, [
+    fullBars, OFFSET, dimensions.size.plotHeight, dimensions.attribute.width, fullSelectBars, darkenColor,
+    elementSelectionColor, getFillColor, SELECTION_OPACITY, translate, sizeWidth, selectedWidth
+  ]);
+
+  if (size < 0 || sizeDomain < 0) return null;
 
   return (
     <g
@@ -80,23 +235,29 @@ export const SizeBar: FC<Props> = ({ row, size, color }) => {
         (dimensions.body.rowHeight - dimensions.size.plotHeight) / 2,
       )}
     >
-      {rectArray.map((arr) => (
+      {rectArray.map((rect) => (
         <rect
-          transform={translate(0, (arr * offset) / 2)}
-          key={arr}
-          height={dimensions.size.plotHeight - arr * offset}
-          width={dimensions.attribute.width}
-          fill={getFillColor(arr)}
+          transform={rect.transform}
+          width={rect.width}
+          height={rect.height}
+          fill={rect.fillColor}
+          fillOpacity={rect.opacity}
         />
       ))}
-      {fullBars < 3 && (
-        <rect
-          transform={translate(0, (fullBars * offset) / 2)}
-          height={dimensions.size.plotHeight - fullBars * offset}
-          width={scale(rem)}
-          fill={getFillColor(fullBars)}
-        />
-      )}
+      {/* Tick & line at end of element selection bar */}
+      {fullSelectBars < 3 && selected > 0 && 
+        lineAndTick(selectedWidth, elementSelectionColor, fullSelectBars)
+      }
+      {/* Tick & line at end of size bar */}
+      {fullBars < 3 
+        && (
+          (currentIntersection && currentIntersection?.id === row?.id)
+          || (row && bookmarks.some((bookmark) => bookmark.id === row.id))
+        )
+        && lineAndTick(sizeWidth, 
+          (row && bookmarks.some((bookmark) => bookmark.id === row.id)) ? bookmarkedColorPallete[row.id] : nextColor, 
+        fullBars)
+      }
       {fullBars === 3 && (
         <>
           <line
@@ -121,7 +282,7 @@ export const SizeBar: FC<Props> = ({ row, size, color }) => {
         textAnchor="start"
         dominantBaseline="middle"
         transform={translate(
-          (fullBars > 0 ? dimensions.attribute.width : scale(rem)) + 5,
+          (fullBars > 0 ? dimensions.attribute.width : sizeWidth) + 5,
           dimensions.body.rowHeight / 2,
         )}
       >

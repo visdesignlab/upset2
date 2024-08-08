@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
-import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import React, {
+import { convertConfig, CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
   createContext, FC, useEffect, useMemo,
 } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -13,7 +13,7 @@ import { setsAtom } from '../atoms/setsAtoms';
 import { dataAtom } from '../atoms/dataAtom';
 import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemovalAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
-import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { elementSelectionAtom, upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import {
   getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
 } from '../provenance';
@@ -73,9 +73,10 @@ export const Root: FC<Props> = ({
   const setData = useSetRecoilState(dataAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
+  const setElementSelection = useSetRecoilState(elementSelectionAtom);
 
   useEffect(() => {
-    setState(config);
+    setState(convertConfig(config));
     setData(data);
   }, []);
 
@@ -84,8 +85,12 @@ export const Root: FC<Props> = ({
     if (extProvenance) {
       const { provenance, actions } = extProvenance;
 
+      // This syncs all linked atoms with the provenance state
       provenance.currentChange(() => {
-        setState(provenance.getState());
+        // Old provenance nodes may be using a different config version, so convert it if need be
+        const converted = convertConfig(provenance.getState());
+        setState(converted);
+        setElementSelection(converted.elementSelection);
       });
 
       provenance.done();

@@ -5,12 +5,15 @@ import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { attributeAtom } from '../../atoms/attributeAtom';
-import { elementSelector } from '../../atoms/elementsSelectors';
+import { elementSelector, selectedItemsSelector } from '../../atoms/elementsSelectors';
+import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 
-type Props = {
-  id: string;
-};
-
+/**
+ * Hook to generate rows for the DataGrid
+ * @param items Items in the dataset
+ * @returns readonly array of rows
+ */
 function useRows(items: Item[]): GridRowsProp {
   return useMemo(() => {
     const newItems: GridRowsProp = items.map((item) => ({
@@ -22,16 +25,26 @@ function useRows(items: Item[]): GridRowsProp {
   }, [items]);
 }
 
+/**
+ * Hook to generate columns for the DataGrid
+ * @param columns columns to be displayed
+ * @returns array of columns with item field to be displayed in the DataGrid and headerName
+ */
 function useColumns(columns: string[]) {
   return useMemo(() => columns.map((col) => ({
     field: col,
+    // Prefixed with _ since that's how the Item object is structured
     headerName: col === '_id' ? 'ID' : col === '_label' ? 'Label' : col,
   })), [columns]);
 }
 
-export const ElementTable: FC<Props> = ({ id }) => {
+export const ElementTable: FC = () => {
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const currentSelection = useRecoilValue(elementSelectionAtom);
   const attributeColumns = useRecoilValue(attributeAtom);
-  const elements = useRecoilValue(elementSelector(id));
+  const elements = currentSelection?.selection 
+    ? useRecoilValue(selectedItemsSelector)
+    : useRecoilValue(elementSelector(currentIntersection?.id));
   const rows = useRows(elements);
   const columns = useColumns(['_id', '_label', ...attributeColumns]);
 

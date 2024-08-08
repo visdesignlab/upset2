@@ -2,7 +2,7 @@ import { Bookmark, Row } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
-import { upsetConfigAtom } from './upsetConfigAtoms';
+import { elementSelectionAtom, upsetConfigAtom } from './upsetConfigAtoms';
 
 
 /**
@@ -18,12 +18,15 @@ export const currentIntersectionSelector = selector<Row | null | undefined>({
   // No setter; this should be set by calling actions.setSelected(intersection)
 });
 
-export const bookmarkedIntersectionSelector = selector<Bookmark[]>({
-  key: 'bookmarked-intersection',
+/**
+ * Selector for bookmarks from the config atom
+ */
+export const bookmarkSelector = selector<Bookmark[]>({
+  key: 'bookmarks',
   get: ({ get }) => {
-    const intersection = get(upsetConfigAtom).bookmarkedIntersections;
+    const bookmarks = get(upsetConfigAtom).bookmarks;
 
-    return intersection;
+    return bookmarks;
   },
 });
 
@@ -38,7 +41,7 @@ export const bookmarkedColorPalette = selector<{
   get: ({ get }) => {
     const colorPalette: { [i: string]: string } = {};
 
-    const bookmarks = get(bookmarkedIntersectionSelector);
+    const bookmarks = get(bookmarkSelector);
 
     [...bookmarks].forEach((inter, idx) => {
       colorPalette[inter.id] = queryColorPalette[idx] || '#000';
@@ -63,4 +66,24 @@ export const nextColorSelector = selector<string>({
     }
     return queryColorPalette[currentLength];
   },
+});
+
+/**
+ * The color to use for the current element selection stored in the elementSelectionAtom
+ */
+export const elementColorSelector = selector<string>({
+  key: 'element-selection-atom-color',
+  get: ({ get }) => {
+    const selection = get(elementSelectionAtom);
+    const bookmarkColors = get(bookmarkedColorPalette);
+    const palette = get(bookmarkedColorPalette);
+
+    if (Object.keys(bookmarkColors).includes(selection?.id ?? '')) {
+      return bookmarkColors[selection?.id ?? ''];
+    }
+
+    return get(currentIntersectionSelector) 
+      ? queryColorPalette[Object.values(palette).length + 1] 
+      : get(nextColorSelector);
+  }
 });

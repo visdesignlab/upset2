@@ -1,10 +1,15 @@
-import { Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
-import { selectorFamily } from 'recoil';
-import { bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
+import { BookmarkedSelection, Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
+import { selector, selectorFamily } from 'recoil';
+import { bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
-import { upsetConfigAtom } from './config/upsetConfigAtoms';
+import { elementSelectionAtom, upsetConfigAtom } from './config/upsetConfigAtoms';
 
+/**
+ * Gets all elements in the intersection represented by the provided ID
+ * @param id - The ID of the intersection to get elements for.
+ * @returns The elements in the intersection, with properties for coloring and selection.
+ */
 export const elementSelector = selectorFamily<
   Item[],
   string | null | undefined
@@ -56,15 +61,19 @@ export const intersectionCountSelector = selectorFamily<
   },
 });
 
+/**
+ * Gets all elements in intersections represented by the provided IDs
+ * and the currently selected intersection
+ * @param ids - The IDs of the intersections to get elements for.
+ * @returns The elements in the intersections
+ */
 export const elementItemMapSelector = selectorFamily<Item[], string[]>({
   key: 'element-item-map',
   get: (ids: string[]) => ({ get }) => {
     const currentIntersection = get(currentIntersectionSelector);
     const items: Item[] = [];
 
-    if (!currentIntersection) return [];
-
-    if (!ids.includes(currentIntersection.id)) {
+    if (currentIntersection && !ids.includes(currentIntersection.id)) {
       items.push(...get(elementSelector(currentIntersection.id)));
     }
 
@@ -74,4 +83,39 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
 
     return items;
   },
+});
+
+/**
+ * Gets the current selection of elements
+ * @returns The current selection of elements
+ */
+export const configElementsSelector = selector<BookmarkedSelection | null>({
+  key: 'config-element-selection',
+  get: ({ get }) => {
+    const state = get(upsetConfigAtom);
+    return state.elementSelection;
+  },
+});
+
+/**
+ * Returns all items that are in a bookmarked intersection OR the currently selected intersection
+ * AND are within the bounds of the current element selection.
+ */
+export const selectedItemsSelector = selector<Item[]>({
+  key: 'selected-elements',
+  get: ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
+    const selection = get(elementSelectionAtom)?.selection;
+    if (!selection) return [];
+
+    let result: Item[] = [];
+    for (const item of items) {
+      if (Object.entries(selection).every(([key, value]) => {
+        return typeof item[key] === 'number' &&
+          item[key] as number >= value[0] && item[key] as number <= value[1]
+      })) { result.push(item); }
+    }
+    return result;
+  }
 });

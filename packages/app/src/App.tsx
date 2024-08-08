@@ -3,7 +3,6 @@ import { useEffect, useMemo } from 'react';
 import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
-import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
@@ -18,15 +17,9 @@ function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
   const data = (encodedData === null) ? multinetData : encodedData
-  const config = useRecoilValue(upsetConfigAtom);
-
-  const setState = useSetRecoilState(upsetConfigAtom);
-
-  useEffect(() => {
-    setState(config);
-  }, [config, setState]);
 
   const conf = useMemo(() => {
+    const config = { ...DefaultConfig }
     if (data !== null) {
       const conf = JSON.parse(JSON.stringify(config))
       if (config.visibleSets.length === 0) {
@@ -40,7 +33,7 @@ function App() {
 
       return conf;
     }
-  }, [config, data]);
+  }, [data]);
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {

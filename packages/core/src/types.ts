@@ -1,5 +1,11 @@
+import { hashString } from "./utils";
+
 export type ColumnName = string;
 
+/**
+ * Base type for a column in the plot
+ * @privateRemarks typechecked by isColumn in typecheck.ts; changes here must be reflected there
+ */
 export type Column = {
   name: string;
   size: number;
@@ -15,6 +21,7 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
+ * @privateRemarks This is typechecked in isUpsetConfig; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
@@ -100,6 +107,7 @@ export type Attributes = AttributeList & {
 
 /**
  * Represents a base element.
+ * @privateRemarks typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
  */
 export type BaseElement = {
   /**
@@ -138,15 +146,24 @@ export const UNINCLUDED = 'unincluded';
 
 /**
  * Base Intersection type for subsets and aggregates.
+ * @privateRemarks typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
  */
-type BaseIntersection = BaseElement & {
+export type BaseIntersection = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
 
 export type Sets = { [set_id: string]: BaseIntersection };
 
+/**
+ * A single subset
+ * @privateRemarks typechecked by isSubset in typecheck.ts; changes here must be reflected there
+ */
 export type Subset = BaseIntersection;
 
+/**
+ * A list of subsets & their order
+ * @privateRemarks typechecked by isSubsets in typecheck.ts; changes here must be reflected there
+ */
 export type Subsets = {
   values: { [subset_id: string]: Subset };
   order: string[];
@@ -164,6 +181,11 @@ export const aggregateByList = [
   'Overlaps',
   'None',
 ] as const;
+
+/**
+ * Ways the upset plot can be aggregated
+ * @privateRemarks typechecked by isAggregateBy in typecheck.ts; changes here must be reflected there
+ */
 export type AggregateBy = typeof aggregateByList[number];
 
 export type SortByOrder = 'Ascending' | 'Descending';
@@ -171,6 +193,10 @@ export type SortByOrder = 'Ascending' | 'Descending';
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
 export type SortVisibleBy = typeof sortVisibleByList[number];
 
+/**
+ * An aggregate row in the plot
+ * @privateRemarks typechecked by isAggregate in typecheck.ts; changes here must be reflected there
+ */
 export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
@@ -190,6 +216,10 @@ export type Aggregates = {
 
 export type Rows = Subsets | Aggregates;
 
+/**
+ * A row in the plot
+ * @privateRemarks typechecked by isRow in typecheck.ts; changes here must be reflected there
+ */
 export type Row = Subset | Aggregate;
 
 export type ColumnTypes = {
@@ -210,6 +240,10 @@ export type BasePlot = {
   id: string;
 };
 
+/**
+ * Information defining an element view scatterplot
+ * @privateRemarks Typechecked by isScatterplot in typecheck.ts; changes here must be reflected there.
+ */
 export type Scatterplot = BasePlot & {
   type: 'Scatterplot';
   x: string;
@@ -218,6 +252,10 @@ export type Scatterplot = BasePlot & {
   yScaleLog?: boolean;
 };
 
+/**
+ * Information defining an element view histogram.
+ * @privateRemarks Typechecked by isHistogram in typecheck.ts; changes here must be reflected there
+ */
 export type Histogram = BasePlot & {
   type: 'Histogram';
   attribute: string;
@@ -226,7 +264,6 @@ export type Histogram = BasePlot & {
 };
 
 export type Plot = Scatterplot | Histogram;
-
 /**
  * Represents the different types of attribute plots.
  * Enum value is used here so that the values can be used as keys in upset package.
@@ -246,10 +283,55 @@ export enum AttributePlotType {
  */
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
-export type Bookmark = { id: string; label: string; size: number }
 
 /**
-* Represents the alternative text for an Upset plot.
+ * Base representation of a bookmarkable type
+ * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
+ */
+export type Bookmark = {
+  /**
+   * The unique ID of the bookmark.
+   */
+  id: string;
+  /**
+   * The display name of the bookmark.
+   */
+  label: string;
+  /**
+   * Subtype of the bookmark; used to determine what fields are available at runtime
+   */
+  type: 'intersection' | 'elements';
+};
+
+/**
+ * Represents a selection of elements in the Element View.
+ * Maps attribute names to an array with the minimum and maximum
+ * values of the selection over each attribute.
+ * 
+ * @privateRemarks
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in the Element View.
+ * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
+ */
+export type ElementSelection = {[attName: string] : [number, number]};
+
+/**
+ * Represents a bookmarked element selection, created in the Element View.
+ * @privateRemarks typechecked by isBookmarkedSelection in typecheck.ts; changes here must be reflected there
+ */
+export type BookmarkedSelection = Bookmark & {
+  /**
+   * The selection parameters
+   */
+  selection: ElementSelection;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'elements';
+}
+
+/**
+ * Represents the alternative text for an Upset plot.
+ * @privateRemarks typechecked by isAltText in typecheck.ts; changes here must be reflected there
 */
 export type AltText = {
   /**
@@ -274,6 +356,14 @@ export type AltText = {
   warnings?: string;
 }
 
+/**
+ * A configuration object for an UpSet plot.
+ * @version 0.1.0
+ * @privateRemarks
+ * Each breaking update to this config MUST be accompanied by an update to the config converter 
+ * in `convertConfig.ts`. Full instructions are provided in the converter file.
+ * ANY update to this config must be accompanied by a change to the isUpsetConfig function in typecheck.ts
+ */
 export type UpsetConfig = {
   plotInformation: PlotInformation;
   horizontal: boolean;
@@ -293,7 +383,10 @@ export type UpsetConfig = {
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
   attributePlots: AttributePlots;
-  bookmarkedIntersections: Bookmark[];
+  /**
+   * Bookmarked selections, can be intersections or element selections. 
+   */
+  bookmarks: Bookmark[];
   collapsed: string[];
   plots: {
     scatterplots: Scatterplot[];
@@ -301,8 +394,13 @@ export type UpsetConfig = {
   };
   allSets: Column[];
   selected: Row | null;
+  /**
+   * Selected elements (data points) in the Element View.
+   */
+  elementSelection: BookmarkedSelection | null;
+  version: '0.1.0';
   useUserAlt: boolean;
-  userAltText?: AltText;
+  userAltText: AltText | null;
 };
 
 export type AccessibleDataEntry = {
@@ -378,6 +476,72 @@ export function isRowAggregate(row: Row): row is Aggregate {
  */
 export function isRowSubset(row: Row): row is Subset {
   return row.type === 'Subset';
+}
+
+
+/**
+ * Checks if a bookmark is a BookmarkedIntersection.
+ * @param b - The bookmark to check.
+ * @returns True if the bookmark is a BookmarkedIntersection, false otherwise.
+ */
+export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersection {
+  return b.type === 'intersection';
+}
+
+/**
+ * Checks if two element selections are equal
+ * {} is considered == to undefined 
+ * @param a The first element selection
+ * @param b The second element selection
+ * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
+ * @returns Whether a and b are equal
+ */
+export function elementSelectionsEqual(a: ElementSelection | undefined, b: ElementSelection | undefined, decimalPlaces = 4): boolean {
+  // We want undefined == {}
+  if (!a || Object.keys(a).length == 0) {
+    return (!b || Object.keys(b).length == 0);
+  }
+  if (!a || !b) return false;
+  
+  const keys = Object.keys(a);
+  if (keys.length !== Object.keys(b).length) return false;
+
+  const round = 10 ** decimalPlaces;
+  function prep(num: number): number {
+    return Math.round(num * round);
+  }
+
+  for (const key of keys) {
+    if (!b.hasOwnProperty(key)) return false;
+    if (prep(a[key][0]) !== prep(b[key][0])) return false;
+    if (prep(a[key][1]) !== prep(b[key][1])) return false;
+  }
+
+  return true;
+}
+
+/**
+ * Converts an element selection to a bookmark.
+ * Generates the ID by hashing the selection and 
+ * labels the bookmark with the selection attributes.
+ * @param selection The numerical attribute query.
+ * @returns The element selection.
+ */
+export function elementSelectionToBookmark(selection: ElementSelection): BookmarkedSelection {
+  // Normalizing prevents floating point error from causing different hashes
+  const norm = (i : number) => Math.abs(Math.round(i * 10000));
+
+  let i = 1;
+  for (const [key, value] of Object.entries(selection)) {
+    i *= norm(hashString(key)) * norm(value[0]) * norm(value[1]);
+  }
+  i = norm(i);
+  return {
+    id: i.toString(),
+    label: `Atts: ${Object.keys(selection).join(', ')}`,
+    type: 'elements',
+    selection: selection,
+  };
 }
 
 /**

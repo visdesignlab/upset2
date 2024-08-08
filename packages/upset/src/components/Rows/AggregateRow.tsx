@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
@@ -16,6 +16,9 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
+import { countAggregateSelected } from './functions';
+import { elementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
 
 /** @jsxImportSource @emotion/react */
 /**
@@ -62,9 +65,10 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarks = useRecoilValue(bookmarkSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
+  const elementSelection = useRecoilValue(elementSelectionAtom);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -138,9 +142,14 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         </g>
       )}
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
-        { bookmarkedIntersections.find((b) => b.id === aggregateRow.id) &&
+        { bookmarks.find((b) => b.id === aggregateRow.id) &&
         <BookmarkStar row={aggregateRow} />}
-        <SizeBar row={aggregateRow} size={aggregateRow.size} />
+        <SizeBar 
+          row={aggregateRow} 
+          size={aggregateRow.size} 
+          selected={countAggregateSelected(aggregateRow, elementSelection?.selection, 
+            (id: string) => {return useRecoilValue(elementSelector(id))}
+          )} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>

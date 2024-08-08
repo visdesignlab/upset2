@@ -1,5 +1,5 @@
 import { UpsetActions, UpsetProvenance } from "@visdesignlab/upset2-react"
-import { UpsetConfig } from "@visdesignlab/upset2-core"
+import { convertConfig, UpsetConfig } from "@visdesignlab/upset2-core"
 import { Box, css } from "@mui/material"
 import { Body } from "./Body"
 import Header from "./Header"
@@ -7,9 +7,9 @@ import { useRef, useState, useEffect, createContext } from "react"
 import React from "react"
 import Footer from "./Footer"
 import { useRecoilValue } from "recoil"
-import { api } from "../atoms/authAtoms"
 import { queryParamAtom } from "../atoms/queryParamAtom"
 import { Home } from "./Home"
+import { getMultinetSession } from "../api/session"
 
 type Props = {
     provenance: UpsetProvenance,
@@ -47,11 +47,17 @@ export const Root = ({provenance, actions, data, config}: Props) => {
   
     async function restoreSession() {
       if (sessionId) {
-        const session = await api.getSession(workspace || '', parseInt(sessionId), 'table');
+        const session = await getMultinetSession(workspace || '', sessionId);
   
         // Load the session if the object is not empty
         if (typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
           provenance.importObject(session.state);
+          // We may have imported an outdated provenance object with old states, so we make sure it doesn't expose those
+          // by having it convert the state every time getState is called
+          (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
+          provenance.getState = () => convertConfig(
+            (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
+          );
         }
       }
     }
