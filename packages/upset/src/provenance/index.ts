@@ -178,6 +178,14 @@ const removeMultipleVisibleAttributes = register<ColumnName[]>(
   },
 );
 
+const updateAttributePlotType = registry.register(
+  'update-attribute-plot-type',
+  (state: UpsetConfig, { attr, plotType }) => {
+    state.attributePlots[attr] = plotType;
+    return state;
+  },
+);
+
 const addBookmarkAction = register<Bookmark>(
   'add-bookmark',
   (state, newBookmark) => {
@@ -394,6 +402,7 @@ export function getActions(provenance: UpsetProvenance) {
     removeAttribute: (attr: string) => provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
+    updateAttributePlotType: (attr: string, plotType: string) => provenance.apply(`Update ${attr} plot type to ${plotType}`, updateAttributePlotType({ attr, plotType })),
     addBookmark: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
     removeBookmark: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),

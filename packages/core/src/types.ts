@@ -266,6 +266,25 @@ export type Histogram = BasePlot & {
 export type Plot = Scatterplot | Histogram;
 
 /**
+ * Represents the different types of attribute plots.
+ * Enum value is used here so that the values can be used as keys in upset package.
+*/
+// linter is saying this is already declared on line 226 (the line it is first declared...)
+// eslint-disable-next-line no-shadow
+export enum AttributePlotType {
+  BoxPlot = 'Box Plot',
+  DotPlot = 'Dot Plot',
+  StripPlot = 'Strip Plot',
+  DensityPlot = 'Density Plot',
+}
+
+/**
+ * Represents the different types of attribute plots.
+ * Enum values (AttributePlotType) behave better in a Record object than in traditional dict types.
+ */
+export type AttributePlots = Record<string, `${AttributePlotType}`>;
+
+/**
  * Base representation of a bookmarkable type
  * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
@@ -287,7 +306,7 @@ export type Bookmark = {
 /**
  * A bookmarked intersection.
  */
-export type BookmarkedIntersection = Bookmark & { 
+export type BookmarkedIntersection = Bookmark & {
   /**
    * The size of the bookmarked intersection.
    */
@@ -377,6 +396,7 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
   /**
    * Bookmarked selections, can be intersections or element selections. 
    */
