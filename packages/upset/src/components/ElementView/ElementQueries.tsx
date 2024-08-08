@@ -3,7 +3,7 @@ import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Alert, Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 import { Bookmark, BookmarkedIntersection, BookmarkedSelection, flattenedOnlyRows, isBookmarkedIntersection, isBookmarkedSelection } from '@visdesignlab/upset2-core';
 import {
@@ -16,8 +16,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { elementSelectionAtom } from '../../atoms/config/upsetConfigAtoms';
-import { configElementsSelector } from '../../atoms/elementsSelectors';
+import { selectedElementSelector } from '../../atoms/elementsSelectors';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -32,8 +31,8 @@ export const ElementQueries = () => {
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll("~&~", " & ") || "";
-  const [currentSelection, setCurrentSelection] = useRecoilState(elementSelectionAtom);
-  const savedSelection = useRecoilValue(configElementsSelector);
+  const currentSelection = useRecoilValue(selectedElementSelector);
+  const savedSelection = useRecoilValue(selectedElementSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
 
   /**
@@ -47,10 +46,10 @@ export const ElementQueries = () => {
     } else if (isBookmarkedSelection(bookmark)) {
       // Need to update both the saved trrack state & the selection atom when a chip is clicked
       if (currentSelection?.id === bookmark.id) {
-        setCurrentSelection(null);
+        actions.setElementSelection(null);
         if (savedSelection !== null) actions.setElementSelection(null);
       } else {
-        setCurrentSelection(bookmark);
+        actions.setElementSelection(bookmark);
         if (savedSelection?.id !== bookmark.id) actions.setElementSelection(bookmark);
       };
     }

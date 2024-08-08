@@ -7,6 +7,7 @@ import defaultTheme from '../utils/theme';
 import { Root } from './Root';
 import { UpsetProps } from '../types';
 import { processRawData } from '../utils/data';
+import { entries } from 'vega-lite';
 
 const defaultVisibleSets = 6;
 
@@ -55,10 +56,7 @@ export const Upset: FC<UpsetProps> = ({
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
   const combinedConfig = useMemo(() => {
-    let conf: UpsetConfig = { ...DefaultConfig };
-    if (Object.entries(config).length > 0) {
-      conf = { ...conf, ...convertConfig(config) };
-    }
+    const conf: UpsetConfig = { ...DefaultConfig, ...(Object.entries(config).length > 0 ? convertConfig(config) : {}) };
 
     const DEFAULT_NUM_ATTRIBUTES = 3;
 

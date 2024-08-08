@@ -3,7 +3,7 @@ import { selector, selectorFamily } from 'recoil';
 import { bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
-import { elementSelectionAtom, upsetConfigAtom } from './config/upsetConfigAtoms';
+import { upsetConfigAtom } from './config/upsetConfigAtoms';
 
 /**
  * Gets all elements in the intersection represented by the provided ID
@@ -89,7 +89,7 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
  * Gets the current selection of elements
  * @returns The current selection of elements
  */
-export const configElementsSelector = selector<BookmarkedSelection | null>({
+export const selectedElementSelector = selector<BookmarkedSelection | null>({
   key: 'config-element-selection',
   get: ({ get }) => {
     const state = get(upsetConfigAtom);
@@ -106,7 +106,7 @@ export const selectedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const bookmarks = get(bookmarkSelector);
     const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
-    const selection = get(elementSelectionAtom)?.selection;
+    const selection = get(selectedElementSelector)?.selection;
     if (!selection) return [];
 
     let result: Item[] = [];

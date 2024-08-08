@@ -2,7 +2,8 @@ import { Bookmark, Row } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
-import { elementSelectionAtom, upsetConfigAtom } from './upsetConfigAtoms';
+import { upsetConfigAtom } from './upsetConfigAtoms';
+import { selectedElementSelector } from '../elementsSelectors';
 
 /**
  * Represents the currently selected intersection,
@@ -68,12 +69,12 @@ export const nextColorSelector = selector<string>({
 });
 
 /**
- * The color to use for the current element selection stored in the elementSelectionAtom
+ * The color to use for the current element selection stored in the config
  */
 export const elementColorSelector = selector<string>({
   key: 'element-selection-atom-color',
   get: ({ get }) => {
-    const selection = get(elementSelectionAtom);
+    const selection = get(selectedElementSelector);
     const bookmarkColors = get(bookmarkedColorPalette);
     const palette = get(bookmarkedColorPalette);
 

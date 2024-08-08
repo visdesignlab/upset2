@@ -283,7 +283,6 @@ export enum AttributePlotType {
  */
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
-
 /**
  * Base representation of a bookmarkable type
  * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
