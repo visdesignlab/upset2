@@ -55,7 +55,10 @@ export const Upset: FC<UpsetProps> = ({
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
   const combinedConfig = useMemo(() => {
-    const conf: UpsetConfig = { ...DefaultConfig, ...convertConfig(config)};
+    let conf: UpsetConfig = { ...DefaultConfig };
+    if (Object.entries(config).length > 0) {
+      conf = { ...conf, ...convertConfig(config) };
+    }
 
     const DEFAULT_NUM_ATTRIBUTES = 3;
 

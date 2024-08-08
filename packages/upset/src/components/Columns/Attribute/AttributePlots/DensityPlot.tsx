@@ -6,7 +6,7 @@ import { generateAttributePlotSpec } from './generateAttributePlotSpec';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
 import {
-  bookmarkedColorPalette, bookmarkedIntersectionSelector, currentIntersectionSelector, nextColorSelector,
+  bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
 } from '../../../../atoms/config/currentIntersectionAtom';
 import { ATTRIBUTE_DEFAULT_COLOR } from '../../../../utils/styles';
 
@@ -41,7 +41,7 @@ export const DensityPlot: FC<Props> = ({
 
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const bookmarks = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarks = useRecoilValue(bookmarkSelector);
   const colorPalette = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
 

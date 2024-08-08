@@ -304,6 +304,20 @@ export type Bookmark = {
 };
 
 /**
+ * A bookmarked intersection.
+ */
+export type BookmarkedIntersection = Bookmark & {
+  /**
+   * The size of the bookmarked intersection.
+   */
+  size: number;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'intersection';
+}
+
+/**
  * Represents a selection of elements in the Element View.
  * Maps attribute names to an array with the minimum and maximum
  * values of the selection over each attribute.
