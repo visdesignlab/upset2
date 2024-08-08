@@ -25,6 +25,7 @@ export const DefaultConfig: UpsetConfig = {
   },
   visibleSets: [],
   visibleAttributes: ['Degree', 'Deviation'],
+  attributePlots: {},
   bookmarkedIntersections: [],
   collapsed: [],
   plots: {

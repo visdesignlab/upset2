@@ -44,3 +44,5 @@ export const mousePointer = css`
 export const arrowIconCSS = {
   height: '16px', width: '16px', marginLeft: '6px',
 };
+
+export const ATTRIBUTE_DEFAULT_COLOR = '#d3d3d3';

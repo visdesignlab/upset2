@@ -1,6 +1,6 @@
 import { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { SortByOrder } from '@visdesignlab/upset2-core';
+import { SortByOrder, AttributePlotType } from '@visdesignlab/upset2-core';
 
 import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -11,6 +11,7 @@ import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { ContextMenuItem } from '../../types';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
+import { attributePlotsSelector } from '../../atoms/config/plotAtoms';
 
 /** @jsxImportSource @emotion/react */
 type Props = {
@@ -37,6 +38,8 @@ export const AttributeButton: FC<Props> = ({ label }) => {
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
+
+  const attributePlots = useRecoilValue(attributePlotsSelector);
 
   const allowAttributeRemoval = useRecoilValue(allowAttributeRemovalAtom);
 
@@ -93,6 +96,22 @@ export const AttributeButton: FC<Props> = ({ label }) => {
         disabled: sortBy === label && sortByOrder === 'Descending',
       },
     ];
+
+    if (!['Degree', 'Deviation'].includes(label)) {
+    // for every possible value of the type AttributePlotType (from core), add a menu item
+      Object.values(AttributePlotType).forEach((plot) => {
+        items.push(
+          {
+            label: `Change plot type to ${plot}`,
+            onClick: () => {
+              actions.updateAttributePlotType(label, plot);
+              handleContextMenuClose();
+            },
+            disabled: attributePlots[label] === plot,
+          },
+        );
+      });
+    }
 
     // Add remove attribute option if allowed
     if (allowAttributeRemoval) {

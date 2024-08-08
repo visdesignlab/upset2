@@ -106,3 +106,39 @@ test('Size header', async ({ page }) => {
   await toggleAdvancedScale(page);
   await assertSizeScaleMax(page, 3);
 });
+
+/**
+ * Tests that the attribute header menu items for changing plot type work and update on selection
+ * *Note* Does NOT test the actual plot rendering
+ */
+test('Attribute Plot Types', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+
+  // remove 'Male' set so that there are attributes with at least 6 items (threshold for dotplot)
+  await removeSetByName(page, 'Male');
+
+  const ageAttributeHeader = page.getByLabel('Age').locator('rect');
+
+  await ageAttributeHeader.click({ button: 'right', force: true });
+
+  // Click 'Change plot type to Dot Plot'
+  await page.getByRole('menuitem', { name: 'Change plot type to Dot Plot' }).click();
+  await ageAttributeHeader.click({ button: 'right', force: true });
+
+  // Expect that dot plot is disabled
+  await expect(page.getByRole('menuitem', { name: 'Change plot type to Dot Plot' })).toBeDisabled();
+
+  // Click 'Change plot type to Strip Plot'
+  await page.getByRole('menuitem', { name: 'Change plot type to Strip Plot' }).click();
+  await ageAttributeHeader.click({ button: 'right', force: true });
+
+  // Expect that strip plot is disabled
+  await expect(page.getByRole('menuitem', { name: 'Change plot type to Strip Plot' })).toBeDisabled();
+
+  // Click 'Change plot type to Density Plot'
+  await page.getByRole('menuitem', { name: 'Change plot type to Density Plot' }).click();
+  await ageAttributeHeader.click({ button: 'right', force: true });
+
+  // Expect that density plot is disabled
+  await expect(page.getByRole('menuitem', { name: 'Change plot type to Density Plot' })).toBeDisabled();
+});
