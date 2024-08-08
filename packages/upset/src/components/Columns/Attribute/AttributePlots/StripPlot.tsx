@@ -6,7 +6,7 @@ import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { visibleAttributesSelector } from '../../../../atoms/config/visibleAttributes';
 
 /**
- * Props for the DotPlot component.
+ * Props for the StripPlot component.
  */
 type Props = {
   /**
@@ -29,14 +29,10 @@ type Props = {
    * The row object. Rows can be either Subsets or Aggregates.
    */
   row: Subset | Aggregate;
-  /**
-   * Whether to jitter the dots
-   */
-  jitter?: boolean;
 };
 
 /**
- * Renders a Dot Plot for a given attribute.
+ * Renders a strip plot for a given attribute.
  *
  * @component
  * @param {Props} props - The component props.
@@ -45,37 +41,13 @@ type Props = {
  * @param {string} props.attribute - The attribute name.
  * @param {boolean} props.isAggregate - Indicates whether the row is an aggregate.
  * @param {Row} props.row - The row object. Rows can be either Subsets or Aggregates.
- * @param {boolean} props.jitter - Whether to jitter the dots.
- * @returns {JSX.Element} The rendered dot plot.
+ * @returns {JSX.Element} The rendered strip plot.
  */
-export const DotPlot: FC<Props> = ({
-  scale, values, attribute, isAggregate, row, jitter = false,
+export const StripPlot: FC<Props> = ({
+  scale, values, attribute, isAggregate, row,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attributes = useRecoilValue(visibleAttributesSelector);
-
-  /**
-   * Generates a y offset for the provided index.
-   * Seeded based on row size and length of row id so that jitter is consistent between renders, and also varies between rows.
-   * Rows of the same size AND same id string length will have the same jitter.
-   * @param index The index of the dot being rendered
-   * @returns y offset for the dot based on the index and row size
-   */
-  function getJitterForIndex(index: number) {
-    const seed = row.size + row.id.length + index;
-
-    /**
-     * Generates a random number between 0 and 1 using a seed value.
-     * Poor randomness approximation, but good enough for jittering.
-     * @returns A random number between 0 and 1.
-     */
-    function random() {
-      const x = Math.sin(seed) * 10000;
-      return x - Math.floor(x);
-    }
-
-    return (dimensions.attribute.plotHeight / 4) * (1 - random() * 2);
-  }
 
   return (
     <g>
@@ -88,9 +60,19 @@ export const DotPlot: FC<Props> = ({
         y={-(dimensions.attribute.plotHeight / 2)}
       />
       {values.map((value, idx) => (
-        // There is no unique identifier for the attribute values other than index, so it is used as key
-        // eslint-disable-next-line react/no-array-index-key
-        <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={jitter ? getJitterForIndex(idx) : 0} r={dimensions.attribute.dotSize} fill="black" opacity="0.2" />
+        // vertical line for x position, go top to bottom
+        <line
+          // There is no unique identifier for the attribute values other than index, so it is used as key
+          // eslint-disable-next-line react/no-array-index-key
+          key={`${row.id} + ${idx}`}
+          x1={scale(value)}
+          x2={scale(value)}
+          y1={-(dimensions.attribute.plotHeight / 2)}
+          y2={dimensions.attribute.plotHeight / 2}
+          stroke="#474242"
+          opacity={0.3}
+          strokeWidth={dimensions.attribute.dotSize / 3}
+        />
       ))}
     </g>
   );
