@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
-import { FC, useContext } from 'react';
+import { FC, useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
@@ -74,6 +74,12 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     width -= dimensions.body.aggregateOffset;
   }
 
+  const selected = useMemo(() => countAggregateSelected(
+    aggregateRow,
+    elementSelection?.selection,
+    (id: string) => useRecoilValue(elementSelector(id)),
+  ), [aggregateRow, elementSelection, elementSelector]);
+
   /**
    * Truncates the element name if it is longer than 14 characters and the aggregateBy value is 'Overlaps'.
    * Otherwise, description is the element name.
@@ -143,12 +149,11 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
         { bookmarks.find((b) => b.id === aggregateRow.id) &&
         <BookmarkStar row={aggregateRow} />}
-        <SizeBar 
-          row={aggregateRow} 
-          size={aggregateRow.size} 
-          selected={countAggregateSelected(aggregateRow, elementSelection?.selection, 
-            (id: string) => {return useRecoilValue(elementSelector(id))}
-          )} />
+        <SizeBar
+          row={aggregateRow}
+          size={aggregateRow.size}
+          selected={selected}
+        />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>
