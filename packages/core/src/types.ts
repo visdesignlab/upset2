@@ -1,4 +1,4 @@
-import { hashString } from "./utils";
+import { hashString } from './utils';
 
 export type ColumnName = string;
 
@@ -321,7 +321,7 @@ export type BookmarkedIntersection = Bookmark & {
  * Represents a selection of elements in the Element View.
  * Maps attribute names to an array with the minimum and maximum
  * values of the selection over each attribute.
- * 
+ *
  * @privateRemarks
  * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in the Element View.
  * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
@@ -374,7 +374,7 @@ export type AltText = {
  * A configuration object for an UpSet plot.
  * @version 0.1.0
  * @privateRemarks
- * Each breaking update to this config MUST be accompanied by an update to the config converter 
+ * Each breaking update to this config MUST be accompanied by an update to the config converter
  * in `convertConfig.ts`. Full instructions are provided in the converter file.
  * ANY update to this config must be accompanied by a change to the isUpsetConfig function in typecheck.ts
  */
@@ -398,7 +398,7 @@ export type UpsetConfig = {
   visibleAttributes: ColumnName[];
   attributePlots: AttributePlots;
   /**
-   * Bookmarked selections, can be intersections or element selections. 
+   * Bookmarked selections, can be intersections or element selections.
    */
   bookmarks: Bookmark[];
   collapsed: string[];
@@ -492,7 +492,6 @@ export function isRowSubset(row: Row): row is Subset {
   return row.type === 'Subset';
 }
 
-
 /**
  * Checks if a bookmark is a BookmarkedIntersection.
  * @param b - The bookmark to check.
@@ -504,7 +503,7 @@ export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersecti
 
 /**
  * Checks if two element selections are equal
- * {} is considered == to undefined 
+ * {} is considered == to undefined
  * @param a The first element selection
  * @param b The second element selection
  * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
@@ -512,11 +511,11 @@ export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersecti
  */
 export function elementSelectionsEqual(a: ElementSelection | undefined, b: ElementSelection | undefined, decimalPlaces = 4): boolean {
   // We want undefined == {}
-  if (!a || Object.keys(a).length == 0) {
-    return (!b || Object.keys(b).length == 0);
+  if (!a || Object.keys(a).length === 0) {
+    return (!b || Object.keys(b).length === 0);
   }
   if (!a || !b) return false;
-  
+
   const keys = Object.keys(a);
   if (keys.length !== Object.keys(b).length) return false;
 
@@ -525,18 +524,16 @@ export function elementSelectionsEqual(a: ElementSelection | undefined, b: Eleme
     return Math.round(num * round);
   }
 
-  for (const key of keys) {
-    if (!b.hasOwnProperty(key)) return false;
-    if (prep(a[key][0]) !== prep(b[key][0])) return false;
-    if (prep(a[key][1]) !== prep(b[key][1])) return false;
-  }
-
-  return true;
+  return keys.every(
+    (key) => Object.hasOwn(b, key)
+      && prep(a[key][0]) === prep(b[key][0])
+      && prep(a[key][1]) === prep(b[key][1]),
+  );
 }
 
 /**
  * Converts an element selection to a bookmark.
- * Generates the ID by hashing the selection and 
+ * Generates the ID by hashing the selection and
  * labels the bookmark with the selection attributes.
  * @param selection The numerical attribute query.
  * @returns The element selection.
@@ -546,15 +543,15 @@ export function elementSelectionToBookmark(selection: ElementSelection): Bookmar
   const norm = (i : number) => Math.abs(Math.round(i * 10000));
 
   let i = 1;
-  for (const [key, value] of Object.entries(selection)) {
+  Object.entries(selection).forEach(([key, value]) => {
     i *= norm(hashString(key)) * norm(value[0]) * norm(value[1]);
-  }
+  });
   i = norm(i);
   return {
     id: i.toString(),
     label: `Atts: ${Object.keys(selection).join(', ')}`,
     type: 'elements',
-    selection: selection,
+    selection,
   };
 }
 
