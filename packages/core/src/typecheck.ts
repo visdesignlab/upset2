@@ -1,7 +1,25 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, BookmarkedSelection, Column, ElementSelection, Histogram, PlotInformation, Row, Scatterplot, Subset, Subsets, UpsetConfig,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, BookmarkedSelection, Column, ElementSelection, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
 } from './types';
 import { deepCopy } from './utils';
+
+/**
+ * Type guard for RowType
+ * @param t variable to check
+ * @returns {boolean}
+ */
+export function isRowType(t: unknown): t is RowType {
+  return !!t
+  && typeof t === 'string'
+  && (t === 'Set'
+    || t === 'Subset'
+    || t === 'Group'
+    || t === 'Aggregate'
+    || t === 'Query Group'
+    || t === 'Seperator'
+    || t === 'Undefined'
+  );
+}
 
 /**
  * Type guard for BaseElement
@@ -21,13 +39,7 @@ export function isBaseElement(r: unknown): r is BaseElement {
     && typeof (r as BaseElement).elementName === 'string'
     && typeof (r as BaseElement).size === 'number'
     && typeof (r as BaseElement).attributes === 'object'
-    && ((r as BaseElement).type === 'Set'
-      || (r as BaseElement).type === 'Subset'
-      || (r as BaseElement).type === 'Group'
-      || (r as BaseElement).type === 'Aggregate'
-      || (r as BaseElement).type === 'Query Group'
-      || (r as BaseElement).type === 'Seperator'
-      || (r as BaseElement).type === 'Undefined')
+    && isRowType((r as BaseElement).type)
     && Array.isArray((r as BaseElement).items)
     && (r as BaseElement).items.every((i: unknown) => typeof i === 'string');
 }
@@ -188,7 +200,7 @@ export function isSubsets(s: unknown): s is Subsets {
     && Object.hasOwn(s, 'order')
     && typeof (s as Subsets).values === 'object'
     && Array.isArray((s as Subsets).order)
-    && Object.entries((s as Subsets).values).every((k, v) => typeof k === 'string' && isSubset(v))
+    && Object.entries((s as Subsets).values).every(([k, v]) => typeof k === 'string' && isSubset(v))
     && (s as Subsets).order.every((o: unknown) => typeof o === 'string');
 }
 
