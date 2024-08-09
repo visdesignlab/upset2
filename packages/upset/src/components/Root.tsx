@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
-import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
-import React, {
+import { convertConfig, CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
   createContext, FC, useEffect, useMemo,
 } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
@@ -75,7 +75,7 @@ export const Root: FC<Props> = ({
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
   useEffect(() => {
-    setState(config);
+    setState(convertConfig(config));
     setData(data);
   }, []);
 
@@ -84,8 +84,11 @@ export const Root: FC<Props> = ({
     if (extProvenance) {
       const { provenance, actions } = extProvenance;
 
+      // This syncs all linked atoms with the provenance state
       provenance.currentChange(() => {
-        setState(provenance.getState());
+        // Old provenance nodes may be using a different config version, so convert it if need be
+        const converted = convertConfig(provenance.getState());
+        setState(converted);
       });
 
       provenance.done();

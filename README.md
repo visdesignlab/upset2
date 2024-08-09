@@ -266,7 +266,7 @@ The configuration options are documented below:
   - `hideNoSet` (boolean): Whether or not to hide the subset which is a member of *no* sets. Defaults to `false`.
 - `visibleSets` (string[]): List of which sets are visible and loaded into the UpSet plot. (Ex: ["Set_Comedy", "Set_Drama", "Set_Action"]).
 - `visibleAttributes` (string[]): List of which attributes are visible and loaded into the UpSet plot. (Ex: ["ReleaseDate", "AvgRating"]).
-- `bookmarkedIntersections`: List of which subsets (ids) are bookmarked. Each list entry should be an object with the following key-value pairs:
+- `bookmarks`: List of which subsets (ids) are bookmarked. Each list entry should be an object with the following key-value pairs:
   - `id` (string): Generated id for the subset. In UpSet 2.0, the id uses `~&~` as a set delimiter, and always prepends `Subset_`. Ex: `Subset_Action~&~Adventure~&~Comedy`
   - `label` (string): Human readable label for the subset. Ex: `Action & Adventure & Comedy`
   - `size` (number): The size of the subset.
@@ -324,7 +324,7 @@ Example of full configuration (grammar) JSON produced for default Simpsons datas
   "visibleAttributes": [
     "Age"
   ],
-  "bookmarkedIntersections": [],
+  "bookmarks": [],
   "collapsed": [],
   "plots": {
     "scatterplots": [],

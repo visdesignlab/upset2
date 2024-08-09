@@ -11,7 +11,9 @@ import { RecoilRoot } from 'recoil';
 
 import App from './App';
 import DefaultTheme from './components/theme';
-import { api, client_id, oAuth } from './atoms/authAtoms';
+import { api } from './api/api';
+import { oAuth } from './api/auth';
+import { client_id } from './api/env';
 import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
 import localforage from 'localforage';
 

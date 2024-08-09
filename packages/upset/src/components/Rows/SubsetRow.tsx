@@ -6,7 +6,7 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { bookmarkedIntersectionSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -14,6 +14,8 @@ import {
 import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
+import { countSubsetSelected } from './functions';
+import { elementSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 
 type Props = {
   subset: Subset;
@@ -27,7 +29,9 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const bookmarkedIntersections = useRecoilValue(bookmarkedIntersectionSelector);
+  const bookmarks = useRecoilValue(bookmarkSelector);
+  const selectedElements = useRecoilValue(selectedElementSelector);
+  const items = useRecoilValue(elementSelector(subset.id));
 
   // Use trrack action for current intersection
   const { actions } = useContext(
@@ -90,9 +94,9 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         fillOpacity="0.0"
       />
       <Matrix sets={visibleSets} subset={subset} />
-      {bookmarkedIntersections.find((b) => b.id === subset.id) &&
+      {bookmarks.find((b) => b.id === subset.id) &&
         <BookmarkStar row={subset} />}
-      <SizeBar size={subset.size} row={subset} />
+      <SizeBar size={subset.size} row={subset} selected={countSubsetSelected(items, selectedElements?.selection)} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );
