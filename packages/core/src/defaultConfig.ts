@@ -1,4 +1,4 @@
-import { AttributePlotType, UpsetConfig } from './types';
+import { UpsetConfig } from './types';
 
 export const DefaultConfig: UpsetConfig = {
   // Calls to the alttext API may error if these are not set
