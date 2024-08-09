@@ -75,7 +75,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
    */
   const generatePlotInformationText: () => string = () => {
     // return default string if there are no values filled in
-    if (Object.values(plotInformation).filter((a) => a && a.length > 0).length === 0) {
+    if (Object.values(plotInformation).filter((a) => a?.length > 0).length === 0) {
       return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
     }
 
