@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
-import { FC, useContext, useMemo } from 'react';
+import { FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
@@ -74,12 +74,6 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     width -= dimensions.body.aggregateOffset;
   }
 
-  const selected = useMemo(() => countAggregateSelected(
-    aggregateRow,
-    elementSelection?.selection,
-    (id: string) => useRecoilValue(elementSelector(id)),
-  ), [aggregateRow, elementSelection, elementSelector]);
-
   /**
    * Truncates the element name if it is longer than 14 characters and the aggregateBy value is 'Overlaps'.
    * Otherwise, description is the element name.
@@ -152,7 +146,11 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <SizeBar
           row={aggregateRow}
           size={aggregateRow.size}
-          selected={selected}
+          selected={countAggregateSelected(
+            aggregateRow,
+            elementSelection?.selection,
+            (id: string) => useRecoilValue(elementSelector(id)),
+          )}
         />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
