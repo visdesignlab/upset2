@@ -1,4 +1,6 @@
-import { ElementSelection, Histogram, isHistogram, isScatterplot, Plot, Scatterplot } from '@visdesignlab/upset2-core';
+import {
+  ElementSelection, Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
+} from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
 /**
@@ -16,11 +18,11 @@ function convertSelection(plot: Plot, select: ElementSelection): ElementSelectio
     val = {
       x: select[plot.x],
       y: select[plot.y],
-    }
+    };
   } else if (isHistogram(plot) && Object.keys(select).length === 1 && select[plot.attribute]) {
     val = {
       x: select[plot.attribute],
-    }
+    };
   } else val = undefined;
   return val;
 }
@@ -78,9 +80,9 @@ export function createScatterplotSpec(
  * @returns The Vega-Lite spec for the scatterplots.
  */
 export function createScatterplotRow(
-  specs: Scatterplot[], 
-  selection: ElementSelection | undefined, 
-  selectColor: string
+  specs: Scatterplot[],
+  selection: ElementSelection | undefined,
+  selectColor: string,
 ): VisualizationSpec[] {
   return specs.map((s) => ({
     width: 200,
@@ -90,17 +92,19 @@ export function createScatterplotRow(
     },
     // We only add the 'params' field if this object has a selection OR if there is no selection
     // This works around a Vega bug where providing the value field to a param doesn't always work in concatenated plots
-    ...((!selection || (selection && convertSelection(s, selection))) && {params: [
-      {
-        name: 'brush',
-        select: {
-          type: 'interval',
-          clear: 'mousedown',
+    ...((!selection || (selection && convertSelection(s, selection))) && {
+      params: [
+        {
+          name: 'brush',
+          select: {
+            type: 'interval',
+            clear: 'mousedown',
+          },
+          // We only add the 'value' field if selection is defined
+          ...(selection && convertSelection(s, selection) && { value: convertSelection(s, selection) }),
         },
-        // We only add the 'value' field if selection is defined
-        ...(selection && convertSelection(s, selection) && {value: convertSelection(s, selection)}),
-      },
-    ]}),
+      ],
+    }),
     encoding: {
       x: {
         field: s.x,
@@ -113,7 +117,7 @@ export function createScatterplotRow(
         scale: { zero: false, type: s.yScaleLog ? 'log' : 'linear' },
       },
       color: {
-        condition:{
+        condition: {
           param: 'brush',
           empty: false,
           value: selectColor,
@@ -130,10 +134,12 @@ export function createScatterplotRow(
             value: 0.8,
           },
           {
-            test: {or: [
-              {not: {param: 'brush'}},
-              'datum["isCurrentSelected"] === true && datum["isCurrent"] === false'
-            ]},
+            test: {
+              or: [
+                { not: { param: 'brush' } },
+                'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
+              ],
+            },
             value: 0.3,
           },
         ],
@@ -211,8 +217,9 @@ export function createHistogramSpec(
  * @returns An array of Vega-Lite specs for the histograms.
  */
 export function createHistogramRow(
-  histograms: Histogram[], 
-  selection: ElementSelection | undefined)
+  histograms: Histogram[],
+  selection: ElementSelection | undefined,
+)
 : VisualizationSpec[] {
   function makeParams(plot: Histogram) {
     return [
@@ -223,9 +230,10 @@ export function createHistogramRow(
           encodings: ['x'],
           clear: 'mousedown',
         },
-        ...(selection && convertSelection(plot, selection) && {value: convertSelection(plot, selection)}),
-      }
-  ];};
+        ...(selection && convertSelection(plot, selection) && { value: convertSelection(plot, selection) }),
+      },
+    ];
+  }
 
   const COLOR = {
     field: 'subset',
@@ -246,7 +254,7 @@ export function createHistogramRow(
                 groupby: ['subset', 'color'],
               },
               { // Hacky way to get the correct name for the attribute & sync with other plots
-                // Otherwise, the attribute name is "value", so selections don't sync and the signal sent 
+                // Otherwise, the attribute name is "value", so selections don't sync and the signal sent
                 // by selecting on this plot doesn''t include the name of the attribute being selected
                 calculate: 'datum["value"]',
                 as: h.attribute,
@@ -258,7 +266,7 @@ export function createHistogramRow(
               x: { field: h.attribute, type: 'quantitative', title: h.attribute },
               y: { field: 'density', type: 'quantitative', title: 'Probability' },
               color: COLOR,
-              opacity: {value: 0.4},
+              opacity: { value: 0.4 },
             },
           },
           { // This layer displays probability lines for selected elements, grouped by subset
@@ -268,7 +276,7 @@ export function createHistogramRow(
                 groupby: ['subset', 'color'],
               },
               {
-                filter: {param: 'brush'}
+                filter: { param: 'brush' },
               },
               {
                 calculate: 'datum["value"]',
@@ -278,12 +286,12 @@ export function createHistogramRow(
             mark: 'line',
             encoding: {
               x: { field: h.attribute, type: 'quantitative', title: h.attribute },
-              y: { field: 'density', type: 'quantitative',},
+              y: { field: 'density', type: 'quantitative' },
               color: COLOR,
-              opacity: {value: 1},
+              opacity: { value: 1 },
             },
           },
-        ]
+        ],
       };
     }
 
@@ -293,7 +301,7 @@ export function createHistogramRow(
       layer: [
         {
           params: makeParams(h),
-          mark: "bar",
+          mark: 'bar',
           encoding: {
             x: {
               bin: { maxBins: h.bins },
@@ -304,26 +312,26 @@ export function createHistogramRow(
               title: 'Frequency',
             },
             color: COLOR,
-            opacity: {value: .4},
+            opacity: { value: 0.4 },
           },
-        },{
+        }, {
           transform: [{
-            filter: {param: 'brush'}
+            filter: { param: 'brush' },
           }],
-          mark: "bar",
+          mark: 'bar',
           encoding: {
             x: {
               field: h.attribute,
-              bin: {maxBins: h.bins}
+              bin: { maxBins: h.bins },
             },
             y: {
               aggregate: 'count',
               title: 'Frequency',
             },
             color: COLOR,
-            opacity: {value: 1},
-          }
-        }
+            opacity: { value: 1 },
+          },
+        },
       ],
     };
   });
@@ -333,7 +341,7 @@ export function generateVega(
   scatterplots: Scatterplot[],
   histograms: Histogram[],
   selectColor: string,
-  selection? : ElementSelection
+  selection? : ElementSelection,
 ): VisualizationSpec {
   // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
   const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;
@@ -343,12 +351,12 @@ export function generateVega(
     data: {
       name: 'elements',
     },
-    vconcat: [
+    hconcat: [
       {
-        hconcat: scatterplotSpecs,
+        vconcat: scatterplotSpecs,
       },
       {
-        hconcat: histogramSpecs,
+        vconcat: histogramSpecs,
       },
     ],
   };
