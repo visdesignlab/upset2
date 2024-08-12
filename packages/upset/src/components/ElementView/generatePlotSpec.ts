@@ -241,7 +241,11 @@ export function createHistogramRow(
     scale: { range: { field: 'color' } },
   };
 
-  return histograms.map((h) => {
+  // eslint-disable-next-line arrow-body-style
+  return histograms.filter((h) => !h.frequency).map((h) => {
+    /* Due to a vega-lite bug, we can't use the density transform in a concatenated plot
+     * To re-enable this, remove the filter statement above this comment, uncomment the following block,
+     * and uncomment the frequency control in AddPlot.tsx
     if (h.frequency) {
       return {
         width: 200,
@@ -294,6 +298,7 @@ export function createHistogramRow(
         ],
       };
     }
+    */
 
     return {
       width: 200,
