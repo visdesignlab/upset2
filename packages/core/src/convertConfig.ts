@@ -79,8 +79,9 @@ function preVersionConversion(config: PreVersionConfig): UpsetConfig {
 /**
  * Converts a config, of any version, to the current version.
  * This is done in-place, so the input config will be modified and returned.
+ * Outputs a console error if the after-conversion config is invalid;
+ * this should not happen in practice but if it does, there will likely be other errors downstream.
  * @param config The config to convert.
- * @throws {Error} If the config is not an object or programmer error leads to an invalid config at return.
  * @returns {UpsetConfig} The converted config; the same object as the input config.
  */
 export function convertConfig(config: unknown): UpsetConfig {
@@ -99,6 +100,9 @@ export function convertConfig(config: unknown): UpsetConfig {
   /* eslint-enable no-void */
   /* eslint-enable no-fallthrough */
 
-  if (!isUpsetConfig(config)) throw new Error('Invalid config output from conversion');
-  else return config;
+  if (!isUpsetConfig(config)) {
+    // eslint-disable-next-line no-console
+    console.error('Invalid config output from conversion', config);
+  }
+  return config as UpsetConfig;
 }
