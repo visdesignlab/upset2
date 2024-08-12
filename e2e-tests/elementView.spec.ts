@@ -77,7 +77,7 @@ test('Element View', async ({ page }) => {
   await expect(histogramHeader).toBeVisible();
   await histogramHeader.click();
 
-  const vis = await page.locator('canvas');
+  const vis = await page.getByLabel('Add Plot').locator('canvas');
   await expect(vis).toBeVisible();
 
   const option1 = await page.locator('div').filter({ hasText: /^AttributeAgeAttribute$/ }).first();
@@ -86,8 +86,9 @@ test('Element View', async ({ page }) => {
   const option2 = page.locator('div').filter({ hasText: /^BinsBins$/ }).first();
   await expect(option2).toBeVisible();
 
-  const option3 = await page.locator('label').filter({ hasText: 'Frequency' });
-  await expect(option3).toBeVisible();
+  // These should be uncommented when density (frequency) plots are re-added
+  // const option3 = await page.locator('label').filter({ hasText: 'Frequency' });
+  // await expect(option3).toBeVisible();
 
   // close the plot preview
   const closeButton = await page.getByRole('heading', { name: 'Add Plot' }).getByRole('button');

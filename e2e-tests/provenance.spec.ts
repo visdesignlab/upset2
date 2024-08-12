@@ -39,8 +39,8 @@ test('Selection History', async ({ page }) => {
   await page.getByLabel('Additional options menu').click();
   await page.getByLabel('History tree sidebar').click();
 
-  const schoolIntersection = page.locator('#Subset_School > g:nth-child(3) > rect');
-  const duffFanIntersection = page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3) > rect');
+  const schoolIntersection = page.locator('#Subset_School > g:nth-child(3)');
+  const duffFanIntersection = page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3)');
 
   // Testing history for a subset selection & deselection
   await page.locator('g > circle').first().click();
