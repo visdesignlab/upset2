@@ -100,7 +100,7 @@ test('Element View', async ({ page }) => {
   const downloadButton = await page.getByLabel('Download 3 elements');
   await expect(downloadButton).toBeVisible();
   await downloadButton.click();
-  const download = await downloadPromise;
+  await downloadPromise;
 
   // Check that the close button is visible and works
   const elementViewClose = await page.getByLabel('Close the sidebar');
