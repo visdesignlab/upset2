@@ -16,8 +16,7 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
-import { countAggregateSelected } from './functions';
-import { elementSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
+import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 
 /** @jsxImportSource @emotion/react */
 /**
@@ -67,7 +66,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const bookmarks = useRecoilValue(bookmarkSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
-  const elementSelection = useRecoilValue(selectedElementSelector);
+  const selected = useRecoilValue(aggregateSelectedCount(aggregateRow));
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -146,11 +145,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <SizeBar
           row={aggregateRow}
           size={aggregateRow.size}
-          selected={countAggregateSelected(
-            aggregateRow,
-            elementSelection?.selection,
-            (id: string) => useRecoilValue(elementSelector(id)),
-          )}
+          selected={selected}
         />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>

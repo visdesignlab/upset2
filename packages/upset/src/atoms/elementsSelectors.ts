@@ -1,6 +1,12 @@
-import { BookmarkedSelection, Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
+import {
+  Aggregate,
+  BaseIntersection,
+  BookmarkedSelection, Item, flattenedOnlyRows, getItems,
+} from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
-import { bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
+import {
+  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector,
+} from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
@@ -42,6 +48,11 @@ export const elementSelector = selectorFamily<
   },
 });
 
+/**
+ * Gets the number of elements in the intersection represented by the provided ID
+ * @param id - The ID of the intersection to get elements for.
+ * @returns The number of elements in the intersection
+ */
 export const intersectionCountSelector = selectorFamily<
   number,
   string | null | undefined
@@ -109,13 +120,49 @@ export const selectedItemsSelector = selector<Item[]>({
     const selection = get(selectedElementSelector)?.selection;
     if (!selection) return [];
 
-    let result: Item[] = [];
-    for (const item of items) {
-      if (Object.entries(selection).every(([key, value]) => {
-        return typeof item[key] === 'number' &&
-          item[key] as number >= value[0] && item[key] as number <= value[1]
-      })) { result.push(item); }
-    }
+    const result: Item[] = [];
+    items.forEach((item) => {
+      if (Object.entries(selection).every(([key, value]) => typeof item[key] === 'number' &&
+          item[key] as number >= value[0] && item[key] as number <= value[1])) { result.push(item); }
+    });
     return result;
-  }
+  },
+});
+
+/**
+ * Count the number of selected items in a subset.
+ */
+export const subsetSelectedCount = selectorFamily<number, string>({
+  key: 'subset-selected',
+  get: (id: string) => ({ get }) => {
+    const items = get(elementSelector(id));
+    const selection = get(selectedElementSelector)?.selection;
+
+    if (!selection || Object.keys(selection).length === 0) return 0;
+
+    let count = 0;
+    items.forEach((item) => {
+      if (Object.entries(selection).every(
+        ([key, value]) => typeof item[key] === 'number'
+          && item[key] as number >= value[0] && item[key] as number <= value[1],
+      )) count++;
+    });
+    return count;
+  },
+});
+
+/**
+ * Count the number of selected items in an aggregate.
+ */
+export const aggregateSelectedCount = selectorFamily<number, Aggregate>({
+  key: 'aggregate-selected',
+  get: (agg: Aggregate) => ({ get }) => {
+    let total = 0;
+    Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate }).forEach(([id, value]) => {
+      total += Object.hasOwn(value, 'aggregateBy')
+        ? get(aggregateSelectedCount(value as Aggregate))
+        : get(subsetSelectedCount(id));
+    });
+    return total;
+  },
 });
