@@ -130,7 +130,7 @@ export const selectedItemsSelector = selector<Item[]>({
 });
 
 /**
- * Count the number of selected items in a subset.
+ * Counts the number of selected items in a subset.
  */
 export const subsetSelectedCount = selectorFamily<number, string>({
   key: 'subset-selected',
@@ -152,7 +152,8 @@ export const subsetSelectedCount = selectorFamily<number, string>({
 });
 
 /**
- * Count the number of selected items in an aggregate.
+ * Counts the number of selected items in an aggregate.
+ * Selection is taken from the current element selection in the config.
  */
 export const aggregateSelectedCount = selectorFamily<number, Aggregate>({
   key: 'aggregate-selected',
