@@ -66,5 +66,6 @@ module.exports = {
     'import/no-cycle': 'off',
     'no-underscore-dangle': 'off',
     'no-nested-ternary': 'off',
+    'jsx-a11y/tabindex-no-positive': 'off',
   },
 };

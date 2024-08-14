@@ -13,11 +13,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import {
   useState, useEffect, FC, useContext,
   useMemo,
+  useCallback,
 } from 'react';
 import { useRecoilValue } from 'recoil';
+import { AltText } from '@visdesignlab/upset2-core/';
 import { ProvenanceContext } from './Root';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { AltText } from '@visdesignlab/upset2-core/';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import '../index.css';
 import { PlotInformation } from './custom/PlotInformation';
@@ -63,7 +64,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const [altText, setAltText] = useState<AltText | null>(null);
   const [textGenErr, setTextGenErr] = useState<string | false>(false);
-  
+
   // States for editing the alt text
   const [textEditing, setTextEditing] = useState(false);
   const [userLongText, setUserLongText] = useState(currState.userAltText?.longDescription);
@@ -73,25 +74,21 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   /**
    * Handler for when the save button is clicked
    */
-  function saveButtonClick() {
+  const saveButtonClick = useCallback(() => {
     setTextEditing(false);
-    if (!currState.useUserAlt)
-      actions.setUseUserAltText(true);
-    if (currState.userAltText?.shortDescription !== userShortText 
-        || currState.userAltText?.longDescription !== userLongText)  
-      actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
-  }
+    if (!currState.useUserAlt) actions.setUseUserAltText(true);
+    if (currState.userAltText?.shortDescription !== userShortText
+        || currState.userAltText?.longDescription !== userLongText) { actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' }); }
+  }, [currState, userShortText, userLongText, actions]);
 
   /**
    * Sets text editing to true and sets default user alttexts if necessary
    */
-  function enableTextEditing() {
+  const enableTextEditing = useCallback(() => {
     setTextEditing(true);
-    if (!currState.userAltText?.shortDescription)
-      setUserShortText(altText?.shortDescription);
-    if (!currState.userAltText?.longDescription)
-      setUserLongText(altText?.longDescription);
-  }
+    if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
+    if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
+  }, [currState, altText]);
 
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
@@ -105,24 +102,24 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         setTextGenErr(msg);
       }
     }
-    
+
     generate();
   }, [currState]);
 
   // Current alt text to display to the user
   const displayAltText: string | undefined = useMemo(() => {
-      if (useLong) return userLongText ?? altText?.longDescription ?? ""
-      else return userShortText ?? altText?.shortDescription ?? "";
+    if (useLong) return userLongText ?? altText?.longDescription ?? '';
+    return userShortText ?? altText?.shortDescription ?? '';
   }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription]);
-  
+
   const divider = <Divider
     css={css`
       width: 100%;
       margin: auto;
       margin-bottom: 1em;
     `}
-    aria-hidden={true}
-  />
+    aria-hidden
+  />;
 
   /**
    * Number of tab indicies used by the PlotInformation component
@@ -133,7 +130,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
    * The tab index, in this component, of the plot information component
    */
   const PLOT_INFO_TAB_INDEX = 9;
-  
+
   return (
     <Drawer
       aria-hidden={!open}
@@ -162,7 +159,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           </Typography>
           <Button
             onClick={close}
-            aria-label='Close Text Descriptions Sidebar'
+            aria-label="Close Text Descriptions Sidebar"
             tabIndex={PLOT_INFO_TAB_INDEX + PLOT_INFO_TABS}
             style={{
               display: 'inline',
@@ -172,7 +169,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               right: '10px',
             }}
           >
-            <Icon><CloseIcon/></Icon>
+            <Icon><CloseIcon /></Icon>
           </Button>
         </Box>
         {divider}
@@ -185,40 +182,42 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           {textGenErr && !userLongText && !userShortText ? (
             <Typography variant="body1" color="error">{textGenErr}</Typography>
           ) : (
-            textEditing ? (<>
-              <Button 
-                color="primary" 
-                style={{float: 'right'}} 
-                onClick={saveButtonClick}
-                id="saveAltTextButton"
-                tabIndex={7}
-              >Save</Button>
-              <Button
-                color='warning'
-                style={{float: "right"}}
-                onClick={() => {
-                  setUserLongText(altText?.longDescription);
-                  setUserShortText(altText?.shortDescription);
-                }}
-                tabIndex={8}
-              >Reset Descriptions</Button>
-              <br />
-              <TextField multiline fullWidth
-                onChange={(e) => useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}
-                value={(displayAltText)}
-                tabIndex={6}
-                aria-flowto='saveAltTextButton'
-              />
-              <br />
-            </>) : (
-              <Box 
-                style={{
-                  
-                }}
+            textEditing ? (
+              <>
+                <Button
+                  color="primary"
+                  style={{ float: 'right' }}
+                  onClick={saveButtonClick}
+                  id="saveAltTextButton"
+                  tabIndex={7}
+                >
+                  Save
+                </Button>
+                <Button
+                  color="warning"
+                  style={{ float: 'right' }}
+                  onClick={() => {
+                    setUserLongText(altText?.longDescription);
+                    setUserShortText(altText?.shortDescription);
+                  }}
+                  tabIndex={8}
+                >
+                  Reset Descriptions
+                </Button>
+                <br />
+                <TextField
+                  multiline
+                  fullWidth
+                  onChange={(e) => (useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value))}
+                  value={(displayAltText)}
+                  tabIndex={6}
+                  aria-flowto="saveAltTextButton"
+                />
+                <br />
+              </>
+            ) : (
+              <Box
                 sx={{
-                  '&:hover': {
-                  border: '2px inset #ddd', 
-                  },
                   overflowY: 'auto',
                   cursor: 'pointer',
                   borderRadius: '4px',
@@ -226,7 +225,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   width: 'calc(100% - 10px)', // We have 10px of padding + border
                 }}
                 onClick={enableTextEditing}
-                tabIndex={3}  
+                tabIndex={3}
               >
                 <Button
                   style={{
@@ -238,11 +237,11 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   tabIndex={5}
                   aria-label="Alt Text Description Editor"
                 >
-                  <Icon style={{overflow: 'visible'}}>
+                  <Icon style={{ overflow: 'visible' }}>
                     <EditIcon />
                   </Icon>
                 </Button>
-                <ReactMarkdownWrapper 
+                <ReactMarkdownWrapper
                   text={displayAltText}
                 />
               </Box>
@@ -252,16 +251,15 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             onClick={() => setUseLong(!useLong)}
             tabIndex={4}
             style={{
-              width: '100%', 
+              width: '100%',
               textAlign: 'center',
               marginBottom: '90px', // Necessary to keep it above the footer
             }}
           >
-            {useLong ? "Show Less" : "Show More"}
+            {useLong ? 'Show Less' : 'Show More'}
           </Button>
         </Box>
       </div>
     </Drawer>
   );
 };
-      
