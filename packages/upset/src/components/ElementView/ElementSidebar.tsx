@@ -6,7 +6,9 @@ import {
   Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
+import React, {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
@@ -18,14 +20,25 @@ import { ElementVisualization } from './ElementVisualization';
 import { UpsetActions } from '../../provenance';
 import { ProvenanceContext } from '../Root';
 
+/**
+ * Props for the ElementSidebar component
+ */
 type Props = {
+  /** Whether the sidebar is open */
   open: boolean,
+  /** Function to close the sidebar */
   close: () => void
 }
 
 const initialDrawerWidth = 450;
 const minDrawerWidth = 100;
 
+/**
+ * Immediately downloads a csv containing items with the given columns
+ * @param items Rows to download
+ * @param columns Data attributes to download
+ * @param name Name of the file
+ */
 function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
@@ -56,6 +69,11 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 }
 
 /** @jsxImportSource @emotion/react */
+/**
+ * Sidebar component for the Element View
+ * @param open Whether the sidebar is open
+ * @param close Function to close the sidebar
+ */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -72,7 +90,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
 
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
 
-  const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const currentSelection = useRecoilValue(selectedElementSelector);
 
   useEffect(() => {

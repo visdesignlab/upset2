@@ -5,7 +5,6 @@ import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 import { selectedElementSelector } from '../elementsSelectors';
 
-
 /**
  * Represents the currently selected intersection,
  * which is tracked by & pulled from the upsetConfigAtom.
@@ -24,11 +23,7 @@ export const currentIntersectionSelector = selector<Row | null | undefined>({
  */
 export const bookmarkSelector = selector<Bookmark[]>({
   key: 'bookmarks',
-  get: ({ get }) => {
-    const bookmarks = get(upsetConfigAtom).bookmarks;
-
-    return bookmarks;
-  },
+  get: ({ get }) => get(upsetConfigAtom).bookmarks,
 });
 
 /**
@@ -83,8 +78,8 @@ export const elementColorSelector = selector<string>({
       return bookmarkColors[selection?.id ?? ''];
     }
 
-    return get(currentIntersectionSelector) 
-      ? queryColorPalette[Object.values(palette).length + 1] 
+    return get(currentIntersectionSelector)
+      ? queryColorPalette[Object.values(palette).length + 1]
       : get(nextColorSelector);
-  }
+  },
 });

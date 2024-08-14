@@ -133,9 +133,10 @@ test('Element View', async ({ page }) => {
   await expect(elementViewClose).toBeVisible();
   await elementViewClose.click();
 
-  // =================================================================================================
-  // Tests for selection behavior
-  // =================================================================================================
+  /*
+   * Tests for selection behavior
+   */
+
   // Check that the selection chip is visible after selecting
   await elementViewToggle.click();
   await dragElement(page.locator('canvas'), 150, 0, page);

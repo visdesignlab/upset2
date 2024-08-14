@@ -5,7 +5,9 @@ import { Alert, Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { Bookmark, BookmarkedIntersection, BookmarkedSelection, flattenedOnlyRows, isBookmarkedIntersection, isBookmarkedSelection } from '@visdesignlab/upset2-core';
+import {
+  Bookmark, BookmarkedIntersection, BookmarkedSelection, flattenedOnlyRows, isBookmarkedIntersection, isBookmarkedSelection,
+} from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
   bookmarkSelector,
@@ -30,7 +32,7 @@ export const ElementQueries = () => {
   const data = useRecoilValue(dataAtom);
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
-  const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll("~&~", " & ") || "";
+  const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const currentSelection = useRecoilValue(selectedElementSelector);
   const savedSelection = useRecoilValue(selectedElementSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
@@ -51,7 +53,7 @@ export const ElementQueries = () => {
       } else {
         actions.setElementSelection(bookmark);
         if (savedSelection?.id !== bookmark.id) actions.setElementSelection(bookmark);
-      };
+      }
     }
   }
 
@@ -85,17 +87,15 @@ export const ElementQueries = () => {
                   : 'default',
             })}
             key={bookmark.id}
-            aria-label={`Bookmarked intersection ${bookmark.label}` + 
-              (isBookmarkedIntersection(bookmark) ? `, size ${bookmark.size}` : '')
-            }
+            aria-label={`Bookmarked intersection ${bookmark.label}${
+              isBookmarkedIntersection(bookmark) ? `, size ${bookmark.size}` : ''}`}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
                 chipClicked(bookmark);
               }
             }}
             label={isBookmarkedIntersection(bookmark)
-              ? `${bookmark.label} - ${bookmark.size}` : `${bookmark.label}`
-            }
+              ? `${bookmark.label} - ${bookmark.size}` : `${bookmark.label}`}
             icon={<SquareIcon fontSize={'1em' as any} />}
             deleteIcon={<StarIcon />}
             onClick={() => {
@@ -105,7 +105,7 @@ export const ElementQueries = () => {
               if (currentIntersection?.id === bookmark.id) {
                 actions.setSelected(null);
               }
-              actions.removeBookmark({id: bookmark.id, label: bookmark.label, type: bookmark.type});
+              actions.removeBookmark({ id: bookmark.id, label: bookmark.label, type: bookmark.type });
             }}
           />
         ))}
@@ -127,8 +127,8 @@ export const ElementQueries = () => {
                   id: currentIntersection.id,
                   label: currentIntersectionDisplayName,
                   size: currentIntersection.size,
-                  type: 'intersection'
-              });
+                  type: 'intersection',
+                });
               }
             }}
             label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
@@ -138,7 +138,7 @@ export const ElementQueries = () => {
                 label: currentIntersectionDisplayName,
                 size: currentIntersection.size,
                 type: 'intersection',
-            });
+              });
             }}
             deleteIcon={<StarBorderIcon />}
           />
@@ -162,7 +162,7 @@ export const ElementQueries = () => {
                   label: currentSelection.label,
                   type: 'elements',
                   selection: currentSelection.selection,
-              });
+                });
               }
             }}
             label={`${currentSelection.label}`}
@@ -172,7 +172,7 @@ export const ElementQueries = () => {
                 label: currentSelection.label,
                 type: 'elements',
                 selection: currentSelection.selection,
-            });
+              });
             }}
             deleteIcon={<StarBorderIcon />}
           />

@@ -31,7 +31,6 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarks = useRecoilValue(bookmarkSelector);
-
   const selected = useRecoilValue(subsetSelectedCount(subset.id));
 
   // Use trrack action for current intersection

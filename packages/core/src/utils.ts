@@ -1,7 +1,17 @@
+/**
+ * Create a deep copy (with all fields recursively copied) of an object
+ * @param obj the object to copy
+ * @returns a deep copy of the object
+ */
 export function deepCopy<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
+/**
+ * Hash a string to a number
+ * @param str the string to hash
+ * @returns the hash of the string
+ */
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;

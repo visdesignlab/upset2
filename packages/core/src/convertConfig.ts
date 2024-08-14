@@ -91,6 +91,8 @@ export function convertConfig(config: unknown): UpsetConfig {
 
   /* eslint-disable no-fallthrough */
   /* eslint-disable no-void */
+  // Switch case is designed to fallthrough to the next version's conversion function
+  // so that all versions are converted cumulatively.
   switch ((config as {version: string}).version) {
     case '0.1.0':
       void 0; // This will be replaced by the next version's conversion function

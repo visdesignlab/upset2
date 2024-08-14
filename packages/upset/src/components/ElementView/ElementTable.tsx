@@ -37,11 +37,14 @@ function useColumns(columns: string[]) {
   })), [columns]);
 }
 
+/**
+ * Table to display elements
+ */
 export const ElementTable: FC = () => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const currentSelection = useRecoilValue(selectedElementSelector);
   const attributeColumns = useRecoilValue(attributeAtom);
-  const elements = currentSelection?.selection 
+  const elements = currentSelection?.selection
     ? useRecoilValue(selectedItemsSelector)
     : useRecoilValue(elementSelector(currentIntersection?.id));
   const rows = useRows(elements);

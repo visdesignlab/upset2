@@ -2,12 +2,10 @@ import { Box, ThemeProvider } from '@mui/material';
 import { UpsetConfig, DefaultConfig, convertConfig } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
-
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
 import { UpsetProps } from '../types';
 import { processRawData } from '../utils/data';
-import { entries } from 'vega-lite';
 
 const defaultVisibleSets = 6;
 

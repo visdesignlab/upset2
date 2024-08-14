@@ -1,40 +1,57 @@
-import { Button } from '@mui/material';
+// import { Button } from '@mui/material';
 import { Box } from '@mui/system';
-import { useContext, useMemo, useRef, useState } from 'react';
+import {
+  useContext, useMemo, useRef, useState,
+} from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
+import { elementSelectionToBookmark, elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
+import { Button } from '@mui/material';
 import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { elementItemMapSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
-import { elementSelectionToBookmark, elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
 /**
  * Displays a matrix of plots representing the elements in the current intersection selection & bookmarks.
- * @returns 
+ * @returns
  */
 export const ElementVisualization = () => {
+  /**
+   * State hooks
+   */
+
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
-  
   const currentSelection = useRecoilValue(selectedElementSelector);
   const selectColor = useRecoilValue(elementColorSelector);
   // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
-  const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const draftSelection = useRef(currentSelection?.selection);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
+  /**
+   * Hooks
+   */
+
+  const draftSelection = useRef(currentSelection?.selection);
   const vegaSpec = useMemo(
     () => generateVega(scatterplots, histograms, selectColor, currentSelection?.selection),
-    [scatterplots, histograms, selectColor, currentSelection?.selection]
+    [scatterplots, histograms, selectColor, currentSelection?.selection],
   );
-  
+
+  /**
+   * Functions
+   */
+
+  /**
+   * Closes the AddPlotDialog
+   */
   const onClose = () => setOpenAddPlot(false);
 
   /**
@@ -53,8 +70,8 @@ export const ElementVisualization = () => {
       onClick={() => {
         // Since onClick fires onMouseUp, this is a great time to save
         if (
-          draftSelection.current 
-          && Object.keys(draftSelection.current).length > 0 
+          draftSelection.current
+          && Object.keys(draftSelection.current).length > 0
           && !elementSelectionsEqual(draftSelection.current, currentSelection?.selection)
         ) {
           actions.setElementSelection(elementSelectionToBookmark(draftSelection.current));
@@ -75,7 +92,7 @@ export const ElementVisualization = () => {
             }}
             actions={false}
             signalListeners={{
-              "brush": brushHandler,
+              brush: brushHandler,
             }}
           />
         )}

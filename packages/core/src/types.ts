@@ -36,6 +36,10 @@ export type PlotInformation = {
   caption?: string;
 };
 
+/**
+ * Represents a row in the UpSet plot.
+ * @privateRemarks typechecked by isRowType in typecheck.ts; changes here must be reflected there
+ */
 export type RowType =
   | 'Set'
   | 'Subset'
@@ -269,7 +273,7 @@ export type Plot = Scatterplot | Histogram;
  * Represents the different types of attribute plots.
  * Enum value is used here so that the values can be used as keys in upset package.
 */
-// linter is saying this is already declared on line 226 (the line it is first declared...)
+// linter is saying this is already declared... on this line
 // eslint-disable-next-line no-shadow
 export enum AttributePlotType {
   BoxPlot = 'Box Plot',
@@ -281,6 +285,7 @@ export enum AttributePlotType {
 /**
  * Represents the different types of attribute plots.
  * Enum values (AttributePlotType) behave better in a Record object than in traditional dict types.
+ * @privateRemarks typechecked by isAttributePlots in typecheck.ts; changes here must be reflected there
  */
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
@@ -323,7 +328,8 @@ export type BookmarkedIntersection = Bookmark & {
  * values of the selection over each attribute.
  *
  * @privateRemarks
- * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in the Element View.
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
+ * upset/src/components/ElementView/ElementVisualization.tsx.
  * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
  */
 export type ElementSelection = {[attName: string] : [number, number]};

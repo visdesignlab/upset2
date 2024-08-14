@@ -17,7 +17,7 @@ const registry = Registry.create();
 
 /**
  * Registers a new action that uses a StateChangeFunction with the provenance registry while also guaranteeing
- * that old upset config types (from outdated Trrack graph imports) 
+ * that old upset config types (from outdated Trrack graph imports)
  * are converted to the new upset config type before being passed to the StateChangeFunction.
  * One type parameter is required; for the payload argument received by the action function.
  * @param type Action type, string
@@ -28,12 +28,12 @@ const registry = Registry.create();
  * @returns An action creator that can be passed to provenance.apply
  */
 function register<DoActionPayload, UndoActionType extends string = string, UndoActionPayload = any>(
-  type: string, 
-  func: StateChangeFunction<UpsetConfig, DoActionPayload>
+  type: string,
+  func: StateChangeFunction<UpsetConfig, DoActionPayload>,
 ): ReturnType<typeof registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>> {
   return registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>(
-    type, 
-    (state, payload) => func(convertConfig(state), payload)
+    type,
+    (state, payload) => func(convertConfig(state), payload),
   );
 }
 
@@ -222,7 +222,7 @@ const addPlotAction = register<Plot>(
         state.plots.scatterplots = [...state.plots.scatterplots, plot];
         break;
       default:
-        throw new Error(`Unknown plot type`);
+        throw new Error('Unknown plot type');
     }
 
     return state;
@@ -244,7 +244,7 @@ const removePlotAction = register<Plot>(
         );
         break;
       default:
-        throw new Error(`Unknown plot type`);
+        throw new Error('Unknown plot type');
     }
 
     return state;
@@ -336,7 +336,7 @@ const setElementSelectionAction = register<BookmarkedSelection | null>(
   (state: UpsetConfig, bookmarkedSelection) => {
     state.elementSelection = bookmarkedSelection;
     return state;
-  }
+  },
 );
 /**
  * Sets the alt text for the user
@@ -347,7 +347,7 @@ const setUserAltTextAction = register<AltText | null>(
   (state: UpsetConfig, altText) => {
     state.userAltText = altText;
     return state;
-  }
+  },
 );
 
 /**
@@ -359,7 +359,7 @@ const setUseUserAltTextAction = register<boolean>(
   (state: UpsetConfig, useUserAlt) => {
     state.useUserAlt = useUserAlt;
     return state;
-  }
+  },
 );
 
 export function initializeProvenanceTracking(
@@ -403,9 +403,25 @@ export function getActions(provenance: UpsetProvenance) {
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
     updateAttributePlotType: (attr: string, plotType: string) => provenance.apply(`Update ${attr} plot type to ${plotType}`, updateAttributePlotType({ attr, plotType })),
+    /**
+     * Adds a bookmark to the state
+     * @param b bookmark to add
+     */
     addBookmark: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
+    /**
+     * Removes a bookmark from the state
+     * @param b bookmark to remove
+     */
     removeBookmark: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
+    /**
+     * Adds a plot to the state
+     * @param plot plot to add
+     */
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
+    /**
+     * Removes a plot from the state
+     * @param plot plot to remove
+     */
     removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
     addCollapsed: (id: string) => provenance.apply(`Collapsed ${id}`, addCollapsedAction(id)),
@@ -419,18 +435,23 @@ export function getActions(provenance: UpsetProvenance) {
         'Deselect intersection',
       setSelectedAction(intersection),
     ),
+    /**
+     * Sets a global element selection for the plot,
+     * which is a filter on items based on their attributes.
+     * @param selection The selection to set
+     */
     setElementSelection: (selection: BookmarkedSelection | null) => provenance.apply(
       selection && Object.keys(selection.selection).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
-          : "Deselected elements",
+        : 'Deselected elements',
       setElementSelectionAction(selection),
     ),
     setUserAltText: (altText: AltText | null) => provenance.apply(
-      altText ? `Set user alt text` : "Cleared user alt text",
-      setUserAltTextAction(altText)
+      altText ? 'Set user alt text' : 'Cleared user alt text',
+      setUserAltTextAction(altText),
     ),
     setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
-      useUserAlt ? "Enabled user alt text" : "Disabled user alt text",
+      useUserAlt ? 'Enabled user alt text' : 'Disabled user alt text',
       setUseUserAltTextAction(useUserAlt),
     ),
   };

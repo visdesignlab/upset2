@@ -7,7 +7,6 @@ import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from './Root';
 import { useContext, useEffect } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
-import React from 'react';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
 import { loadingAtom } from '../atoms/loadingAtom';

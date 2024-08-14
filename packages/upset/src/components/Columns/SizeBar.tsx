@@ -56,14 +56,18 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const nextColor = useRecoilValue(nextColorSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
 
-  // Constants
+  /*
+   * Constants
+   */
 
   // Opacity for the selection color
   const SELECTION_OPACITY = 0.6;
   // Offset in px for each nested bar
   const OFFSET = 6;
 
-  /// Functions
+  /*
+   * Functions
+   */
 
   /**
    * Darkens a size bar color according to its nesting index.
@@ -162,7 +166,9 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     );
   }
 
-  /// Hooks
+  /*
+   * Hooks
+   */
 
   // Compute vars for size bars
   const scale = useScale(
@@ -228,8 +234,11 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     elementSelectionColor, getFillColor, SELECTION_OPACITY, translate, sizeWidth, selectedWidth,
   ]);
 
-  if (size < 0 || sizeDomain < 0) return null;
+  /*
+   * Render
+   */
 
+  if (size < 0 || sizeDomain < 0) return null;
   return (
     <g
       transform={translate(
