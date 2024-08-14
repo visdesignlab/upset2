@@ -74,7 +74,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   /**
    * Handler for when the save button is clicked
    */
-  const saveButtonClick = useCallback(() => {
+  const saveButtonClick: () => void = useCallback(() => {
     setTextEditing(false);
     if (!currState.useUserAlt) actions.setUseUserAltText(true);
     if (currState.userAltText?.shortDescription !== userShortText
@@ -84,7 +84,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   /**
    * Sets text editing to true and sets default user alttexts if necessary
    */
-  const enableTextEditing = useCallback(() => {
+  const enableTextEditing: () => void = useCallback(() => {
     setTextEditing(true);
     if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
     if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
@@ -219,12 +219,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               <Box
                 sx={{
                   overflowY: 'auto',
-                  cursor: 'pointer',
                   borderRadius: '4px',
                   border: '2px solid white',
                   width: 'calc(100% - 10px)', // We have 10px of padding + border
                 }}
-                onClick={enableTextEditing}
                 tabIndex={3}
               >
                 <Button
@@ -232,6 +230,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                     display: 'inline-block',
                     width: '24px',
                     float: 'right',
+                    cursor: 'pointer',
                   }}
                   onClick={enableTextEditing}
                   tabIndex={5}

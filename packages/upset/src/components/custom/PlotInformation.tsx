@@ -124,9 +124,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
     !editing ? (
       <Box
         tabIndex={tabIndex}
-        onClick={() => setEditing(true)}
         sx={{
-          cursor: 'pointer',
           border: '2px solid white', // Prevent resize on hover
           padding: '.2em',
         }}
@@ -137,8 +135,14 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
           </Typography>
           <Button
             aria-label="Plot Information Editor"
-            style={{ float: 'right', position: 'relative', bottom: '40px' }}
+            style={{
+              float: 'right',
+              position: 'relative',
+              bottom: '40px',
+              cursor: 'pointer',
+            }}
             tabIndex={tabIndex + 1}
+            onClick={() => setEditing(true)}
           >
             <Icon style={{ overflow: 'visible' }}>
               <EditIcon />
