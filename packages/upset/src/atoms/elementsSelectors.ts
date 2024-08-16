@@ -130,6 +130,14 @@ export const selectedItemsSelector = selector<Item[]>({
 });
 
 /**
+ * Counts the number of selected items.
+ */
+export const selectedItemsCounter = selector<number>({
+  key: 'selected-item-count',
+  get: ({ get }) => get(selectedItemsSelector).length,
+});
+
+/**
  * Counts the number of selected items in a subset.
  */
 export const subsetSelectedCount = selectorFamily<number, string>({

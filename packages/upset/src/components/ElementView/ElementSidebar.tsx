@@ -7,13 +7,16 @@ import {
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import React, {
-  useCallback, useContext, useEffect, useState,
+  useCallback, useContext, useEffect, useMemo, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
-import { elementSelector, intersectionCountSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
+import {
+  elementSelector, intersectionCountSelector, selectedElementSelector, selectedItemsCounter,
+  selectedItemsSelector,
+} from '../../atoms/elementsSelectors';
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
@@ -78,24 +81,39 @@ export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
-  const intersectionCounter = useRecoilValue(
-    intersectionCountSelector(currentIntersection?.id),
-  );
+  const currentSelection = useRecoilValue(selectedElementSelector);
+  const selectedItems = useRecoilValue(selectedItemsSelector);
+  const itemCount = currentSelection
+    ? useRecoilValue(selectedItemsCounter)
+    : useRecoilValue(intersectionCountSelector(currentIntersection?.id));
   const currentIntersectionElements = useRecoilValue(
     elementSelector(currentIntersection?.id),
   );
   const bookmarks = useRecoilValue(bookmarkSelector);
-
   const columns = useRecoilValue(columnsAtom);
-
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
-
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const currentSelection = useRecoilValue(selectedElementSelector);
+
+  /**
+   * Vars
+   */
+
+  const queryDownloadable = useMemo(
+    () => currentIntersection || (currentSelection && bookmarks.length > 0),
+    [currentIntersection, currentSelection, bookmarks],
+  );
+
+  /**
+   * Effects
+   */
 
   useEffect(() => {
     setHideElementSidebar(!open);
   }, [open]);
+
+  /**
+   * Callbacks
+   */
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -215,20 +233,28 @@ export const ElementSidebar = ({ open, close }: Props) => {
         Query Result
         <Tooltip
           title={
-              currentIntersection
-                ? `Download ${intersectionCounter} elements`
+              queryDownloadable
+                ? `Download ${itemCount} elements`
                 : ''
             }
         >
           <IconButton
-            disabled={!currentIntersection}
+            disabled={!queryDownloadable}
             onClick={() => {
-              if (currentIntersection) {
-                downloadElementsAsCSV(
-                  currentIntersectionElements,
-                  columns,
-                  currentIntersection.elementName,
-                );
+              if (queryDownloadable) {
+                if (currentSelection) {
+                  downloadElementsAsCSV(
+                    selectedItems,
+                    columns,
+                    currentSelection.label,
+                  );
+                } else if (currentIntersection) {
+                  downloadElementsAsCSV(
+                    currentIntersectionElements,
+                    columns,
+                    currentIntersection.elementName,
+                  );
+                }
               }
             }}
           >
@@ -237,7 +263,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Tooltip>
       </Typography>
       <Divider />
-      {currentIntersection || (currentSelection?.selection && bookmarks.length > 0) ? (
+      {queryDownloadable ? (
         <ElementTable />
       ) : (
         <Alert
@@ -245,7 +271,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
           variant="outlined"
           role="generic"
           sx={{
-            alignItems: 'center', marginTop: '0.5em', border: 'none', color: '#777777',
+            alignItems: 'center', marginTop: '0.5em', marginBottom: '100px', border: 'none', color: '#777777',
           }}
         >
           Please select a query to view the elements.
