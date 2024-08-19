@@ -212,13 +212,13 @@ export function isSubsets(s: unknown): s is Subsets {
 export function isAggregate(a: unknown): a is Aggregate {
   // Dupe the items field because BaseIntersection has a different items definition,
   // then check if it is a BaseIntersection
+  if (!a || typeof a !== 'object') return false;
   const dupeA = deepCopy(a);
   (dupeA as { items: string[]}).items = [];
   if (!isBaseIntersection(dupeA)) return false;
 
   // We can now assume a is an object, but I add type guards here for the compiler
-  return !!a && typeof a === 'object'
-    && Object.hasOwn(a, 'aggregateBy')
+  return Object.hasOwn(a, 'aggregateBy')
     && Object.hasOwn(a, 'level')
     && Object.hasOwn(a, 'description')
     && Object.hasOwn(a, 'items')
