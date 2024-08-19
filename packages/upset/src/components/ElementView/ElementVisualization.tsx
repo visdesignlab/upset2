@@ -1,4 +1,3 @@
-// import { Button } from '@mui/material';
 import { Box } from '@mui/system';
 import {
   useContext, useMemo, useRef, useState,
@@ -68,7 +67,7 @@ export const ElementVisualization = () => {
   return (
     <Box
       onClick={() => {
-        // Since onClick fires onMouseUp, this is a great time to save
+        // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
         if (
           draftSelection.current
           && Object.keys(draftSelection.current).length > 0

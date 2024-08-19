@@ -30,7 +30,7 @@ const registry = Registry.create();
 function register<DoActionPayload, UndoActionType extends string = string, UndoActionPayload = any>(
   type: string,
   func: StateChangeFunction<UpsetConfig, DoActionPayload>,
-): ReturnType<typeof registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>> {
+) {
   return registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>(
     type,
     (state, payload) => func(convertConfig(state), payload),

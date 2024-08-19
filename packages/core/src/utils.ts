@@ -1,10 +1,11 @@
 /**
+ * DEPRECATED: Currently serves only as an alias for structuredClone; use that instead.
  * Create a deep copy (with all fields recursively copied) of an object
  * @param obj the object to copy
  * @returns a deep copy of the object
  */
-export function deepCopy<T>(obj: T): T {
-  return JSON.parse(JSON.stringify(obj));
+export function deepCopy<T extends object>(obj: T): T {
+  return structuredClone(obj);
 }
 
 /**
