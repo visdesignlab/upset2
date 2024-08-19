@@ -23,6 +23,7 @@ import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import '../index.css';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
+import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 
 /**
  * Props for the AltTextSidebar component.
@@ -59,17 +60,24 @@ const initialDrawerWidth = 450;
 * @returns {JSX.Element} The AltTextSidebar component.
 */
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
+  /**
+   * State
+   */
+
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const currState = useRecoilValue(upsetConfigAtom);
-
   const [altText, setAltText] = useState<AltText | null>(null);
   const [textGenErr, setTextGenErr] = useState<string | false>(false);
-
-  // States for editing the alt text
   const [textEditing, setTextEditing] = useState(false);
   const [userLongText, setUserLongText] = useState(currState.userAltText?.longDescription);
   const [userShortText, setUserShortText] = useState(currState.userAltText?.shortDescription);
   const [useLong, setUseLong] = useState(false);
+  const [plotInfoEditing, setPlotInfoEditing] = useState(false);
+  const plotInfo = useRecoilValue(plotInformationSelector);
+
+  /**
+   * Functions
+   */
 
   /**
    * Handler for when the save button is clicked
@@ -90,6 +98,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
   }, [currState, altText]);
 
+  /**
+   * Effects
+   */
+
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
   useEffect(() => {
@@ -105,6 +117,20 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
     generate();
   }, [currState]);
+
+  /**
+   * Constants
+   */
+
+  /**
+   * Number of tab indicies used by the PlotInformation component
+   * @see PlotInformation to count the number of tab indices used
+   */
+  const PLOT_INFO_TABS = 7;
+  /**
+   * The tab index, in this component, of the plot information component
+   */
+  const PLOT_INFO_TAB_INDEX = 9;
 
   // Current alt text to display to the user
   const displayAltText: string | undefined = useMemo(() => {
@@ -122,14 +148,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   />;
 
   /**
-   * Number of tab indicies used by the PlotInformation component
-   * @see PlotInformation to count the number of tab indices used
+   * Whether to display the plot information section
    */
-  const PLOT_INFO_TABS = 7;
-  /**
-   * The tab index, in this component, of the plot information component
-   */
-  const PLOT_INFO_TAB_INDEX = 9;
+  const displayPlotInfo: boolean = useMemo(
+    () => plotInfoEditing || (currState.plotInformation && Object.values(currState.plotInformation).some((v) => !!v)),
+    [currState.plotInformation, plotInfoEditing],
+  );
 
   return (
     <Drawer
@@ -155,7 +179,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         <br />
         <Box>
           <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
-            Text Descriptions
+            {displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
           </Typography>
           <Button
             onClick={close}
@@ -173,11 +197,28 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           </Button>
         </Box>
         {divider}
-        <PlotInformation divider={divider} tabIndex={PLOT_INFO_TAB_INDEX} />
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          Alt Text Description
-        </Typography>
-        {divider}
+        {displayPlotInfo ? (
+          <PlotInformation
+            tabIndex={PLOT_INFO_TAB_INDEX}
+            editing={plotInfoEditing}
+            setEditing={setPlotInfoEditing}
+          />
+        ) : (
+          <Button
+            onClick={() => setPlotInfoEditing(true)}
+            tabIndex={PLOT_INFO_TAB_INDEX}
+          >
+            Add Plot Information
+          </Button>
+        )}
+        {displayPlotInfo && (
+          <>
+            <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
+              Alt Text Description
+            </Typography>
+            {divider}
+          </>
+        )}
         <Box css={css`overflow-y: auto;`}>
           {textGenErr && !userLongText && !userShortText ? (
             <Typography variant="body1" color="error">{textGenErr}</Typography>

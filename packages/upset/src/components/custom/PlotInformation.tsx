@@ -8,7 +8,7 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { useRecoilValue } from 'recoil';
 import {
-  useContext, useState, JSX, useCallback,
+  useContext, useState, useCallback,
 } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
 import { ProvenanceContext } from '../Root';
@@ -23,13 +23,17 @@ type Props = {
    */
   onSave?: () => void;
   /**
-   * The JSX element to be used as a divider.
+   * Callback to set the editing state.
    */
-  divider: JSX.Element;
+  setEditing: (editing: boolean) => void;
   /**
-   * The starting tab index for the component. Uses up to 5 additional indices
+   * The starting tab index for the component. Uses up to 6 additional indices
    */
   tabIndex: number;
+  /**
+   * Whether the component is in editing mode by default
+   */
+  editing: boolean;
 }
 
 /**
@@ -37,7 +41,9 @@ type Props = {
  * Uses up to 5 tab indices, starting from @param tabIndex
  * @param Props @see @type Props
  */
-export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
+export const PlotInformation = ({
+  onSave, setEditing, tabIndex, editing,
+}: Props) => {
   /**
    * Width of the titles for all the fields in %.
    * Field entry boxes will occupy the rest of the space
@@ -74,7 +80,6 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
   const plotInformationState = useRecoilValue(plotInformationSelector);
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
   const { actions } = useContext(ProvenanceContext);
-  const [editing, setEditing] = useState(false);
 
   /**
    * Functions
@@ -86,7 +91,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
    */
   const generatePlotInformationText: () => string = useCallback(() => {
     // return default string if there are no values filled in
-    if (Object.values(plotInformation).filter((a) => a.length > 0).length === 0) {
+    if (Object.values(plotInformation).filter((a) => a && a.length > 0).length === 0) {
       return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
     }
 
@@ -130,15 +135,12 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
         }}
       >
         <div style={{ height: '1.6em' }}>
-          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0">
-            {plotInformation.title ?? '[Title]'}
-          </Typography>
           <Button
             aria-label="Plot Information Editor"
             style={{
               float: 'right',
               position: 'relative',
-              bottom: '40px',
+              bottom: '10px',
               cursor: 'pointer',
             }}
             tabIndex={tabIndex + 1}
@@ -148,9 +150,8 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
               <EditIcon />
             </Icon>
           </Button>
+          <Typography>{plotInformation.caption}</Typography>
         </div>
-        {divider}
-        <Typography>{plotInformation.caption ?? '[Caption]'}</Typography>
         <br />
         <Typography>{generatePlotInformationText()}</Typography>
       </Box>
@@ -170,11 +171,10 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
             fullWidth
             variant="standard"
             style={{ marginBottom: '5px' }}
-            value={plotInformation.title}
+            value={plotInformation.title ?? ''}
             onChange={(e) => setPlotInformation({ ...plotInformation, title: e.target.value })}
             placeholder="Title"
             inputProps={{
-              disableUnderline: true,
               style: {
                 padding: '1px',
                 height: '1.4em',
@@ -193,7 +193,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
               // We need to override the default overflow prop (hidden), then still deny x scrolling
               style: { height: '4em', overflow: 'auto', overflowX: 'hidden' },
             }}
-            value={plotInformation.caption}
+            value={plotInformation.caption ?? ''}
             onChange={(e) => setPlotInformation({ ...plotInformation, caption: e.target.value })}
             placeholder="Caption"
           />
@@ -209,7 +209,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
               sx={{ width: `${100 - fieldTitleWidth}%` }}
               multiline
               InputLabelProps={{ shrink: true }}
-              value={plotInformation.description}
+              value={plotInformation.description ?? ''}
               fullWidth
               maxRows={8}
               placeholder={`${placeholderText.description}`}
@@ -227,7 +227,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
               sx={{ width: `${100 - fieldTitleWidth}%` }}
               multiline
               InputLabelProps={{ shrink: true }}
-              value={plotInformation.sets}
+              value={plotInformation.sets ?? ''}
               fullWidth
               maxRows={8}
               placeholder={`${placeholderText.sets}`}
@@ -245,7 +245,7 @@ export const PlotInformation = ({ onSave, divider, tabIndex }: Props) => {
               sx={{ width: `${100 - fieldTitleWidth}%` }}
               multiline
               InputLabelProps={{ shrink: true }}
-              value={plotInformation.items}
+              value={plotInformation.items ?? ''}
               fullWidth
               maxRows={8}
               placeholder={`${placeholderText.items}`}
