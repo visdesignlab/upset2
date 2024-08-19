@@ -48,7 +48,7 @@ export const ElementTable: FC = () => {
     ? useRecoilValue(selectedItemsSelector)
     : useRecoilValue(elementSelector(currentIntersection?.id));
   const rows = useRows(elements);
-  const columns = useColumns(['_id', '_label', ...attributeColumns]);
+  const columns = useColumns(['_label', ...attributeColumns]);
 
   return (
     <Box
