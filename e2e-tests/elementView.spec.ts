@@ -84,14 +84,12 @@ test('Element View', async ({ page }) => {
   await expect(selectionChip).toBeVisible();
 
   // Check that the datatable is visible and populated
-  const dataTable = await page.locator('div').filter({ hasText: /^simpsons\/40726826Bart10simpsons\/40726838Ralph8simpsons\/40726848Martin Prince10$/ }).nth(2);
+  const dataTable = page.locator('div').filter({ hasText: /^LabelAge$/ }).first();
   await expect(dataTable).toBeVisible();
-  const cell1 = await page.getByRole('cell', { name: 'simpsons/40726826' });
-  await expect(cell1).toBeVisible();
-  const cell2 = await page.getByRole('cell', { name: 'Bart' });
-  await expect(cell2).toBeVisible();
-  const cell3 = await page.getByRole('cell', { name: '10' }).first();
-  await expect(cell3).toBeVisible();
+  const nameCell = await page.getByRole('cell', { name: 'Bart' });
+  await expect(nameCell).toBeVisible();
+  const ageCell = await page.getByRole('cell', { name: '10' }).first();
+  await expect(ageCell).toBeVisible();
 
   // Check that the add plot button is visible
   const addPlot = await page.getByRole('button', { name: 'Add Plot' });
