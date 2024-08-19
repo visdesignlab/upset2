@@ -89,18 +89,17 @@ export function convertConfig(config: unknown): UpsetConfig {
   // Special case for pre-versioning configs
   if (!Object.hasOwn(config, 'version')) preVersionConversion(config as PreVersionConfig);
 
-  /* eslint-disable no-fallthrough */
   /* eslint-disable no-void */
   // Switch case is designed to fallthrough to the next version's conversion function
   // so that all versions are converted cumulatively.
   switch ((config as {version: string}).version) {
     case '0.1.0':
       void 0; // This will be replaced by the next version's conversion function
+      // falls through
     default:
       void 0;
   }
   /* eslint-enable no-void */
-  /* eslint-enable no-fallthrough */
 
   if (!isUpsetConfig(config)) {
     // eslint-disable-next-line no-console
