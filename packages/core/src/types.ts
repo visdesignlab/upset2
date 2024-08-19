@@ -539,8 +539,8 @@ export function elementSelectionsEqual(a: ElementSelection | undefined, b: Eleme
 
 /**
  * Converts an element selection to a bookmark.
- * Generates the ID by hashing the selection and
- * labels the bookmark with the selection attributes.
+ * Generates the ID by hashing the selection and labels the bookmark with the selection parameters.
+ * Truncates keys to 16 characters and values to 2 sig figs.
  * @param selection The numerical attribute query.
  * @returns The element selection.
  */
@@ -553,9 +553,24 @@ export function elementSelectionToBookmark(selection: ElementSelection): Bookmar
     i *= norm(hashString(key)) * norm(value[0]) * norm(value[1]);
   });
   i = norm(i);
+
+  let label = 'Atts: ';
+  Object.entries(selection).forEach(([k, v]) => {
+    // Ternary/toPrecision sets 2 sig fig bound on small numbers
+    let min: string | number = v[0] < 100 ? parseFloat(v[0].toPrecision(2)) : Math.round(v[0]);
+    let max: string | number = v[1] < 100 ? parseFloat(v[1].toPrecision(2)) : Math.round(v[1]);
+    // Convert numbers with lots of 0s to exponential notation with 2 sig figs
+    if (min >= 10000 || min <= 0.0009) min = min.toPrecision(2);
+    if (max >= 10000 || max <= 0.0009) max = max.toPrecision(2);
+    // Truncate names
+    if (k.length > 16) { k = k.slice(0, 13); k += '...'; }
+    if (label !== 'Atts: ') label += ', ';
+    label += `${k}: [${min} to ${max}]`;
+  });
+
   return {
     id: i.toString(),
-    label: `Atts: ${Object.keys(selection).join(', ')}`,
+    label,
     type: 'elements',
     selection,
   };
