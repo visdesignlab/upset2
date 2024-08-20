@@ -1,7 +1,7 @@
 import {
   Aggregate, Subset, getBelongingSetsFromSetMembership, isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
