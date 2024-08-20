@@ -1,7 +1,7 @@
 import {
   Aggregate,
   BaseIntersection,
-  BookmarkedSelection, Item, flattenedOnlyRows, getItems,
+  BookmarkedSelection, ElementSelection, Item, flattenedOnlyRows, getItems,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -102,10 +102,16 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
  */
 export const selectedElementSelector = selector<BookmarkedSelection | null>({
   key: 'config-element-selection',
-  get: ({ get }) => {
-    const state = get(upsetConfigAtom);
-    return state.elementSelection;
-  },
+  get: ({ get }) => get(upsetConfigAtom).elementSelection,
+});
+
+/**
+ * Gets the parameters for the current selection of elements,
+ * ie the 'selected' property of the selectedElementsSelector
+ */
+export const elementSelectionParameters = selector<ElementSelection | undefined>({
+  key: 'config-current-element-selection',
+  get: ({ get }) => get(selectedElementSelector)?.selection,
 });
 
 /**
@@ -117,7 +123,7 @@ export const selectedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const bookmarks = get(bookmarkSelector);
     const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
-    const selection = get(selectedElementSelector)?.selection;
+    const selection = get(elementSelectionParameters);
     if (!selection) return [];
 
     const result: Item[] = [];
@@ -144,7 +150,7 @@ export const subsetSelectedCount = selectorFamily<number, string>({
   key: 'subset-selected',
   get: (id: string) => ({ get }) => {
     const items = get(elementSelector(id));
-    const selection = get(selectedElementSelector)?.selection;
+    const selection = get(elementSelectionParameters);
 
     if (!selection || Object.keys(selection).length === 0) return 0;
 
@@ -152,8 +158,11 @@ export const subsetSelectedCount = selectorFamily<number, string>({
     items.forEach((item) => {
       if (Object.entries(selection).every(
         ([key, value]) => typeof item[key] === 'number'
-          && item[key] as number >= value[0] && item[key] as number <= value[1],
-      )) count++;
+          && item[key] as number >= value[0]
+          && item[key] as number <= value[1],
+      )) {
+        count++;
+      }
     });
     return count;
   },

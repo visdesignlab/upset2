@@ -9,7 +9,7 @@ import { elementSelectionToBookmark, elementSelectionsEqual, isElementSelection 
 import { Button } from '@mui/material';
 import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { elementItemMapSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
+import { elementItemMapSelector, elementSelectionParameters } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
@@ -29,7 +29,7 @@ export const ElementVisualization = () => {
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
-  const currentSelection = useRecoilValue(selectedElementSelector);
+  const elementSelection = useRecoilValue(elementSelectionParameters);
   const selectColor = useRecoilValue(elementColorSelector);
   // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
@@ -38,10 +38,10 @@ export const ElementVisualization = () => {
    * Hooks
    */
 
-  const draftSelection = useRef(currentSelection?.selection);
+  const draftSelection = useRef(elementSelection);
   const vegaSpec = useMemo(
-    () => generateVega(scatterplots, histograms, selectColor, currentSelection?.selection),
-    [scatterplots, histograms, selectColor, currentSelection?.selection],
+    () => generateVega(scatterplots, histograms, selectColor, elementSelection),
+    [scatterplots, histograms, selectColor, elementSelection],
   );
 
   /**
@@ -71,7 +71,7 @@ export const ElementVisualization = () => {
         if (
           draftSelection.current
           && Object.keys(draftSelection.current).length > 0
-          && !elementSelectionsEqual(draftSelection.current, currentSelection?.selection)
+          && !elementSelectionsEqual(draftSelection.current, elementSelection)
         ) {
           actions.setElementSelection(elementSelectionToBookmark(draftSelection.current));
         } else {

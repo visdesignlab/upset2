@@ -18,7 +18,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { selectedElementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionParameters, selectedElementSelector } from '../../atoms/elementsSelectors';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -36,6 +36,7 @@ export const ElementQueries = () => {
   const currentSelection = useRecoilValue(selectedElementSelector);
   const savedSelection = useRecoilValue(selectedElementSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
+  const elementSelection = useRecoilValue(elementSelectionParameters);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
@@ -139,7 +140,7 @@ export const ElementQueries = () => {
           />
         )}
         {/* Chip for the current element selection */}
-        {currentSelection?.selection && !bookmarked.find((b) => b.id === currentSelection.id) && (
+        {elementSelection && currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
           <Chip
             sx={(theme) => ({
               margin: theme.spacing(0.5),
@@ -156,7 +157,7 @@ export const ElementQueries = () => {
                   id: currentSelection.id,
                   label: currentSelection.label,
                   type: 'elements',
-                  selection: currentSelection.selection,
+                  selection: elementSelection,
                 });
               }
             }}
@@ -166,7 +167,7 @@ export const ElementQueries = () => {
                 id: currentSelection.id,
                 label: currentSelection.label,
                 type: 'elements',
-                selection: currentSelection.selection,
+                selection: elementSelection,
               });
             }}
             deleteIcon={<StarBorderIcon />}
