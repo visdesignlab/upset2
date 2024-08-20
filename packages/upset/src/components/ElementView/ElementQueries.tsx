@@ -47,13 +47,8 @@ export const ElementQueries = () => {
       else actions.setSelected(rows[bookmark.id]);
     } else if (isBookmarkedSelection(bookmark)) {
       // Need to update both the saved trrack state & the selection atom when a chip is clicked
-      if (currentSelection?.id === bookmark.id) {
-        actions.setElementSelection(null);
-        if (savedSelection !== null) actions.setElementSelection(null);
-      } else {
-        actions.setElementSelection(bookmark);
-        if (savedSelection?.id !== bookmark.id) actions.setElementSelection(bookmark);
-      }
+      if (currentSelection?.id === bookmark.id && savedSelection !== null) actions.setElementSelection(null);
+      else if (savedSelection?.id !== bookmark.id) actions.setElementSelection(bookmark);
     }
   }
 
