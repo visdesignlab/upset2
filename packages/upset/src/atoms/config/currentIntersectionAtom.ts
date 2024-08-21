@@ -74,8 +74,8 @@ export const elementColorSelector = selector<string>({
     const bookmarkColors = get(bookmarkedColorPalette);
     const palette = get(bookmarkedColorPalette);
 
-    if (Object.keys(bookmarkColors).includes(selection?.id ?? '')) {
-      return bookmarkColors[selection?.id ?? ''];
+    if (selection && Object.keys(bookmarkColors).includes(selection.id)) {
+      return bookmarkColors[selection.id];
     }
 
     return get(currentIntersectionSelector)

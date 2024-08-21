@@ -445,7 +445,11 @@ Storybook can be used to test development of UpSet 2.0 as a react component. To 
 
 A new story can be added by adding a `{name}.stories.tsx` file to `packages/upset/stories/`. New data can be added to the `data` subfolder in the same directory.
 
-## Developer Documentation Guidelines
+## Developer Guidelines
+
+Changes to the `UpsetConfig` type require writing config conversion functions to ensure backwards compatibility. See the note at the top of `packages/core/src/convertConfig.ts` for details. Additionally, the typechecker for the `UpsetConfig` must be updated when the type is. See `packages/core/src/typecheck.ts`. Additionally, all the types used within `UpsetConfig` have their own typecheck functions; changes to these types must be reflected in the typechecker.
+
+### Developer Documentation Guidelines
 
 When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html). Also, please add testing via Playwright, outlined in [#end-to-end-e2e-testing](#end-to-end-e2e-testing).
 

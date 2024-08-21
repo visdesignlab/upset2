@@ -61,12 +61,15 @@ type PreVersionConfig = {
  * @returns The converted config.
  */
 function preVersionConversion(config: PreVersionConfig): UpsetConfig {
+  // TS won't allow a conversion directly to UpsetConfig, so we have to cast it to unknown first.
+  // This is necessary to add and remove properties from the object.
   (config as unknown as UpsetConfig).version = '0.1.0';
   (config as unknown as UpsetConfig).elementSelection = null;
   (config as unknown as UpsetConfig).bookmarks = config.bookmarkedIntersections;
   (config as unknown as UpsetConfig).useUserAlt = false;
   (config as unknown as UpsetConfig).userAltText = null;
   (config as unknown as UpsetConfig).attributePlots = {};
+  // Any cast required because bookmarkedIntersections isn't optional in PreversionConfig
   delete (config as any).bookmarkedIntersections;
 
   (config as unknown as UpsetConfig).bookmarks.forEach((bookmark) => {

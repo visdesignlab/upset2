@@ -31,7 +31,6 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   const elementSelection = useRecoilValue(elementSelectionParameters);
   const selectColor = useRecoilValue(elementColorSelector);
-  // This will default to the savedSelection because brushHandler fires on the default selection in generateVega()
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
@@ -55,7 +54,7 @@ export const ElementVisualization = () => {
 
   /**
    * Saves brush bounds to state when the interactive brush is used.
-   * @param {string}  _     Name of the signal: "brush"
+   * @param {string}  _     Name of the signal: "brush" (defined in the vega spec & signalListeners of VegaLite element)
    * @param {unknown} value Should be an object mapping the names of the attributes being brushed over
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
