@@ -35,6 +35,18 @@ export type PlotInformation = {
 };
 
 /**
+ * Possible string types for an element query
+ */
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum QueryType {
+  EQUALS = 'equals',
+  CONTAINS = 'contains',
+  LENGTH = 'length',
+  REGEX = 'regex'
+}
+
+/**
  * Represents a row in the UpSet plot.
  * @privateRemarks typechecked by isRowType in typecheck.ts; changes here must be reflected there
  */
