@@ -24,7 +24,7 @@ import { elementSelectionParameters, selectedElementSelector } from '../../atoms
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
  * with options to add and remove bookmarks
  */
-export const ElementQueries = () => {
+export const BookmarkChips = () => {
   const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
