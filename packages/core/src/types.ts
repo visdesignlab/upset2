@@ -35,18 +35,6 @@ export type PlotInformation = {
 };
 
 /**
- * Possible string types for an element query
- */
-// linter is saying this is already declared... on this line
-// eslint-disable-next-line no-shadow
-export enum QueryType {
-  EQUALS = 'equals',
-  CONTAINS = 'contains',
-  LENGTH = 'length',
-  REGEX = 'regex'
-}
-
-/**
  * Represents a row in the UpSet plot.
  * @privateRemarks typechecked by isRowType in typecheck.ts; changes here must be reflected there
  */
@@ -300,6 +288,51 @@ export enum AttributePlotType {
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
 /**
+ * Possible string types for an element query
+ */
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum StringQueryType {
+  EQUALS = 'equals',
+  CONTAINS = 'contains',
+  LENGTH = 'length',
+  REGEX = 'regex'
+}
+
+/**
+ * Represents a selection of elements based on a string attribute.
+ */
+export type StringQuery = {
+  /**
+   * Name of the attribute being queried upon
+   */
+  att: string,
+  /**
+   * Type of the query; determines the mechanism used to evaluate whether the value of att
+   * on a given element matches this query
+   */
+  type: StringQueryType,
+  /**
+   * The query string. To be included in this query, the value of att on a given
+   * element must match this query string according to the rules set by the type.
+   */
+  query: string,
+}
+
+/**
+ * Represents a selection of elements based on their numerical attributes,
+ * currently only from brushes in the element view.
+ * Maps attribute names to an array with the minimum and maximum
+ * values of the selection over each attribute.
+ *
+ * @privateRemarks
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
+ * upset/src/components/ElementView/ElementVisualization.tsx.
+ * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
+ */
+export type NumericalQuery = {[attName: string] : [number, number]};
+
+/**
  * Base representation of a bookmarkable type
  * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
@@ -331,19 +364,6 @@ export type BookmarkedIntersection = Bookmark & {
    */
   type: 'intersection';
 }
-
-/**
- * Represents a selection of elements based on their numerical attributes,
- * currently only from brushes in the element view.
- * Maps attribute names to an array with the minimum and maximum
- * values of the selection over each attribute.
- *
- * @privateRemarks
- * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
- * upset/src/components/ElementView/ElementVisualization.tsx.
- * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
- */
-export type NumericalQuery = {[attName: string] : [number, number]};
 
 /**
  * Represents a bookmarked element selection, created in the Element View.
