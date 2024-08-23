@@ -3,6 +3,7 @@ import {
   TextualQuery,
   TextualQueryType,
   TextualBookmark,
+  ElementSelection,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -293,6 +294,15 @@ export function isTextualBookmark(b: unknown): b is TextualBookmark {
 }
 
 /**
+ * Determines if the given object is an ElementSelection.
+ * @param e The object to check.
+ * @returns {boolean} Whether the object is an ElementSelection.
+ */
+export function isElementSelection(e: unknown): e is ElementSelection {
+  return isNumericalBookmark(e) || isTextualBookmark(e);
+}
+
+/**
  * Determines if the given object is a valid UpsetConfig using the CURRENT version.
  * @privateRemarks
  * This needs to be updated each time a new version is added. Since it's intended to be an exhaustive
@@ -538,7 +548,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // elementSelection
-  if (!(elementSelection === null || isNumericalBookmark(elementSelection))) {
+  if (!(elementSelection === null || isElementSelection(elementSelection))) {
     console.warn('Upset config error: Element selection is not a bookmarked selection');
     return false;
   }

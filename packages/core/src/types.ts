@@ -396,6 +396,12 @@ export type TextualBookmark = Bookmark & {
 }
 
 /**
+ * A bookmark which represents a selection of elements
+ * @privateRemarks typechecked by isElementSelection in typecheck.ts; changes here must be reflected there
+ */
+export type ElementSelection = NumericalBookmark | TextualBookmark;
+
+/**
  * Represents the alternative text for an Upset plot.
  * @privateRemarks typechecked by isAltText in typecheck.ts; changes here must be reflected there
 */
@@ -463,7 +469,7 @@ export type UpsetConfig = {
   /**
    * Selected elements (data points) in the Element View.
    */
-  elementSelection: NumericalBookmark | null;
+  elementSelection: ElementSelection | null;
   version: '0.1.0';
   useUserAlt: boolean;
   userAltText: AltText | null;
