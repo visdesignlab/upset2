@@ -328,7 +328,7 @@ export type StringQuery = {
  * @privateRemarks
  * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
  * upset/src/components/ElementView/ElementVisualization.tsx.
- * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
+ * This is typechecked by isNumericalQuery in typecheck.ts; changes here must be reflected there.
  */
 export type NumericalQuery = {[attName: string] : [number, number]};
 
@@ -366,10 +366,10 @@ export type BookmarkedIntersection = Bookmark & {
 }
 
 /**
- * Represents a bookmarked element selection, created in the Element View.
- * @privateRemarks typechecked by isBookmarkedSelection in typecheck.ts; changes here must be reflected there
+ * Represents a bookmarked element selection based on numerical attributes, created in the Element View.
+ * @privateRemarks typechecked by isNumericalBookmark in typecheck.ts; changes here must be reflected there
  */
-export type BookmarkedSelection = Bookmark & {
+export type NumericalBookmark = Bookmark & {
   /**
    * The selection parameters
    */
@@ -448,7 +448,7 @@ export type UpsetConfig = {
   /**
    * Selected elements (data points) in the Element View.
    */
-  elementSelection: BookmarkedSelection | null;
+  elementSelection: NumericalBookmark | null;
   version: '0.1.0';
   useUserAlt: boolean;
   userAltText: AltText | null;

@@ -6,7 +6,7 @@ import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, BookmarkedIntersection, BookmarkedSelection, flattenedOnlyRows, isBookmarkedIntersection, isBookmarkedSelection,
+  Bookmark, BookmarkedIntersection, NumericalBookmark, flattenedOnlyRows, isBookmarkedIntersection, isNumericalBookmark,
 } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
@@ -46,7 +46,7 @@ export const BookmarkChips = () => {
     if (isBookmarkedIntersection(bookmark)) {
       if (currentIntersection?.id === bookmark.id) actions.setSelected(null);
       else actions.setSelected(rows[bookmark.id]);
-    } else if (isBookmarkedSelection(bookmark)) {
+    } else if (isNumericalBookmark(bookmark)) {
       // Need to update both the saved trrack state & the selection atom when a chip is clicked
       if (currentSelection?.id === bookmark.id && savedSelection !== null) actions.setElementSelection(null);
       else if (savedSelection?.id !== bookmark.id) actions.setElementSelection(bookmark);
@@ -153,7 +153,7 @@ export const BookmarkChips = () => {
             aria-label={`Selected elements ${currentSelection.label}`}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                actions.addBookmark<BookmarkedSelection>({
+                actions.addBookmark<NumericalBookmark>({
                   id: currentSelection.id,
                   label: currentSelection.label,
                   type: 'elements',
@@ -163,7 +163,7 @@ export const BookmarkChips = () => {
             }}
             label={`${currentSelection.label}`}
             onDelete={() => {
-              actions.addBookmark<BookmarkedSelection>({
+              actions.addBookmark<NumericalBookmark>({
                 id: currentSelection.id,
                 label: currentSelection.label,
                 type: 'elements',

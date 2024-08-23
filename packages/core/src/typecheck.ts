@@ -1,5 +1,5 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, BookmarkedSelection, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, NumericalBookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -247,15 +247,15 @@ export function isRow(r: unknown): r is Row {
 }
 
 /**
- * Type guard for BookmarkedSelection
+ * Type guard for NumericalBookmark
  * @param b variable to check
  * @returns {boolean}
  */
-export function isBookmarkedSelection(b: unknown): b is BookmarkedSelection {
+export function isNumericalBookmark(b: unknown): b is NumericalBookmark {
   return isBookmark(b)
   && b.type === 'elements'
   && Object.hasOwn(b, 'selection')
-  && isNumericalQuery((b as BookmarkedSelection).selection);
+  && isNumericalQuery((b as NumericalBookmark).selection);
 }
 
 /**
@@ -505,7 +505,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // elementSelection
-  if (!(elementSelection === null || isBookmarkedSelection(elementSelection))) {
+  if (!(elementSelection === null || isNumericalBookmark(elementSelection))) {
     console.warn('Upset config error: Element selection is not a bookmarked selection');
     return false;
   }

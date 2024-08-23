@@ -1,6 +1,6 @@
 import {
   Aggregate,
-  Aggregates, Bookmark, BookmarkedIntersection, BookmarkedSelection, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
+  Aggregates, Bookmark, BookmarkedIntersection, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
 } from './types';
 import { hashString } from './utils';
 
@@ -98,7 +98,7 @@ export function numericalQueriesEqual(a: NumericalQuery | undefined, b: Numerica
  * @param selection The numerical attribute query.
  * @returns The element selection.
  */
-export function numericalQueryToBookmark(selection: NumericalQuery): BookmarkedSelection {
+export function numericalQueryToBookmark(selection: NumericalQuery): NumericalBookmark {
   // Normalizing prevents floating point error from causing different hashes
   const norm = (i : number) => Math.abs(Math.round(i * 10000));
 

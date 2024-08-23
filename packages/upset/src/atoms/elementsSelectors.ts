@@ -1,7 +1,7 @@
 import {
   Aggregate,
   BaseIntersection,
-  BookmarkedSelection, NumericalQuery, Item, flattenedOnlyRows, getItems,
+  NumericalBookmark, NumericalQuery, Item, flattenedOnlyRows, getItems,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -100,7 +100,7 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
  * Gets the current selection of elements
  * @returns The current selection of elements
  */
-export const selectedElementSelector = selector<BookmarkedSelection | null>({
+export const selectedElementSelector = selector<NumericalBookmark | null>({
   key: 'config-element-selection',
   get: ({ get }) => get(upsetConfigAtom).elementSelection,
 });

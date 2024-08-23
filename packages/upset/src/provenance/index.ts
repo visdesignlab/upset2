@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
-  Bookmark, BookmarkedSelection,
+  Bookmark, NumericalBookmark,
   convertConfig,
   ColumnName,
   AltText,
@@ -331,10 +331,10 @@ const setSelectedAction = register<Row | null>(
   },
 );
 
-const setElementSelectionAction = register<BookmarkedSelection | null>(
+const setElementSelectionAction = register<NumericalBookmark | null>(
   'select-elements',
-  (state: UpsetConfig, bookmarkedSelection) => {
-    state.elementSelection = bookmarkedSelection;
+  (state: UpsetConfig, NumericalBookmark) => {
+    state.elementSelection = NumericalBookmark;
     return state;
   },
 );
@@ -440,7 +440,7 @@ export function getActions(provenance: UpsetProvenance) {
      * which is a filter on items based on their attributes.
      * @param selection The selection to set
      */
-    setElementSelection: (selection: BookmarkedSelection | null) => provenance.apply(
+    setElementSelection: (selection: NumericalBookmark | null) => provenance.apply(
       selection && Object.keys(selection.selection).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
         : 'Deselected elements',
