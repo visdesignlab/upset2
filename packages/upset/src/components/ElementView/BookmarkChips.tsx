@@ -156,7 +156,7 @@ export const BookmarkChips = () => {
                 actions.addBookmark<NumericalBookmark>({
                   id: currentSelection.id,
                   label: currentSelection.label,
-                  type: 'elements',
+                  type: 'numerical',
                   selection: elementSelection,
                 });
               }
@@ -166,7 +166,7 @@ export const BookmarkChips = () => {
               actions.addBookmark<NumericalBookmark>({
                 id: currentSelection.id,
                 label: currentSelection.label,
-                type: 'elements',
+                type: 'numerical',
                 selection: elementSelection,
               });
             }}

@@ -292,7 +292,7 @@ export type AttributePlots = Record<string, `${AttributePlotType}`>;
  */
 // linter is saying this is already declared... on this line
 // eslint-disable-next-line no-shadow
-export enum StringQueryType {
+export enum TextualQueryType {
   EQUALS = 'equals',
   CONTAINS = 'contains',
   LENGTH = 'length',
@@ -302,7 +302,7 @@ export enum StringQueryType {
 /**
  * Represents a selection of elements based on a string attribute.
  */
-export type StringQuery = {
+export type TextualQuery = {
   /**
    * Name of the attribute being queried upon
    */
@@ -311,7 +311,7 @@ export type StringQuery = {
    * Type of the query; determines the mechanism used to evaluate whether the value of att
    * on a given element matches this query
    */
-  type: StringQueryType,
+  type: TextualQueryType,
   /**
    * The query string. To be included in this query, the value of att on a given
    * element must match this query string according to the rules set by the type.
@@ -348,7 +348,7 @@ export type Bookmark = {
   /**
    * Subtype of the bookmark; used to determine what fields are available at runtime
    */
-  type: 'intersection' | 'elements';
+  type: 'intersection' | 'numerical' | 'textual';
 };
 
 /**
@@ -377,7 +377,22 @@ export type NumericalBookmark = Bookmark & {
   /**
    * Indicates type at runtime
    */
-  type: 'elements';
+  type: 'numerical';
+}
+
+/**
+ * Represents a bookmarked element selection based on textual attributes, created in the element view
+ * @privateRemarks typechecked by isTextualBookmark in typecheck.ts; changes here must be reflected there
+ */
+export type TextualBookmark = Bookmark & {
+  /**
+   * Selection parameters
+   */
+  selection: TextualQuery;
+  /**
+   * Indicates type at runtim
+   */
+  type: 'textual';
 }
 
 /**

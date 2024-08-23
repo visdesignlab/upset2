@@ -125,7 +125,7 @@ export function numericalQueryToBookmark(selection: NumericalQuery): NumericalBo
   return {
     id: i.toString(),
     label,
-    type: 'elements',
+    type: 'numerical',
     selection,
   };
 }

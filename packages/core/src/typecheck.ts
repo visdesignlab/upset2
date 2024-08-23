@@ -1,5 +1,8 @@
 import {
   Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, NumericalBookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  TextualQuery,
+  TextualQueryType,
+  TextualBookmark,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -114,6 +117,24 @@ export function isNumericalQuery(value: unknown): value is NumericalQuery {
 }
 
 /**
+ * Type guard for TextualQuery
+ * @param val The value to check.
+ * @returns whether the value is a TextualQuery
+ */
+export function isTextualQuery(val: unknown): val is TextualQuery {
+  return (
+    !!val
+    && typeof val === 'object'
+    && Object.hasOwn(val, 'att')
+    && Object.hasOwn(val, 'type')
+    && Object.hasOwn(val, 'query')
+    && typeof (val as TextualQuery).att === 'string'
+    && Object.values(TextualQueryType).includes((val as TextualQuery).type)
+    && typeof (val as TextualQuery).query === 'string'
+  );
+}
+
+/**
  * Type guard for Scatterplot
  * @param s variable to check
  * @returns {boolean}
@@ -162,7 +183,10 @@ export function isBookmark(b: unknown): b is Bookmark {
     && Object.hasOwn(b, 'type')
     && typeof (b as Bookmark).id === 'string'
     && typeof (b as Bookmark).label === 'string'
-    && ((b as Bookmark).type === 'intersection' || (b as Bookmark).type === 'elements');
+    && ((b as Bookmark).type === 'intersection'
+      || (b as Bookmark).type === 'numerical'
+      || (b as Bookmark).type === 'textual'
+    );
 }
 
 /**
@@ -253,9 +277,21 @@ export function isRow(r: unknown): r is Row {
  */
 export function isNumericalBookmark(b: unknown): b is NumericalBookmark {
   return isBookmark(b)
-  && b.type === 'elements'
+  && b.type === 'numerical'
   && Object.hasOwn(b, 'selection')
   && isNumericalQuery((b as NumericalBookmark).selection);
+}
+
+/**
+ * Type guard for TextualBookmark
+ * @param b variable to check
+ * @returns {boolean}
+ */
+export function isTextualBookmark(b: unknown): b is TextualBookmark {
+  return isBookmark(b)
+  && b.type === 'textual'
+  && Object.hasOwn(b, 'selection')
+  && isTextualQuery((b as TextualBookmark).selection);
 }
 
 /**
