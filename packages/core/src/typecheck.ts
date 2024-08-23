@@ -4,6 +4,14 @@ import {
 import { deepCopy } from './utils';
 
 /**
+ * Checks that a value is not null/undefined and has type object
+ * @param v The value
+ */
+export function isObject(v: unknown): v is object {
+  return !!v && typeof v === 'object';
+}
+
+/**
  * Type guard for RowType
  * @param t variable to check
  * @returns {boolean}
@@ -27,8 +35,7 @@ export function isRowType(t: unknown): t is RowType {
  * @returns {boolean}
  */
 export function isBaseElement(r: unknown): r is BaseElement {
-  return !!r
-    && typeof r === 'object'
+  return isObject(r)
     && Object.hasOwn(r, 'id')
     && Object.hasOwn(r, 'elementName')
     && Object.hasOwn(r, 'size')
@@ -75,8 +82,7 @@ export function isSubset(s: unknown): s is Subset {
  */
 export function isAttributePlots(a: unknown): a is AttributePlots {
   return (
-    !!a
-    && typeof a === 'object'
+    isObject(a)
     && Object.values(a).every((v) => Object.values(AttributePlotType).includes(v))
   );
 }
@@ -88,8 +94,7 @@ export function isAttributePlots(a: unknown): a is AttributePlots {
  */
 export function isAltText(val: unknown): val is AltText {
   return (
-    !!val
-    && typeof val === 'object'
+    isObject(val)
     && Object.hasOwn(val, 'longDescription')
     && Object.hasOwn(val, 'shortDescription')
     && typeof (val as AltText).longDescription === 'string'
@@ -104,8 +109,7 @@ export function isAltText(val: unknown): val is AltText {
  */
 export function isElementSelection(value: unknown): value is ElementSelection {
   return (
-    !!value
-    && typeof value === 'object'
+    isObject(value)
     && Object.values(value).every((v) => Array.isArray(v)
           && v.length === 2
           && typeof v[0] === 'number'
@@ -120,8 +124,7 @@ export function isElementSelection(value: unknown): value is ElementSelection {
  */
 export function isScatterplot(s: unknown): s is Scatterplot {
   return (
-    !!s
-    && typeof s === 'object'
+    isObject(s)
     && Object.hasOwn(s, 'type')
     && Object.hasOwn(s, 'x')
     && Object.hasOwn(s, 'y')
@@ -137,8 +140,7 @@ export function isScatterplot(s: unknown): s is Scatterplot {
  * @returns {boolean}
  */
 export function isHistogram(h: unknown): h is Histogram {
-  return !!h
-    && typeof h === 'object'
+  return isObject(h)
     && Object.hasOwn(h, 'attribute')
     && Object.hasOwn(h, 'type')
     && Object.hasOwn(h, 'bins')
@@ -155,8 +157,7 @@ export function isHistogram(h: unknown): h is Histogram {
  * @returns {boolean}
  */
 export function isBookmark(b: unknown): b is Bookmark {
-  return !!b
-    && typeof b === 'object'
+  return isObject(b)
     && Object.hasOwn(b, 'id')
     && Object.hasOwn(b, 'label')
     && Object.hasOwn(b, 'type')
@@ -171,8 +172,7 @@ export function isBookmark(b: unknown): b is Bookmark {
  * @returns {boolean}
  */
 export function isColumn(c: unknown): c is Column {
-  return !!c
-    && typeof c === 'object'
+  return isObject(c)
     && Object.hasOwn(c, 'name')
     && Object.hasOwn(c, 'size')
     && typeof (c as Column).name === 'string'
@@ -194,8 +194,7 @@ export function isAggregateBy(a: unknown): a is AggregateBy {
  * @returns {boolean}
  */
 export function isSubsets(s: unknown): s is Subsets {
-  return !!s
-    && typeof s === 'object'
+  return isObject(s)
     && Object.hasOwn(s, 'values')
     && Object.hasOwn(s, 'order')
     && typeof (s as Subsets).values === 'object'
@@ -212,7 +211,7 @@ export function isSubsets(s: unknown): s is Subsets {
 export function isAggregate(a: unknown): a is Aggregate {
   // Dupe the items field because BaseIntersection has a different items definition,
   // then check if it is a BaseIntersection
-  if (!a || typeof a !== 'object') return false;
+  if (!isObject(a)) return false;
   const dupeA = deepCopy(a);
   (dupeA as { items: string[]}).items = [];
   if (!isBaseIntersection(dupeA)) return false;
@@ -270,8 +269,7 @@ export function isBookmarkedSelection(b: unknown): b is BookmarkedSelection {
 export function isUpsetConfig(config: unknown): config is UpsetConfig {
   /* eslint-disable no-console */
   if (!(
-    !!config
-    && typeof config === 'object'
+    isObject(config)
     && Object.hasOwn(config, 'plotInformation')
     && Object.hasOwn(config, 'horizontal')
     && Object.hasOwn(config, 'firstAggregateBy')
