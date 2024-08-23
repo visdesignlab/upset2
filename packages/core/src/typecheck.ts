@@ -127,8 +127,7 @@ export function isNumericalQuery(value: unknown): value is NumericalQuery {
  */
 export function isTextualQuery(val: unknown): val is TextualQuery {
   return (
-    !!val
-    && typeof val === 'object'
+    isObject(val)
     && Object.hasOwn(val, 'att')
     && Object.hasOwn(val, 'type')
     && Object.hasOwn(val, 'query')
