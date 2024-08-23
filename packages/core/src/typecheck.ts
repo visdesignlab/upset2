@@ -1,5 +1,5 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, BookmarkedSelection, Column, ElementSelection, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, BookmarkedSelection, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -98,11 +98,11 @@ export function isAltText(val: unknown): val is AltText {
 }
 
 /**
- * Validates that the given value is an ElementSelection.
+ * Validates that the given value is a NumericalQuery.
  * @param value The value to check.
- * @returns whether the value is an ElementSelection.
+ * @returns whether the value is a NumericalQuery.
  */
-export function isElementSelection(value: unknown): value is ElementSelection {
+export function isNumericalQuery(value: unknown): value is NumericalQuery {
   return (
     !!value
     && typeof value === 'object'
@@ -255,7 +255,7 @@ export function isBookmarkedSelection(b: unknown): b is BookmarkedSelection {
   return isBookmark(b)
   && b.type === 'elements'
   && Object.hasOwn(b, 'selection')
-  && isElementSelection((b as BookmarkedSelection).selection);
+  && isNumericalQuery((b as BookmarkedSelection).selection);
 }
 
 /**

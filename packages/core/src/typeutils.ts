@@ -1,6 +1,6 @@
 import {
   Aggregate,
-  Aggregates, Bookmark, BookmarkedIntersection, BookmarkedSelection, ElementSelection, Row, Rows, SetMembershipStatus, Subset, Subsets,
+  Aggregates, Bookmark, BookmarkedIntersection, BookmarkedSelection, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
 } from './types';
 import { hashString } from './utils';
 
@@ -69,7 +69,7 @@ export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersecti
  * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
  * @returns Whether a and b are equal
  */
-export function elementSelectionsEqual(a: ElementSelection | undefined, b: ElementSelection | undefined, decimalPlaces = 4): boolean {
+export function numericalQueriesEqual(a: NumericalQuery | undefined, b: NumericalQuery | undefined, decimalPlaces = 4): boolean {
   // We want undefined == {}
   if (!a || Object.keys(a).length === 0) {
     return (!b || Object.keys(b).length === 0);
@@ -98,7 +98,7 @@ export function elementSelectionsEqual(a: ElementSelection | undefined, b: Eleme
  * @param selection The numerical attribute query.
  * @returns The element selection.
  */
-export function elementSelectionToBookmark(selection: ElementSelection): BookmarkedSelection {
+export function numericalQueryToBookmark(selection: NumericalQuery): BookmarkedSelection {
   // Normalizing prevents floating point error from causing different hashes
   const norm = (i : number) => Math.abs(Math.round(i * 10000));
 

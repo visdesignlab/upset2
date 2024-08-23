@@ -333,7 +333,8 @@ export type BookmarkedIntersection = Bookmark & {
 }
 
 /**
- * Represents a selection of elements in the Element View.
+ * Represents a selection of elements based on their numerical attributes,
+ * currently only from brushes in the element view.
  * Maps attribute names to an array with the minimum and maximum
  * values of the selection over each attribute.
  *
@@ -342,7 +343,7 @@ export type BookmarkedIntersection = Bookmark & {
  * upset/src/components/ElementView/ElementVisualization.tsx.
  * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
  */
-export type ElementSelection = {[attName: string] : [number, number]};
+export type NumericalQuery = {[attName: string] : [number, number]};
 
 /**
  * Represents a bookmarked element selection, created in the Element View.
@@ -352,7 +353,7 @@ export type BookmarkedSelection = Bookmark & {
   /**
    * The selection parameters
    */
-  selection: ElementSelection;
+  selection: NumericalQuery;
   /**
    * Indicates type at runtime
    */

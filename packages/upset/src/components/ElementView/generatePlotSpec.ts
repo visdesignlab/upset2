@@ -1,10 +1,10 @@
 import {
-  ElementSelection, Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
+  NumericalQuery, Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 
 /**
- * Converts an elementselection to a value for a vega param.
+ * Converts an NumericalQuery to a value for a vega param.
  * Plots want x and y ranges instead of attribute ranges, so we need to convert the selection to match.
  * If this plot's axis don't match the selection attributes, we return undefined to avoid conflicting selections.
  * @param plot   The plot that we need a selection value for
@@ -12,8 +12,8 @@ import { VisualizationSpec } from 'react-vega';
  * @returns An object which can be assigned to the 'value' field of a vega param in the plot
  *          to display the selection in the plot.
  */
-function convertSelection(plot: Plot, select: ElementSelection): ElementSelection | undefined {
-  let val: ElementSelection | undefined;
+function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
+  let val: NumericalQuery | undefined;
   if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
     val = {
       x: select[plot.x],
@@ -81,7 +81,7 @@ export function createScatterplotSpec(
  */
 export function createScatterplotRow(
   specs: Scatterplot[],
-  selection: ElementSelection | undefined,
+  selection: NumericalQuery | undefined,
   selectColor: string,
 ): VisualizationSpec[] {
   return specs.map((s) => ({
@@ -218,7 +218,7 @@ export function createHistogramSpec(
  */
 export function createHistogramRow(
   histograms: Histogram[],
-  selection: ElementSelection | undefined,
+  selection: NumericalQuery | undefined,
 )
 : VisualizationSpec[] {
   function makeParams(plot: Histogram) {
@@ -346,7 +346,7 @@ export function generateVega(
   scatterplots: Scatterplot[],
   histograms: Histogram[],
   selectColor: string,
-  selection? : ElementSelection,
+  selection? : NumericalQuery,
 ): VisualizationSpec {
   // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
   const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;

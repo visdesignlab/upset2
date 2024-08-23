@@ -5,7 +5,7 @@ import {
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
-import { elementSelectionToBookmark, elementSelectionsEqual, isElementSelection } from '@visdesignlab/upset2-core';
+import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } from '@visdesignlab/upset2-core';
 import { Button } from '@mui/material';
 import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
@@ -59,7 +59,7 @@ export const ElementVisualization = () => {
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
   const brushHandler: SignalListener = (_: string, value: unknown) => {
-    if (!isElementSelection(value)) return;
+    if (!isNumericalQuery(value)) return;
     draftSelection.current = value;
   };
 
@@ -70,9 +70,9 @@ export const ElementVisualization = () => {
         if (
           draftSelection.current
           && Object.keys(draftSelection.current).length > 0
-          && !elementSelectionsEqual(draftSelection.current, elementSelection)
+          && !numericalQueriesEqual(draftSelection.current, elementSelection)
         ) {
-          actions.setElementSelection(elementSelectionToBookmark(draftSelection.current));
+          actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
         } else {
           actions.setElementSelection(null);
         }

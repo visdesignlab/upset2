@@ -1,7 +1,7 @@
 import {
   Aggregate,
   BaseIntersection,
-  BookmarkedSelection, ElementSelection, Item, flattenedOnlyRows, getItems,
+  BookmarkedSelection, NumericalQuery, Item, flattenedOnlyRows, getItems,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -109,7 +109,7 @@ export const selectedElementSelector = selector<BookmarkedSelection | null>({
  * Gets the parameters for the current selection of elements,
  * ie the 'selected' property of the selectedElementsSelector
  */
-export const elementSelectionParameters = selector<ElementSelection | undefined>({
+export const elementSelectionParameters = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
   get: ({ get }) => get(selectedElementSelector)?.selection,
 });
