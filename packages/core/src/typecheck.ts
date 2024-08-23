@@ -380,7 +380,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // sortByOrder
-  if (!(sortByOrder === 'Ascending' || sortByOrder === 'Descending')) {
+  if (!(sortByOrder === 'Ascending' || sortByOrder === 'Descending' || sortByOrder === 'None')) {
     console.warn('Upset config error: Invalid sort by order');
     return false;
   }
