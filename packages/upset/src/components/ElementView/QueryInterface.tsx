@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRecoilValue } from 'recoil';
-import { TextualQueryType } from '@visdesignlab/upset2-core';
+import { ElementQueryType } from '@visdesignlab/upset2-core';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
 
 /**
@@ -35,7 +35,7 @@ export const QueryInterface = () => {
       <FormControl css={FIELD_CSS}>
         <InputLabel id="query-type-select-label">Query Type</InputLabel>
         <Select labelId="query-type-select-label">
-          {Object.values(TextualQueryType).map((type) => (
+          {Object.values(ElementQueryType).map((type) => (
             <MenuItem key={type} value={type}>{type}</MenuItem>
           ))}
         </Select>

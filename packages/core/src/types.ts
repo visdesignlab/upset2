@@ -292,17 +292,19 @@ export type AttributePlots = Record<string, `${AttributePlotType}`>;
  */
 // linter is saying this is already declared... on this line
 // eslint-disable-next-line no-shadow
-export enum TextualQueryType {
-  EQUALS = 'equals',
-  CONTAINS = 'contains',
-  LENGTH = 'length',
-  REGEX = 'regex'
+export enum ElementQueryType {
+  EQUALS = 'eq',
+  CONTAINS = 'ctns',
+  LENGTH = 'len',
+  REGEX = 'regex',
+  LESS_THAN = 'lt',
+  GREATER_THAN = 'gt',
 }
 
 /**
- * Represents a selection of elements based on a string attribute.
+ * Represents a selection of elements based on a comparison between an attribute and a query string.
  */
-export type TextualQuery = {
+export type ElementQuery = {
   /**
    * Name of the attribute being queried upon
    */
@@ -311,7 +313,7 @@ export type TextualQuery = {
    * Type of the query; determines the mechanism used to evaluate whether the value of att
    * on a given element matches this query
    */
-  type: TextualQueryType,
+  type: ElementQueryType,
   /**
    * The query string. To be included in this query, the value of att on a given
    * element must match this query string according to the rules set by the type.
@@ -348,7 +350,7 @@ export type Bookmark = {
   /**
    * Subtype of the bookmark; used to determine what fields are available at runtime
    */
-  type: 'intersection' | 'numerical' | 'textual';
+  type: 'intersection' | 'numerical' | 'element';
 };
 
 /**
@@ -381,25 +383,25 @@ export type NumericalBookmark = Bookmark & {
 }
 
 /**
- * Represents a bookmarked element selection based on textual attributes, created in the element view
- * @privateRemarks typechecked by isTextualBookmark in typecheck.ts; changes here must be reflected there
+ * Represents a bookmarked element selection based on attribute comparisons, created in the element view
+ * @privateRemarks typechecked by isElementBookmark in typecheck.ts; changes here must be reflected there
  */
-export type TextualBookmark = Bookmark & {
+export type ElementBookmark = Bookmark & {
   /**
    * Selection parameters
    */
-  selection: TextualQuery;
+  selection: ElementQuery;
   /**
    * Indicates type at runtim
    */
-  type: 'textual';
+  type: 'element';
 }
 
 /**
  * A bookmark which represents a selection of elements
  * @privateRemarks typechecked by isElementSelection in typecheck.ts; changes here must be reflected there
  */
-export type ElementSelection = NumericalBookmark | TextualBookmark;
+export type ElementSelection = NumericalBookmark | ElementBookmark;
 
 /**
  * Represents the alternative text for an Upset plot.
