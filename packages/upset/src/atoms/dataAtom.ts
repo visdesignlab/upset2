@@ -16,9 +16,9 @@ export const dataAtom = atom<CoreUpsetData | Record<string, never>>({
 export const queryColumnsSelector = selector<ColumnName[]>({
   key: 'data-columns',
   get: ({ get }) => {
+    const BUILTIN_COLS = ['_id', '_from', '_to', '_key', '_rev'];
     const data = get(dataAtom);
-    return data.columns.filter((col) => data.columnTypes[col] !== 'number'
-      && !data.setColumns.includes(col)
-      && !col.startsWith('_'));
+    return data.columns.filter((col) => !data.setColumns.includes(col)
+      && !BUILTIN_COLS.includes(col));
   },
 });
