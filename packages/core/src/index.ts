@@ -5,3 +5,6 @@ export * from './sort';
 export * from './filter';
 export * from './render';
 export * from './defaultConfig';
+export * from './convertConfig';
+export * from './typecheck';
+export * from './typeutils';

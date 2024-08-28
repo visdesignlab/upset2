@@ -33,7 +33,7 @@ module.exports = {
       },
     ],
     'react/function-component-definition': 'off',
-    'no-plusplus': ['error', { allowForLoopAfterthoughts: true }],
+    'no-plusplus': ['warn', { allowForLoopAfterthoughts: true }],
     'dot-notation': 'off',
     'import/extensions': [
       'error',
@@ -66,5 +66,6 @@ module.exports = {
     'import/no-cycle': 'off',
     'no-underscore-dangle': 'off',
     'no-nested-ternary': 'off',
+    'no-bitwise': 'warn',
   },
 };

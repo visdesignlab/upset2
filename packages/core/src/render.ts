@@ -2,8 +2,9 @@ import { firstAggregation, secondAggregation } from './aggregate';
 import { filterRows } from './filter';
 import { getSubsets } from './process';
 import { sortRows } from './sort';
+import { areRowsAggregates, isRowAggregate } from './typeutils';
 import {
-  Row, Rows, Sets, UpsetConfig, areRowsAggregates, isRowAggregate,
+  Row, Rows, Sets, UpsetConfig,
 } from './types';
 
 /**

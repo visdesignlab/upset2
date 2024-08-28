@@ -1,8 +1,7 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { UpsetConfig, DefaultConfig } from '@visdesignlab/upset2-core';
-import React, { FC, useMemo } from 'react';
+import { UpsetConfig, DefaultConfig, convertConfig } from '@visdesignlab/upset2-core';
+import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
-
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
 import { UpsetProps } from '../types';
@@ -55,7 +54,7 @@ export const Upset: FC<UpsetProps> = ({
   // Combine the partial config and add visible sets if empty
   // Also add missing attributes if specified
   const combinedConfig = useMemo(() => {
-    const conf: UpsetConfig = { ...DefaultConfig, ...config };
+    const conf: UpsetConfig = { ...DefaultConfig, ...(Object.entries(config).length > 0 ? convertConfig(config) : {}) };
 
     const DEFAULT_NUM_ATTRIBUTES = 3;
 

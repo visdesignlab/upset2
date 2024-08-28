@@ -10,7 +10,6 @@ import { AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, T
 import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
 import React, { useContext, useEffect, useState } from 'react';
 import localforage from 'localforage';
-import { getMultinetDataUrl, oAuth } from '../../atoms/authAtoms';
 import { getQueryParam, queryParamAtom, saveQueryParam } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
@@ -19,10 +18,12 @@ import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
 import { Link } from 'react-router-dom';
-import { getUserInfo } from '../../getUserInfo';
 import { restoreQueryParam } from '../../atoms/queryParamAtom';
 import { altTextSidebarAtom } from '../../atoms/altTextSidebarAtom';
 import { loadingAtom } from '../../atoms/loadingAtom';
+import { getMultinetDataUrl } from '../../api/getMultinetDataUrl';
+import { getUserInfo } from '../../api/getUserInfo';
+import { oAuth } from '../../api/auth';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);

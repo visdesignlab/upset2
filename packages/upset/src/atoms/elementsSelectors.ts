@@ -1,10 +1,21 @@
-import { Item, flattenedOnlyRows, getItems } from '@visdesignlab/upset2-core';
-import { selectorFamily } from 'recoil';
-import { bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector } from './config/currentIntersectionAtom';
+import {
+  Aggregate,
+  BaseIntersection,
+  BookmarkedSelection, ElementSelection, Item, flattenedOnlyRows, getItems,
+} from '@visdesignlab/upset2-core';
+import { selector, selectorFamily } from 'recoil';
+import {
+  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector,
+} from './config/currentIntersectionAtom';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 
+/**
+ * Gets all elements in the intersection represented by the provided ID
+ * @param id - The ID of the intersection to get elements for.
+ * @returns The elements in the intersection, with properties for coloring and selection.
+ */
 export const elementSelector = selectorFamily<
   Item[],
   string | null | undefined
@@ -37,6 +48,11 @@ export const elementSelector = selectorFamily<
   },
 });
 
+/**
+ * Gets the number of elements in the intersection represented by the provided ID
+ * @param id - The ID of the intersection to get elements for.
+ * @returns The number of elements in the intersection
+ */
 export const intersectionCountSelector = selectorFamily<
   number,
   string | null | undefined
@@ -56,15 +72,19 @@ export const intersectionCountSelector = selectorFamily<
   },
 });
 
+/**
+ * Gets all elements in intersections represented by the provided IDs
+ * and the currently selected intersection
+ * @param ids - The IDs of the intersections to get elements for.
+ * @returns The elements in the intersections
+ */
 export const elementItemMapSelector = selectorFamily<Item[], string[]>({
   key: 'element-item-map',
   get: (ids: string[]) => ({ get }) => {
     const currentIntersection = get(currentIntersectionSelector);
     const items: Item[] = [];
 
-    if (!currentIntersection) return [];
-
-    if (!ids.includes(currentIntersection.id)) {
+    if (currentIntersection && !ids.includes(currentIntersection.id)) {
       items.push(...get(elementSelector(currentIntersection.id)));
     }
 
@@ -73,5 +93,94 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
     });
 
     return items;
+  },
+});
+
+/**
+ * Gets the current selection of elements
+ * @returns The current selection of elements
+ */
+export const selectedElementSelector = selector<BookmarkedSelection | null>({
+  key: 'config-element-selection',
+  get: ({ get }) => get(upsetConfigAtom).elementSelection,
+});
+
+/**
+ * Gets the parameters for the current selection of elements,
+ * ie the 'selected' property of the selectedElementsSelector
+ */
+export const elementSelectionParameters = selector<ElementSelection | undefined>({
+  key: 'config-current-element-selection',
+  get: ({ get }) => get(selectedElementSelector)?.selection,
+});
+
+/**
+ * Returns all items that are in a bookmarked intersection OR the currently selected intersection
+ * AND are within the bounds of the current element selection.
+ */
+export const selectedItemsSelector = selector<Item[]>({
+  key: 'selected-elements',
+  get: ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
+    const selection = get(elementSelectionParameters);
+    if (!selection) return [];
+
+    const result: Item[] = [];
+    items.forEach((item) => {
+      if (Object.entries(selection).every(([key, value]) => typeof item[key] === 'number' &&
+          item[key] as number >= value[0] && item[key] as number <= value[1])) { result.push(item); }
+    });
+    return result;
+  },
+});
+
+/**
+ * Counts the number of selected items.
+ */
+export const selectedItemsCounter = selector<number>({
+  key: 'selected-item-count',
+  get: ({ get }) => get(selectedItemsSelector).length,
+});
+
+/**
+ * Counts the number of selected items in a subset.
+ */
+export const subsetSelectedCount = selectorFamily<number, string>({
+  key: 'subset-selected',
+  get: (id: string) => ({ get }) => {
+    const items = get(elementSelector(id));
+    const selection = get(elementSelectionParameters);
+
+    if (!selection || Object.keys(selection).length === 0) return 0;
+
+    let count = 0;
+    items.forEach((item) => {
+      if (Object.entries(selection).every(
+        ([key, value]) => typeof item[key] === 'number'
+          && item[key] as number >= value[0]
+          && item[key] as number <= value[1],
+      )) {
+        count++;
+      }
+    });
+    return count;
+  },
+});
+
+/**
+ * Counts the number of selected items in an aggregate.
+ * Selection is taken from the current element selection in the config.
+ */
+export const aggregateSelectedCount = selectorFamily<number, Aggregate>({
+  key: 'aggregate-selected',
+  get: (agg: Aggregate) => ({ get }) => {
+    let total = 0;
+    Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate }).forEach(([id, value]) => {
+      total += Object.hasOwn(value, 'aggregateBy')
+        ? get(aggregateSelectedCount(value as Aggregate))
+        : get(subsetSelectedCount(id));
+    });
+    return total;
   },
 });

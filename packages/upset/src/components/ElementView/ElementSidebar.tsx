@@ -6,24 +6,42 @@ import {
   Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, {
+  useCallback, useContext, useEffect, useMemo, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
-import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
-import { elementSelector, intersectionCountSelector } from '../../atoms/elementsSelectors';
+import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import {
+  elementSelector, intersectionCountSelector, selectedElementSelector, selectedItemsCounter,
+  selectedItemsSelector,
+} from '../../atoms/elementsSelectors';
 import { ElementQueries } from './ElementQueries';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
+import { UpsetActions } from '../../provenance';
+import { ProvenanceContext } from '../Root';
 
+/**
+ * Props for the ElementSidebar component
+ */
 type Props = {
+  /** Whether the sidebar is open */
   open: boolean,
+  /** Function to close the sidebar */
   close: () => void
 }
 
 const initialDrawerWidth = 450;
 const minDrawerWidth = 100;
 
+/**
+ * Immediately downloads a csv containing items with the given columns
+ * @param items Rows to download
+ * @param columns Data attributes to download
+ * @param name Name of the file
+ */
 function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
@@ -54,24 +72,48 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 }
 
 /** @jsxImportSource @emotion/react */
+/**
+ * Sidebar component for the Element View
+ * @param open Whether the sidebar is open
+ * @param close Function to close the sidebar
+ */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
-  const intersectionCounter = useRecoilValue(
-    intersectionCountSelector(currentIntersection?.id),
-  );
+  const currentSelection = useRecoilValue(selectedElementSelector);
+  const selectedItems = useRecoilValue(selectedItemsSelector);
+  const itemCount = currentSelection
+    ? useRecoilValue(selectedItemsCounter)
+    : useRecoilValue(intersectionCountSelector(currentIntersection?.id));
   const currentIntersectionElements = useRecoilValue(
     elementSelector(currentIntersection?.id),
   );
-
+  const bookmarks = useRecoilValue(bookmarkSelector);
   const columns = useRecoilValue(columnsAtom);
-
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+
+  /**
+   * Vars
+   */
+
+  const queryDownloadable = useMemo(
+    () => currentIntersection || (currentSelection && bookmarks.length > 0),
+    [currentIntersection, currentSelection, bookmarks],
+  );
+
+  /**
+   * Effects
+   */
 
   useEffect(() => {
     setHideElementSidebar(!open);
   }, [open]);
+
+  /**
+   * Callbacks
+   */
 
   const handleMouseMove = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -163,6 +205,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         <IconButton
           onClick={() => {
             setHideElementSidebar(true);
+            actions.setElementSelection(currentSelection);
             close();
           }}
           aria-label="Close the sidebar"
@@ -190,20 +233,28 @@ export const ElementSidebar = ({ open, close }: Props) => {
         Query Result
         <Tooltip
           title={
-              currentIntersection
-                ? `Download ${intersectionCounter} elements`
+              queryDownloadable
+                ? `Download ${itemCount} elements`
                 : ''
             }
         >
           <IconButton
-            disabled={!currentIntersection}
+            disabled={!queryDownloadable}
             onClick={() => {
-              if (currentIntersection) {
-                downloadElementsAsCSV(
-                  currentIntersectionElements,
-                  columns,
-                  currentIntersection.elementName,
-                );
+              if (queryDownloadable) {
+                if (currentSelection) {
+                  downloadElementsAsCSV(
+                    selectedItems,
+                    columns,
+                    currentSelection.label,
+                  );
+                } else if (currentIntersection) {
+                  downloadElementsAsCSV(
+                    currentIntersectionElements,
+                    columns,
+                    currentIntersection.elementName,
+                  );
+                }
               }
             }}
           >
@@ -212,15 +263,15 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Tooltip>
       </Typography>
       <Divider />
-      {currentIntersection ? (
-        <ElementTable id={currentIntersection.id} />
+      {queryDownloadable ? (
+        <ElementTable />
       ) : (
         <Alert
           severity="info"
           variant="outlined"
           role="generic"
           sx={{
-            alignItems: 'center', marginTop: '0.5em', border: 'none', color: '#777777',
+            alignItems: 'center', marginTop: '0.5em', marginBottom: '100px', border: 'none', color: '#777777',
           }}
         >
           Please select a query to view the elements.

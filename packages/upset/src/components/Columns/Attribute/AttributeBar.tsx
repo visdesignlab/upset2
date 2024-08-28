@@ -1,7 +1,7 @@
 import {
   Aggregate, SixNumberSummary, Items, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
@@ -37,12 +37,21 @@ type Props = {
 // Threshold for when to render a dot plot regardless of selected plot type
 const DOT_PLOT_THRESHOLD = 5;
 
+/**
+ * Get the values from a row based on the attribute
+ * @param row The row to get the values from
+ * @param attribute The attribute to get the values for
+ * @param items The items to get the values from
+ * @returns The values for the attribute
+ */
 const getValuesFromRow = (row: Subset | Aggregate, attribute: string, items: Items): number[] => {
   if (isRowAggregate(row)) {
     return Object.values(row.items.values).map((item) => getValuesFromRow(item, attribute, items)).flat();
   }
 
-  return Object.entries(items).filter(([key, _]) => row.items.includes(key)).map(([_, value]) => value[attribute] as number);
+  return Object.entries(items).filter(
+    ([key, _]) => row.items.includes(key),
+  ).map(([_, value]) => Number(value[attribute]));
 };
 
 // this is recomputing every hover event?
@@ -51,7 +60,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
   const items = useRecoilValue(itemsAtom);
-  const values = getValuesFromRow(row, attribute, items);
+  const values = useMemo(() => getValuesFromRow(row, attribute, items), [row, attribute, items]);
 
   const attributePlots = useRecoilValue(attributePlotsSelector);
 

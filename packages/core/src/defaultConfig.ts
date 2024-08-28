@@ -26,7 +26,7 @@ export const DefaultConfig: UpsetConfig = {
   visibleSets: [],
   visibleAttributes: ['Degree', 'Deviation'],
   attributePlots: {},
-  bookmarkedIntersections: [],
+  bookmarks: [],
   collapsed: [],
   plots: {
     scatterplots: [],
@@ -35,4 +35,7 @@ export const DefaultConfig: UpsetConfig = {
   allSets: [],
   selected: null,
   useUserAlt: false,
+  userAltText: null,
+  elementSelection: null,
+  version: '0.1.0',
 };
