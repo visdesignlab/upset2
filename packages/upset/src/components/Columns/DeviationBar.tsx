@@ -18,7 +18,7 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const deviationScale = useRecoilValue(deviationScaleAtom);
-  deviationScale.range([0, dimensions.attribute.width / 2]);
+  deviationScale.range([0, dimensions.attribute.width]);
 
   return (
     <g
@@ -30,11 +30,11 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
       <rect
         fill={(deviation > 0) ? positiveDeviation : negativeDeviation}
         transform={translate(
-          deviation > 0 ? 0 : -deviationScale(Math.abs(deviation)),
+          deviation > 0 ? 0 : -deviationScale(Math.abs(deviation)) + dimensions.attribute.width / 2,
           0,
         )}
         height={dimensions.attribute.plotHeight}
-        width={deviationScale(Math.abs(deviation))}
+        width={deviationScale(Math.abs(deviation)) - dimensions.attribute.width / 2}
       />
     </g>
   );
