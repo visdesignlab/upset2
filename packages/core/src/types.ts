@@ -19,19 +19,19 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
- * @privateRemarks This is typechecked in isUpsetConfig; changes here must be reflected there
+ * @privateRemarks This is typechecked by isPlotinformation in typecheck.ts; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
-  description?: string;
+  description: string | null;
   /** User-generated name to use for sets in the plot (ie "genres") */
-  sets?: string;
+  sets: string | null;
   /** User-generated name for items in the dataset (ie "movies") */
-  items?: string;
+  items: string | null;
   /** User-defined plot title */
-  title?: string;
+  title: string | null;
   /** User-defined plot caption (for sighted users) */
-  caption?: string;
+  caption: string | null;
 };
 
 /**
@@ -355,12 +355,12 @@ export type AltText = {
   /**
   * The long description for the Upset plot.
   */
-  longDescription: string;
+  longDescription: string | null;
 
   /**
   * The short description for the Upset plot.
   */
-  shortDescription: string;
+  shortDescription: string | null;
 
   /**
   * The technique description for the Upset plot.

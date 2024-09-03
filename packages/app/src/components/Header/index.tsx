@@ -50,7 +50,7 @@ const Header = ({ data }: { data: any }) => {
    * "Tab indicies" refers to the number of tabIndex properties on elements in the sidebar
    * @see AltTextSidebar to count the number of tab indices used
    */
-  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 17 : 0);
+  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 18 : 0);
 
   const handleImportModalClose = () => {
     setShowImportModal(false);
@@ -187,10 +187,10 @@ const Header = ({ data }: { data: any }) => {
                   setIsAltTextSidebarOpen(true);
                 }
               }}
-              aria-label='Alt Text Sidebar'
+              aria-label='Text Descriptions (Alt Text) Sidebar'
               tabIndex={2}
               >
-                Text Description
+                Text Descriptions
               </Button>
               <Link 
                 to={`/datatable${getQueryParam()}`} 
