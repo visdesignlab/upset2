@@ -32,7 +32,9 @@ const Footer = () => {
                         aria-haspopup="dialog"
                         onClick={() => setAboutModal(true)}
                     >
-                        <img src={vdl_logo} alt="About Us" height="32px" width="100%" />
+                        {/* TEMPORARY REMOVAL UNTIL AFTER CHI SUBMISSION */}
+                        {/* <img src={vdl_logo} alt="About Us" height="32px" width="100%" /> */}
+                        About Us
                     </Button>
                     <Link
                         sx={categoryCSS}
