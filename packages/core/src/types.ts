@@ -1,5 +1,9 @@
 export type ColumnName = string;
 
+/**
+ * Base type for a column in the plot
+ * @privateRemarks typechecked by isColumn in typecheck.ts; changes here must be reflected there
+ */
 export type Column = {
   name: string;
   size: number;
@@ -15,6 +19,7 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
+ * @privateRemarks This is typechecked in isUpsetConfig; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
@@ -29,6 +34,10 @@ export type PlotInformation = {
   caption: string | null;
 };
 
+/**
+ * Represents a row in the UpSet plot.
+ * @privateRemarks typechecked by isRowType in typecheck.ts; changes here must be reflected there
+ */
 export type RowType =
   | 'Set'
   | 'Subset'
@@ -100,6 +109,7 @@ export type Attributes = AttributeList & {
 
 /**
  * Represents a base element.
+ * @privateRemarks typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
  */
 export type BaseElement = {
   /**
@@ -138,15 +148,24 @@ export const UNINCLUDED = 'unincluded';
 
 /**
  * Base Intersection type for subsets and aggregates.
+ * @privateRemarks typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
  */
-type BaseIntersection = BaseElement & {
+export type BaseIntersection = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
 
 export type Sets = { [set_id: string]: BaseIntersection };
 
+/**
+ * A single subset
+ * @privateRemarks typechecked by isSubset in typecheck.ts; changes here must be reflected there
+ */
 export type Subset = BaseIntersection;
 
+/**
+ * A list of subsets & their order
+ * @privateRemarks typechecked by isSubsets in typecheck.ts; changes here must be reflected there
+ */
 export type Subsets = {
   values: { [subset_id: string]: Subset };
   order: string[];
@@ -164,6 +183,11 @@ export const aggregateByList = [
   'Overlaps',
   'None',
 ] as const;
+
+/**
+ * Ways the upset plot can be aggregated
+ * @privateRemarks typechecked by isAggregateBy in typecheck.ts; changes here must be reflected there
+ */
 export type AggregateBy = typeof aggregateByList[number];
 
 export type SortByOrder = 'Ascending' | 'Descending';
@@ -171,6 +195,10 @@ export type SortByOrder = 'Ascending' | 'Descending';
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
 export type SortVisibleBy = typeof sortVisibleByList[number];
 
+/**
+ * An aggregate row in the plot
+ * @privateRemarks typechecked by isAggregate in typecheck.ts; changes here must be reflected there
+ */
 export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
@@ -190,6 +218,10 @@ export type Aggregates = {
 
 export type Rows = Subsets | Aggregates;
 
+/**
+ * A row in the plot
+ * @privateRemarks typechecked by isRow in typecheck.ts; changes here must be reflected there
+ */
 export type Row = Subset | Aggregate;
 
 export type ColumnTypes = {
@@ -210,6 +242,10 @@ export type BasePlot = {
   id: string;
 };
 
+/**
+ * Information defining an element view scatterplot
+ * @privateRemarks Typechecked by isScatterplot in typecheck.ts; changes here must be reflected there.
+ */
 export type Scatterplot = BasePlot & {
   type: 'Scatterplot';
   x: string;
@@ -218,6 +254,10 @@ export type Scatterplot = BasePlot & {
   yScaleLog?: boolean;
 };
 
+/**
+ * Information defining an element view histogram.
+ * @privateRemarks Typechecked by isHistogram in typecheck.ts; changes here must be reflected there
+ */
 export type Histogram = BasePlot & {
   type: 'Histogram';
   attribute: string;
@@ -227,10 +267,89 @@ export type Histogram = BasePlot & {
 
 export type Plot = Scatterplot | Histogram;
 
-export type Bookmark = { id: string; label: string; size: number }
+/**
+ * Represents the different types of attribute plots.
+ * Enum value is used here so that the values can be used as keys in upset package.
+*/
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum AttributePlotType {
+  BoxPlot = 'Box Plot',
+  DotPlot = 'Dot Plot',
+  StripPlot = 'Strip Plot',
+  DensityPlot = 'Density Plot',
+}
 
 /**
-* Represents the alternative text for an Upset plot.
+ * Represents the different types of attribute plots.
+ * Enum values (AttributePlotType) behave better in a Record object than in traditional dict types.
+ * @privateRemarks typechecked by isAttributePlots in typecheck.ts; changes here must be reflected there
+ */
+export type AttributePlots = Record<string, `${AttributePlotType}`>;
+
+/**
+ * Base representation of a bookmarkable type
+ * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
+ */
+export type Bookmark = {
+  /**
+   * The unique ID of the bookmark.
+   */
+  id: string;
+  /**
+   * The display name of the bookmark.
+   */
+  label: string;
+  /**
+   * Subtype of the bookmark; used to determine what fields are available at runtime
+   */
+  type: 'intersection' | 'elements';
+};
+
+/**
+ * A bookmarked intersection.
+ */
+export type BookmarkedIntersection = Bookmark & {
+  /**
+   * The size of the bookmarked intersection.
+   */
+  size: number;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'intersection';
+}
+
+/**
+ * Represents a selection of elements in the Element View.
+ * Maps attribute names to an array with the minimum and maximum
+ * values of the selection over each attribute.
+ *
+ * @privateRemarks
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
+ * upset/src/components/ElementView/ElementVisualization.tsx.
+ * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
+ */
+export type ElementSelection = {[attName: string] : [number, number]};
+
+/**
+ * Represents a bookmarked element selection, created in the Element View.
+ * @privateRemarks typechecked by isBookmarkedSelection in typecheck.ts; changes here must be reflected there
+ */
+export type BookmarkedSelection = Bookmark & {
+  /**
+   * The selection parameters
+   */
+  selection: ElementSelection;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'elements';
+}
+
+/**
+ * Represents the alternative text for an Upset plot.
+ * @privateRemarks typechecked by isAltText in typecheck.ts; changes here must be reflected there
 */
 export type AltText = {
   /**
@@ -255,6 +374,14 @@ export type AltText = {
   warnings?: string;
 }
 
+/**
+ * A configuration object for an UpSet plot.
+ * @version 0.1.0
+ * @privateRemarks
+ * Each breaking update to this config MUST be accompanied by an update to the config converter
+ * in `convertConfig.ts`. Full instructions are provided in the converter file.
+ * ANY update to this config must be accompanied by a change to the isUpsetConfig function in typecheck.ts
+ */
 export type UpsetConfig = {
   plotInformation: PlotInformation;
   horizontal: boolean;
@@ -273,7 +400,11 @@ export type UpsetConfig = {
   };
   visibleSets: ColumnName[];
   visibleAttributes: ColumnName[];
-  bookmarkedIntersections: Bookmark[];
+  attributePlots: AttributePlots;
+  /**
+   * Bookmarked selections, can be intersections or element selections.
+   */
+  bookmarks: Bookmark[];
   collapsed: string[];
   plots: {
     scatterplots: Scatterplot[];
@@ -281,8 +412,13 @@ export type UpsetConfig = {
   };
   allSets: Column[];
   selected: Row | null;
+  /**
+   * Selected elements (data points) in the Element View.
+   */
+  elementSelection: BookmarkedSelection | null;
+  version: '0.1.0';
   useUserAlt: boolean;
-  userAltText?: AltText;
+  userAltText: AltText | null;
 };
 
 export type AccessibleDataEntry = {
@@ -311,78 +447,3 @@ export type AltTextConfig = UpsetConfig & {
   processedData?: Rows;
   accessibleProcessedData?: AccessibleData
 };
-
-/**
- * Checks if the given rows are aggregates.
- * @param rr The rows to check.
- * @returns `true` if the rows are aggregates, `false` otherwise.
- */
-export function areRowsAggregates(rr: Rows): rr is Aggregates {
-  const { order } = rr;
-
-  if (order.length === 0) return false;
-
-  const row = rr.values[order[0]];
-
-  return row.type === 'Aggregate';
-}
-
-/**
- * Checks if the given rows are subsets.
- * @param rr - The rows to check.
- * @returns True if the rows are subsets, false otherwise.
- */
-export function areRowsSubsets(rr: Rows): rr is Subsets {
-  const { order } = rr;
-
-  if (order.length === 0) return false;
-
-  const row = rr.values[order[0]];
-
-  return row.type === 'Subset';
-}
-
-/**
- * Checks if a given row is an aggregate.
- * @param row - The row to check.
- * @returns True if the row is an aggregate, false otherwise.
- */
-export function isRowAggregate(row: Row): row is Aggregate {
-  return row.type === 'Aggregate';
-}
-
-/**
- * Checks if a given row is a subset.
- * @param row - The row to check.
- * @returns True if the row is a subset, false otherwise.
- */
-export function isRowSubset(row: Row): row is Subset {
-  return row.type === 'Subset';
-}
-
-/**
- * Calculates the degree of set membership based on the provided membership object.
- * The degree of set membership is the number of sets in which the subset is comprised of.
- *
- * @param membership - The membership object containing the set membership statuses.
- * @returns The degree of set membership.
- */
-export function getDegreeFromSetMembership(membership: {
-  [key: string]: SetMembershipStatus;
-}): number {
-  if (Object.values(membership).length === 0) return -1;
-  return Object.values(membership).filter((m) => m === 'Yes').length;
-}
-
-/**
- * Retrieves the belonging sets from a set membership object.
- * @param membership - The set membership object.
- * @returns An array of strings representing the belonging sets.
- */
-export function getBelongingSetsFromSetMembership(membership: {
-  [key: string]: SetMembershipStatus;
-}): string[] {
-  return Object.entries(membership)
-    .filter((mem) => mem[1] === 'Yes')
-    .map((mem) => mem[0]);
-}

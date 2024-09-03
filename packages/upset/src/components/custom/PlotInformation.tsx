@@ -62,6 +62,7 @@ export const PlotInformation = ({
     margin: '0.25em 0',
     minHeight: '4em',
   };
+
   const plotInfoTitle = {
     fontSize: '1em',
     fontWeight: 'inherit',
@@ -92,7 +93,7 @@ export const PlotInformation = ({
    */
   const generatePlotInformationText: () => string = useCallback(() => {
     // return default string if there are no values filled in
-    if (Object.values(plotInformation).filter((a) => a && a.length > 0).length === 0) {
+    if (Object.values(plotInformation).filter((a) => a?.length > 0).length === 0) {
       return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
     }
 

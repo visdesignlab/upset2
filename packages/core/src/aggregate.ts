@@ -4,10 +4,6 @@ import {
   Aggregate,
   AggregateBy,
   Aggregates,
-  areRowsSubsets,
-  getBelongingSetsFromSetMembership,
-  getDegreeFromSetMembership,
-  isRowSubset,
   Items,
   Row,
   Rows,
@@ -16,6 +12,12 @@ import {
   Subsets,
   UNINCLUDED,
 } from './types';
+import {
+  areRowsSubsets,
+  getBelongingSetsFromSetMembership,
+  getDegreeFromSetMembership,
+  isRowSubset,
+} from './typeutils';
 
 /**
  * Retrieves all items from a given row.

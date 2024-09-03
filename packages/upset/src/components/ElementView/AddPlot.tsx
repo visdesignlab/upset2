@@ -143,7 +143,9 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
   const attributeColumns = useRecoilValue(attributeAtom);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
   const [bins, setBins] = useState(20);
-  const [frequency, setFrequency] = useState(true);
+  // Frequency plots are temporarily disabled, see comment further down
+  // const [frequency, setFrequency] = useState(true);
+  const frequency = false;
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -173,13 +175,17 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
           value={bins}
           type="number"
           onChange={(event) => {
-            const newBins = event.target.value as unknown as number;
+            const newBins = Number(event.target.value);
 
             if (newBins > 0) setBins(newBins);
           }}
         />
       </Grid>
 
+      {/*
+        * Frequency plots are disabled currently due to a bug in Vega-Lite
+        * To re-enable, uncomment this, change frequency back to a useState at the top of this component,
+        * and find the section in generatePlotSpec.ts which also needs uncommenting
       <Grid container item xs={4}>
         <FormControlLabel
           label="Frequency"
@@ -191,6 +197,7 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
           }
         />
       </Grid>
+      */}
 
       <Grid container item xs={12}>
         {attribute && bins > 0 && Object.values(items).length && (

@@ -1,13 +1,12 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 
 import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
-import { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
-import { DefaultConfig } from '@visdesignlab/upset2-core';
+import { DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -18,17 +17,11 @@ function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
   const data = (encodedData === null) ? multinetData : encodedData
-  const config = useRecoilValue(upsetConfigAtom);
-
-  const setState = useSetRecoilState(upsetConfigAtom);
-
-  useEffect(() => {
-    setState(config);
-  }, [config, setState]);
 
   const conf = useMemo(() => {
+    const config: UpsetConfig = { ...DefaultConfig }
     if (data !== null) {
-      const conf = JSON.parse(JSON.stringify(config))
+      const conf: UpsetConfig = JSON.parse(JSON.stringify(config))
       if (config.visibleSets.length === 0) {
         const setList = Object.entries(data.sets);
         conf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]) // get first 6 set names
@@ -38,9 +31,22 @@ function App() {
       // Add first 4 attribute columns (deviation + 3 attrs) to visibleAttributes
       conf.visibleAttributes = [...DefaultConfig.visibleAttributes, ...data.attributeColumns.slice(0, 4)];
 
+      // Default: a histogram for each attribute if no plots exist
+      if (conf.plots.histograms.length + conf.plots.scatterplots.length === 0) {
+        conf.plots.histograms = data.attributeColumns.map((attr) => {
+          return { 
+            attribute: attr, 
+            bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
+            type: 'Histogram', 
+            frequency: false, 
+            id: Date.now().toString() // Same calculation as in upset/.../AddPlot.tsx
+          }
+        })
+      }
+
       return conf;
     }
-  }, [config, data]);
+  }, [data]);
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
