@@ -98,13 +98,13 @@ export const PlotInformation = ({
     }
 
     let str: string = '';
-    if (plotInformation.description !== '') {
+    if (plotInformation.description) {
       str += `This UpSet plot shows ${plotInformation.description}. `;
     }
-    if (plotInformation.sets !== '') {
+    if (plotInformation.sets) {
       str += `The sets are ${plotInformation.sets}. `;
     }
-    if (plotInformation.items !== '') {
+    if (plotInformation.items) {
       str += `The items are ${plotInformation.items}.`;
     }
 
