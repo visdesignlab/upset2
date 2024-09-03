@@ -197,24 +197,26 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           </Button>
         </Box>
         {divider}
-        {displayPlotInfo ? (
-          <PlotInformation
-            tabIndex={PLOT_INFO_TAB_INDEX}
-            editing={plotInfoEditing}
-            setEditing={setPlotInfoEditing}
-          />
-        ) : (
-          <Button
-            onClick={() => setPlotInfoEditing(true)}
-            tabIndex={PLOT_INFO_TAB_INDEX}
-          >
-            Add Plot Information
-          </Button>
-        )}
+        {displayPlotInfo &&
+          // We only want to display plotInfo if the user is editing OR if they've entered some field other than title
+          (plotInfoEditing || Object.entries(plotInfo).filter(([k, _]) => k !== 'title').some(([_, v]) => !!v)) ? (
+            <PlotInformation
+              tabIndex={PLOT_INFO_TAB_INDEX}
+              editing={plotInfoEditing}
+              setEditing={setPlotInfoEditing}
+            />
+          ) : (
+            <Button
+              onClick={() => setPlotInfoEditing(true)}
+              tabIndex={PLOT_INFO_TAB_INDEX}
+            >
+              Add Plot Information
+            </Button>
+          )}
         {displayPlotInfo && (
           <>
             <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-              Alt Text Description
+              Text Description
             </Typography>
             {divider}
           </>
