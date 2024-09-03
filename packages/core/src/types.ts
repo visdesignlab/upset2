@@ -19,7 +19,7 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
- * @privateRemarks This is typechecked in isUpsetConfig; changes here must be reflected there
+ * @privateRemarks This is typechecked by isPlotinformation in typecheck.ts; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
