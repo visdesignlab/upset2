@@ -136,7 +136,7 @@ export const PlotInformation = ({
           padding: '.2em',
         }}
       >
-        <div style={{ height: '1.6em' }}>
+        <div style={{ minHeight: '1.6em' }}>
           <Button
             aria-label="Plot Information Editor"
             style={{
