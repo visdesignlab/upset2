@@ -1,4 +1,5 @@
 import {
+  Alert,
   Box,
   Button,
   Icon,
@@ -198,6 +199,9 @@ export const PlotInformation = ({
             placeholder="Caption"
           />
         </Box>
+        <Alert severity="info">
+          Providing the following information will help us improve auto-generated text descriptions
+        </Alert>
         <Box>
           <Box sx={plotInfoItem}>
             <Typography variant="h4" sx={plotInfoTitle}>
