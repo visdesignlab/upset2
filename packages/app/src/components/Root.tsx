@@ -3,7 +3,7 @@ import { convertConfig, UpsetConfig } from "@visdesignlab/upset2-core"
 import { Box, css } from "@mui/material"
 import { Body } from "./Body"
 import Header from "./Header"
-import { useRef, useState, useEffect, createContext } from "react"
+import { useRef, useState, useEffect, createContext, useMemo } from "react"
 import React from "react"
 import Footer from "./Footer"
 import { useRecoilValue } from "recoil"
@@ -18,13 +18,6 @@ type Props = {
     config?: UpsetConfig
 }
 
-const AppCss = css`
-  overflow: hidden;
-  height: 100vh;
-  display: grid;
-  grid-template-rows: min-content auto;
-`;
-
 export const ProvenanceContext = createContext<{
     provenance: UpsetProvenance;
     actions: UpsetActions;
@@ -33,6 +26,15 @@ export const ProvenanceContext = createContext<{
 export const Root = ({provenance, actions, data, config}: Props) => {
     const headerDiv = useRef<HTMLDivElement>(null);
     const [headerHeight, setHeaderHeight] = useState(-1);
+
+    const AppCss = useMemo(() => {
+      return css`
+        overflow: ${data === null ? "auto" : "hidden"};
+        height: 100vh;
+        display: grid;
+        grid-template-rows: min-content auto;
+      `;
+    }, [data]);
 
     useEffect(() => {
       const { current } = headerDiv;
