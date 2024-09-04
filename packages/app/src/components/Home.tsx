@@ -3,7 +3,7 @@ import { Box, Card, CardActionArea, CardContent, CardMedia, Link, Typography } f
 export const Home = () => {
     return (
         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100% - 54px)', width: '100%', paddingBottom: "50px"}}>
-            <Card raised sx={{ maxWidth: 1000, borderRadius: "10px" }}>
+            <Card raised sx={{ maxWidth: 1400, borderRadius: "10px", boxShadow: 'none' }}>
                 <CardContent>
                     <Typography gutterBottom variant="h4" component="div">
                         Welcome to UpSet 2.0
@@ -19,27 +19,64 @@ export const Home = () => {
                     <Typography variant="body1" color="text.secondary">
                         If this is your first time visiting UpSet, click on the images below to explore some examples.
                     </Typography>
-                    <Box sx={{display: 'flex', justifyContent: 'space-around', alignItems: 'center', width: '100%', marginTop: '1em'}}>
-                        <Card sx={{boxShadow: 4, borderRadius: "8px"}} aria-label="Example of a dataset of movies in UpSet">
-                            <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=192')}>
-                                <CardMedia component="img" height="250" image="/placard/movies.png" alt="Example UpSet plot: movies" />
-                                <CardContent sx={{paddingLeft: 0}}>
-                                    <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
-                                        Movies - Upset
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
-                        <Card sx={{boxShadow: 4, borderRadius: "8px"}} aria-label="Example of a dataset of Simpsons character attributes in UpSet">
-                            <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=simpsons&sessionId=193')}>
-                                <CardMedia component="img" height="250" image="/placard/simpsons.png" alt="Example UpSet plot: simpsons" />
-                                <CardContent sx={{paddingLeft: 0}}>
-                                    <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5em', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
-                                        Simpsons - Upset
-                                    </Typography>
-                                </CardContent>
-                            </CardActionArea>
-                        </Card>
+                    <Box sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        width: '100%',
+                        marginTop: '1em',
+                        marginBottom: '1em'
+                    }}>
+                        <Box sx={{  display: 'grid',
+                                    gridTemplateColumns: '1fr 1fr',
+                                    gridTemplateRows: '280px 280px',
+                                    gridColumnGap: '20px',
+                                    gridRowGap: '20px',
+                                    width: '60%',
+                                    height: '100%',
+                                    margin: 'auto',
+                                    marginTop: '1em'}}>
+                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of movies in UpSet">
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=2835')}>
+                                    <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/movies_example.png" alt="Example UpSet plot: movies" />
+                                    <CardContent sx={{paddingLeft: 0}}>
+                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                            Movies - Upset
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of Covid Symptoms in UpSet">
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Covid_Symptoms&sessionId=2783')}>
+                                    <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/covid_example.png" alt="Example UpSet plot: Covid Symptoms" />
+                                    <CardContent sx={{paddingLeft: 0}}>
+                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5em', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                            Covid Symptoms - Upset
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of Tennis Grandslam Championships in UpSet">
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Tennis_Grand_Slam_Champions&sessionId=2780')}>
+                                    <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/tennis_example.png" alt="Example UpSet plot: Tennis Grand Slam Championships" />
+                                    <CardContent sx={{paddingLeft: 0}}>
+                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                            Tennis Tournament Winners - Upset
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of World Organizations in UpSet">
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=International_Organizations&sessionId=2777')}>
+                                    <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/world_orgs_example.png" alt="Example UpSet plot: World Organizations" />
+                                    <CardContent sx={{paddingLeft: 0}}>
+                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                            World Organizations - UpSet
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
+                        </Box>
                     </Box>
                 </CardContent>
             </Card>
