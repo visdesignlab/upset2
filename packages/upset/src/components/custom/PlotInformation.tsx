@@ -74,6 +74,11 @@ export const PlotInformation = ({
     sets: 'name for the sets in this data, eg: "movie genres"',
     items: 'name for the items in this data, eg: "movies"',
   };
+  const defaultPlotInformation = {
+    description: '[dataset description]',
+    sets: '[set names]',
+    items: '[item names]',
+  };
 
   /**
    * State
@@ -94,7 +99,7 @@ export const PlotInformation = ({
   const generatePlotInformationText: () => string = useCallback(() => {
     // return default string if there are no values filled in
     if (Object.values(plotInformation).filter((a) => a && a.length > 0).length === 0) {
-      return `This UpSet plot shows ${placeholderText.description}. The sets are ${placeholderText.sets}. The items are ${placeholderText.items}`;
+      return `This UpSet plot shows ${defaultPlotInformation.description}. The sets are ${defaultPlotInformation.sets}. The items are ${defaultPlotInformation.items}`;
     }
 
     let str: string = '';
@@ -109,7 +114,7 @@ export const PlotInformation = ({
     }
 
     return str;
-  }, [plotInformation, placeholderText]);
+  }, [plotInformation, defaultPlotInformation]);
 
   /**
    * Commits changes to the plot information if the new state is different from the old state.
