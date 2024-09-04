@@ -1,5 +1,21 @@
 import { Box, Card, CardActionArea, CardContent, CardMedia, Link, Typography } from "@mui/material"
 
+const cardTextStyle = {
+    position: 'absolute',
+    paddingLeft: "0.8rem",
+    paddingTop: '5rem',
+    bottom: '0.5rem',
+    width: '100%',
+    boxShadow: 'inset 0 -230px 70px -120px #fff'
+}
+
+const cardStyle = {
+    boxShadow: 4,
+    borderRadius: "8px",
+    width: '100%',
+    height: '100%'
+}
+
 export const Home = () => {
     return (
         <Box sx={{display: 'flex', justifyContent: 'center', alignItems: 'center', height: 'calc(100% - 54px)', width: '100%', paddingBottom: "50px"}}>
@@ -27,50 +43,52 @@ export const Home = () => {
                         marginTop: '1em',
                         marginBottom: '1em'
                     }}>
-                        <Box sx={{  display: 'grid',
-                                    gridTemplateColumns: '1fr 1fr',
-                                    gridTemplateRows: '280px 280px',
-                                    gridColumnGap: '20px',
-                                    gridRowGap: '20px',
-                                    width: '60%',
-                                    height: '100%',
-                                    margin: 'auto',
-                                    marginTop: '1em'}}>
-                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of movies in UpSet">
+                        <Box sx={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            gridTemplateRows: '280px 280px',
+                            gridColumnGap: '20px',
+                            gridRowGap: '20px',
+                            width: '60%',
+                            height: '100%',
+                            margin: 'auto',
+                            marginTop: '1em'
+                        }}>
+                            <Card sx={cardStyle} aria-label="Example of a dataset of movies in UpSet">
                                 <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=2835')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/movies_example.png" alt="Example UpSet plot: movies" />
                                     <CardContent sx={{paddingLeft: 0}}>
-                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                        <Typography variant="h5" component="div" sx={cardTextStyle}>
                                             Movies - Upset
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of Covid Symptoms in UpSet">
+                            <Card sx={cardStyle} aria-label="Example of a dataset of Covid Symptoms in UpSet">
                                 <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Covid_Symptoms&sessionId=2783')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/covid_example.png" alt="Example UpSet plot: Covid Symptoms" />
                                     <CardContent sx={{paddingLeft: 0}}>
-                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5em', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                        <Typography variant="h5" component="div" sx={cardTextStyle}>
                                             Covid Symptoms - Upset
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of Tennis Grandslam Championships in UpSet">
+                            <Card sx={cardStyle} aria-label="Example of a dataset of Tennis Grandslam Championships in UpSet">
                                 <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Tennis_Grand_Slam_Champions&sessionId=2780')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/tennis_example.png" alt="Example UpSet plot: Tennis Grand Slam Championships" />
                                     <CardContent sx={{paddingLeft: 0}}>
-                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                        <Typography variant="h5" component="div" sx={cardTextStyle}>
                                             Tennis Tournament Winners - Upset
                                         </Typography>
                                     </CardContent>
                                 </CardActionArea>
                             </Card>
-                            <Card sx={{boxShadow: 4, borderRadius: "8px", width: '100%', height: '100%'}} aria-label="Example of a dataset of World Organizations in UpSet">
+                            <Card sx={cardStyle} aria-label="Example of a dataset of World Organizations in UpSet">
                                 <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=International_Organizations&sessionId=2777')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/world_orgs_example.png" alt="Example UpSet plot: World Organizations" />
                                     <CardContent sx={{paddingLeft: 0}}>
-                                        <Typography variant="h5" component="div" sx={{paddingLeft: "0.8rem", position: 'absolute', bottom: '0.5rem', width: '100%', paddingTop: '5rem', boxShadow: 'inset 0 -230px 70px -120px #fff'}}>
+                                        <Typography variant="h5" component="div" sx={cardTextStyle}>
                                             World Organizations - UpSet
                                         </Typography>
                                     </CardContent>
