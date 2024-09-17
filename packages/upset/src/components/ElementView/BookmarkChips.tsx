@@ -42,13 +42,11 @@ export const BookmarkChips = () => {
    * @param bookmark Clicked bookmark
    */
   function chipClicked(bookmark: Bookmark) {
-    console.log('chipclicked', bookmark);
     if (isBookmarkedIntersection(bookmark)) {
       if (currentIntersection?.id === bookmark.id) actions.setSelected(null);
       else actions.setSelected(rows[bookmark.id]);
     } else if (isElementSelection(bookmark)) {
       // Need to update both the saved trrack state & the selection atom when a chip is clicked
-      console.log("bookmark", bookmark, currentSelection);
       if (currentSelection?.id === bookmark.id) actions.setElementSelection(null);
       else actions.setElementSelection(bookmark);
     }
