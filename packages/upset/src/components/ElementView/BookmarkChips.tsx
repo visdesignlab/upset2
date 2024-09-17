@@ -6,7 +6,8 @@ import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, BookmarkedIntersection, NumericalBookmark, flattenedOnlyRows, isBookmarkedIntersection, isNumericalBookmark,
+  Bookmark, BookmarkedIntersection, flattenedOnlyRows, isBookmarkedIntersection,
+  isElementSelection,
 } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
@@ -18,7 +19,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { elementSelectionParameters, selectedElementSelector } from '../../atoms/elementsSelectors';
+import { selectedElementSelector } from '../../atoms/elementsSelectors';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -34,22 +35,22 @@ export const BookmarkChips = () => {
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const currentSelection = useRecoilValue(selectedElementSelector);
-  const savedSelection = useRecoilValue(selectedElementSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
-  const elementSelection = useRecoilValue(elementSelectionParameters);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
    * @param bookmark Clicked bookmark
    */
   function chipClicked(bookmark: Bookmark) {
+    console.log('chipclicked', bookmark);
     if (isBookmarkedIntersection(bookmark)) {
       if (currentIntersection?.id === bookmark.id) actions.setSelected(null);
       else actions.setSelected(rows[bookmark.id]);
-    } else if (isNumericalBookmark(bookmark)) {
+    } else if (isElementSelection(bookmark)) {
       // Need to update both the saved trrack state & the selection atom when a chip is clicked
-      if (currentSelection?.id === bookmark.id && savedSelection !== null) actions.setElementSelection(null);
-      else if (savedSelection?.id !== bookmark.id) actions.setElementSelection(bookmark);
+      console.log("bookmark", bookmark, currentSelection);
+      if (currentSelection?.id === bookmark.id) actions.setElementSelection(null);
+      else actions.setElementSelection(bookmark);
     }
   }
 
@@ -100,8 +101,10 @@ export const BookmarkChips = () => {
             onDelete={() => {
               if (currentIntersection?.id === bookmark.id) {
                 actions.setSelected(null);
+              } else if (currentSelection?.id === bookmark.id) {
+                actions.setElementSelection(null);
               }
-              actions.removeBookmark({ id: bookmark.id, label: bookmark.label, type: bookmark.type });
+              actions.removeBookmark(bookmark);
             }}
           />
         ))}
@@ -140,7 +143,7 @@ export const BookmarkChips = () => {
           />
         )}
         {/* Chip for the current element selection */}
-        {elementSelection && currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
+        {currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
           <Chip
             sx={(theme) => ({
               margin: theme.spacing(0.5),
@@ -153,22 +156,12 @@ export const BookmarkChips = () => {
             aria-label={`Selected elements ${currentSelection.label}`}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
-                actions.addBookmark<NumericalBookmark>({
-                  id: currentSelection.id,
-                  label: currentSelection.label,
-                  type: 'numerical',
-                  selection: elementSelection,
-                });
+                actions.addBookmark(structuredClone(currentSelection));
               }
             }}
             label={`${currentSelection.label}`}
             onDelete={() => {
-              actions.addBookmark<NumericalBookmark>({
-                id: currentSelection.id,
-                label: currentSelection.label,
-                type: 'numerical',
-                selection: elementSelection,
-              });
+              actions.addBookmark(structuredClone(currentSelection));
             }}
             deleteIcon={<StarBorderIcon />}
           />

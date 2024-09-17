@@ -9,7 +9,7 @@ import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } fro
 import { Button } from '@mui/material';
 import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { elementItemMapSelector, elementSelectionParameters } from '../../atoms/elementsSelectors';
+import { elementItemMapSelector, currentNumericalQuery } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
@@ -29,7 +29,7 @@ export const ElementVisualization = () => {
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
-  const elementSelection = useRecoilValue(elementSelectionParameters);
+  const numericalQuery = useRecoilValue(currentNumericalQuery);
   const selectColor = useRecoilValue(elementColorSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
@@ -37,10 +37,10 @@ export const ElementVisualization = () => {
    * Hooks
    */
 
-  const draftSelection = useRef(elementSelection);
+  const draftSelection = useRef(numericalQuery);
   const vegaSpec = useMemo(
-    () => generateVega(scatterplots, histograms, selectColor, elementSelection),
-    [scatterplots, histograms, selectColor, elementSelection],
+    () => generateVega(scatterplots, histograms, selectColor, numericalQuery),
+    [scatterplots, histograms, selectColor, numericalQuery],
   );
 
   /**
@@ -70,7 +70,7 @@ export const ElementVisualization = () => {
         if (
           draftSelection.current
           && Object.keys(draftSelection.current).length > 0
-          && !numericalQueriesEqual(draftSelection.current, elementSelection)
+          && !numericalQueriesEqual(draftSelection.current, numericalQuery)
         ) {
           actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
         } else {
@@ -86,7 +86,7 @@ export const ElementVisualization = () => {
           <VegaLite
             spec={vegaSpec}
             data={{
-              elements: Object.values(JSON.parse(JSON.stringify(items))),
+              elements: Object.values(structuredClone(items)),
             }}
             actions={false}
             signalListeners={{

@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
-  Bookmark, NumericalBookmark,
+  Bookmark,
   convertConfig,
   ColumnName,
   AltText,
+  ElementSelection,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -331,10 +332,10 @@ const setSelectedAction = register<Row | null>(
   },
 );
 
-const setElementSelectionAction = register<NumericalBookmark | null>(
+const setElementSelectionAction = register<ElementSelection | null>(
   'select-elements',
-  (state: UpsetConfig, NumericalBookmark) => {
-    state.elementSelection = NumericalBookmark;
+  (state: UpsetConfig, elementSelection) => {
+    state.elementSelection = elementSelection;
     return state;
   },
 );
@@ -440,7 +441,8 @@ export function getActions(provenance: UpsetProvenance) {
      * which is a filter on items based on their attributes.
      * @param selection The selection to set
      */
-    setElementSelection: (selection: NumericalBookmark | null) => provenance.apply(
+    setElementSelection: (selection: ElementSelection | null) => provenance.apply(
+      // Object.keys check is for numerical queries, which can come out of vega as {}
       selection && Object.keys(selection.selection).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
         : 'Deselected elements',
