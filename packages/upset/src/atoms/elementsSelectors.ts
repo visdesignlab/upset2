@@ -4,6 +4,7 @@ import {
   NumericalQuery, Item, flattenedOnlyRows, getItems,
   ElementSelection,
   filterItems,
+  ElementQuery,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -108,14 +109,28 @@ export const selectedElementSelector = selector<ElementSelection | null>({
 });
 
 /**
- * Gets the parameters for the current selection of elements,
- * ie the 'selected' property of the selectedElementsSelector
+ * Gets the parameters for the current numerical selection of elements,
+ * ie the 'selected' property of the selectedElementsSelector.
+ * If the current selection is not numerical, returns undefined.
  */
 export const currentNumericalQuery = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
     return elementSelection?.type === 'numerical' ? elementSelection.selection : undefined;
+  },
+});
+
+/**
+ * Gets the parameters for the current selection of elements,
+ * ie the 'selected' property of the selectedElementsSelector.
+ * If the current selection is not an element query, returns undefined.
+ */
+export const currentElementQuery = selector<ElementQuery | undefined>({
+  key: 'config-current-element-query',
+  get: ({ get }) => {
+    const elementSelection = get(selectedElementSelector);
+    return elementSelection?.type === 'element' ? elementSelection.selection : undefined;
   },
 });
 
