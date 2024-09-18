@@ -293,12 +293,12 @@ export type AttributePlots = Record<string, `${AttributePlotType}`>;
 // linter is saying this is already declared... on this line
 // eslint-disable-next-line no-shadow
 export enum ElementQueryType {
-  EQUALS = 'eq',
-  CONTAINS = 'ctns',
-  LENGTH = 'len',
+  EQUALS = 'equals',
+  CONTAINS = 'contains',
+  LENGTH = 'length equals',
   REGEX = 'regex',
-  LESS_THAN = 'lt',
-  GREATER_THAN = 'gt',
+  LESS_THAN = 'less than',
+  GREATER_THAN = 'greater than',
 }
 
 /**

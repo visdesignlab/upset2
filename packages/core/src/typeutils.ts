@@ -1,6 +1,6 @@
 import {
   Aggregate,
-  Aggregates, Bookmark, BookmarkedIntersection, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
+  Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
 } from './types';
 import { hashString } from './utils';
 
@@ -126,6 +126,23 @@ export function numericalQueryToBookmark(selection: NumericalQuery): NumericalBo
     id: i.toString(),
     label,
     type: 'numerical',
+    selection,
+  };
+}
+
+/**
+ * Converts an element selection to a bookmark.
+ * Generates the ID by hashing the selection and labels the bookmark with the selection parameters.
+ * @param selection The element query.
+ * @returns The element selection.
+ */
+export function ElementQueryToBookmark(selection: ElementQuery): ElementBookmark {
+  const i = hashString(JSON.stringify(selection));
+  const label = `${selection.att} ${selection.type} ${selection.query}`;
+  return {
+    id: i.toString(),
+    label,
+    type: 'element',
     selection,
   };
 }
