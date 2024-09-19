@@ -55,7 +55,7 @@ export const Home = () => {
                             marginTop: '1em'
                         }}>
                             <Card sx={cardStyle} aria-label="Example of a dataset of movies in UpSet">
-                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=2835')}>
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=2939')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/movies_example.png" alt="Example UpSet plot: movies" />
                                     <CardContent sx={{paddingLeft: 0}}>
                                         <Typography variant="h5" component="div" sx={cardTextStyle}>
@@ -65,7 +65,7 @@ export const Home = () => {
                                 </CardActionArea>
                             </Card>
                             <Card sx={cardStyle} aria-label="Example of a dataset of Covid Symptoms in UpSet">
-                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Covid_Symptoms&sessionId=2783')}>
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Covid_Symptoms&sessionId=2938')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/covid_example.png" alt="Example UpSet plot: Covid Symptoms" />
                                     <CardContent sx={{paddingLeft: 0}}>
                                         <Typography variant="h5" component="div" sx={cardTextStyle}>
@@ -75,7 +75,7 @@ export const Home = () => {
                                 </CardActionArea>
                             </Card>
                             <Card sx={cardStyle} aria-label="Example of a dataset of Tennis Grandslam Championships in UpSet">
-                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Tennis_Grand_Slam_Champions&sessionId=2780')}>
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=Tennis_Grand_Slam_Champions&sessionId=2937')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/tennis_example.png" alt="Example UpSet plot: Tennis Grand Slam Championships" />
                                     <CardContent sx={{paddingLeft: 0}}>
                                         <Typography variant="h5" component="div" sx={cardTextStyle}>
@@ -85,7 +85,7 @@ export const Home = () => {
                                 </CardActionArea>
                             </Card>
                             <Card sx={cardStyle} aria-label="Example of a dataset of World Organizations in UpSet">
-                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=International_Organizations&sessionId=2777')}>
+                                <CardActionArea onClick={() => window.open('/?workspace=Upset+Examples&table=International_Organizations&sessionId=2936')}>
                                     <CardMedia component="img" sx={{ height:"250px", paddingTop:"4px" }} image="/placard/world_orgs_example.png" alt="Example UpSet plot: World Organizations" />
                                     <CardContent sx={{paddingLeft: 0}}>
                                         <Typography variant="h5" component="div" sx={cardTextStyle}>
