@@ -12,7 +12,10 @@ export const DeviationHeader = () => {
 
   return (
     <g>
-      <AttributeButton label="Deviation" />
+      <AttributeButton
+        label="Deviation"
+        tooltip='Measure for how "surprising" the size of an intersection is. This also considers the size of the sets. For more information visit <a href="https://upset.app/advanced/">https://upset.app/advanced/</a>'
+      />
       <g
         transform={translate(
           0,
