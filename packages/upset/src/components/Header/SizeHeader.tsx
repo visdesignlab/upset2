@@ -6,6 +6,7 @@ import {
 } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+import { Tooltip } from '@mui/material';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
@@ -103,7 +104,7 @@ export const SizeHeader: FC = () => {
 
   /**
    * Updates the scale of the header based on the largest subset as long as the advanced scale slider hasn't taken
-   * control and set a value 
+   * control and set a value
    */
   useEffect(() => {
     if (advancedScale) return;
@@ -226,55 +227,57 @@ export const SizeHeader: FC = () => {
             2 * dimensions.size.gap} H ${dimensions.attribute.width} z`}
         />
       </g>
-      <g
-        className="size-button"
-        css={css`
+      <Tooltip title="Size (cardinality) of each intersection" arrow placement="top">
+        <g
+          className="size-button"
+          css={css`
           ${sliding ? hide : show};
           cursor: context-menu;
           &:hover {
             opacity: 0.7;
             transition: opacity 0s;
-          }
-        `}
-        transform={translate(
-          0,
-          dimensions.size.scaleHeight + dimensions.size.gap,
-        )}
-        onContextMenu={(e: any) => {
-          e.preventDefault();
-          e.stopPropagation();
-          openContextMenu(e);
-        }}
-        onClick={handleOnClick}
-      >
-        <rect
-          fill="#ccc"
-          stroke="#000"
-          opacity="0.5"
-          strokeWidth="0.3px"
-          height={dimensions.size.buttonHeight}
-          width={dimensions.attribute.width}
-        />
-        <g
-          transform={translate(
-            dimensions.attribute.width / 2,
-            dimensions.size.buttonHeight / 2,
-          )}
-        >
-          <text
-            id="header-text"
-            css={css`
-              pointer-event: none;
+            }
             `}
-            dominantBaseline="middle"
-            textAnchor="middle"
+          transform={translate(
+            0,
+            dimensions.size.scaleHeight + dimensions.size.gap,
+          )}
+          onContextMenu={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openContextMenu(e);
+          }}
+          onClick={handleOnClick}
+        >
+          <rect
+            fill="#ccc"
+            stroke="#000"
+            opacity="0.5"
+            strokeWidth="0.3px"
+            height={dimensions.size.buttonHeight}
+            width={dimensions.attribute.width}
+          />
+          <g
+            transform={translate(
+              dimensions.attribute.width / 2,
+              dimensions.size.buttonHeight / 2,
+            )}
           >
-            Size
-          </text>
-          { sortBy === 'Size' &&
+            <text
+              id="header-text"
+              css={css`
+              pointer-event: none;
+              `}
+              dominantBaseline="middle"
+              textAnchor="middle"
+            >
+              Size
+            </text>
+            { sortBy === 'Size' &&
             <HeaderSortArrow />}
+          </g>
         </g>
-      </g>
+      </Tooltip>
       <g
         className="details-scale"
         transform={translate(
