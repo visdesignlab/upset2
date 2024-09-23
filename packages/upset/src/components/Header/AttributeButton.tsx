@@ -22,6 +22,7 @@ type Props = {
   /**
    * Text to display on the attribute button tooltip.
    * Optional, defaults to label
+   * HTML will be rendered in the tooltip
    */
   tooltip?: string;
 };
@@ -152,7 +153,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
   };
 
   return (
-    <Tooltip title={tooltip ?? label} arrow placement="top">
+    <Tooltip title={<div dangerouslySetInnerHTML={{ __html: tooltip ?? label }} />} arrow placement="top">
       <g
         css={{
           '&:hover': {
