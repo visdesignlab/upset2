@@ -227,7 +227,7 @@ export const SizeHeader: FC = () => {
             2 * dimensions.size.gap} H ${dimensions.attribute.width} z`}
         />
       </g>
-      <Tooltip title="Size (cardinality) of each intersection" arrow placement="top">
+      <Tooltip title="Size (cardinality)" arrow placement="top">
         <g
           className="size-button"
           css={css`
