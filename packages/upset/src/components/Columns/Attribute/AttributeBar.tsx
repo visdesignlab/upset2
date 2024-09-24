@@ -37,7 +37,9 @@ type Props = {
 // Threshold for when to render a dot plot regardless of selected plot type
 const DOT_PLOT_THRESHOLD = 5;
 
-// this is recomputing every hover event?
+/**
+ * A single attribute chart, visualizing one attribute's values for one intersection.
+ */
 export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
@@ -46,7 +48,14 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
 
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
-  if (typeof summary !== 'number' && (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined)) {
+  if (
+    typeof summary !== 'number'
+    && (
+      summary.max === undefined
+      || summary.min === undefined
+      || summary.first === undefined
+      || summary.third === undefined
+      || summary.median === undefined)) {
     return null;
   }
 
