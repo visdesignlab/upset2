@@ -169,7 +169,7 @@ export const Root: FC<Props> = ({
         </SvgBase>
       </div>
       <ContextMenu />
-      {elementSidebar && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
+      {elementSidebar && elementSidebar.open && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {(altTextSidebar && generateAltText) && <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />}
     </ProvenanceContext.Provider>
