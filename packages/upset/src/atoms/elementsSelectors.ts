@@ -1,7 +1,7 @@
 import {
   Aggregate,
   BaseIntersection,
-  BookmarkedSelection, ElementSelection, Item, flattenedOnlyRows, getItems,
+  BookmarkedSelection, ElementSelection, Item, Row, flattenedOnlyRows, getItems,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -45,6 +45,26 @@ export const elementSelector = selectorFamily<
       isCurrent:
         !!(currentIntersection?.id === id),
     }));
+  },
+});
+
+/**
+ * Gets all values for a given attribute for all items in a given row.
+ * If the provided attribute does not exist or is not numeric,
+ * outputs a console warning & returns an empty list.
+ */
+export const attValuesSelector = selectorFamily<number[], {row: Row, att: string}>({
+  key: 'att-values',
+  get: ({ row, att }) => ({ get }) => {
+    const items = get(elementSelector(row.id));
+
+    // We could filter the whole array before we map, but attributes should all be the same type,
+    // so its sufficient and more performant to only check the first attribute
+    if (!items[0][att] || typeof items[0][att] !== 'number') {
+      console.warn('Attempted to get values for nonexistent or non-numeric attribute ', att);
+      return [];
+    }
+    return items.map((item) => item[att] as number);
   },
 });
 
