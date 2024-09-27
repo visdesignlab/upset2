@@ -115,7 +115,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       }
     }
 
-    generate();
+    if (open) generate();
   }, [currState]);
 
   /**
