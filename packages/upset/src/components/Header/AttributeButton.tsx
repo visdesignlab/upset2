@@ -19,6 +19,12 @@ type Props = {
    * Text to display on the attribute button
    */
   label: string;
+  /**
+   * Text to display on the attribute button tooltip.
+   * Optional, defaults to label
+   * HTML will be rendered in the tooltip
+   */
+  tooltip?: string;
 };
 
 /**
@@ -30,7 +36,7 @@ type Props = {
  *   <AttributeButton label="Name" />
  * )
  */
-export const AttributeButton: FC<Props> = ({ label }) => {
+export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
     ProvenanceContext,
@@ -147,7 +153,7 @@ export const AttributeButton: FC<Props> = ({ label }) => {
   };
 
   return (
-    <Tooltip title={label} arrow placement="top">
+    <Tooltip title={<div dangerouslySetInnerHTML={{ __html: tooltip ?? label }} />} arrow placement="top">
       <g
         css={{
           '&:hover': {
