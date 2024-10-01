@@ -1,6 +1,4 @@
-import { 
-  Button, 
-  Box, 
+import {
   Menu,
   Checkbox,
   FormControlLabel,
@@ -19,33 +17,8 @@ import { ProvenanceContext } from "./Root"
 import { dataSelector } from "../atoms/dataAtom";
 import { useRecoilValue } from "recoil";
 import { useState } from "react";
-import { CoreUpsetData, DefaultConfig } from "@visdesignlab/upset2-core";
-
-/**
- * Get the count of items that have a specific attribute. 
- * Does not count items with null or undefined values for this attribute.
- * @param attribute - The attribute to count.
- * @param data - The data object containing the items.
- * @returns The count of items with the specified attribute value.
- */
-const getAttributeItemCount = (attribute: string, data: CoreUpsetData) => {
-  if (DefaultConfig.visibleAttributes.includes(attribute)) {
-      return '';
-  }
-  let count = 0;
-
-  Object.values(data.items).forEach((item) => {
-    Object.entries(item).forEach(([key, val]) => {
-      if (key === attribute) {
-        if (val) {
-          count++;
-        }
-      }
-    })
-  })
-
-  return count;
-}
+import { DefaultConfig } from "@visdesignlab/upset2-core";
+import { countValuesForAttributes } from "../atoms/selectors";
 
 /**
  * Dropdown component for selecting attributes.
@@ -66,18 +39,12 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
   );
 
   const [ searchTerm, setSearchTerm ] = useState<string>("");
-
-  const attributeItemCount: { [attr: string]: number | string } = {};
-
-  const attributes = data ? [...DefaultConfig.visibleAttributes, ...data.attributeColumns]: [...DefaultConfig.visibleAttributes];
+  const attributes = useMemo(
+    () => data ? [...DefaultConfig.visibleAttributes, ...data.attributeColumns]: [...DefaultConfig.visibleAttributes],
+    [data]
+  );
+  const attributeCounts = useRecoilValue(countValuesForAttributes(attributes));
     
-
-  if (data) {
-      attributes.forEach((attr) => {
-          attributeItemCount[attr] = getAttributeItemCount(attr,data);
-      })
-  }
-
   /**
    * Handle checkbox toggle: add or remove the attribute from the visible attributes
    * and update the provenance state and plot.
@@ -116,7 +83,7 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
    * Get the rows to display in the table.
    * @returns The filtered rows based on the search term.
    */
-  const getRows = () => {
+  const rows = useMemo(() => {
     if (data === undefined || data === null) {
       return []
     }
@@ -124,10 +91,10 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
       return {
         id: index,
         attribute: attr,
-        itemCount: getAttributeItemCount(attr,data)
+        itemCount: attributeCounts[attr]
       }
     }).filter((row) => row.attribute.toLowerCase().includes(searchTerm.toLowerCase()))
-  }
+  }, [data, attributes, searchTerm, attributeCounts]);
 
   return (
     <Menu 
@@ -156,13 +123,13 @@ export const AttributeDropdown = (props: {anchorEl: HTMLElement, close: () => vo
             </TableRow>
           </TableHead>
           <TableBody>
-        { getRows().map((row) => {
+        {rows.map((row) => {
           return (
             <TableRow key={row.id}>
               <TableCell>
                 <FormControlLabel checked={checked.includes(row.attribute)} control={<Checkbox />} label={row.attribute} onChange={(e) => handleToggle(e.target)}/>
               </TableCell>
-              <TableCell><Typography>{row.itemCount}</Typography></TableCell>
+              <TableCell><Typography>{row.itemCount > 0 ? row.itemCount : ''}</Typography></TableCell>
             </TableRow>
           )
           })
