@@ -1,5 +1,5 @@
 import {
-  flattenedOnlyRows, flattenedRows, Row,
+  flattenedOnlyRows, flattenedRows,
   RowMap,
 } from '@visdesignlab/upset2-core';
 import { selector } from 'recoil';

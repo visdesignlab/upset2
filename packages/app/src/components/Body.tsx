@@ -1,5 +1,5 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { UpsetConfig, getRows } from '@visdesignlab/upset2-core';
+import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
