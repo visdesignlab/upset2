@@ -1,6 +1,6 @@
 import { css, SvgIcon, Tooltip } from '@mui/material';
 import { DoubleArrow } from '@mui/icons-material';
-import { getRows, isRowAggregate } from '@visdesignlab/upset2-core';
+import { isRowAggregate } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
 import { useCallback, useContext, useState } from 'react';
 import Group from '../custom/Group';
@@ -8,7 +8,7 @@ import { mousePointer } from '../../utils/styles';
 import { ProvenanceContext } from '../Root';
 import { firstAggregateSelector } from '../../atoms/config/aggregateAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { dataAtom } from '../../atoms/dataAtom';
+import { rowsSelector } from '../../atoms/renderRowsAtom';
 
 const iconSize = 16;
 
@@ -25,10 +25,9 @@ export const CollapseAllButton = () => {
    */
 
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
-  const { provenance, actions } = useContext(ProvenanceContext);
-  const data = useRecoilValue(dataAtom);
+  const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const rows = getRows(data, provenance.getState());
+  const rows = useRecoilValue(rowsSelector);
   const [allCollapsed, setAllCollapsed] = useState(false);
 
   /*

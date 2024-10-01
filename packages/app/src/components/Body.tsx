@@ -13,6 +13,7 @@ import { loadingAtom } from '../atoms/loadingAtom';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
+import { rowsSelector } from '../atoms/selectors';
 
 type Props = {
   data: any;
@@ -27,6 +28,7 @@ export const Body = ({ data, config }: Props) => {
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
   const loading = useRecoilValue(loadingAtom);
+  const rows = useRecoilValue(rowsSelector(provObject.provenance.getState()));
 
   const provVis = {
     open: isProvVisOpen,
@@ -59,7 +61,7 @@ export const Body = ({ data, config }: Props) => {
    */
   async function getAltText(): Promise<AltText> {
     const state = provObject.provenance.getState();
-    const config = getAltTextConfig(state, data, getRows(data, state));
+    const config = getAltTextConfig(state, data, rows);
 
     if (config.firstAggregateBy !== "None") {
       throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
