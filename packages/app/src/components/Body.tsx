@@ -61,7 +61,8 @@ export const Body = ({ data, config }: Props) => {
    */
   async function getAltText(): Promise<AltText> {
     const state = provObject.provenance.getState();
-    const config = getAltTextConfig(state, data, rows);
+    // Rows must be cloned to avoid a recoil error triggered far down in this call chain when a function writes rows
+    const config = getAltTextConfig(state, data, structuredClone(rows));
 
     if (config.firstAggregateBy !== "None") {
       throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
