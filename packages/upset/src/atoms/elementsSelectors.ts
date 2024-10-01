@@ -10,6 +10,7 @@ import {
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
+import { rowsSelector } from './renderRowsAtom';
 
 /**
  * Gets all elements in the intersection represented by the provided ID
@@ -25,9 +26,7 @@ export const elementSelector = selectorFamily<
     if (!id) return [];
 
     const items = get(itemsAtom);
-    const data = get(dataAtom);
-    const state = get(upsetConfigAtom);
-    const intersections = flattenedOnlyRows(data, state);
+    const intersections = get(rowsSelector);
     const row = intersections[id];
     const palette = get(bookmarkedColorPalette);
     const currentIntersection = get(currentIntersectionSelector);
