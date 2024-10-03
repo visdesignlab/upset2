@@ -17,6 +17,17 @@ import { client_id } from './api/env';
 import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
 import localforage from 'localforage';
 
+// Not quite recommended but the only way I could get why-did-you-render to work with vite
+// from https://github.com/welldone-software/why-did-you-render/issues/243#issuecomment-1112542230
+if (process.env.NODE_ENV === 'development') {
+  // Yes, ts complains, but it works
+  const { default: whyDidYouRender } = await import('@welldone-software/why-did-you-render');
+  whyDidYouRender(React, {
+    logOnDifferentValues: true,
+    trackAllPureComponents: true,
+  });
+}
+
 // import reportWebVitals from './reportWebVitals';
 
 localforage.config({
