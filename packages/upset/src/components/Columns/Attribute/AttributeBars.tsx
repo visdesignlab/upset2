@@ -84,9 +84,9 @@ export const AttributeBars: FC<Props> = memo(
     );
   },
   // Only re-render if the row or visible attributes change
-  // Since the data shouldn't change, the attribute values should be the same for the same row
+  // Not checking the other attributes of the row object as they are not used in this component
   (prevProps, nextProps) => prevProps.row.id === nextProps.row.id
-  && Object.keys(prevProps.attributes).every(
-    (k) => Object.keys(nextProps.attributes).includes(k),
+  && Object.entries(prevProps.attributes).every(
+    ([k, v]) => Object.keys(nextProps.attributes).includes(k) && nextProps.attributes[k] === v,
   ),
 );
