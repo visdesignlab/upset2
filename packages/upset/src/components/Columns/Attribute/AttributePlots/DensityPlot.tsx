@@ -1,7 +1,10 @@
 import { VegaLite } from 'react-vega';
 import { Subset, Aggregate, AttributePlotType } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import {
+  FC, useCallback, useMemo, useRef,
+} from 'react';
 import { useRecoilValue } from 'recoil';
+import { Renderers } from 'vega';
 import { generateAttributePlotSpec } from './generateAttributePlotSpec';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
@@ -45,25 +48,34 @@ export const DensityPlot: FC<Props> = ({
   const colorPalette = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
 
+  // We need to use a ref here to avoid re-rendering the plot on every render.
+  const RENDERER = useRef<Renderers>('svg');
+
   /**
    * Logic for determining the selection/bookmark status of the row.
    * @returns {string} The fill color for the density plot.
    */
-  function getFillColor(): string {
+  const getFillColor = useCallback(
+    () => {
     // if the row is bookmarked, highlight the bar with the bookmark color
-    if (row !== undefined && bookmarks.some((b) => b.id === row.id)) {
+      if (row !== undefined && bookmarks.some((b) => b.id === row.id)) {
       // darken the color for advanced scale sub-bars
-      return colorPalette[row.id];
-    }
+        return colorPalette[row.id];
+      }
 
-    // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
-    if (currentIntersection && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
-      return nextColor;
-    }
-    return ATTRIBUTE_DEFAULT_COLOR;
-  }
+      // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
+      if (currentIntersection && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
+        return nextColor;
+      }
+      return ATTRIBUTE_DEFAULT_COLOR;
+    },
+    [row, currentIntersection, bookmarks, colorPalette, nextColor],
+  );
 
-  const spec = generateAttributePlotSpec(AttributePlotType.DensityPlot, values, min, max, getFillColor());
+  const spec = useMemo(
+    () => generateAttributePlotSpec(AttributePlotType.DensityPlot, values, min, max, getFillColor()),
+    [values, min, max, getFillColor],
+  );
 
   return (
     <g
@@ -72,7 +84,7 @@ export const DensityPlot: FC<Props> = ({
     >
       <foreignObject width={dimensions.attribute.width} height={dimensions.attribute.plotHeight + 20}>
         <VegaLite
-          renderer="svg"
+          renderer={RENDERER.current}
           height={dimensions.attribute.plotHeight + 6}
           actions={false}
           spec={spec as any}
