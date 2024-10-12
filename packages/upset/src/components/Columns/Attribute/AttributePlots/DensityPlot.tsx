@@ -1,10 +1,9 @@
 import { VegaLite } from 'react-vega';
 import { Subset, Aggregate, AttributePlotType } from '@visdesignlab/upset2-core';
 import {
-  FC, useCallback, useMemo, useRef,
+  FC, useCallback, useMemo,
 } from 'react';
 import { useRecoilValue } from 'recoil';
-import { Renderers } from 'vega';
 import { generateAttributePlotSpec } from './generateAttributePlotSpec';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
@@ -48,9 +47,6 @@ export const DensityPlot: FC<Props> = ({
   const colorPalette = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
 
-  // We need to use a ref here to avoid re-rendering the plot on every render.
-  const RENDERER = useRef<Renderers>('svg');
-
   /**
    * Logic for determining the selection/bookmark status of the row.
    * @returns {string} The fill color for the density plot.
@@ -84,7 +80,7 @@ export const DensityPlot: FC<Props> = ({
     >
       <foreignObject width={dimensions.attribute.width} height={dimensions.attribute.plotHeight + 20}>
         <VegaLite
-          renderer={RENDERER.current}
+          renderer="svg"
           height={dimensions.attribute.plotHeight + 6}
           actions={false}
           spec={spec as any}
