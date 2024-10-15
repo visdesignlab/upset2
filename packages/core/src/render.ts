@@ -93,7 +93,7 @@ const filterRR = (data: any, state: UpsetConfig) => {
  */
 export const getRows = (data: any, state: UpsetConfig) => filterRR(data, state);
 
-type RenderRow = {
+export type RenderRow = {
   id: string;
   row: Row;
 };
