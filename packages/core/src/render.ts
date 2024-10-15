@@ -66,8 +66,8 @@ const secondAggRR = (data: any, state: UpsetConfig) => {
  * @returns The sorted rows based on the RR and the provided sorting options.
  */
 const sortByRR = (data: any, state: UpsetConfig) => {
-  if (!Object.hasOwn(data, 'sets')) return { order: [], values: {} };
-  
+  if (data && typeof data === 'object' && !Object.hasOwn(data, 'sets')) return { order: [], values: {} };
+
   const vSets: Sets = Object.fromEntries(Object.entries(data.sets as Sets).filter(([name, _set]) => state.visibleSets.includes(name)));
   const rr = secondAggRR(data, state);
 
