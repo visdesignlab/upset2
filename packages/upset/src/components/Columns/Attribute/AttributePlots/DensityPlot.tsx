@@ -1,16 +1,15 @@
-import { VegaLite } from 'react-vega';
-import { Subset, Aggregate, AttributePlotType } from '@visdesignlab/upset2-core';
+import { Subset, Aggregate } from '@visdesignlab/upset2-core';
 import {
-  FC, useCallback, useMemo,
+  FC, useMemo,
 } from 'react';
 import { useRecoilValue } from 'recoil';
-import { generateAttributePlotSpec } from './generateAttributePlotSpec';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
 import {
   bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
 } from '../../../../atoms/config/currentIntersectionAtom';
 import { ATTRIBUTE_DEFAULT_COLOR } from '../../../../utils/styles';
+import { MemoizedDensityVega } from './MemoizedDensityVega';
 
 /**
  * Props for the DotPlot component.
@@ -51,7 +50,7 @@ export const DensityPlot: FC<Props> = ({
    * Logic for determining the selection/bookmark status of the row.
    * @returns {string} The fill color for the density plot.
    */
-  const getFillColor = useCallback(
+  const fillColor = useMemo(
     () => {
     // if the row is bookmarked, highlight the bar with the bookmark color
       if (row !== undefined && bookmarks.some((b) => b.id === row.id)) {
@@ -68,22 +67,18 @@ export const DensityPlot: FC<Props> = ({
     [row, currentIntersection, bookmarks, colorPalette, nextColor],
   );
 
-  const spec = useMemo(
-    () => generateAttributePlotSpec(AttributePlotType.DensityPlot, values, min, max, getFillColor()),
-    [values, min, max, getFillColor],
-  );
-
   return (
     <g
       id="Density"
       transform={`translate(0, ${-dimensions.attribute.plotHeight / 1.5})`}
     >
       <foreignObject width={dimensions.attribute.width} height={dimensions.attribute.plotHeight + 20}>
-        <VegaLite
-          renderer="svg"
-          height={dimensions.attribute.plotHeight + 6}
-          actions={false}
-          spec={spec as any}
+        <MemoizedDensityVega
+          values={values}
+          fillColor={fillColor}
+          min={min}
+          max={max}
+          height={dimensions.attribute.plotHeight}
         />
       </foreignObject>
     </g>
