@@ -1,5 +1,6 @@
 import { Box } from '@mui/system';
 import {
+  useCallback,
   useContext, useMemo, useRef, useState,
 } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
@@ -58,10 +59,14 @@ export const ElementVisualization = () => {
    * @param {unknown} value Should be an object mapping the names of the attributes being brushed over
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
-  const brushHandler: SignalListener = (_: string, value: unknown) => {
+  const brushHandler: SignalListener = useCallback((_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
     draftSelection.current = value;
-  };
+  }, [draftSelection]);
+
+  const signalListeners = useMemo(() => ({
+    brush: brushHandler,
+  }), [brushHandler]);
 
   return (
     <Box
@@ -89,9 +94,7 @@ export const ElementVisualization = () => {
               elements: Object.values(JSON.parse(JSON.stringify(items))),
             }}
             actions={false}
-            signalListeners={{
-              brush: brushHandler,
-            }}
+            signalListeners={signalListeners}
           />
         )}
       </Box>
