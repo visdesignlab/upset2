@@ -22,7 +22,7 @@ import { UpsetActions } from '../../provenance';
  */
 export const ElementVisualization = () => {
   /**
-   * State hooks
+   * External state
    */
 
   const [openAddPlot, setOpenAddPlot] = useState(false);
@@ -35,7 +35,7 @@ export const ElementVisualization = () => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
-   * Hooks
+   * Internal State
    */
 
   const draftSelection = useRef(elementSelection);
@@ -43,6 +43,9 @@ export const ElementVisualization = () => {
     () => generateVega(scatterplots, histograms, selectColor, elementSelection),
     [scatterplots, histograms, selectColor, elementSelection],
   );
+  const data = useMemo(() => ({
+    elements: Object.values(JSON.parse(JSON.stringify(items))),
+  }), [items]);
 
   /**
    * Functions
@@ -90,9 +93,7 @@ export const ElementVisualization = () => {
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
             spec={vegaSpec}
-            data={{
-              elements: Object.values(JSON.parse(JSON.stringify(items))),
-            }}
+            data={data}
             actions={false}
             signalListeners={signalListeners}
           />
