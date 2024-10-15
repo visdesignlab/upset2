@@ -59,8 +59,7 @@ export const attValuesSelector = selectorFamily<number[], {row: Row, att: string
 
     // We could filter the whole array before we map, but attributes should all be the same type,
     // so its sufficient and more performant to only check the first attribute
-    if (!items[0][att] || typeof items[0][att] !== 'number') {
-      console.warn('Attempted to get values for nonexistent or non-numeric attribute ', att);
+    if (!items[0] || !items[0][att] || typeof items[0][att] !== 'number') {
       return [];
     }
     return items.map((item) => item[att] as number);
