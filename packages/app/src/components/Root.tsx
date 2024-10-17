@@ -1,5 +1,5 @@
 import { UpsetActions, UpsetProvenance } from "@visdesignlab/upset2-react"
-import { convertConfig, UpsetConfig } from "@visdesignlab/upset2-core"
+import { UpsetConfig } from "@visdesignlab/upset2-core"
 import { Box, css } from "@mui/material"
 import { Body } from "./Body"
 import Header from "./Header"
@@ -54,12 +54,6 @@ export const Root = ({provenance, actions, data, config}: Props) => {
         // Load the session if the object is not empty
         if (typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
           provenance.importObject(session.state);
-          // We may have imported an outdated provenance object with old states, so we make sure it doesn't expose those
-          // by having it convert the state every time getState is called
-          (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
-          provenance.getState = () => convertConfig(
-            (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
-          );
         }
       }
     }

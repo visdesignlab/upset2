@@ -6,7 +6,7 @@ import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
-import { DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
+import { convertConfig, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -52,6 +52,12 @@ function App() {
   const { provenance, actions } = useMemo(() => {
     const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
     const actions: UpsetActions = getActions(provenance);
+
+    // Make sure the provenance state gets converted every time this is called
+    (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
+    provenance.getState = () => convertConfig(
+      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
+    );
     return { provenance, actions };
   }, [conf]);
 
