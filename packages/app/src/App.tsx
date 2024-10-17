@@ -1,12 +1,13 @@
 import { useMemo } from 'react';
 
 import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
 import { convertConfig, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
+import { configAtom } from './atoms/configAtoms';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -16,6 +17,7 @@ const defaultVisibleSets = 6;
 function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
+  const setState = useSetRecoilState(configAtom);
   const data = (encodedData === null) ? multinetData : encodedData
 
   const conf = useMemo(() => {
@@ -58,8 +60,12 @@ function App() {
     provenance.getState = () => convertConfig(
       (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
     );
+
+    // Make sure the config atom stays up-to-date with the provenance
+    provenance.currentChange(() => setState(provenance.getState()));
+
     return { provenance, actions };
-  }, [conf]);
+  }, [conf, setState]);
 
   return (
     <BrowserRouter>
