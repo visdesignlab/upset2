@@ -4,7 +4,7 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../App';
 import { useContext, useEffect } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';

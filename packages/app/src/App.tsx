@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { createContext, useEffect, useMemo, useState } from 'react';
 
 import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -8,17 +8,26 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
 import { convertConfig, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
 import { configAtom } from './atoms/configAtoms';
+import { queryParamAtom } from './atoms/queryParamAtom';
+import { getMultinetSession } from './api/session';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 const defaultVisibleSets = 6;
 
+export const ProvenanceContext = createContext<{
+  provenance: UpsetProvenance;
+  actions: UpsetActions;
+}>(undefined!);
+
 function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
   const setState = useSetRecoilState(configAtom);
   const data = (encodedData === null) ? multinetData : encodedData
+  const { workspace, sessionId } = useRecoilValue(queryParamAtom);
+  const [sessionState, setSessionState] = useState<any>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
 
   const conf = useMemo(() => {
     const config: UpsetConfig = { ...DefaultConfig }
@@ -50,30 +59,67 @@ function App() {
     }
   }, [data]);
 
+  useEffect(() => {
+    async function update() {
+      if (sessionId) {
+        const session = await getMultinetSession(workspace || '', sessionId);
+        // Load the session if the object is not empty
+        if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
+          setSessionState(session.state);
+        } else {
+          setSessionState(undefined);
+        }
+      } else {
+        setSessionState(undefined);
+      }
+    }
+    update();
+  }, [sessionId, workspace]);
+
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
-    const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
-    const actions: UpsetActions = getActions(provenance);
+    if (sessionState !== null) {
+      const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
+      const actions: UpsetActions = getActions(provenance);
 
-    // Make sure the provenance state gets converted every time this is called
-    (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
-    provenance.getState = () => convertConfig(
-      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
-    );
+      // Make sure the provenance state gets converted every time this is called
+      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
+      provenance.getState = () => convertConfig(
+        (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
+      );
 
-    // Make sure the config atom stays up-to-date with the provenance
-    provenance.currentChange(() => setState(provenance.getState()));
+      if (sessionState !== undefined) {
+        provenance.importObject(structuredClone(sessionState));
+      }
 
-    return { provenance, actions };
-  }, [conf, setState]);
+      // Make sure the config atom stays up-to-date with the provenance
+      provenance.currentChange(() => setState(provenance.getState()));
+
+      return { provenance: provenance || null, actions: actions || null };
+    }
+    return {provenance: null, actions: null};
+  }, [conf, setState, sessionState]);
 
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
-        <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
-        <Route path="/datatable" element={<DataTable />} />
-      </Routes>
+      {provenance ? 
+        <ProvenanceContext.Provider
+          value={{
+              provenance,
+              actions,
+          }}
+        >
+          <Routes>
+            <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
+            <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
+            <Route path="/datatable" element={<DataTable />} />
+          </Routes>
+        </ProvenanceContext.Provider>
+      :
+        <Routes>
+          <Route path="/datatable" element={<DataTable />} />
+        </Routes>
+      }
     </BrowserRouter>
   );
 }

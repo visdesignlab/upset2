@@ -13,7 +13,7 @@ import {
   TextField,
 } from "@mui/material"
 import { useContext, useMemo } from "react"
-import { ProvenanceContext } from "./Root"
+import { ProvenanceContext } from "../App"
 import { dataSelector } from "../atoms/dataAtom";
 import { useRecoilValue } from "recoil";
 import { useState } from "react";

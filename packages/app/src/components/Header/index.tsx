@@ -13,7 +13,7 @@ import localforage from 'localforage';
 import { getQueryParam, queryParamAtom, saveQueryParam } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../App';
 import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
