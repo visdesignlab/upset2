@@ -1,7 +1,5 @@
 import { test, expect } from '@playwright/test';
-import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
-import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';
-import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json';
+import { beforeTest } from './common';
 
 const alttxt = {
   upsetIntroduction: 'This is an UpSet plot that visualizes set intersection. To learn about UpSet plots, visit https://upset.app.',
@@ -12,31 +10,7 @@ const alttxt = {
   trendAnalysis: 'The intersection sizes start from a value of 1 and then drastically rise up to 3. The empty intersection is present with a size of 3. An all set intersection is not present. The individual set intersections are large in size. The low degree set intersections lie in medium and largest sized intersections. The medium degree set intersections can be seen among small sized intersections. No high order intersections are present.',
 };
 
-test.beforeEach(async ({ page }) => {
-  await page.route('*/**/api/**', async (route) => {
-    const url = route.request().url();
-    let json;
-
-    if (url) {
-      if (url.includes('workspaces/Upset%20Examples/tables/simpsons/rows/?limit=9007199254740991')) {
-        json = mockData;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/tables/simpsons/annotations/')) {
-        json = mockAnnotations;
-        await route.fulfill({ json });
-      } else if (url.includes('alttxt')) {
-        json = mockAltText;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/state/')) {
-        await route.fulfill({ status: 200 });
-      } else {
-        await route.continue();
-      }
-    } else {
-      await route.abort();
-    }
-  });
-});
+test.beforeEach(beforeTest);
 
 test('Alt Text', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');

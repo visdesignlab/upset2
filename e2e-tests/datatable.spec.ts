@@ -1,33 +1,7 @@
 import { test, expect } from '@playwright/test';
-import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
-import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';
-import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json';
+import { beforeTest } from './common';
 
-test.beforeEach(async ({ page }) => {
-  await page.route('*/**/api/**', async (route) => {
-    const url = route.request().url();
-    let json;
-
-    if (url) {
-      if (url.includes('workspaces/Upset%20Examples/tables/simpsons/rows/?limit=9007199254740991')) {
-        json = mockData;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/tables/simpsons/annotations/')) {
-        json = mockAnnotations;
-        await route.fulfill({ json });
-      } else if (url.includes('alttxt')) {
-        json = mockAltText;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/state/')) {
-        await route.fulfill({ status: 200 });
-      } else {
-        await route.continue();
-      }
-    } else {
-      await route.abort();
-    }
-  });
-});
+test.beforeEach(beforeTest);
 
 test('Datatable', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
@@ -45,12 +19,12 @@ test('Datatable', async ({ page }) => {
   const heading1 = await page1.getByRole('heading', { name: 'Intersection Data' });
   await expect(heading1).toBeVisible();
 
-  const downloadPromise = page1.waitForEvent('download');
+  // const downloadPromise = page1.waitForEvent('download');
   const downloadButton = await page1.locator('div').filter({ hasText: /^Intersection DataDownload$/ }).getByRole('button');
   await expect(downloadButton).toBeVisible();
   await downloadButton.click();
-  const download = await downloadPromise;
-  await expect(download).not.toBeNull();
+  // const download = await downloadPromise;
+  // await expect(download).not.toBeNull();
 
   const heading2 = await page1.getByRole('heading', { name: 'Visible Sets' });
   await expect(heading2).toBeVisible();

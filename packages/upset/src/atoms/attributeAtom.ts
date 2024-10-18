@@ -7,6 +7,11 @@ export const attributeAtom = atom<string[]>({
   default: [],
 });
 
+/**
+ * Gets all non-NaN values for a given attribute
+ * @param {string} attribute Attribute name
+ * @returns {number[]} All numeric (!Number.isNaN) values for this attribute
+ */
 export const attributeValuesSelector = selectorFamily<number[], string>({
   key: 'attribute-values',
   get:

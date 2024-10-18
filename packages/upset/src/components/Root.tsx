@@ -75,7 +75,7 @@ export const Root: FC<Props> = ({
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
   useEffect(() => {
-    setState(convertConfig(config));
+    if (!extProvenance) setState(convertConfig(config));
     setData(data);
   }, []);
 
@@ -99,6 +99,8 @@ export const Root: FC<Props> = ({
     const actions = getActions(provenance);
     return { provenance, actions };
   }, [config]);
+
+  useEffect(() => setState(convertConfig(provenance.getState())), []);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
@@ -169,7 +171,7 @@ export const Root: FC<Props> = ({
         </SvgBase>
       </div>
       <ContextMenu />
-      {elementSidebar && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
+      {elementSidebar && elementSidebar.open && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {(altTextSidebar && generateAltText) && <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />}
     </ProvenanceContext.Provider>

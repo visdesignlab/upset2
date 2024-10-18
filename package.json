@@ -17,8 +17,10 @@
     "doc": "typedoc --options typedoc.json"
   },
   "devDependencies": {
+    "@types/node": "^22.7.4",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
     "@typescript-eslint/parser": "^6.3.0",
+    "@welldone-software/why-did-you-render": "^8.0.3",
     "eslint": "^8.6.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-plugin-import": "^2.25.4",
@@ -43,9 +45,9 @@
     "@playwright/test": "^1.15.0",
     "@vitejs/plugin-react": "^4.0.4",
     "eslint-config-react-app": "^7.0.1",
+    "react": "^18.0.2",
     "vite": "^4.4.9",
     "vite-plugin-dts": "^3.5.1",
-    "vite-tsconfig-paths": "^4.2.0",
-    "react": "^18.0.2"
+    "vite-tsconfig-paths": "^4.2.0"
   }
 }
