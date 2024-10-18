@@ -44,7 +44,7 @@ export const ElementVisualization = () => {
     [scatterplots, histograms, selectColor, elementSelection],
   );
   const data = useMemo(() => ({
-    elements: Object.values(JSON.parse(JSON.stringify(items))),
+    elements: Object.values(structuredClone(items)),
   }), [items]);
 
   /**
