@@ -35,7 +35,7 @@ const Header = ({ data }: { data: any }) => {
   const setLoading = useSetRecoilState(loadingAtom);
   
   const { provenance } = useContext(ProvenanceContext);
-  const rows = useRecoilValue(rowsSelector(provenance.getState()))
+  const rows = useRecoilValue(rowsSelector);
   
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);

@@ -28,7 +28,7 @@ export const Body = ({ data, config }: Props) => {
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
   const loading = useRecoilValue(loadingAtom);
-  const rows = useRecoilValue(rowsSelector(provObject.provenance.getState()));
+  const rows = useRecoilValue(rowsSelector);
 
   const provVis = {
     open: isProvVisOpen,

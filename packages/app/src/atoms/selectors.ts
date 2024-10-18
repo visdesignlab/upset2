@@ -1,13 +1,14 @@
-import { getRows, Item, Rows, UpsetConfig } from "@visdesignlab/upset2-core";
+import { getRows, Item, Rows } from "@visdesignlab/upset2-core";
 import { selector, selectorFamily } from "recoil";
 import { dataSelector } from "./dataAtom";
+import { configAtom } from "./configAtoms";
 
 /**
  * Gets all rows in the plot
  */
-export const rowsSelector = selectorFamily<Rows, UpsetConfig>({
+export const rowsSelector = selector<Rows>({
   key: 'plot-rows',
-  get: (config: UpsetConfig) => ({ get }) => getRows(get(dataSelector), config),
+  get: ({ get }) => getRows(get(dataSelector), get(configAtom)),
 })
 
 /**
