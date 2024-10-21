@@ -303,6 +303,21 @@ export function isElementSelection(e: unknown): e is ElementSelection {
 }
 
 /**
+ * Type guard for PlotInformation
+ * @param p variable to check
+ * @returns {boolean}
+ */
+export function isPlotInformation(p: unknown): p is PlotInformation {
+  return isObject(p)
+    && Object.hasOwn(p, 'description')
+    && Object.hasOwn(p, 'sets')
+    && Object.hasOwn(p, 'items')
+    && (typeof (p as PlotInformation).description === 'string' || (p as PlotInformation).description === null)
+    && (typeof (p as PlotInformation).sets === 'string' || (p as PlotInformation).sets === null)
+    && (typeof (p as PlotInformation).items === 'string' || (p as PlotInformation).items === null);
+}
+
+/**
  * Determines if the given object is a valid UpsetConfig using the CURRENT version.
  * @privateRemarks
  * This needs to be updated each time a new version is added. Since it's intended to be an exhaustive
@@ -350,32 +365,8 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 
   // Check that the fields are of the correct type
   // Start with plot info
-  if (typeof plotInformation !== 'object') {
-    console.warn('Upset config error: Plot information is not an object');
-    return false;
-  }
-  if (!Object.hasOwn(plotInformation, 'description')) {
-    console.warn('Upset config error: Plot information missing description');
-    return false;
-  }
-  if (!Object.hasOwn(plotInformation, 'sets')) {
-    console.warn('Upset config error: Plot information missing sets');
-    return false;
-  }
-  if (!Object.hasOwn(plotInformation, 'items')) {
-    console.warn('Upset config error: Plot information missing items');
-    return false;
-  }
-  if (typeof (plotInformation as PlotInformation).description !== 'string') {
-    console.warn('Upset config error: Plot description is not a string');
-    return false;
-  }
-  if (typeof (plotInformation as PlotInformation).sets !== 'string') {
-    console.warn('Upset config error: Plot sets is not a string');
-    return false;
-  }
-  if (typeof (plotInformation as PlotInformation).items !== 'string') {
-    console.warn('Upset config error: Plot items is not a string');
+  if (!isPlotInformation(plotInformation)) {
+    console.warn('Upset config error: Invalid plot information');
     return false;
   }
 

@@ -1,10 +1,10 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { UpsetConfig, getRows } from '@visdesignlab/upset2-core';
+import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../App';
 import { useContext, useEffect } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
@@ -13,6 +13,7 @@ import { loadingAtom } from '../atoms/loadingAtom';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
+import { rowsSelector } from '../atoms/selectors';
 
 type Props = {
   data: any;
@@ -27,6 +28,7 @@ export const Body = ({ data, config }: Props) => {
   const [ isElementSidebarOpen, setIsElementSidebarOpen ] = useRecoilState(elementSidebarAtom);
   const [ isAltTextSidebarOpen, setIsAltTextSidebarOpen ] = useRecoilState(altTextSidebarAtom);
   const loading = useRecoilValue(loadingAtom);
+  const rows = useRecoilValue(rowsSelector);
 
   const provVis = {
     open: isProvVisOpen,
@@ -59,7 +61,8 @@ export const Body = ({ data, config }: Props) => {
    */
   async function getAltText(): Promise<AltText> {
     const state = provObject.provenance.getState();
-    const config = getAltTextConfig(state, data, getRows(data, state));
+    // Rows must be cloned to avoid a recoil error triggered far down in this call chain when a function writes rows
+    const config = getAltTextConfig(state, data, structuredClone(rows));
 
     if (config.firstAggregateBy !== "None") {
       throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");

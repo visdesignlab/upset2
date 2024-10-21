@@ -1,4 +1,6 @@
-import { useContext, useState, useEffect } from 'react';
+import {
+  useContext, useState, useEffect, useMemo,
+} from 'react';
 import { ProvVis } from '@trrack/vis-react';
 import {
   Divider, Drawer, IconButton, Typography, css,
@@ -20,6 +22,20 @@ export const ProvenanceVis = ({ open, close }: Props) => {
   useEffect(() => {
     provenance.currentChange(() => setCurrentNodeId(provenance.current.id));
   }, [provenance]);
+
+  const provVis = useMemo(() => {
+    if (Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
+      return (<ProvVis
+        root={provenance.root.id}
+        config={{
+          changeCurrent: (node) => provenance.to(node),
+        }}
+        nodeMap={provenance.graph.backend.nodes}
+        currentNode={currentNodeId}
+      />);
+    }
+    return null;
+  }, [provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
 
   return (
     <Drawer
@@ -64,14 +80,7 @@ export const ProvenanceVis = ({ open, close }: Props) => {
             margin: auto;
           `}
         />
-        <ProvVis
-          root={provenance.root.id}
-          config={{
-            changeCurrent: (node) => provenance.to(node),
-          }}
-          nodeMap={provenance.graph.backend.nodes}
-          currentNode={currentNodeId}
-        />
+        {provVis}
       </div>
     </Drawer>
   );

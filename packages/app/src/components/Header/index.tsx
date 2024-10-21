@@ -1,5 +1,5 @@
 import { exportState, getAccessibleData, downloadSVG } from '@visdesignlab/upset2-react';
-import { Column, getRows } from '@visdesignlab/upset2-core';
+import { Column } from '@visdesignlab/upset2-core';
 import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
@@ -13,7 +13,7 @@ import localforage from 'localforage';
 import { getQueryParam, queryParamAtom, saveQueryParam } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../App';
 import { ImportModal } from '../ImportModal';
 import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
@@ -24,6 +24,7 @@ import { loadingAtom } from '../../atoms/loadingAtom';
 import { getMultinetDataUrl } from '../../api/getMultinetDataUrl';
 import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
+import { rowsSelector } from '../../atoms/selectors';
 
 const Header = ({ data }: { data: any }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -34,6 +35,7 @@ const Header = ({ data }: { data: any }) => {
   const setLoading = useSetRecoilState(loadingAtom);
   
   const { provenance } = useContext(ProvenanceContext);
+  const rows = useRecoilValue(rowsSelector);
   
   const [ attributeDialog, setAttributeDialog ] = useState(false);
   const [ showImportModal, setShowImportModal ] = useState(false);
@@ -50,7 +52,7 @@ const Header = ({ data }: { data: any }) => {
    * "Tab indicies" refers to the number of tabIndex properties on elements in the sidebar
    * @see AltTextSidebar to count the number of tab indices used
    */
-  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 17 : 0);
+  const ALTTEXT_SIDEBAR_TABS = (isAltTextSidebarOpen ? 18 : 0);
 
   const handleImportModalClose = () => {
     setShowImportModal(false);
@@ -117,7 +119,7 @@ const Header = ({ data }: { data: any }) => {
     await Promise.all([
       localforage.clear(),
       localforage.setItem('data', data),
-      localforage.setItem('rows', getAccessibleData(getRows(data, provenance.getState()), true)),
+      localforage.setItem('rows', getAccessibleData(rows, true)),
       localforage.setItem('visibleSets', visibleSets),
       localforage.setItem('hiddenSets', hiddenSets.map((set: Column) => set.name))
     ]);
@@ -161,7 +163,8 @@ const Header = ({ data }: { data: any }) => {
         justifyContent: "space-between",
       }}>
         <Box sx={{display: 'flex', flexGrow: '1', justifyContent: 'start', alignItems: 'center', margin: 0, padding: 0}}>
-          <img className="logo" id="multinet-logo" src="https://raw.githubusercontent.com/multinet-app/multinet-components/main/src/assets/multinet_logo.svg" alt="Multinet Logo"/>
+          {/* TEMPORARY REMOVAL UNTIL CHI SUBMISSION */}
+          {/* <img className="logo" id="multinet-logo" src="https://raw.githubusercontent.com/multinet-app/multinet-components/main/src/assets/multinet_logo.svg" alt="Multinet Logo"/> */}
           <Typography id="upset-title" variant="h1" noWrap component="div" sx={{ marginRight: '5px', lineHeight: '1.5', fontWeight: 'normal', fontSize: '1.3em' }}>
             Upset - Visualizing Intersecting Sets
           </Typography>
@@ -186,10 +189,10 @@ const Header = ({ data }: { data: any }) => {
                   setIsAltTextSidebarOpen(true);
                 }
               }}
-              aria-label='Alt Text Sidebar'
+              aria-label='Text Descriptions (Alt Text) Sidebar'
               tabIndex={2}
               >
-                Text Description
+                Text Descriptions
               </Button>
               <Link 
                 to={`/datatable${getQueryParam()}`} 
@@ -271,7 +274,7 @@ const Header = ({ data }: { data: any }) => {
               <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="UpSet JSON state file download">
                 Export State
               </MenuItem>
-              <MenuItem onClick={() => exportState(provenance, data, getRows(data, provenance.getState()))} aria-label="Download UpSet JSON state file with table data included">
+              <MenuItem onClick={() => exportState(provenance, data, rows)} aria-label="Download UpSet JSON state file with table data included">
                 Export State + Data
               </MenuItem>
               <MenuItem onClick={() => downloadSVG()} aria-label="SVG Download of this upset plot">

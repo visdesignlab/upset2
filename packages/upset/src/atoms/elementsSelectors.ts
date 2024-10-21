@@ -1,7 +1,7 @@
 import {
   Aggregate,
   BaseIntersection,
-  NumericalQuery, Item, flattenedOnlyRows, getItems,
+  NumericalQuery, Item, Row, flattenedOnlyRows, getItems,
   ElementSelection,
   filterItems,
   ElementQuery,
@@ -13,6 +13,7 @@ import {
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
+import { rowsSelector } from './renderRowsAtom';
 
 /**
  * Gets all elements in the intersection represented by the provided ID
@@ -28,9 +29,7 @@ export const elementSelector = selectorFamily<
     if (!id) return [];
 
     const items = get(itemsAtom);
-    const data = get(dataAtom);
-    const state = get(upsetConfigAtom);
-    const intersections = flattenedOnlyRows(data, state);
+    const intersections = get(rowsSelector);
     const row = intersections[id];
     const palette = get(bookmarkedColorPalette);
     const currentIntersection = get(currentIntersectionSelector);
@@ -48,6 +47,25 @@ export const elementSelector = selectorFamily<
       isCurrent:
         !!(currentIntersection?.id === id),
     }));
+  },
+});
+
+/**
+ * Gets all values for a given attribute for all items in a given row.
+ * If the provided attribute does not exist or is not numeric,
+ * outputs a console warning & returns an empty list.
+ */
+export const attValuesSelector = selectorFamily<number[], {row: Row, att: string}>({
+  key: 'att-values',
+  get: ({ row, att }) => ({ get }) => {
+    const items = get(elementSelector(row.id));
+
+    // We could filter the whole array before we map, but attributes should all be the same type,
+    // so its sufficient and more performant to only check the first attribute
+    if (!items[0] || !items[0][att] || typeof items[0][att] !== 'number') {
+      return [];
+    }
+    return items.map((item) => item[att] as number);
   },
 });
 
