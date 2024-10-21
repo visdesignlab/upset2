@@ -1,5 +1,6 @@
 import { Box } from '@mui/system';
 import {
+  useCallback,
   useContext, useMemo, useRef, useState,
 } from 'react';
 import { SignalListener, VegaLite } from 'react-vega';
@@ -21,7 +22,7 @@ import { UpsetActions } from '../../provenance';
  */
 export const ElementVisualization = () => {
   /**
-   * State hooks
+   * External state
    */
 
   const [openAddPlot, setOpenAddPlot] = useState(false);
@@ -34,7 +35,7 @@ export const ElementVisualization = () => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
-   * Hooks
+   * Internal State
    */
 
   const draftSelection = useRef(elementSelection);
@@ -42,6 +43,9 @@ export const ElementVisualization = () => {
     () => generateVega(scatterplots, histograms, selectColor, elementSelection),
     [scatterplots, histograms, selectColor, elementSelection],
   );
+  const data = useMemo(() => ({
+    elements: Object.values(structuredClone(items)),
+  }), [items]);
 
   /**
    * Functions
@@ -58,10 +62,14 @@ export const ElementVisualization = () => {
    * @param {unknown} value Should be an object mapping the names of the attributes being brushed over
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
-  const brushHandler: SignalListener = (_: string, value: unknown) => {
+  const brushHandler: SignalListener = useCallback((_: string, value: unknown) => {
     if (!isElementSelection(value)) return;
     draftSelection.current = value;
-  };
+  }, [draftSelection]);
+
+  const signalListeners = useMemo(() => ({
+    brush: brushHandler,
+  }), [brushHandler]);
 
   return (
     <Box
@@ -85,13 +93,9 @@ export const ElementVisualization = () => {
         {(scatterplots.length > 0 || histograms.length > 0) && (
           <VegaLite
             spec={vegaSpec}
-            data={{
-              elements: Object.values(JSON.parse(JSON.stringify(items))),
-            }}
+            data={data}
             actions={false}
-            signalListeners={{
-              brush: brushHandler,
-            }}
+            signalListeners={signalListeners}
           />
         )}
       </Box>

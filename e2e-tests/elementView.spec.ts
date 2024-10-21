@@ -1,35 +1,9 @@
 import {
   test, expect, Page, Locator,
 } from '@playwright/test';
-import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
-import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';
-import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json';
+import { beforeTest } from './common';
 
-test.beforeEach(async ({ page }) => {
-  await page.route('*/**/api/**', async (route) => {
-    const url = route.request().url();
-    let json;
-
-    if (url) {
-      if (url.includes('workspaces/Upset%20Examples/tables/simpsons/rows/?limit=9007199254740991')) {
-        json = mockData;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/tables/simpsons/annotations/')) {
-        json = mockAnnotations;
-        await route.fulfill({ json });
-      } else if (url.includes('alttxt')) {
-        json = mockAltText;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/state/')) {
-        await route.fulfill({ status: 200 });
-      } else {
-        await route.continue();
-      }
-    } else {
-      await route.abort();
-    }
-  });
-});
+test.beforeEach(beforeTest);
 
 /**
  * Drags the mouse from the center of the element to the specified offset
