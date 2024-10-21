@@ -59,23 +59,6 @@ function App() {
     }
   }, [data]);
 
-  useEffect(() => {
-    async function update() {
-      if (sessionId) {
-        const session = await getMultinetSession(workspace || '', sessionId);
-        // Load the session if the object is not empty
-        if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
-          setSessionState(session.state);
-        } else {
-          setSessionState(undefined);
-        }
-      } else {
-        setSessionState(undefined);
-      }
-    }
-    update();
-  }, [sessionId, workspace]);
-
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
     if (sessionState !== null) {
@@ -99,6 +82,30 @@ function App() {
     }
     return {provenance: null, actions: null};
   }, [conf, setState, sessionState]);
+
+  /*
+   * Effects
+   */
+
+  useEffect(() => {
+    async function update() {
+      if (sessionId) {
+        const session = await getMultinetSession(workspace || '', sessionId);
+        // Load the session if the object is not empty
+        if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
+          setSessionState(session.state);
+        } else {
+          setSessionState(undefined);
+        }
+      } else {
+        setSessionState(undefined);
+      }
+    }
+    update();
+  }, [sessionId, workspace]);
+
+  // Update the state on first render and if the provenance object changes
+  useEffect(() => {if (provenance?.getState()) setState(provenance?.getState())}, [provenance, setState]);
 
   return (
     <BrowserRouter>
