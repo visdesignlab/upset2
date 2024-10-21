@@ -37,10 +37,15 @@ export const QueryInterface = () => {
    */
 
   /**
-   * Save the current query
+   * Save the current query if none is defined, or clear the existing selection
    */
-  const save = useCallback(() => {
-    if (attField && typeField && queryField
+  const saveOrClear = useCallback(() => {
+    if (currentSelection) {
+      actions.setElementSelection(null);
+      setAttField(undefined);
+      setTypeField(undefined);
+      setQueryField(undefined);
+    } else if (attField && typeField && queryField
       && Object.values(ElementQueryType).includes(typeField as ElementQueryType)
       && atts.includes(attField)
     ) {
@@ -50,13 +55,18 @@ export const QueryInterface = () => {
         query: queryField,
       }));
     }
-  }, [attField, typeField, queryField, atts, actions]);
+  }, [attField, typeField, queryField, atts, actions, currentSelection]);
 
   return atts.length > 0 ? (
     <Box>
       <FormControl css={FIELD_CSS}>
         <InputLabel id="query-att-select-label">Attribute Name</InputLabel>
-        <Select labelId="query-att-select-label" value={attField ?? ''} onChange={(e) => setAttField(e.target.value)}>
+        <Select
+          disabled={!!currentSelection}
+          labelId="query-att-select-label"
+          value={attField ?? ''}
+          onChange={(e) => setAttField(e.target.value)}
+        >
           {atts.map((att) => (
             <MenuItem key={att} value={att}>{att}</MenuItem>
           ))}
@@ -64,7 +74,12 @@ export const QueryInterface = () => {
       </FormControl>
       <FormControl css={FIELD_CSS}>
         <InputLabel id="query-type-select-label">Query Type</InputLabel>
-        <Select labelId="query-type-select-label" value={typeField ?? ''} onChange={(e) => setTypeField(e.target.value)}>
+        <Select
+          disabled={!!currentSelection}
+          labelId="query-type-select-label"
+          value={typeField ?? ''}
+          onChange={(e) => setTypeField(e.target.value)}
+        >
           {Object.values(ElementQueryType).map((type) => (
             <MenuItem key={type} value={type}>{type}</MenuItem>
           ))}
@@ -78,10 +93,18 @@ export const QueryInterface = () => {
             width: '80%',
             display: 'inline-block',
           }}
+          disabled={!!currentSelection}
           value={queryField ?? ''}
           onChange={(e) => setQueryField(e.target.value)}
         />
-        <Button fullWidth css={{ width: '20%', height: '100%' }} onClick={save}>Save</Button>
+        <Button
+          fullWidth
+          css={{ width: '20%', height: '100%' }}
+          onClick={saveOrClear}
+          color={currentSelection ? 'error' : 'success'}
+        >
+          {currentSelection ? 'Clear' : 'Save'}
+        </Button>
       </Box>
     </Box>
   ) : null;
