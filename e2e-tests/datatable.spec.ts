@@ -16,6 +16,7 @@ test('Datatable', async ({ page }) => {
   // Test downloads
   // //////////////////
   const page1 = await page1Promise;
+  await beforeTest({ page: page1 });
   const heading1 = await page1.getByRole('heading', { name: 'Intersection Data' });
   await expect(heading1).toBeVisible();
 

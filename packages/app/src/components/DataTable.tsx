@@ -1,10 +1,12 @@
-import { Backdrop, Box, Button, CircularProgress, Dialog } from "@mui/material"
+import { Backdrop, Box, Button, CircularProgress } from "@mui/material"
 import { AccessibleDataEntry, CoreUpsetData, SixNumberSummary } from "@visdesignlab/upset2-core";
 import { useEffect, useMemo, useState } from "react";
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { getAccessibleData } from "@visdesignlab/upset2-react";
 import DownloadIcon from '@mui/icons-material/Download';
 import localforage from "localforage";
+import { rowsSelector } from "../atoms/selectors";
+import { useRecoilValue } from "recoil";
 
 const downloadCSS = {
   m: "4px",
@@ -162,11 +164,13 @@ const DownloadButton = ({onClick}: DownloadButtonProps) => {
  */
 export const DataTable = () => {
   const [data , setData] = useState<CoreUpsetData | null>(null);
-  const [rows, setRows] = useState<ReturnType<typeof getAccessibleData> | null>(null);
+  const flatRows = useRecoilValue(rowsSelector);
   const [visibleSets, setVisibleSets] = useState<string[] | null>(null);
   const [hiddenSets, setHiddenSets] = useState<string[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const rows = useMemo(() => getAccessibleData(flatRows, true), [flatRows]);
 
   /**
    * Fetches data from local storage and sets the state variables.
@@ -185,7 +189,6 @@ export const DataTable = () => {
         setError("Error: Data not found in local storage");
       } else {
         setData(storedData as CoreUpsetData);
-        setRows(storedRows as ReturnType<typeof getAccessibleData>);
         setVisibleSets(storedVisibleSets as string[]);
         setHiddenSets(storedHiddenSets as string[]);
       }
