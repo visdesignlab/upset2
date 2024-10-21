@@ -10,6 +10,7 @@ import { convertConfig, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-
 import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
+import { CircularProgress } from '@mui/material';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -124,6 +125,8 @@ function App() {
         </ProvenanceContext.Provider>
       :
         <Routes>
+          <Route path="*" element={<CircularProgress />} />
+          <Route path="/" element={<CircularProgress />} />
           <Route path="/datatable" element={<DataTable />} />
         </Routes>
       }
