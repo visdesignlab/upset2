@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }) => {
       } else if (url.includes('alttxt')) {
         json = mockAltText;
         await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/state/')) {
+      } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/')) {
         await route.fulfill({ status: 200 });
       } else {
         await route.continue();
@@ -180,4 +180,144 @@ test('Element View', async ({ page }) => {
   await expect(schoolMaleSelectionRect).toBeVisible();
   await expect(schoolBlueHairMaleSelectionRect).toBeVisible();
   await expect(schoolMale3rdPoly).toBeVisible();
+});
+
+/**
+ * Clears the selection in the element view; element view must be open
+ * @param page The page to perform the clear selection on
+ */
+async function clearSelection(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Clear' }).click();
+}
+
+/**
+ * Sets a query in the element view; element view must be open
+ * @param page The current testing page
+ * @param att The attribute to query
+ * @param type The type of query
+ * @param query The query string
+ */
+async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
+  await page.getByLabel('Attribute Name').click();
+  await page.getByRole('option', { name: att }).click();
+  await page.getByLabel('Query Type').click();
+  await page.getByRole('option', { name: type, exact: true }).click();
+  await page.getByPlaceholder('Query').click();
+  await page.getByPlaceholder('Query').fill(query);
+  await page.getByRole('button', { name: 'Save' }).click();
+}
+
+test('Query Selection', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.getByLabel('Element View Sidebar Toggle').click();
+  await page.locator('[id="Subset_School\\~\\&\\~Male"] g').filter({ hasText: /^Blue Hair$/ }).locator('circle').click();
+  await page.getByLabel('Selected intersection School').click();
+
+  // Selected elements for testing
+  const ralphCell = page.getByRole('cell', { name: 'Ralph' });
+  const age8Cell = page.getByRole('cell', { name: '8' });
+  const bartCell = page.getByRole('cell', { name: 'Bart' });
+  const age10Cell1 = page.getByRole('cell', { name: '10' }).first();
+  const age10Cell2 = page.getByRole('cell', { name: '10' }).nth(1);
+  const martinCell = page.getByRole('cell', { name: 'Martin Prince' });
+  const schoolSelectPoly = page.locator('#Subset_School polygon').nth(1);
+  const maleSelectPoly = page.locator('#Subset_Male polygon').nth(1);
+  const schoolMaleSelectPoly = page.locator('[id="Subset_School\\~\\&\\~Male"] polygon').nth(1);
+
+  // Test less than query
+  await setQuery(page, 'Age', 'less than', '10');
+
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(ralphCell).toBeVisible();
+  await expect(age8Cell).toBeVisible();
+  await expect(bartCell).not.toBeVisible();
+  await expect(age10Cell1).not.toBeVisible();
+  await expect(age10Cell2).not.toBeVisible();
+  await expect(martinCell).not.toBeVisible();
+  await expect(schoolSelectPoly).toBeVisible();
+  await expect(maleSelectPoly).not.toBeVisible();
+
+  // Test greater than query
+  await clearSelection(page);
+  await setQuery(page, 'Age', 'greater than', '8');
+
+  await expect(bartCell).toBeVisible();
+  await expect(age10Cell1).toBeVisible();
+  await expect(age10Cell2).toBeVisible();
+  await expect(martinCell).toBeVisible();
+  await expect(maleSelectPoly).toBeVisible();
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(ralphCell).not.toBeVisible();
+  await expect(age8Cell).not.toBeVisible();
+  await expect(schoolSelectPoly).not.toBeVisible();
+
+  // Test contains query
+  await clearSelection(page);
+  await setQuery(page, 'Name', 'contains', 't');
+
+  await expect(bartCell).toBeVisible();
+  await expect(age10Cell1).toBeVisible();
+  await expect(age10Cell2).toBeVisible();
+  await expect(martinCell).toBeVisible();
+  await expect(maleSelectPoly).toBeVisible();
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(ralphCell).not.toBeVisible();
+  await expect(age8Cell).not.toBeVisible();
+  await expect(schoolSelectPoly).not.toBeVisible();
+
+  // Test equals query
+  await clearSelection(page);
+  await setQuery(page, 'Name', 'equals', 'Bart');
+
+  await expect(bartCell).toBeVisible();
+  await expect(age10Cell1).toBeVisible();
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(age10Cell2).not.toBeVisible();
+  await expect(martinCell).not.toBeVisible();
+  await expect(maleSelectPoly).not.toBeVisible();
+  await expect(ralphCell).not.toBeVisible();
+  await expect(age8Cell).not.toBeVisible();
+  await expect(schoolSelectPoly).not.toBeVisible();
+
+  // Test length equals query
+  await clearSelection(page);
+  await setQuery(page, 'Name', 'length equals', '5');
+
+  await expect(ralphCell).toBeVisible();
+  await expect(age8Cell).toBeVisible();
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(bartCell).not.toBeVisible();
+  await expect(age10Cell1).not.toBeVisible();
+  await expect(age10Cell2).not.toBeVisible();
+  await expect(martinCell).not.toBeVisible();
+  await expect(schoolSelectPoly).not.toBeVisible();
+  await expect(maleSelectPoly).not.toBeVisible();
+
+  // Test regex query
+  await clearSelection(page);
+  await setQuery(page, 'Name', 'regex', '^([A-z]+)$');
+
+  await expect(page.locator('[id="Subset_Evil\\~\\&\\~Male"] polygon').nth(1)).not.toBeVisible();
+  await expect(bartCell).toBeVisible();
+  await expect(age10Cell1).toBeVisible();
+  await expect(ralphCell).toBeVisible();
+  await expect(age8Cell).toBeVisible();
+  await expect(martinCell).not.toBeVisible();
+  await expect(age10Cell2).not.toBeVisible();
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(schoolSelectPoly).toBeVisible();
+  await expect(maleSelectPoly).toBeVisible();
+
+  // Test clear selection
+  await clearSelection(page);
+  await expect(bartCell).toBeVisible();
+  await expect(age10Cell1).toBeVisible();
+  await expect(ralphCell).toBeVisible();
+  await expect(age8Cell).toBeVisible();
+  await expect(martinCell).toBeVisible();
+  await expect(age10Cell2).toBeVisible();
+  // Only visible because the intersection is selected
+  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(schoolSelectPoly).not.toBeVisible();
+  await expect(maleSelectPoly).not.toBeVisible();
 });
