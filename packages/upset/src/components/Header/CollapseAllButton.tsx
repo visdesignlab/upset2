@@ -1,14 +1,14 @@
 import { css, SvgIcon, Tooltip } from '@mui/material';
 import { DoubleArrow } from '@mui/icons-material';
-import { getRows, isRowAggregate } from '@visdesignlab/upset2-core';
+import { isRowAggregate } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import Group from '../custom/Group';
 import { mousePointer } from '../../utils/styles';
 import { ProvenanceContext } from '../Root';
 import { firstAggregateSelector } from '../../atoms/config/aggregateAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { dataAtom } from '../../atoms/dataAtom';
+import { rowsSelector } from '../../atoms/renderRowsAtom';
 
 const iconSize = 16;
 
@@ -20,14 +20,24 @@ const collapseAllStyle = css`
 `;
 
 export const CollapseAllButton = () => {
+  /*
+   * State
+   */
+
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
-  const { provenance, actions } = useContext(ProvenanceContext);
-  const data = useRecoilValue(dataAtom);
+  const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const rows = getRows(data, provenance.getState());
+  const rows = useRecoilValue(rowsSelector);
   const [allCollapsed, setAllCollapsed] = useState(false);
 
-  const toggleCollapseAll = () => {
+  /*
+   * Callbacks
+   */
+
+  /**
+   * Toggles the collapse state of all rows.
+   */
+  const toggleCollapseAll = useCallback(() => {
     const ids: string[] = [];
 
     if (allCollapsed === true) {
@@ -44,14 +54,17 @@ export const CollapseAllButton = () => {
       setAllCollapsed(true);
       actions.collapseAll(ids);
     }
-  };
+  }, [allCollapsed, actions, rows]);
 
-  const getTransform = () => {
+  /**
+   * Get the transform for the icon.
+   */
+  const getTransform = useCallback(() => {
     if (!allCollapsed) {
       return `rotate(-90) translate(-${iconSize}, -${iconSize})`;
     }
     return 'rotate(90)';
-  };
+  }, [allCollapsed, iconSize]);
 
   return (
     <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>

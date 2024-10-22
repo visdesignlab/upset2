@@ -21,5 +21,9 @@ export function updateMultinetSession(workspace: string, sessionId: string, prov
  * @returns A promise that resolves to the retrieved session.
  */
 export async function getMultinetSession(workspace: string, sessionId: string) {
-  return api.getSession(workspace, parseInt(sessionId), 'table');
+  try {
+    return await api.getSession(workspace, parseInt(sessionId), 'table');
+  } catch {
+    return null;
+  }
 }
