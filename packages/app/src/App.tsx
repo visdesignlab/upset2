@@ -11,13 +11,14 @@ import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
 import { CircularProgress } from '@mui/material';
+import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 const defaultVisibleSets = 6;
 
-type SessionState = any | null | 'not found';
+type SessionState = ProvenanceGraph<UpsetConfig, string> | null | 'not found';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
