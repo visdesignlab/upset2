@@ -6,7 +6,9 @@ import {
 import { Box } from '@mui/system';
 import { useRecoilValue } from 'recoil';
 import { ElementQueryToBookmark, ElementQueryType } from '@visdesignlab/upset2-core';
-import { useCallback, useContext, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
 import { currentElementQuery } from '../../atoms/elementsSelectors';
 import { ProvenanceContext } from '../Root';
@@ -31,6 +33,19 @@ export const QueryInterface = () => {
   const [attField, setAttField] = useState(currentSelection?.att);
   const [typeField, setTypeField] = useState<string | undefined>(currentSelection?.type);
   const [queryField, setQueryField] = useState(currentSelection?.query);
+
+  // Resets input state every time the current selection changes
+  useEffect(() => {
+    if (currentSelection) {
+      setAttField(currentSelection?.att);
+      setTypeField(currentSelection?.type);
+      setQueryField(currentSelection?.query);
+    } else {
+      setAttField(undefined);
+      setTypeField(undefined);
+      setQueryField(undefined);
+    }
+  }, [currentSelection]);
 
   /*
    * Functions
@@ -58,12 +73,13 @@ export const QueryInterface = () => {
   }, [attField, typeField, queryField, atts, actions, currentSelection]);
 
   return atts.length > 0 ? (
-    <Box>
+    <Box css={{ marginTop: '10px' }}>
       <FormControl css={FIELD_CSS}>
         <InputLabel id="query-att-select-label">Attribute Name</InputLabel>
         <Select
           disabled={!!currentSelection}
           labelId="query-att-select-label"
+          label="Attribute Name"
           value={attField ?? ''}
           onChange={(e) => setAttField(e.target.value)}
         >
@@ -76,6 +92,7 @@ export const QueryInterface = () => {
         <InputLabel id="query-type-select-label">Query Type</InputLabel>
         <Select
           disabled={!!currentSelection}
+          label="Query Type"
           labelId="query-type-select-label"
           value={typeField ?? ''}
           onChange={(e) => setTypeField(e.target.value)}
@@ -102,8 +119,9 @@ export const QueryInterface = () => {
           css={{ width: '20%', height: '100%' }}
           onClick={saveOrClear}
           color={currentSelection ? 'error' : 'success'}
+          variant="outlined"
         >
-          {currentSelection ? 'Clear' : 'Save'}
+          {currentSelection ? 'Clear' : 'Apply'}
         </Button>
       </Box>
     </Box>
