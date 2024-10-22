@@ -1,7 +1,7 @@
 import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
-import { Alert, Chip, Stack } from '@mui/material';
+import { Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -53,118 +53,104 @@ export const BookmarkChips = () => {
   }
 
   return (
-    <>
-      {!currentIntersection && bookmarked.length === 0 && (
-        <Alert
-          severity="info"
-          variant="outlined"
-          role="generic"
-          sx={{
-            alignItems: 'center', margin: '0.5em 0', border: 'none', color: '#777777',
-          }}
-        >
-          Please click on intersections to select an intersection.
-        </Alert>
-      )}
-      <Stack direction="row" sx={{ flexFlow: 'row wrap' }}>
-        {/* All chips from bookmarks */}
-        {bookmarked.map((bookmark) => (
-          <Chip
-            disabled={bookmark.type === 'intersection' && rows[bookmark.id] === undefined}
-            sx={(theme) => ({
-              margin: theme.spacing(0.5),
-              '.MuiChip-icon': {
-                color: colorPallete[bookmark.id],
-              },
-              backgroundColor:
+    <Stack direction="row" sx={{ flexFlow: 'row wrap' }}>
+      {/* All chips from bookmarks */}
+      {bookmarked.map((bookmark) => (
+        <Chip
+          disabled={bookmark.type === 'intersection' && rows[bookmark.id] === undefined}
+          sx={(theme) => ({
+            margin: theme.spacing(0.5),
+            '.MuiChip-icon': {
+              color: colorPallete[bookmark.id],
+            },
+            backgroundColor:
                 bookmark.id === currentIntersection?.id || bookmark.id === currentSelection?.id
                   ? 'rgba(0,0,0,0.2)'
                   : 'default',
-            })}
-            key={bookmark.id}
-            aria-label={`Bookmarked intersection ${bookmark.label}${
-              isBookmarkedIntersection(bookmark) ? `, size ${bookmark.size}` : ''}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                chipClicked(bookmark);
-              }
-            }}
-            label={isBookmarkedIntersection(bookmark)
-              ? `${bookmark.label} - ${bookmark.size}` : `${bookmark.label}`}
-            icon={<SquareIcon fontSize={'1em' as any} />}
-            deleteIcon={<StarIcon />}
-            onClick={() => {
+          })}
+          key={bookmark.id}
+          aria-label={`Bookmarked intersection ${bookmark.label}${
+            isBookmarkedIntersection(bookmark) ? `, size ${bookmark.size}` : ''}`}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
               chipClicked(bookmark);
-            }}
-            onDelete={() => {
-              if (currentIntersection?.id === bookmark.id) {
-                actions.setSelected(null);
-              } else if (currentSelection?.id === bookmark.id) {
-                actions.setElementSelection(null);
-              }
-              actions.removeBookmark(bookmark);
-            }}
-          />
-        ))}
-        {/* Chip for the currently selected intersection */}
-        {currentIntersection && !bookmarked.find((b) => b.id === currentIntersection.id) && (
-          <Chip
-            sx={(theme) => ({
-              margin: theme.spacing(0.5),
-              '.MuiChip-icon': {
-                color: nextColor,
-              },
-              backgroundColor: 'rgba(0,0,0,0.2)',
-            })}
-            icon={<SquareIcon fontSize={'1em' as any} />}
-            aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                actions.addBookmark<BookmarkedIntersection>({
-                  id: currentIntersection.id,
-                  label: currentIntersectionDisplayName,
-                  size: currentIntersection.size,
-                  type: 'intersection',
-                });
-              }
-            }}
-            label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
-            onDelete={() => {
-              actions.addBookmark<BookmarkedIntersection>({
-                id: currentIntersection.id,
-                label: currentIntersectionDisplayName,
-                size: currentIntersection.size,
-                type: 'intersection',
-              });
-            }}
-            deleteIcon={<StarBorderIcon />}
-          />
-        )}
-        {/* Chip for the current element selection */}
-        {currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
-          <Chip
-            sx={(theme) => ({
-              margin: theme.spacing(0.5),
-              '.MuiChip-icon': {
-                color: elementSelectionColor,
-              },
-              backgroundColor: 'rgba(0,0,0,0.2)',
-            })}
-            icon={<SquareIcon fontSize={'1em' as any} />}
-            aria-label={`Selected elements ${currentSelection.label}`}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') {
-                actions.addBookmark(structuredClone(currentSelection));
-              }
-            }}
-            label={`${currentSelection.label}`}
-            onDelete={() => {
-              actions.addBookmark(structuredClone(currentSelection));
-            }}
-            deleteIcon={<StarBorderIcon />}
-          />
-        )}
-      </Stack>
-    </>
+            }
+          }}
+          label={isBookmarkedIntersection(bookmark)
+            ? `${bookmark.label} - ${bookmark.size}` : `${bookmark.label}`}
+          icon={<SquareIcon fontSize={'1em' as any} />}
+          deleteIcon={<StarIcon />}
+          onClick={() => {
+            chipClicked(bookmark);
+          }}
+          onDelete={() => {
+            if (currentIntersection?.id === bookmark.id) {
+              actions.setSelected(null);
+            } else if (currentSelection?.id === bookmark.id) {
+              actions.setElementSelection(null);
+            }
+            actions.removeBookmark(bookmark);
+          }}
+        />
+      ))}
+      {/* Chip for the currently selected intersection */}
+      {currentIntersection && !bookmarked.find((b) => b.id === currentIntersection.id) && (
+      <Chip
+        sx={(theme) => ({
+          margin: theme.spacing(0.5),
+          '.MuiChip-icon': {
+            color: nextColor,
+          },
+          backgroundColor: 'rgba(0,0,0,0.2)',
+        })}
+        icon={<SquareIcon fontSize={'1em' as any} />}
+        aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            actions.addBookmark<BookmarkedIntersection>({
+              id: currentIntersection.id,
+              label: currentIntersectionDisplayName,
+              size: currentIntersection.size,
+              type: 'intersection',
+            });
+          }
+        }}
+        label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
+        onDelete={() => {
+          actions.addBookmark<BookmarkedIntersection>({
+            id: currentIntersection.id,
+            label: currentIntersectionDisplayName,
+            size: currentIntersection.size,
+            type: 'intersection',
+          });
+        }}
+        deleteIcon={<StarBorderIcon />}
+      />
+      )}
+      {/* Chip for the current element selection */}
+      {currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
+      <Chip
+        sx={(theme) => ({
+          margin: theme.spacing(0.5),
+          '.MuiChip-icon': {
+            color: elementSelectionColor,
+          },
+          backgroundColor: 'rgba(0,0,0,0.2)',
+        })}
+        icon={<SquareIcon fontSize={'1em' as any} />}
+        aria-label={`Selected elements ${currentSelection.label}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            actions.addBookmark(structuredClone(currentSelection));
+          }
+        }}
+        label={`${currentSelection.label}`}
+        onDelete={() => {
+          actions.addBookmark(structuredClone(currentSelection));
+        }}
+        deleteIcon={<StarBorderIcon />}
+      />
+      )}
+    </Stack>
   );
 };

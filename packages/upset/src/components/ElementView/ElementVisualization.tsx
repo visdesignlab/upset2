@@ -7,8 +7,8 @@ import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
 import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } from '@visdesignlab/upset2-core';
-import { Button } from '@mui/material';
-import { bookmarkSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
+import { Alert, Button } from '@mui/material';
+import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { elementItemMapSelector, currentNumericalQuery } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
@@ -32,6 +32,7 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const selectColor = useRecoilValue(elementColorSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
@@ -87,6 +88,18 @@ export const ElementVisualization = () => {
         draftSelection.current = undefined;
       }}
     >
+      {!currentIntersection && bookmarked.length === 0 && (
+        <Alert
+          severity="info"
+          variant="outlined"
+          role="generic"
+          sx={{
+            alignItems: 'center', margin: '0.5em 0', border: 'none', color: '#777777',
+          }}
+        >
+          Please click on intersections to select an intersection.
+        </Alert>
+      )}
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{ overflowX: 'auto' }}>
