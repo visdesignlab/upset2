@@ -6,7 +6,8 @@ import { beforeTest } from './common';
 test.beforeEach(beforeTest);
 
 /**
- * Drags the mouse from the center of the element to the specified offset
+ * Drags the mouse from the center of the element to the specified offset.
+ * Doesn't quite work in firefox; use caution
  * @see https://stackoverflow.com/a/71147367
  * @param element The element to drag over
  * @param xOffset The x offset to drag to
@@ -28,7 +29,7 @@ async function dragElement(element: Locator, xOffset: number, yOffset: number, p
   await page.mouse.up();
 }
 
-test('Element View', async ({ page }) => {
+test('Element View', async ({ page, browserName }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   // Make selection
@@ -112,6 +113,10 @@ test('Element View', async ({ page }) => {
   // Check that the selection chip is visible after selecting
   await elementViewToggle.click();
   await dragElement(page.locator('canvas'), 150, 0, page);
+  // For some reason, in firefox, the dragElement() method doesn't quite work right and the end of the drag
+  // is off the element, which doesn't fire the select handler. Clicking the canvas in firefox fires the event,
+  // but clicking in chromium/webkit resets the selection & breaks the test
+  if (browserName === 'firefox') await page.locator('canvas').first().click();
   const elementSelectionChip = await page.getByLabel('Selected elements Atts: Age');
   await expect(elementSelectionChip).toBeVisible();
 
