@@ -11,11 +11,14 @@ import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
 import { CircularProgress } from '@mui/material';
+import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 const defaultVisibleSets = 6;
+
+type SessionState = ProvenanceGraph<UpsetConfig, string> | null | 'not found';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -28,7 +31,7 @@ function App() {
   const setState = useSetRecoilState(configAtom);
   const data = (encodedData === null) ? multinetData : encodedData
   const { workspace, sessionId } = useRecoilValue(queryParamAtom);
-  const [sessionState, setSessionState] = useState<any>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
+  const [sessionState, setSessionState] = useState<SessionState>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
 
   const conf = useMemo(() => {
     const config: UpsetConfig = { ...DefaultConfig }
@@ -62,7 +65,7 @@ function App() {
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
-    if (sessionState !== null) {
+    if (sessionState) {
       const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
       const actions: UpsetActions = getActions(provenance);
 
@@ -72,16 +75,16 @@ function App() {
         (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
       );
 
-      if (sessionState !== undefined) {
+      if (sessionState && sessionState !== 'not found') {
         provenance.importObject(structuredClone(sessionState));
       }
 
       // Make sure the config atom stays up-to-date with the provenance
       provenance.currentChange(() => setState(provenance.getState()));
 
-      return { provenance: provenance || null, actions: actions || null };
+      return { provenance: provenance, actions: actions };
     }
-    return {provenance: null, actions: null};
+    return { provenance: null, actions: null };
   }, [conf, setState, sessionState]);
 
   /*
@@ -96,10 +99,10 @@ function App() {
         if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
           setSessionState(session.state);
         } else {
-          setSessionState(undefined);
+          setSessionState('not found');
         }
       } else {
-        setSessionState(undefined);
+        setSessionState('not found');
       }
     }
     update();
