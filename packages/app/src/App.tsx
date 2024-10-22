@@ -17,6 +17,8 @@ import { CircularProgress } from '@mui/material';
 
 const defaultVisibleSets = 6;
 
+type SessionState = any | null | 'not found';
+
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
@@ -28,7 +30,7 @@ function App() {
   const setState = useSetRecoilState(configAtom);
   const data = (encodedData === null) ? multinetData : encodedData
   const { workspace, sessionId } = useRecoilValue(queryParamAtom);
-  const [sessionState, setSessionState] = useState<any>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
+  const [sessionState, setSessionState] = useState<SessionState>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
 
   const conf = useMemo(() => {
     const config: UpsetConfig = { ...DefaultConfig }
@@ -62,26 +64,23 @@ function App() {
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
-    if (sessionState !== null) {
-      const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
-      const actions: UpsetActions = getActions(provenance);
+    const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
+    const actions: UpsetActions = getActions(provenance);
 
-      // Make sure the provenance state gets converted every time this is called
-      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
-      provenance.getState = () => convertConfig(
-        (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
-      );
+    // Make sure the provenance state gets converted every time this is called
+    (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
+    provenance.getState = () => convertConfig(
+      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
+    );
 
-      if (sessionState !== undefined) {
-        provenance.importObject(structuredClone(sessionState));
-      }
-
-      // Make sure the config atom stays up-to-date with the provenance
-      provenance.currentChange(() => setState(provenance.getState()));
-
-      return { provenance: provenance || null, actions: actions || null };
+    if (sessionState && sessionState !== 'not found') {
+      provenance.importObject(structuredClone(sessionState));
     }
-    return {provenance: null, actions: null};
+
+    // Make sure the config atom stays up-to-date with the provenance
+    provenance.currentChange(() => setState(provenance.getState()));
+
+    return { provenance: provenance, actions: actions };
   }, [conf, setState, sessionState]);
 
   /*
@@ -96,10 +95,10 @@ function App() {
         if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
           setSessionState(session.state);
         } else {
-          setSessionState(undefined);
+          setSessionState('not found');
         }
       } else {
-        setSessionState(undefined);
+        setSessionState('not found');
       }
     }
     update();
