@@ -64,23 +64,26 @@ function App() {
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
-    const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
-    const actions: UpsetActions = getActions(provenance);
+    if (sessionState) {
+      const provenance: UpsetProvenance = initializeProvenanceTracking(conf);
+      const actions: UpsetActions = getActions(provenance);
 
-    // Make sure the provenance state gets converted every time this is called
-    (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
-    provenance.getState = () => convertConfig(
-      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
-    );
+      // Make sure the provenance state gets converted every time this is called
+      (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState = provenance.getState;
+      provenance.getState = () => convertConfig(
+        (provenance as UpsetProvenance & {_getState: typeof provenance.getState})._getState()
+      );
 
-    if (sessionState && sessionState !== 'not found') {
-      provenance.importObject(structuredClone(sessionState));
+      if (sessionState && sessionState !== 'not found') {
+        provenance.importObject(structuredClone(sessionState));
+      }
+
+      // Make sure the config atom stays up-to-date with the provenance
+      provenance.currentChange(() => setState(provenance.getState()));
+
+      return { provenance: provenance, actions: actions };
     }
-
-    // Make sure the config atom stays up-to-date with the provenance
-    provenance.currentChange(() => setState(provenance.getState()));
-
-    return { provenance: provenance, actions: actions };
+    return { provenance: null, actions: null };
   }, [conf, setState, sessionState]);
 
   /*
