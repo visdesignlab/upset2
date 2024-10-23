@@ -97,7 +97,7 @@ export const ElementVisualization = () => {
             alignItems: 'center', margin: '0.5em 0', border: 'none', color: '#777777',
           }}
         >
-          Please click on intersections to select an intersection.
+          Please click on an intersection to visualize its attributes.
         </Alert>
       )}
       <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
