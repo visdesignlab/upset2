@@ -64,9 +64,9 @@ export function filterItems(items: Item[], filter: ElementSelection): Item[] {
         case ElementQueryType.REGEX:
           return (new RegExp(query).test(`${item[att]}`));
         case ElementQueryType.GREATER_THAN:
-          return item[att] > (typeof item[att] === 'number' ? Number(query) : query);
+          return `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
         case ElementQueryType.LESS_THAN:
-          return item[att] < (typeof item[att] === 'number' ? Number(query) : query);
+          return `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
         default:
       }
       return false;
