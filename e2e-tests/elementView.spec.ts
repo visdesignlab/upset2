@@ -183,7 +183,7 @@ async function setQuery(page: Page, att: string, type: string, query: string): P
   await page.getByRole('option', { name: type, exact: true }).click();
   await page.getByPlaceholder('Query').click();
   await page.getByPlaceholder('Query').fill(query);
-  await page.getByRole('button', { name: 'Save' }).click();
+  await page.getByRole('button', { name: 'Apply' }).click();
 }
 
 test('Query Selection', async ({ page }) => {
