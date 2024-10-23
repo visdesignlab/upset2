@@ -1,3 +1,6 @@
+import { isNumericalBookmark, isElementBookmark } from './typecheck';
+import { ElementSelection, Item, ElementQueryType } from './types';
+
 /**
  * DEPRECATED: Currently serves only as an alias for structuredClone; use that instead.
  * Create a deep copy (with all fields recursively copied) of an object using structured cloning;
@@ -26,4 +29,48 @@ export function hashString(str: string): number {
     hash = ((hash << 5) - hash) + char;
   }
   return hash;
+}
+
+/**
+ * Filter items based on a selection
+ * @param items Items to filter
+ * @param filter Selection to filter by
+ * @returns Filtered items
+ */
+export function filterItems(items: Item[], filter: ElementSelection): Item[] {
+  const result: Item[] = [];
+  if (isNumericalBookmark(filter)) {
+    return items.filter(
+      (item) => Object.entries(filter.selection).every(
+        ([key, value]) => typeof item[key] === 'number'
+              && item[key] as number >= value[0]
+              && item[key] as number <= value[1],
+      ),
+    );
+  } if (isElementBookmark(filter)) {
+    const { att } = filter.selection;
+    const { query } = filter.selection;
+
+    return items.filter((item) => {
+      if (!Object.hasOwn(item, att)) return false;
+
+      switch (filter.selection.type) {
+        case ElementQueryType.CONTAINS:
+          return (`${item[att]}`).includes(query);
+        case ElementQueryType.EQUALS:
+          return (`${item[att]}` === query);
+        case ElementQueryType.LENGTH:
+          return ((`${item[att]}`).length === Number(query));
+        case ElementQueryType.REGEX:
+          return (new RegExp(query).test(`${item[att]}`));
+        case ElementQueryType.GREATER_THAN:
+          return `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
+        case ElementQueryType.LESS_THAN:
+          return `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
+        default:
+      }
+      return false;
+    });
+  }
+  return result;
 }

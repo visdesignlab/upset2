@@ -17,11 +17,12 @@ import {
   elementSelector, intersectionCountSelector, selectedElementSelector, selectedItemsCounter,
   selectedItemsSelector,
 } from '../../atoms/elementsSelectors';
-import { ElementQueries } from './ElementQueries';
+import { BookmarkChips } from './BookmarkChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { UpsetActions } from '../../provenance';
 import { ProvenanceContext } from '../Root';
+import { QueryInterface } from './QueryInterface';
 
 /**
  * Props for the ElementSidebar component
@@ -220,15 +221,20 @@ export const ElementSidebar = ({ open, close }: Props) => {
         <Divider />
       </div>
       <Typography variant="h3" fontSize="1.2em">
-        Element Queries
+        Bookmarked Queries
       </Typography>
       <Divider />
-      <ElementQueries />
+      <BookmarkChips />
       <Typography variant="h3" fontSize="1.2em">
         Element Visualization
       </Typography>
       <Divider />
       <ElementVisualization />
+      <Typography variant="h3" fontSize="1.2em">
+        Element Queries
+      </Typography>
+      <Divider />
+      <QueryInterface />
       <Typography variant="h3" fontSize="1.2em">
         Query Result
         <Tooltip

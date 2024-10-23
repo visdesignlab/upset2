@@ -1,5 +1,9 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, BookmarkedSelection, Column, ElementSelection, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, NumericalBookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  ElementQuery,
+  ElementQueryType,
+  ElementBookmark,
+  ElementSelection,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -103,17 +107,34 @@ export function isAltText(val: unknown): val is AltText {
 }
 
 /**
- * Validates that the given value is an ElementSelection.
+ * Validates that the given value is a NumericalQuery.
  * @param value The value to check.
- * @returns whether the value is an ElementSelection.
+ * @returns whether the value is a NumericalQuery.
  */
-export function isElementSelection(value: unknown): value is ElementSelection {
+export function isNumericalQuery(value: unknown): value is NumericalQuery {
   return (
     isObject(value)
     && Object.values(value).every((v) => Array.isArray(v)
           && v.length === 2
           && typeof v[0] === 'number'
           && typeof v[1] === 'number')
+  );
+}
+
+/**
+ * Type guard for ElementQuery
+ * @param val The value to check.
+ * @returns whether the value is a ElementQuery
+ */
+export function isElementQuery(val: unknown): val is ElementQuery {
+  return (
+    isObject(val)
+    && Object.hasOwn(val, 'att')
+    && Object.hasOwn(val, 'type')
+    && Object.hasOwn(val, 'query')
+    && typeof (val as ElementQuery).att === 'string'
+    && Object.values(ElementQueryType).includes((val as ElementQuery).type)
+    && typeof (val as ElementQuery).query === 'string'
   );
 }
 
@@ -163,7 +184,11 @@ export function isBookmark(b: unknown): b is Bookmark {
     && Object.hasOwn(b, 'type')
     && typeof (b as Bookmark).id === 'string'
     && typeof (b as Bookmark).label === 'string'
-    && ((b as Bookmark).type === 'intersection' || (b as Bookmark).type === 'elements');
+    && (
+      (b as Bookmark).type === 'intersection'
+      || (b as Bookmark).type === 'numerical'
+      || (b as Bookmark).type === 'element'
+    );
 }
 
 /**
@@ -246,15 +271,36 @@ export function isRow(r: unknown): r is Row {
 }
 
 /**
- * Type guard for BookmarkedSelection
+ * Type guard for NumericalBookmark
  * @param b variable to check
  * @returns {boolean}
  */
-export function isBookmarkedSelection(b: unknown): b is BookmarkedSelection {
+export function isNumericalBookmark(b: unknown): b is NumericalBookmark {
   return isBookmark(b)
-  && b.type === 'elements'
+  && b.type === 'numerical'
   && Object.hasOwn(b, 'selection')
-  && isElementSelection((b as BookmarkedSelection).selection);
+  && isNumericalQuery((b as NumericalBookmark).selection);
+}
+
+/**
+ * Type guard for ElementBookmark
+ * @param b variable to check
+ * @returns {boolean}
+ */
+export function isElementBookmark(b: unknown): b is ElementBookmark {
+  return isBookmark(b)
+  && b.type === 'element'
+  && Object.hasOwn(b, 'selection')
+  && isElementQuery((b as ElementBookmark).selection);
+}
+
+/**
+ * Determines if the given object is an ElementSelection.
+ * @param e The object to check.
+ * @returns {boolean} Whether the object is an ElementSelection.
+ */
+export function isElementSelection(e: unknown): e is ElementSelection {
+  return isNumericalBookmark(e) || isElementBookmark(e);
 }
 
 /**
@@ -494,7 +540,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // elementSelection
-  if (!(elementSelection === null || isBookmarkedSelection(elementSelection))) {
+  if (!(elementSelection === null || isElementSelection(elementSelection))) {
     console.warn('Upset config error: Element selection is not a bookmarked selection');
     return false;
   }

@@ -5,7 +5,7 @@ import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { attributeAtom } from '../../atoms/attributeAtom';
-import { elementSelectionParameters, elementSelector, selectedItemsSelector } from '../../atoms/elementsSelectors';
+import { elementSelector, selectedElementSelector, selectedItemsSelector } from '../../atoms/elementsSelectors';
 import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 
 /**
@@ -43,7 +43,7 @@ function useColumns(columns: string[]) {
 export const ElementTable: FC = () => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const attributeColumns = useRecoilValue(attributeAtom);
-  const elementSelection = useRecoilValue(elementSelectionParameters);
+  const elementSelection = useRecoilValue(selectedElementSelector);
   const elements = elementSelection
     ? useRecoilValue(selectedItemsSelector)
     : useRecoilValue(elementSelector(currentIntersection?.id));

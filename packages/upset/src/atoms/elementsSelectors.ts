@@ -1,7 +1,10 @@
 import {
   Aggregate,
   BaseIntersection,
-  BookmarkedSelection, ElementSelection, Item, Row, flattenedOnlyRows, getItems,
+  NumericalQuery, Item, Row, flattenedOnlyRows, getItems,
+  ElementSelection,
+  filterItems,
+  ElementQuery,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -118,18 +121,35 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
  * Gets the current selection of elements
  * @returns The current selection of elements
  */
-export const selectedElementSelector = selector<BookmarkedSelection | null>({
+export const selectedElementSelector = selector<ElementSelection | null>({
   key: 'config-element-selection',
   get: ({ get }) => get(upsetConfigAtom).elementSelection,
 });
 
 /**
- * Gets the parameters for the current selection of elements,
- * ie the 'selected' property of the selectedElementsSelector
+ * Gets the parameters for the current numerical selection of elements,
+ * ie the 'selected' property of the selectedElementsSelector.
+ * If the current selection is not numerical, returns undefined.
  */
-export const elementSelectionParameters = selector<ElementSelection | undefined>({
+export const currentNumericalQuery = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
-  get: ({ get }) => get(selectedElementSelector)?.selection,
+  get: ({ get }) => {
+    const elementSelection = get(selectedElementSelector);
+    return elementSelection?.type === 'numerical' ? elementSelection.selection : undefined;
+  },
+});
+
+/**
+ * Gets the parameters for the current selection of elements,
+ * ie the 'selected' property of the selectedElementsSelector.
+ * If the current selection is not an element query, returns undefined.
+ */
+export const currentElementQuery = selector<ElementQuery | undefined>({
+  key: 'config-current-element-query',
+  get: ({ get }) => {
+    const elementSelection = get(selectedElementSelector);
+    return elementSelection?.type === 'element' ? elementSelection.selection : undefined;
+  },
 });
 
 /**
@@ -141,15 +161,10 @@ export const selectedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const bookmarks = get(bookmarkSelector);
     const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
-    const selection = get(elementSelectionParameters);
+    const selection = get(selectedElementSelector);
     if (!selection) return [];
 
-    const result: Item[] = [];
-    items.forEach((item) => {
-      if (Object.entries(selection).every(([key, value]) => typeof item[key] === 'number' &&
-          item[key] as number >= value[0] && item[key] as number <= value[1])) { result.push(item); }
-    });
-    return result;
+    return filterItems(items, selection);
   },
 });
 
@@ -168,21 +183,11 @@ export const subsetSelectedCount = selectorFamily<number, string>({
   key: 'subset-selected',
   get: (id: string) => ({ get }) => {
     const items = get(elementSelector(id));
-    const selection = get(elementSelectionParameters);
+    const selection = get(selectedElementSelector);
 
-    if (!selection || Object.keys(selection).length === 0) return 0;
+    if (!selection) return 0;
 
-    let count = 0;
-    items.forEach((item) => {
-      if (Object.entries(selection).every(
-        ([key, value]) => typeof item[key] === 'number'
-          && item[key] as number >= value[0]
-          && item[key] as number <= value[1],
-      )) {
-        count++;
-      }
-    });
-    return count;
+    return filterItems(items, selection).length;
   },
 });
 

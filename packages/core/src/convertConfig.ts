@@ -1,5 +1,5 @@
 import {
-  AggregateBy, Bookmark, BookmarkedSelection, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot,
+  AggregateBy, Bookmark, NumericalBookmark, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot,
   SortByOrder, SortVisibleBy, UpsetConfig,
 } from './types';
 import { isUpsetConfig } from './typecheck';
@@ -52,7 +52,7 @@ type PreVersionConfig = {
   };
   allSets: Column[];
   selected: Row | null;
-  elementSelection: BookmarkedSelection | null;
+  elementSelection: NumericalBookmark | null;
 };
 
 /**
