@@ -89,7 +89,7 @@ export const DegreeHeader = () => {
       )}
 
     >
-      <Tooltip title="Degree" arrow placement="top">
+      <Tooltip title="Number of intersecting sets" arrow placement="top">
         <g
           className="degree-button"
           css={css`

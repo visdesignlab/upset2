@@ -19,7 +19,7 @@ test('Attribute Dropdown', async ({ page }) => {
   await page.getByLabel('Attributes selection menu').click();
   await page.getByLabel('Age').check();
   await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.getByLabel('Age').locator('rect')).toBeVisible();
+  await expect(page.getByText('Age', { exact: true })).toBeVisible();
 
   /// /////////////////
   // Degree
@@ -28,13 +28,13 @@ test('Attribute Dropdown', async ({ page }) => {
   await page.getByLabel('Attributes selection menu').click();
   await page.getByRole('checkbox', { name: 'Degree' }).uncheck();
   await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.locator('#upset-svg').getByLabel('Degree').locator('rect')).toHaveCount(0);
+  await expect(page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect')).toHaveCount(0);
 
   // Reselect and assert that it's added back to the plot
   await page.getByLabel('Attributes selection menu').click();
   await page.getByRole('checkbox', { name: 'Degree' }).check();
   await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.locator('#upset-svg').getByLabel('Degree').locator('rect')).toBeVisible();
+  await expect(page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect')).toBeVisible();
 
   /// /////////////////
   // Deviation
@@ -49,5 +49,5 @@ test('Attribute Dropdown', async ({ page }) => {
   await page.getByLabel('Attributes selection menu').click();
   await page.getByRole('checkbox', { name: 'Deviation' }).check();
   await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.getByLabel('Deviation', { exact: true }).locator('rect')).toBeVisible();
+  await expect(page.getByText('Deviation', { exact: true })).toBeVisible();
 });

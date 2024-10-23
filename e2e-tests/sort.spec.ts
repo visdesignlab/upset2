@@ -124,11 +124,11 @@ test('Sort by Deviation', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   /// Ascending
-  await page.getByLabel('Deviation', { exact: true }).locator('rect').dispatchEvent('click');
+  await page.getByText('Deviation', { exact: true }).dispatchEvent('click');
   await compareSortedElements(page, DEVIATION_ORDER.Ascending);
 
   /// Descending
-  await page.getByLabel('Deviation', { exact: true }).locator('rect').dispatchEvent('click');
+  await page.getByText('Deviation', { exact: true }).dispatchEvent('click');
   await compareSortedElements(page, DEVIATION_ORDER.Descending);
 });
 

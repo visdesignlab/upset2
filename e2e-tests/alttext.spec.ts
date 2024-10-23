@@ -31,7 +31,7 @@ test('Alt Text', async ({ page }) => {
   await page.getByRole('radio', { name: 'None' }).check();
 
   /// Attribute Sort
-  await page.getByLabel('Age').locator('rect').dispatchEvent('click');
+  await page.getByText('Age', { exact: true }).click({ force: true });
   const attrSortErrMsg = page.getByText('Alt text generation is not yet supported for attribute sorting. To generate an alt text, sort by Size, Degree, or Deviation.');
   await expect(attrSortErrMsg).toBeVisible();
 
