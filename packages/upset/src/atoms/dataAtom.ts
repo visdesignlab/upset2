@@ -1,5 +1,5 @@
-import { CoreUpsetData } from '@visdesignlab/upset2-core';
-import { atom } from 'recoil';
+import { ColumnName, CoreUpsetData } from '@visdesignlab/upset2-core';
+import { atom, selector } from 'recoil';
 
 /**
  * Atom to store the data for the Upset plot
@@ -7,4 +7,18 @@ import { atom } from 'recoil';
 export const dataAtom = atom<CoreUpsetData | Record<string, never>>({
   key: 'data',
   default: {},
+});
+
+/**
+ * Returns all columns that can be used in a string query, ie are not numeric, not set columns,
+ * and not private columns that start with _
+ */
+export const queryColumnsSelector = selector<ColumnName[]>({
+  key: 'data-columns',
+  get: ({ get }) => {
+    const BUILTIN_COLS = ['_id', '_from', '_to', '_key', '_rev'];
+    const data = get(dataAtom);
+    return data.columns.filter((col) => !data.setColumns.includes(col)
+      && !BUILTIN_COLS.includes(col));
+  },
 });

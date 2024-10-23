@@ -288,6 +288,53 @@ export enum AttributePlotType {
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
 /**
+ * Possible string types for an element query
+ */
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum ElementQueryType {
+  EQUALS = 'equals',
+  CONTAINS = 'contains',
+  LENGTH = 'length equals',
+  REGEX = 'regex',
+  LESS_THAN = 'less than',
+  GREATER_THAN = 'greater than',
+}
+
+/**
+ * Represents a selection of elements based on a comparison between an attribute and a query string.
+ */
+export type ElementQuery = {
+  /**
+   * Name of the attribute being queried upon
+   */
+  att: string,
+  /**
+   * Type of the query; determines the mechanism used to evaluate whether the value of att
+   * on a given element matches this query
+   */
+  type: ElementQueryType,
+  /**
+   * The query string. To be included in this query, the value of att on a given
+   * element must match this query string according to the rules set by the type.
+   */
+  query: string,
+}
+
+/**
+ * Represents a selection of elements based on their numerical attributes,
+ * currently only from brushes in the element view.
+ * Maps attribute names to an array with the minimum and maximum
+ * values of the selection over each attribute.
+ *
+ * @privateRemarks
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
+ * upset/src/components/ElementView/ElementVisualization.tsx.
+ * This is typechecked by isNumericalQuery in typecheck.ts; changes here must be reflected there.
+ */
+export type NumericalQuery = {[attName: string] : [number, number]};
+
+/**
  * Base representation of a bookmarkable type
  * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
@@ -303,7 +350,7 @@ export type Bookmark = {
   /**
    * Subtype of the bookmark; used to determine what fields are available at runtime
    */
-  type: 'intersection' | 'elements';
+  type: 'intersection' | 'numerical' | 'element';
 };
 
 /**
@@ -321,31 +368,40 @@ export type BookmarkedIntersection = Bookmark & {
 }
 
 /**
- * Represents a selection of elements in the Element View.
- * Maps attribute names to an array with the minimum and maximum
- * values of the selection over each attribute.
- *
- * @privateRemarks
- * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
- * upset/src/components/ElementView/ElementVisualization.tsx.
- * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
+ * Represents a bookmarked element selection based on numerical attributes, created in the Element View.
+ * @privateRemarks typechecked by isNumericalBookmark in typecheck.ts; changes here must be reflected there
  */
-export type ElementSelection = {[attName: string] : [number, number]};
-
-/**
- * Represents a bookmarked element selection, created in the Element View.
- * @privateRemarks typechecked by isBookmarkedSelection in typecheck.ts; changes here must be reflected there
- */
-export type BookmarkedSelection = Bookmark & {
+export type NumericalBookmark = Bookmark & {
   /**
    * The selection parameters
    */
-  selection: ElementSelection;
+  selection: NumericalQuery;
   /**
    * Indicates type at runtime
    */
-  type: 'elements';
+  type: 'numerical';
 }
+
+/**
+ * Represents a bookmarked element selection based on attribute comparisons, created in the element view
+ * @privateRemarks typechecked by isElementBookmark in typecheck.ts; changes here must be reflected there
+ */
+export type ElementBookmark = Bookmark & {
+  /**
+   * Selection parameters
+   */
+  selection: ElementQuery;
+  /**
+   * Indicates type at runtim
+   */
+  type: 'element';
+}
+
+/**
+ * A bookmark which represents a selection of elements
+ * @privateRemarks typechecked by isElementSelection in typecheck.ts; changes here must be reflected there
+ */
+export type ElementSelection = NumericalBookmark | ElementBookmark;
 
 /**
  * Represents the alternative text for an Upset plot.
@@ -415,7 +471,7 @@ export type UpsetConfig = {
   /**
    * Selected elements (data points) in the Element View.
    */
-  elementSelection: BookmarkedSelection | null;
+  elementSelection: ElementSelection | null;
   version: '0.1.0';
   useUserAlt: boolean;
   userAltText: AltText | null;
