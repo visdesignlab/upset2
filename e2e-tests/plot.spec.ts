@@ -91,7 +91,7 @@ test('Attribute Plot Types', async ({ page }) => {
   // remove 'Male' set so that there are attributes with at least 6 items (threshold for dotplot)
   await removeSetByName(page, 'Male');
 
-  const ageAttributeHeader = page.getByText('Age', { exact: true });
+  const ageAttributeHeader = page.locator('#header-text-Age');
 
   await ageAttributeHeader.click({ button: 'right', force: true });
 
