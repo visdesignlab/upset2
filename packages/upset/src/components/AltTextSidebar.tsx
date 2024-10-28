@@ -24,6 +24,7 @@ import '../index.css';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
+import { userEditPermsAtom } from '../atoms/config/userEditPermsAtoms';
 
 /**
  * Props for the AltTextSidebar component.
@@ -66,6 +67,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const currState = useRecoilValue(upsetConfigAtom);
+  const userEditPerms = useRecoilValue(userEditPermsAtom);
   const [altText, setAltText] = useState<AltText | null>(null);
   const [textGenErr, setTextGenErr] = useState<string | false>(false);
   const [textEditing, setTextEditing] = useState(false);
@@ -83,6 +85,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
    * Handler for when the save button is clicked
    */
   const saveButtonClick: () => void = useCallback(() => {
+    // if the user doesn't have edit permissions, don't allow saving
+    // The user shouldn't be able to edit in this case, but this is a failsafe
+    if (!userEditPerms) return;
+
     setTextEditing(false);
     if (!currState.useUserAlt) actions.setUseUserAltText(true);
     if (currState.userAltText?.shortDescription !== userShortText
@@ -93,6 +99,10 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
    * Sets text editing to true and sets default user alttexts if necessary
    */
   const enableTextEditing: () => void = useCallback(() => {
+    // if the user doesn't have edit permissions, don't allow editing
+    // The button should be hidden in this case, but this is a failsafe
+    if (!userEditPerms) return;
+
     setTextEditing(true);
     if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
     if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
@@ -206,12 +216,15 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               setEditing={setPlotInfoEditing}
             />
           ) : (
-            <Button
-              onClick={() => setPlotInfoEditing(true)}
-              tabIndex={PLOT_INFO_TAB_INDEX}
-            >
-              Add Plot Information
-            </Button>
+            // only show "Add Plot Information" if the user has edit permissions
+            userEditPerms ? (
+              <Button
+                onClick={() => setPlotInfoEditing(true)}
+                tabIndex={PLOT_INFO_TAB_INDEX}
+              >
+                Add Plot Information
+              </Button>
+            ) : null
           )}
         {displayPlotInfo && (
           <>
@@ -268,21 +281,24 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 }}
                 tabIndex={3}
               >
-                <Button
-                  style={{
-                    display: 'inline-block',
-                    width: '24px',
-                    float: 'right',
-                    cursor: 'pointer',
-                  }}
-                  onClick={enableTextEditing}
-                  tabIndex={5}
-                  aria-label="Alt Text Description Editor"
-                >
-                  <Icon style={{ overflow: 'visible' }}>
-                    <EditIcon />
-                  </Icon>
-                </Button>
+                {userEditPerms && (
+                  // Only show the edit button if the user has edit permissions
+                  <Button
+                    style={{
+                      display: 'inline-block',
+                      width: '24px',
+                      float: 'right',
+                      cursor: 'pointer',
+                    }}
+                    onClick={enableTextEditing}
+                    tabIndex={5}
+                    aria-label="Alt Text Description Editor"
+                  >
+                    <Icon style={{ overflow: 'visible' }}>
+                      <EditIcon />
+                    </Icon>
+                  </Button>
+                )}
                 <ReactMarkdownWrapper
                   text={displayAltText}
                 />

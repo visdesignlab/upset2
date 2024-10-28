@@ -128,6 +128,11 @@ export interface UpsetProps {
   allowAttributeRemoval?: boolean;
 
   /**
+   * Whether or not the user has plot information edit permissions.
+   */
+  userEditPerms?: boolean;
+
+  /**
    * Hide the aggregations/filter settings sidebar.
    */
   hideSettings?: boolean;
