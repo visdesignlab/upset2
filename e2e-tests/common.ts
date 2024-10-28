@@ -34,6 +34,9 @@ export async function beforeTest({ page }: {page: Page}) {
         await route.fulfill({ json });
       } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/')) {
         await route.fulfill({ status: 200 });
+      } else if (url.includes('workspaces/Upset%20Examples/permissions/me')) {
+        // User has owner permissions, this will allow plot information editing
+        await route.fulfill({ status: 200, json: { permission_label: 'owner' } });
       } else {
         await route.continue();
       }
