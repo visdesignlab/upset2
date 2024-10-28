@@ -60,13 +60,14 @@ export const Body = ({ data, config }: Props) => {
       try {
         const r = await api.getCurrentUserWorkspacePermissions(workspace || '');
         // https://api.multinet.app/swagger/?format=openapi#/definitions/PermissionsReturn for possible permissions returns
-        return r.permission_label === 'owner' || r.permission_label === 'maintainer';
+        setPermissions(r.permission_label === 'owner' || r.permission_label === 'maintainer');
       } catch (e) {
-        return false;
+        setPermissions(false)
+        return;
       }
     };
 
-    fetchPermissions().then(setPermissions);
+    fetchPermissions();
   }, [workspace]);
 
   /**

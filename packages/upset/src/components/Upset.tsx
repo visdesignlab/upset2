@@ -26,7 +26,7 @@ const defaultVisibleSets = 6;
  * @param {SidebarProps} [elementSidebar] - The element sidebar options. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
  * @param {SidebarProps} [altTextSidebar] - The alternative text sidebar options. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
  * @param {() => Promise<AltText>} [generateAltText] - The function to generate alternative text.
-* @returns {JSX.Element} The rendered Upset component.
+ * @returns {JSX.Element} The rendered Upset component.
  */
 export const Upset: FC<UpsetProps> = ({
   data,
