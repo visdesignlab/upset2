@@ -12,7 +12,7 @@ import {
   useContext, useState, useCallback,
 } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
-import { userEditPermsAtom } from '../../atoms/config/userEditPermsAtoms';
+import { canEditPlotInformationAtom } from '../../atoms/config/canEditPlotInformationAtoms';
 import { ProvenanceContext } from '../Root';
 
 /**
@@ -86,7 +86,7 @@ export const PlotInformation = ({
    */
 
   const plotInformationState = useRecoilValue(plotInformationSelector);
-  const userEditPerms = useRecoilValue(userEditPermsAtom);
+  const canEditPlotInformation = useRecoilValue(canEditPlotInformationAtom);
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
   const { actions } = useContext(ProvenanceContext);
 
@@ -144,7 +144,7 @@ export const PlotInformation = ({
         }}
       >
         <div style={{ minHeight: '1.6em' }}>
-          {userEditPerms && (
+          {canEditPlotInformation && (
             // Hide the edit button if the user does not have permissions
             <Button
               aria-label="Plot Information Editor"

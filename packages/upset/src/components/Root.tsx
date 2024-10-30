@@ -14,7 +14,7 @@ import { dataAtom } from '../atoms/dataAtom';
 import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemovalAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { userEditPermsAtom } from '../atoms/config/userEditPermsAtoms';
+import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtoms';
 import {
   getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
 } from '../provenance';
@@ -42,7 +42,7 @@ type Props = {
   config: UpsetConfig;
   allowAttributeRemoval?: boolean;
   hideSettings?: boolean;
-  userEditPerms?: boolean;
+  canEditPlotInformation?: boolean;
   extProvenance?: {
     provenance: UpsetProvenance;
     actions: UpsetActions;
@@ -63,13 +63,13 @@ type Props = {
 };
 
 export const Root: FC<Props> = ({
-  data, config, allowAttributeRemoval, hideSettings, userEditPerms, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
+  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
-  const setUserEditPerms = useSetRecoilState(userEditPermsAtom);
+  const setcanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
@@ -82,10 +82,10 @@ export const Root: FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    if (userEditPerms !== undefined) {
-      setUserEditPerms(userEditPerms);
+    if (canEditPlotInformation !== undefined) {
+      setcanEditPlotInformation(canEditPlotInformation);
     }
-  }, [userEditPerms]);
+  }, [canEditPlotInformation]);
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {

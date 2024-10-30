@@ -24,7 +24,7 @@ import '../index.css';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
-import { userEditPermsAtom } from '../atoms/config/userEditPermsAtoms';
+import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtoms';
 
 /**
  * Props for the AltTextSidebar component.
@@ -67,7 +67,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const currState = useRecoilValue(upsetConfigAtom);
-  const userEditPerms = useRecoilValue(userEditPermsAtom);
+  const canEditPlotInformation = useRecoilValue(canEditPlotInformationAtom);
   const [altText, setAltText] = useState<AltText | null>(null);
   const [textGenErr, setTextGenErr] = useState<string | false>(false);
   const [textEditing, setTextEditing] = useState(false);
@@ -87,7 +87,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const saveButtonClick: () => void = useCallback(() => {
     // if the user doesn't have edit permissions, don't allow saving
     // The user shouldn't be able to edit in this case, but this is a failsafe
-    if (!userEditPerms) return;
+    if (!canEditPlotInformation) return;
 
     setTextEditing(false);
     if (!currState.useUserAlt) actions.setUseUserAltText(true);
@@ -101,7 +101,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   const enableTextEditing: () => void = useCallback(() => {
     // if the user doesn't have edit permissions, don't allow editing
     // The button should be hidden in this case, but this is a failsafe
-    if (!userEditPerms) return;
+    if (!canEditPlotInformation) return;
 
     setTextEditing(true);
     if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
@@ -217,7 +217,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
             />
           ) : (
             // only show "Add Plot Information" if the user has edit permissions
-            userEditPerms ? (
+            canEditPlotInformation ? (
               <Button
                 onClick={() => setPlotInfoEditing(true)}
                 tabIndex={PLOT_INFO_TAB_INDEX}
@@ -281,7 +281,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                 }}
                 tabIndex={3}
               >
-                {userEditPerms && (
+                {canEditPlotInformation && (
                   // Only show the edit button if the user has edit permissions
                   <Button
                     style={{

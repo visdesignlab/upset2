@@ -128,7 +128,7 @@ export const Body = ({ data, config }: Props) => {
           <Upset
             data={data}
             extProvenance={provObject}
-            userEditPerms={permissions}
+            canEditPlotInformation={permissions}
             config={config}
             provVis={provVis}
             elementSidebar={elementSidebar}

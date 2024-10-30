@@ -130,7 +130,7 @@ export interface UpsetProps {
   /**
    * Whether or not the user has plot information edit permissions.
    */
-  userEditPerms?: boolean;
+  canEditPlotInformation?: boolean;
 
   /**
    * Hide the aggregations/filter settings sidebar.

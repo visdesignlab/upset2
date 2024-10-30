@@ -20,7 +20,7 @@ const defaultVisibleSets = 6;
  * @param {boolean} [allowAttributeRemoval=false] - Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
  * @param {boolean} [hideSettings] - Hide the aggregations/filter settings sidebar.
  * @param {boolean} [parentHasHeight=false] - Indicates if the parent component has a fixed height. If this is set to `false`, the plot will occupy the full viewport height. When set to `true`, the plot will fit entirely within the parent component. Defaults to `false`.
- * @param {boolean} [userEditPerms=false] - Whether or not the user has plot information edit permissions.
+ * @param {boolean} [canEditPlotInformation=false] - Whether or not the user has plot information edit permissions.
  * @param {Object} [extProvenance] - External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
  * @param {SidebarProps} [provVis] - The provenance visualization sidebar options.
  * @param {SidebarProps} [elementSidebar] - The element sidebar options. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
@@ -35,7 +35,7 @@ export const Upset: FC<UpsetProps> = ({
   visualizeDatasetAttributes,
   visualizeUpsetAttributes = false,
   allowAttributeRemoval = false,
-  userEditPerms = false,
+  canEditPlotInformation = false,
   hideSettings,
   extProvenance,
   provVis,
@@ -109,7 +109,7 @@ export const Upset: FC<UpsetProps> = ({
             data={processData}
             config={combinedConfig}
             allowAttributeRemoval={allowAttributeRemoval}
-            userEditPerms={userEditPerms}
+            canEditPlotInformation={canEditPlotInformation}
             hideSettings={hideSettings}
             extProvenance={extProvenance}
             provVis={provVis}
