@@ -24,7 +24,7 @@ import '../index.css';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
-import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtoms';
+import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 
 /**
  * Props for the AltTextSidebar component.

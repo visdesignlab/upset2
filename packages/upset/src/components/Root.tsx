@@ -14,7 +14,7 @@ import { dataAtom } from '../atoms/dataAtom';
 import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemovalAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtoms';
+import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import {
   getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
 } from '../provenance';

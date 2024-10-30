@@ -12,7 +12,7 @@ import {
   useContext, useState, useCallback,
 } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
-import { canEditPlotInformationAtom } from '../../atoms/config/canEditPlotInformationAtoms';
+import { canEditPlotInformationAtom } from '../../atoms/config/canEditPlotInformationAtom';
 import { ProvenanceContext } from '../Root';
 
 /**
