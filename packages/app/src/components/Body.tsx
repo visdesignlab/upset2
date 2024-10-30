@@ -5,7 +5,7 @@ import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { ProvenanceContext } from '../App';
-import { useContext, useEffect } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
@@ -13,6 +13,7 @@ import { loadingAtom } from '../atoms/loadingAtom';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
+import { api } from '../api/api';
 import { rowsSelector } from '../atoms/selectors';
 
 type Props = {
@@ -50,6 +51,24 @@ export const Body = ({ data, config }: Props) => {
       updateMultinetSession(workspace || '', sessionId || '', provObject.provenance.exportObject());
     })
   }, [provObject.provenance, sessionId, workspace]);
+
+  // Check if the user has permissions to edit the plot
+  const [permissions, setPermissions] = useState(false);
+
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      try {
+        const r = await api.getCurrentUserWorkspacePermissions(workspace || '');
+        // https://api.multinet.app/swagger/?format=openapi#/definitions/PermissionsReturn for possible permissions returns
+        setPermissions(r.permission_label === 'owner' || r.permission_label === 'maintainer');
+      } catch (e) {
+        setPermissions(false)
+        return;
+      }
+    };
+
+    fetchPermissions();
+  }, [workspace]);
 
   /**
    * Generates alt text for a plot based on the current state and configuration.
@@ -109,6 +128,7 @@ export const Body = ({ data, config }: Props) => {
           <Upset
             data={data}
             extProvenance={provObject}
+            canEditPlotInformation={permissions}
             config={config}
             provVis={provVis}
             elementSidebar={elementSidebar}

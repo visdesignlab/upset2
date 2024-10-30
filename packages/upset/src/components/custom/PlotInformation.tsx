@@ -12,6 +12,7 @@ import {
   useContext, useState, useCallback,
 } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
+import { canEditPlotInformationAtom } from '../../atoms/config/canEditPlotInformationAtom';
 import { ProvenanceContext } from '../Root';
 
 /**
@@ -85,6 +86,7 @@ export const PlotInformation = ({
    */
 
   const plotInformationState = useRecoilValue(plotInformationSelector);
+  const canEditPlotInformation = useRecoilValue(canEditPlotInformationAtom);
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
   const { actions } = useContext(ProvenanceContext);
 
@@ -142,21 +144,24 @@ export const PlotInformation = ({
         }}
       >
         <div style={{ minHeight: '1.6em' }}>
-          <Button
-            aria-label="Plot Information Editor"
-            style={{
-              float: 'right',
-              position: 'relative',
-              bottom: '10px',
-              cursor: 'pointer',
-            }}
-            tabIndex={tabIndex + 1}
-            onClick={() => setEditing(true)}
-          >
-            <Icon style={{ overflow: 'visible' }}>
-              <EditIcon />
-            </Icon>
-          </Button>
+          {canEditPlotInformation && (
+            // Hide the edit button if the user does not have permissions
+            <Button
+              aria-label="Plot Information Editor"
+              style={{
+                float: 'right',
+                position: 'relative',
+                bottom: '10px',
+                cursor: 'pointer',
+              }}
+              tabIndex={tabIndex + 1}
+              onClick={() => setEditing(true)}
+            >
+              <Icon style={{ overflow: 'visible' }}>
+                <EditIcon />
+              </Icon>
+            </Button>
+          )}
           <Typography>{plotInformation.caption}</Typography>
         </div>
         <br />
