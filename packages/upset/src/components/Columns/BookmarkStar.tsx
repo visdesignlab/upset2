@@ -1,15 +1,25 @@
 import { Row } from '@visdesignlab/upset2-core';
-import { FC, MouseEvent, useContext, useMemo, useState } from 'react';
-import { useRecoilValue } from 'recoil';
 import StarIcon from '@mui/icons-material/Star';
+import {
+  FC,
+  MouseEvent,
+  useContext,
+  useMemo,
+  useState,
+} from 'react';
+import { useRecoilValue } from 'recoil';
+import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
-import { bookmarkedColorPalette, bookmarkSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
-import { ProvenanceContext } from '../Root';
+import {
+  bookmarkedColorPalette,
+  bookmarkSelector,
+  nextColorSelector,
+} from '../../atoms/config/currentIntersectionAtom';
 
 type Props = {
-    row: Row;
-}
+  row: Row;
+};
 
 const BASE_OPACITY = 0.0;
 const HOVERED_OPACITY = 0.5;
@@ -35,9 +45,17 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
   const { actions } = useContext(ProvenanceContext);
 
   const [hovered, setHovered] = useState(false);
-  const bookmarked = useMemo(() => bookmarks.find((b) => b.id === row.id), [bookmarks, row.id]);
+  const bookmarked = useMemo(() => bookmarks.find((b) => b.id === row.id), [
+    bookmarks,
+    row.id,
+  ]);
 
-  const color = useMemo(() => (bookmarked ? colorPallete[row.id] : nextColor), [colorPallete, row.id, bookmarked, nextColor]);
+  const color = useMemo(() => (bookmarked ? colorPallete[row.id] : nextColor), [
+    colorPallete,
+    row.id,
+    bookmarked,
+    nextColor,
+  ]);
 
   /**
    * Calculates the opacity value based on the bookmark and hover states.
@@ -89,8 +107,7 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
   return (
     <g
       transform={translate(
-        dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap,
+        dimensions.matrixColumn.width + dimensions.bookmarkStar.gap,
         0,
       )}
       height={dimensions.body.rowHeight}
