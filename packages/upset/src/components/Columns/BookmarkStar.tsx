@@ -96,6 +96,10 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
    */
   const handleClick = (event: MouseEvent<SVGGElement, MouseEvent>) => {
     event.stopPropagation();
+    if (bookmarked) {
+      actions.removeBookmark(bookmarked);
+      return;
+    }
     actions.addBookmark({
       id: row.id,
       label: row.elementName,
