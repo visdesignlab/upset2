@@ -1,18 +1,90 @@
 import { Row } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import { FC, MouseEvent, useContext, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import StarIcon from '@mui/icons-material/Star';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
-import { bookmarkedColorPalette } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkedColorPalette, bookmarkSelector, nextColorSelector } from '../../atoms/config/currentIntersectionAtom';
+import { ProvenanceContext } from '../Root';
 
 type Props = {
     row: Row;
 }
 
+const BASE_OPACITY = 0.0;
+const HOVERED_OPACITY = 0.5;
+const BOOKMARKED_OPACITY = 1.0;
+
+/**
+ * BookmarkStar component renders a star icon that can be bookmarked.
+ * It changes its color and opacity based on the bookmark and hover states.
+ *
+ * @component
+ * @param {Props} props - The properties object.
+ * @param {Object} props.row - The row data for the current item.
+ * @returns {JSX.Element} The rendered BookmarkStar component.
+ *
+ * @example
+ * <BookmarkStar row={row} />
+ */
 export const BookmarkStar: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const colorPallete = useRecoilValue(bookmarkedColorPalette);
+  const nextColor = useRecoilValue(nextColorSelector);
+  const bookmarks = useRecoilValue(bookmarkSelector);
+  const { actions } = useContext(ProvenanceContext);
+
+  const [hovered, setHovered] = useState(false);
+  const bookmarked = useMemo(() => bookmarks.find((b) => b.id === row.id), [bookmarks, row.id]);
+
+  const color = useMemo(() => (bookmarked ? colorPallete[row.id] : nextColor), [colorPallete, row.id, bookmarked, nextColor]);
+
+  /**
+   * Calculates the opacity value based on the bookmark and hover states.
+   *
+   * @returns {number} The opacity value which can be one of the following:
+   * - `BOOKMARKED_OPACITY` if the item is bookmarked.
+   * - `HOVERED_OPACITY` if the item is hovered.
+   * - `BASE_OPACITY` if neither condition is met.
+   *
+   * @param {boolean} bookmarked - Indicates if the item is bookmarked.
+   * @param {boolean} hovered - Indicates if the item is hovered.
+   */
+  const opacity = useMemo(() => {
+    if (bookmarked) {
+      return BOOKMARKED_OPACITY;
+    }
+
+    if (hovered) {
+      return HOVERED_OPACITY;
+    }
+
+    return BASE_OPACITY;
+  }, [bookmarked, hovered]);
+
+  const handleMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
+
+  /**
+   * Handles the click event on the bookmark star icon.
+   * Stops the event from propagating and adds a bookmark with the specified details.
+   *
+   * @param event - The mouse event triggered by clicking the bookmark star icon.
+   */
+  const handleClick = (event: MouseEvent<SVGGElement, MouseEvent>) => {
+    event.stopPropagation();
+    actions.addBookmark({
+      id: row.id,
+      label: row.elementName,
+      size: row.size,
+      type: 'intersection',
+    });
+  };
 
   return (
     <g
@@ -21,8 +93,21 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
         dimensions.bookmarkStar.gap,
         0,
       )}
+      height={dimensions.body.rowHeight}
+      width={dimensions.set.width}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={(e: any) => handleClick(e)}
     >
-      <StarIcon height={dimensions.body.rowHeight} width={dimensions.set.width} fontSize={'1em' as any} sx={{ color: colorPallete[row.id] }} />
+      <StarIcon
+        height={dimensions.body.rowHeight}
+        width={dimensions.set.width}
+        fontSize={'1em' as any}
+        sx={{
+          color,
+          fillOpacity: opacity,
+        }}
+      />
     </g>
   );
 };

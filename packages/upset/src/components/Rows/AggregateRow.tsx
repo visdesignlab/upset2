@@ -63,7 +63,6 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const bookmarks = useRecoilValue(bookmarkSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
   const selected = useRecoilValue(aggregateSelectedCount(aggregateRow));
@@ -140,8 +139,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         </g>
       )}
       <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
-        { bookmarks.find((b) => b.id === aggregateRow.id) &&
-        <BookmarkStar row={aggregateRow} />}
+        <BookmarkStar row={aggregateRow} />
         <SizeBar
           row={aggregateRow}
           size={aggregateRow.size}
