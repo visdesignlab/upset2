@@ -1,12 +1,6 @@
 import { Row } from '@visdesignlab/upset2-core';
 import StarIcon from '@mui/icons-material/Star';
-import {
-  FC,
-  MouseEvent,
-  useContext,
-  useMemo,
-  useState,
-} from 'react';
+import { FC, MouseEvent, useContext, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -44,8 +38,10 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
   const bookmarks = useRecoilValue(bookmarkSelector);
   const { actions } = useContext(ProvenanceContext);
 
+  const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
+
   const [hovered, setHovered] = useState(false);
-  const bookmarked = useMemo(() => bookmarks.find((b) => b.id === row.id), [
+  const bookmarked = useMemo(() => bookmarks.find(b => b.id === row.id), [
     bookmarks,
     row.id,
   ]);
@@ -102,7 +98,7 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
     }
     actions.addBookmark({
       id: row.id,
-      label: row.elementName,
+      label: rowDisplayName,
       size: row.size,
       type: 'intersection',
     });
@@ -120,6 +116,11 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
       onMouseLeave={handleMouseLeave}
       onClick={(e: any) => handleClick(e)}
     >
+      <rect
+        height={dimensions.body.rowHeight}
+        width={dimensions.set.width}
+        fill="transparent"
+      />
       <StarIcon
         height={dimensions.body.rowHeight}
         width={dimensions.set.width}
