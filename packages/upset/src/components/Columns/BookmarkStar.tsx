@@ -6,9 +6,8 @@ import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import {
-  bookmarkedColorPalette,
-  bookmarkSelector,
-  nextColorSelector,
+  BookmarkedColorSelector,
+  isRowBookmarkedSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 
 type Props = {
@@ -33,25 +32,13 @@ const BOOKMARKED_OPACITY = 1.0;
  */
 export const BookmarkStar: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const colorPallete = useRecoilValue(bookmarkedColorPalette);
-  const nextColor = useRecoilValue(nextColorSelector);
-  const bookmarks = useRecoilValue(bookmarkSelector);
+  const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
+  const color = useRecoilValue(BookmarkedColorSelector(row));
   const { actions } = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
 
   const [hovered, setHovered] = useState(false);
-  const bookmarked = useMemo(() => bookmarks.find(b => b.id === row.id), [
-    bookmarks,
-    row.id,
-  ]);
-
-  const color = useMemo(() => (bookmarked ? colorPallete[row.id] : nextColor), [
-    colorPallete,
-    row.id,
-    bookmarked,
-    nextColor,
-  ]);
 
   /**
    * Calculates the opacity value based on the bookmark and hover states.
