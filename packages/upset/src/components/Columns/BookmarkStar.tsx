@@ -81,14 +81,14 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
     event.stopPropagation();
     if (bookmarked) {
       actions.removeBookmark(bookmarked);
-      return;
+    } else {
+      actions.addBookmark({
+        id: row.id,
+        label: rowDisplayName,
+        size: row.size,
+        type: 'intersection',
+      });
     }
-    actions.addBookmark({
-      id: row.id,
-      label: rowDisplayName,
-      size: row.size,
-      type: 'intersection',
-    });
   };
 
   return (
