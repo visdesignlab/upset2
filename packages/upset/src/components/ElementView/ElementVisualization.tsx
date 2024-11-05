@@ -10,7 +10,7 @@ import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } fro
 import { Alert, Button } from '@mui/material';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { elementItemMapSelector, currentNumericalQuery } from '../../atoms/elementsSelectors';
+import { currentNumericalQuery, elementsInBookmarkSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
@@ -29,7 +29,7 @@ export const ElementVisualization = () => {
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkSelector);
-  const items = useRecoilValue(elementItemMapSelector(bookmarked.map((b) => b.id)));
+  const items = useRecoilValue(elementsInBookmarkSelector);
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const selectColor = useRecoilValue(elementColorSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);

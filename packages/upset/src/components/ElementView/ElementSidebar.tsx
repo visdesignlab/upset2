@@ -3,18 +3,17 @@ import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-  Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
+  Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import React, {
-  useCallback, useContext, useEffect, useMemo, useState,
+  useCallback, useContext, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import {
-  elementSelector, intersectionCountSelector, selectedElementSelector, selectedItemsCounter,
+  selectedElementSelector, selectedItemsCounter,
   selectedItemsSelector,
 } from '../../atoms/elementsSelectors';
 import { BookmarkChips } from './BookmarkChips';
@@ -80,29 +79,13 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
-  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
   const currentSelection = useRecoilValue(selectedElementSelector);
   const selectedItems = useRecoilValue(selectedItemsSelector);
-  const itemCount = currentSelection
-    ? useRecoilValue(selectedItemsCounter)
-    : useRecoilValue(intersectionCountSelector(currentIntersection?.id));
-  const currentIntersectionElements = useRecoilValue(
-    elementSelector(currentIntersection?.id),
-  );
-  const bookmarks = useRecoilValue(bookmarkSelector);
+  const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-
-  /**
-   * Vars
-   */
-
-  const queryDownloadable = useMemo(
-    () => currentIntersection || (currentSelection && bookmarks.length > 0),
-    [currentIntersection, currentSelection, bookmarks],
-  );
 
   /**
    * Effects
@@ -237,31 +220,14 @@ export const ElementSidebar = ({ open, close }: Props) => {
       <QueryInterface />
       <Typography variant="h3" fontSize="1.2em">
         Query Result
-        <Tooltip
-          title={
-              queryDownloadable
-                ? `Download ${itemCount} elements`
-                : ''
-            }
-        >
+        <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton
-            disabled={!queryDownloadable}
             onClick={() => {
-              if (queryDownloadable) {
-                if (currentSelection) {
-                  downloadElementsAsCSV(
-                    selectedItems,
-                    columns,
-                    currentSelection.label,
-                  );
-                } else if (currentIntersection) {
-                  downloadElementsAsCSV(
-                    currentIntersectionElements,
-                    columns,
-                    currentIntersection.elementName,
-                  );
-                }
-              }
+              downloadElementsAsCSV(
+                selectedItems,
+                columns,
+                currentSelection?.label ?? 'upset_elements',
+              );
             }}
           >
             <DownloadIcon />
@@ -269,20 +235,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Tooltip>
       </Typography>
       <Divider />
-      {queryDownloadable ? (
-        <ElementTable />
-      ) : (
-        <Alert
-          severity="info"
-          variant="outlined"
-          role="generic"
-          sx={{
-            alignItems: 'center', marginTop: '0.5em', marginBottom: '100px', border: 'none', color: '#777777',
-          }}
-        >
-          Please select a query to view the elements.
-        </Alert>
-      )}
+      <ElementTable />
     </Drawer>
   );
 };
