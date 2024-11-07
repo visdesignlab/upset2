@@ -7,7 +7,10 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import {
+  bookmarkSelector,
+  currentIntersectionSelector,
+} from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
@@ -43,7 +46,15 @@ const expanded = (
  * Collapsed icon for the AggregateRow component.
  */
 export const collapsed = (
-  <g transform={`rotate(180) translate(-${iconSize.replace('px', '')}, -${iconSize.replace('px', '')})`} className="icon" textAnchor="middle" dominantBaseline="middle">
+  <g
+    transform={`rotate(180) translate(-${iconSize.replace(
+      'px',
+      '',
+    )}, -${iconSize.replace('px', '')})`}
+    className="icon"
+    textAnchor="middle"
+    dominantBaseline="middle"
+  >
     <SvgIcon height={iconSize} width={iconSize}>
       <KeyboardArrowDownIcon />
     </SvgIcon>
@@ -85,19 +96,28 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   return (
     <g
       id={aggregateRow.id}
-      onClick={() => aggregateRow &&
-        (currentIntersection?.id === aggregateRow.id ?
-          actions.setSelected(null) : actions.setSelected(aggregateRow))}
+      onClick={() =>
+        aggregateRow &&
+        (currentIntersection?.id === aggregateRow.id
+          ? actions.setSelected(null)
+          : actions.setSelected(aggregateRow))
+      }
       css={mousePointer}
     >
-      <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
+      <g
+        transform={translate(
+          aggregateRow.level === 2 ? secondLevelXOffset : 2,
+          0,
+        )}
+      >
         <rect
           transform={translate(0, 2)}
-          css={
-            (currentIntersection?.id === aggregateRow.id) &&
-              highlight
+          css={currentIntersection?.id === aggregateRow.id && highlight}
+          height={
+            ['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)
+              ? (dimensions.body.rowHeight - 4) * 2
+              : dimensions.body.rowHeight - 4
           }
-          height={(['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? (dimensions.body.rowHeight - 4) * 2 : dimensions.body.rowHeight - 4}
           width={width}
           rx={5}
           ry={10}
@@ -106,16 +126,21 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           stroke="#555555"
           strokeWidth="1px"
         />
-        <g
-          onClick={() => {
-            if (collapsedIds.includes(aggregateRow.id)) {
-              actions.removeCollapsed(aggregateRow.id);
-            } else {
-              actions.addCollapsed(aggregateRow.id);
-            }
-          }}
-        >
-          { collapsedIds.includes(aggregateRow.id) ? collapsed : expanded}
+        <g>
+          {collapsedIds.includes(aggregateRow.id) ? collapsed : expanded}
+          {/* onclick background element */}
+          <rect
+            width={iconSize}
+            height={iconSize}
+            fill="transparent"
+            onClick={() => {
+              if (collapsedIds.includes(aggregateRow.id)) {
+                actions.removeCollapsed(aggregateRow.id);
+              } else {
+                actions.addCollapsed(aggregateRow.id);
+              }
+            }}
+          />
         </g>
         <text
           css={css`
@@ -138,14 +163,24 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           />
         </g>
       )}
-      <g transform={translate(0, (['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)) ? dimensions.body.rowHeight - 5 : 0)}>
+      <g
+        transform={translate(
+          0,
+          ['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)
+            ? dimensions.body.rowHeight - 5
+            : 0,
+        )}
+      >
         <BookmarkStar row={aggregateRow} />
         <SizeBar
           row={aggregateRow}
           size={aggregateRow.size}
           selected={selected}
         />
-        <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
+        <AttributeBars
+          attributes={aggregateRow.attributes}
+          row={aggregateRow}
+        />
       </g>
     </g>
   );
