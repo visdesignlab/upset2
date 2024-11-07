@@ -88,19 +88,19 @@ export const ElementVisualization = () => {
         draftSelection.current = undefined;
       }}
     >
+      <Button style={{ marginTop: '0.5em' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
       {!currentIntersection && bookmarked.length === 0 && (
         <Alert
           severity="info"
           variant="outlined"
           role="generic"
           sx={{
-            alignItems: 'center', margin: '0.5em 0', border: 'none', color: '#777777',
+            alignItems: 'center', marginBottom: '0.5em', border: 'none', color: '#777777',
           }}
         >
-          Please click on an intersection to visualize its attributes.
+          Currently visualizing all elements. Clicking on an intersection will visualize only its elements.
         </Alert>
       )}
-      <Button onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
