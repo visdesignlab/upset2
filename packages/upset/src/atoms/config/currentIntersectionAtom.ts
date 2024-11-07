@@ -90,7 +90,7 @@ export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
  * @param row - The row for which the color is being selected.
  * @returns The color associated with the given row.
  */
-export const BookmarkedColorSelector = selectorFamily<string, Row>({
+export const bookmarkedColorSelector = selectorFamily<string, Row>({
   key: 'bookmarked-color-selector',
   get: (row: Row) => ({ get }) => {
     const palette = get(bookmarkedColorPalette);

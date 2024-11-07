@@ -6,7 +6,7 @@ import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import {
-  BookmarkedColorSelector,
+  bookmarkedColorSelector,
   isRowBookmarkedSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 
@@ -33,7 +33,7 @@ const BOOKMARKED_OPACITY = 1.0;
 export const BookmarkStar: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
-  const color = useRecoilValue(BookmarkedColorSelector(row));
+  const color = useRecoilValue(bookmarkedColorSelector(row));
   const { actions } = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
