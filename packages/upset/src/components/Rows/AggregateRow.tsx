@@ -133,7 +133,8 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
             width={iconSize}
             height={iconSize}
             fill="transparent"
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation();
               if (collapsedIds.includes(aggregateRow.id)) {
                 actions.removeCollapsed(aggregateRow.id);
               } else {
