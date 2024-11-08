@@ -1,5 +1,5 @@
 import { Bookmark, Row } from '@visdesignlab/upset2-core';
-import { selector } from 'recoil';
+import { selector, selectorFamily } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
@@ -61,6 +61,41 @@ export const nextColorSelector = selector<string>({
       return '#000';
     }
     return queryColorPalette[currentLength];
+  },
+});
+
+/**
+ * Selector to determine if a row is bookmarked.
+ *
+ * This selector uses the `bookmarkSelector` to get the list of bookmarks and checks if the given row
+ * is present in that list by comparing the row's ID with the IDs of the bookmarks.
+ *
+ * @param row - The row to check for being bookmarked.
+ * @returns A boolean indicating whether the row is bookmarked.
+ */
+export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
+  key: 'is-row-bookmarked',
+  get: (row: Row) => ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    return bookmarks.some(b => b.id === row.id);
+  },
+});
+
+/**
+ * Selector to get the color associated with a bookmarked row OR to get the next color if the row is not bookmarked.
+ *
+ * This selector uses the `bookmarkedColorPalette` to find the color for the given row.
+ * If the row does not have a color in the palette, it falls back to the `nextColorSelector`.
+ *
+ * @param row - The row for which the color is being selected.
+ * @returns The color associated with the given row.
+ */
+export const bookmarkedColorSelector = selectorFamily<string, Row>({
+  key: 'bookmarked-color-selector',
+  get: (row: Row) => ({ get }) => {
+    const palette = get(bookmarkedColorPalette);
+    const nextColor = get(nextColorSelector);
+    return palette[row.id] || nextColor;
   },
 });
 

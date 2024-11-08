@@ -94,8 +94,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         fillOpacity="0.0"
       />
       <Matrix sets={visibleSets} subset={subset} />
-      {bookmarks.find((b) => b.id === subset.id) &&
-        <BookmarkStar row={subset} />}
+      <BookmarkStar row={subset} />
       <SizeBar size={subset.size} row={subset} selected={selected} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
