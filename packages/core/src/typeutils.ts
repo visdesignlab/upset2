@@ -1,4 +1,3 @@
-import { isHistogram, isScatterplot } from './typecheck';
 import {
   Aggregate,
   Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Plot, Row, Rows, SetMembershipStatus, Subset, Subsets,
@@ -181,7 +180,9 @@ export function getBelongingSetsFromSetMembership(membership: {
  * @returns Display string with type & axis of plot
  */
 export function plotToString(plot: Plot): string {
-  if (isScatterplot(plot)) return `Scatterplot: ${plot.x} by ${plot.y}`;
-  if (isHistogram(plot)) return `Histogram: ${plot.attribute}`;
-  throw Error(`Cannot convert plot ${plot} to string`);
+  switch (plot.type) {
+    case 'Scatterplot': return `Scatterplot: ${plot.x} by ${plot.y}`;
+    case 'Histogram': return `Histogram: ${plot.attribute}`;
+    default: throw Error(`Cannot convert plot ${plot} to string`);
+  }
 }
