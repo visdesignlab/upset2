@@ -48,13 +48,15 @@ function App() {
 
       // Default: a histogram for each attribute if no plots exist
       if (conf.plots.histograms.length + conf.plots.scatterplots.length === 0) {
+        let i = 0;
         conf.plots.histograms = data.attributeColumns.map((attr) => {
           return { 
             attribute: attr, 
             bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
             type: 'Histogram', 
             frequency: false, 
-            id: Date.now().toString() // Same calculation as in upset/.../AddPlot.tsx
+            // Same calculation as in upset/.../AddPlot.tsx except we append a number to the ID so all 3 aren't the same
+            id: Date.now().toString() + (i++)
           }
         })
       }
