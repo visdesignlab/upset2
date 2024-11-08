@@ -25,14 +25,6 @@ import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
 /**
- * The current interaction phase of the user removing a plot.
- * Determines what to display in the remove plot button's area.
- * false corresponds to no selection; displays the remove plot button
- * true corresponds to selecting & confirming a plot; displays a select & confirm/cancel buttons
- */
-type RemovePhase = boolean;
-
-/**
  * Displays a matrix of plots representing the elements in the current intersection selection & bookmarks.
  * @returns
  */
@@ -40,9 +32,6 @@ export const ElementVisualization = () => {
   /**
    * External state
    */
-
-  const [openAddPlot, setOpenAddPlot] = useState(false);
-  const [removeState, setRemoveState] = useState<RemovePhase>(false);
 
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
@@ -56,6 +45,15 @@ export const ElementVisualization = () => {
   /**
    * Internal State
    */
+
+  const [openAddPlot, setOpenAddPlot] = useState(false);
+  /**
+   * The current interaction phase of the user removing a plot.
+   * Determines what to display in the remove plot button's area.
+   * false corresponds to no selection; displays the remove plot button
+   * true corresponds to selecting & confirming a plot; displays a select & confirm/cancel buttons
+   */
+  const [removingPlot, setRemovingPlot] = useState<boolean>(false);
 
   const draftSelection = useRef(numericalQuery);
   const vegaSpec = useMemo(
@@ -111,10 +109,10 @@ export const ElementVisualization = () => {
       }}
       >
         <Button style={{ height: '100%' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
-        {!removeState &&
-          (<Button style={{ height: '100%' }} color="error" onClick={() => setRemoveState(true)}>Remove Plot</Button>)}
+        {!removingPlot &&
+          (<Button style={{ height: '100%' }} color="error" onClick={() => setRemovingPlot(true)}>Remove Plot</Button>)}
 
-        {removeState && (
+        {removingPlot && (
           <>
             <FormControl style={{ width: 'auto', flexGrow: '1' }} size="small">
               <InputLabel id="remove-plot-select-label">Select Plot to Remove</InputLabel>
