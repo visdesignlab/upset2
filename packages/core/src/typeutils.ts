@@ -1,6 +1,7 @@
+import { isHistogram, isScatterplot } from './typecheck';
 import {
   Aggregate,
-  Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
+  Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Plot, Row, Rows, SetMembershipStatus, Subset, Subsets,
 } from './types';
 import { hashString } from './utils';
 
@@ -172,4 +173,15 @@ export function getBelongingSetsFromSetMembership(membership: {
   return Object.entries(membership)
     .filter((mem) => mem[1] === 'Yes')
     .map((mem) => mem[0]);
+}
+
+/**
+ * Converts a plot to a displable string
+ * @param plot Plot to convert.
+ * @returns Display string with type & axis of plot
+ */
+export function plotToString(plot: Plot): string {
+  if (isScatterplot(plot)) return `Scatterplot: ${plot.x} by ${plot.y}`;
+  if (isHistogram(plot)) return `Histogram: ${plot.attribute}`;
+  throw Error(`Cannot convert plot ${plot} to string`);
 }

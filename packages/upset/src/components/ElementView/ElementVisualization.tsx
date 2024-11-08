@@ -6,8 +6,16 @@ import {
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
-import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } from '@visdesignlab/upset2-core';
-import { Alert, Button } from '@mui/material';
+import {
+  numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery,
+  Plot,
+  plotToString,
+} from '@visdesignlab/upset2-core';
+import {
+  Alert, Button, FormControl, IconButton, InputLabel, MenuItem, Select,
+} from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { currentNumericalQuery, elementsInBookmarkSelector } from '../../atoms/elementsSelectors';
@@ -15,6 +23,14 @@ import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
+
+/**
+ * The current interaction phase of the user removing a plot.
+ * Determines what to display in the remove plot button's area.
+ * false corresponds to no selection; displays the remove plot button
+ * true corresponds to selecting & confirming a plot; displays a select & confirm/cancel buttons
+ */
+type RemovePhase = boolean;
 
 /**
  * Displays a matrix of plots representing the elements in the current intersection selection & bookmarks.
@@ -26,6 +42,8 @@ export const ElementVisualization = () => {
    */
 
   const [openAddPlot, setOpenAddPlot] = useState(false);
+  const [removeState, setRemoveState] = useState<RemovePhase>(false);
+
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
   const bookmarked = useRecoilValue(bookmarkSelector);
@@ -88,7 +106,38 @@ export const ElementVisualization = () => {
         draftSelection.current = undefined;
       }}
     >
-      <Button style={{ marginTop: '0.5em' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
+      <div style={{
+        marginTop: '0.5em', display: 'flex', minHeight: '40px', alignItems: 'center',
+      }}
+      >
+        <Button style={{ height: '100%' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
+        {!removeState &&
+          (<Button style={{ height: '100%' }} color="error" onClick={() => setRemoveState(true)}>Remove Plot</Button>)}
+
+        {removeState && (
+          <>
+            <FormControl style={{ width: 'auto', flexGrow: '1' }} size="small">
+              <InputLabel id="remove-plot-select-label">Select Plot to Remove</InputLabel>
+              <Select
+                label="Select Plot to Remove"
+                labelId="remove-plot-select-label"
+                onChange={(v) => console.log(v)}
+              >
+                {(scatterplots as Plot[]).concat(histograms).map((plot) => (
+                  <MenuItem key={plot.id} value={plot.id}>{plotToString(plot)}</MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <IconButton color="success" onClick={() => console.log('remove')}>
+              <CheckIcon />
+            </IconButton>
+            <IconButton color="error" onClick={() => console.log('remove')}>
+              <CloseIcon />
+            </IconButton>
+          </>
+        )}
+      </div>
+
       {!currentIntersection && bookmarked.length === 0 && (
         <Alert
           severity="info"
@@ -101,6 +150,7 @@ export const ElementVisualization = () => {
           Currently visualizing all elements. Clicking on an intersection will visualize only its elements.
         </Alert>
       )}
+
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{ overflowX: 'auto' }}>
         {(scatterplots.length > 0 || histograms.length > 0) && (
