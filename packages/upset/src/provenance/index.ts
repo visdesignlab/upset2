@@ -6,6 +6,7 @@ import {
   ColumnName,
   AltText,
   ElementSelection,
+  plotToString,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -423,7 +424,7 @@ export function getActions(provenance: UpsetProvenance) {
      * Removes a plot from the state
      * @param plot plot to remove
      */
-    removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
+    removePlot: (plot: Plot) => provenance.apply(`Remove ${plotToString(plot)}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
     addCollapsed: (id: string) => provenance.apply(`Collapsed ${id}`, addCollapsedAction(id)),
     removeCollapsed: (id: string) => provenance.apply(`Expanded ${id}`, removeCollapsedAction(id)),

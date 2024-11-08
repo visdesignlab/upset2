@@ -18,7 +18,9 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { currentNumericalQuery, elementsInBookmarkSelector } from '../../atoms/elementsSelectors';
+import {
+  currentNumericalQuery, elementsInBookmarkSelector, selectedElementSelector,
+} from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVega } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
@@ -40,6 +42,7 @@ export const ElementVisualization = () => {
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const selectColor = useRecoilValue(elementColorSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const elementSelection = useRecoilValue(selectedElementSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
@@ -54,6 +57,10 @@ export const ElementVisualization = () => {
    * true corresponds to selecting & confirming a plot; displays a select & confirm/cancel buttons
    */
   const [removingPlot, setRemovingPlot] = useState<boolean>(false);
+  /**
+   * The plot to remove from the visualization.
+   */
+  const [plotToRemove, setPlotToRemove] = useState<Plot | null>(null);
 
   const draftSelection = useRef(numericalQuery);
   const vegaSpec = useMemo(
@@ -63,6 +70,7 @@ export const ElementVisualization = () => {
   const data = useMemo(() => ({
     elements: Object.values(structuredClone(items)),
   }), [items]);
+  const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
 
   /**
    * Functions
@@ -98,7 +106,7 @@ export const ElementVisualization = () => {
           && !numericalQueriesEqual(draftSelection.current, numericalQuery)
         ) {
           actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
-        } else {
+        } else if (elementSelection) {
           actions.setElementSelection(null);
         }
         draftSelection.current = undefined;
@@ -119,17 +127,27 @@ export const ElementVisualization = () => {
               <Select
                 label="Select Plot to Remove"
                 labelId="remove-plot-select-label"
-                onChange={(v) => console.log(v)}
+                value={plotToRemove?.id || ''}
+                onChange={(v) => {
+                  const plot = plots.find((p) => p.id === v.target.value);
+                  if (plot) setPlotToRemove(plot);
+                }}
               >
-                {(scatterplots as Plot[]).concat(histograms).map((plot) => (
+                {plots.map((plot) => (
                   <MenuItem key={plot.id} value={plot.id}>{plotToString(plot)}</MenuItem>
                 ))}
               </Select>
             </FormControl>
-            <IconButton color="success" onClick={() => console.log('remove')}>
+            <IconButton
+              color="success"
+              onClick={() => {
+                if (plotToRemove) actions.removePlot(plotToRemove);
+                setRemovingPlot(false);
+              }}
+            >
               <CheckIcon />
             </IconButton>
-            <IconButton color="error" onClick={() => console.log('remove')}>
+            <IconButton color="error" onClick={() => setRemovingPlot(false)}>
               <CloseIcon />
             </IconButton>
           </>
