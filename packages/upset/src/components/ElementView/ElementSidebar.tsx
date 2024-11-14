@@ -156,6 +156,9 @@ export const ElementSidebar = ({ open, close }: Props) => {
           left: 0,
           zIndex: 100,
           backgroundColor: '#f4f7f9',
+          // I cannot comprehend why this is the value that works. It is.
+          // The 'rows per page' controls overflow otherwise (:
+          paddingBottom: '1625px',
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
