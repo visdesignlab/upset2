@@ -24,9 +24,9 @@ test('Selection History', async ({ page }) => {
 
   // Testing history for an aggregate row selection & deselection
   await page.getByRole('radio', { name: 'Degree' }).check();
-  await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').click();
+  await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').nth(0).click();
   await expect(page.locator('div').filter({ hasText: /^Select intersection "Degree 3"$/ }).nth(2)).toBeVisible();
-  await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').click();
+  await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').nth(0).click();
   await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
 
   // Check that selections are maintained after de-aggregation
