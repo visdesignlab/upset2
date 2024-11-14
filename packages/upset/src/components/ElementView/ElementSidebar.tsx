@@ -33,8 +33,14 @@ type Props = {
   close: () => void
 }
 
-const initialDrawerWidth = 450;
-const minDrawerWidth = 100;
+/**
+ * The *exact* width at which we don't get a horizontal scrollbar in the table controls
+ */
+const initialDrawerWidth = 462;
+/**
+ * The *exact* width at which the 'apply' button in the element query controls is forced onto a new line
+ */
+const minDrawerWidth = 368;
 
 /**
  * Immediately downloads a csv containing items with the given columns
