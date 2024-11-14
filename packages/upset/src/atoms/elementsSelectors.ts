@@ -118,6 +118,22 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
 });
 
 /**
+ * Gets all elements in the bookmarked intersections and the currently selected intersection.
+ * If no intersections are bookmarked, returns all elements
+ * @returns The elements in the bookmarked intersections
+ */
+export const elementsInBookmarkSelector = selector<Item[]>({
+  key: 'bookmarked-elements',
+  get: ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
+
+    if (items.length === 0) return Object.values(get(itemsAtom)).map((item) => ({ ...item, color: '#444' }));
+    return items;
+  },
+});
+
+/**
  * Gets the current selection of elements
  * @returns The current selection of elements
  */
@@ -155,14 +171,14 @@ export const currentElementQuery = selector<ElementQuery | undefined>({
 /**
  * Returns all items that are in a bookmarked intersection OR the currently selected intersection
  * AND are within the bounds of the current element selection.
+ * If no selections are active and no rows are bookmarked, returns all items.
  */
 export const selectedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
-    const bookmarks = get(bookmarkSelector);
-    const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
+    const items: Item[] = get(elementsInBookmarkSelector);
     const selection = get(selectedElementSelector);
-    if (!selection) return [];
+    if (!selection) return items;
 
     return filterItems(items, selection);
   },

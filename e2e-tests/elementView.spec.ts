@@ -32,13 +32,31 @@ async function dragElement(element: Locator, xOffset: number, yOffset: number, p
 test('Element View', async ({ page, browserName }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
-  // Make selection
-  const row = await page.locator('g > circle').first(); // row
-  await row.dispatchEvent('click');
-
   // Open element view
   const elementViewToggle = await page.getByLabel('Element View Sidebar Toggle');
   await elementViewToggle.click();
+
+  // Make sure the query table has results by default
+  const lisaCell = page.getByRole('cell', { name: 'Lisa' });
+  const cell8 = page.getByRole('cell', { name: '8', exact: true });
+  await expect(cell8).toBeVisible();
+  await expect(lisaCell).toBeVisible();
+
+  // Make a selection on the vis of all data
+  await dragElement(page.locator('canvas'), 20, 0, page);
+  await expect(page.locator('#Subset_Male polygon').nth(1)).toBeVisible();
+  await expect(page.getByLabel('Selected elements Atts: Age')).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'Homer' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: '40' })).toBeVisible();
+  await expect(lisaCell).not.toBeVisible();
+  await expect(cell8).not.toBeVisible();
+
+  // Deselect
+  await page.locator('canvas').click();
+
+  // Make selection
+  const row = await page.locator('g > circle').first(); // row
+  await row.dispatchEvent('click');
 
   // test expansion buttons
   await page.getByLabel('Expand the sidebar in full').click();
