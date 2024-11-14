@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
@@ -107,12 +107,14 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           strokeWidth="1px"
         />
         <g
-          onClick={() => {
+          onClick={(e) => {
             if (collapsedIds.includes(aggregateRow.id)) {
               actions.removeCollapsed(aggregateRow.id);
             } else {
               actions.addCollapsed(aggregateRow.id);
             }
+            // To prevent the handler on SvgBase that deselects the current intersection
+            e.stopPropagation();
           }}
         >
           { collapsedIds.includes(aggregateRow.id) ? collapsed : expanded}

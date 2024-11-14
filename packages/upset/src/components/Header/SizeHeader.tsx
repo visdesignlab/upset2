@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { drag } from 'd3-drag';
 import { select } from 'd3-selection';
-import {
+import React, {
   FC, useContext, useEffect, useRef, useState,
 } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
@@ -51,12 +51,14 @@ export const SizeHeader: FC = () => {
     actions.sortBy('Size', order);
   };
 
-  const handleOnClick = () => {
+  const handleOnClick = (e: React.MouseEvent<SVGElement>) => {
     if (sortBy !== 'Size') {
       sortBySize('Ascending');
     } else {
       sortBySize(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
+    // To prevent the handler on SvgBase that deselects the current intersection
+    e.stopPropagation();
   };
 
   const handleContextMenuClose = () => {

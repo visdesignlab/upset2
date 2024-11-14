@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { SortByOrder, AttributePlotType } from '@visdesignlab/upset2-core';
 
@@ -63,12 +63,14 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
    * If the attribute is not currently sorted, it sorts it in ascending order.
    * If the attribute is already sorted, it toggles between ascending and descending order.
    */
-  const handleOnClick = () => {
+  const handleOnClick = (e: React.MouseEvent<SVGElement>) => {
     if (sortBy !== label) {
       sortByHeader('Ascending');
     } else {
       sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
+    // To prevent the handler on SvgBase that deselects the current intersection
+    e.stopPropagation();
   };
 
   /**
