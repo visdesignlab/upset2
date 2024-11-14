@@ -83,13 +83,14 @@ export const Sidebar = () => {
   return (
     <div
       css={css`
-        width: ${dimensions.sidebar.width}px
+        width: ${dimensions.sidebar.width}px;
+        box-shadow: 0px 2px 1px -1px rgba(0,0,0,0.2),0px 1px 1px 0px rgba(0,0,0,0.14),0px 1px 3px 0px rgba(0,0,0,0.12);
       `}
     >
-      <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
+      <Typography variant="h2" padding="1em" fontSize="1.2em" fontWeight="inherit">
         Settings
       </Typography>
-      <Accordion disableGutters defaultExpanded>
+      <Accordion disableGutters di defaultExpanded>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
         </AccordionSummary>
