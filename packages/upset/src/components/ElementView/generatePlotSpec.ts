@@ -2,6 +2,7 @@ import {
   NumericalQuery, Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
+import { SelectionParameter } from 'vega-lite/build/src/selection';
 
 /**
  * Converts an NumericalQuery to a value for a vega param.
@@ -29,13 +30,14 @@ function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | 
 
 /**
  * Creates the spec for a single scatterplot.
+ * Used in the "Add Plot" dialog.
  * @param x - The attribute to plot on the x-axis.
  * @param y - The attribute to plot on the y-axis.
  * @param height - The height of the plot.
  * @param width - The width of the plot.
  * @returns The Vega-Lite spec for the scatterplot.
  */
-export function createScatterplotSpec(
+export function createAddScatterplotSpec(
   x: {
     attribute: string;
     logScale: boolean;
@@ -73,18 +75,18 @@ export function createScatterplotSpec(
 }
 
 /**
- * Creates the spec for multiple scatterplots containing data from multiple subsets.
+ * Creates the spec for a single scatterplot in the element view matrix.
  * @param specs       Scatterplot objects with x and y attributes.
  * @param selection   The current brush selection, if extant
  * @param selectColor The color to use for brushed points
  * @returns The Vega-Lite spec for the scatterplots.
  */
-export function createScatterplotRow(
-  specs: Scatterplot[],
+export function generateScatterplotSpec(
+  spec: Scatterplot,
   selection: NumericalQuery | undefined,
   selectColor: string,
-): VisualizationSpec[] {
-  return specs.map((s) => ({
+): VisualizationSpec {
+  return {
     width: 200,
     height: 200,
     mark: {
@@ -92,7 +94,7 @@ export function createScatterplotRow(
     },
     // We only add the 'params' field if this object has a selection OR if there is no selection
     // This works around a Vega bug where providing the value field to a param doesn't always work in concatenated plots
-    ...((!selection || (selection && convertSelection(s, selection))) && {
+    ...((!selection || (selection && convertSelection(spec, selection))) && {
       params: [
         {
           name: 'brush',
@@ -101,20 +103,20 @@ export function createScatterplotRow(
             clear: 'mousedown',
           },
           // We only add the 'value' field if selection is defined
-          ...(selection && convertSelection(s, selection) && { value: convertSelection(s, selection) }),
+          ...(selection && convertSelection(spec, selection) && { value: convertSelection(spec, selection) }),
         },
       ],
     }),
     encoding: {
       x: {
-        field: s.x,
+        field: spec.x,
         type: 'quantitative',
-        scale: { zero: false, type: s.xScaleLog ? 'log' : 'linear' },
+        scale: { zero: false, type: spec.xScaleLog ? 'log' : 'linear' },
       },
       y: {
-        field: s.y,
+        field: spec.y,
         type: 'quantitative',
-        scale: { zero: false, type: s.yScaleLog ? 'log' : 'linear' },
+        scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
       color: {
         condition: {
@@ -153,17 +155,17 @@ export function createScatterplotRow(
         value: 0,
       },
     },
-  }));
+  };
 }
 
 /**
- * Creates the spec for a single histogram.
+ * Creates the spec for a single histogram, used in the "Add Plot" dialog.
  * @param attribute The attribute to plot.
  * @param bins      The number of bins to use.
  * @param frequency Whether to plot frequency or density; true for frequency.
  * @returns The Vega-Lite spec for the histogram.
  */
-export function createHistogramSpec(
+export function createAddHistogramSpec(
   attribute: string,
   bins: number,
   frequency: boolean,
@@ -210,23 +212,22 @@ export function createHistogramSpec(
 }
 
 /**
- * Creates the spec for multiple histograms containing data from multiple subsets.
- * Currently used by the element view pane
+ * Creates the spec for a single histogram in the element view matrix.
  * @param histograms The histograms to plot.
  * @param selection  Current brush selection
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function createHistogramRow(
-  histograms: Histogram[],
+export function generateHistogramSpec(
+  hist: Histogram,
   selection: NumericalQuery | undefined,
 )
-: VisualizationSpec[] {
-  function makeParams(plot: Histogram) {
+: VisualizationSpec {
+  function makeParams(plot: Histogram): SelectionParameter<'interval'>[] {
     return [
       {
         name: 'brush',
         select: {
-          type: 'interval',
+          type: 'interval' as const,
           encodings: ['x'],
           clear: 'mousedown',
         },
@@ -242,8 +243,7 @@ export function createHistogramRow(
   };
 
   // eslint-disable-next-line arrow-body-style
-  return histograms.filter((h) => !h.frequency).map((h) => {
-    /* Due to a vega-lite bug, we can't use the density transform in a concatenated plot
+  /* Due to a vega-lite bug, we can't use the density transform in a concatenated plot
      * To re-enable this, remove the filter statement above this comment, uncomment the following block,
      * and uncomment the frequency control in AddPlot.tsx
     if (h.frequency) {
@@ -300,71 +300,91 @@ export function createHistogramRow(
     }
     */
 
-    return {
-      width: 200,
-      height: 200,
-      layer: [
-        {
-          params: makeParams(h),
-          mark: 'bar',
-          encoding: {
-            x: {
-              bin: { maxBins: h.bins },
-              field: h.attribute,
-            },
-            y: {
-              aggregate: 'count',
-              title: 'Frequency',
-            },
-            color: COLOR,
-            opacity: { value: 0.4 },
+  return {
+    width: 200,
+    height: 200,
+    layer: [
+      {
+        params: makeParams(hist),
+        mark: 'bar',
+        encoding: {
+          x: {
+            bin: { maxbins: hist.bins },
+            field: hist.attribute,
           },
-        }, {
-          transform: [{
-            filter: { param: 'brush' },
-          }],
-          mark: 'bar',
-          encoding: {
-            x: {
-              field: h.attribute,
-              bin: { maxBins: h.bins },
-            },
-            y: {
-              aggregate: 'count',
-              title: 'Frequency',
-            },
-            color: COLOR,
-            opacity: { value: 1 },
+          y: {
+            aggregate: 'count',
+            title: 'Frequency',
           },
+          color: COLOR,
+          opacity: { value: 0.4 },
         },
-      ],
-    };
-  });
-}
-
-export function generateVega(
-  scatterplots: Scatterplot[],
-  histograms: Histogram[],
-  selectColor: string,
-  selection? : NumericalQuery,
-): VisualizationSpec {
-  // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
-  const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;
-  const scatterplotSpecs = createScatterplotRow(scatterplots, newSelection, selectColor);
-  const histogramSpecs = createHistogramRow(histograms, newSelection);
-  const base = {
-    data: {
-      name: 'elements',
-    },
-    hconcat: [
-      {
-        vconcat: scatterplotSpecs,
-      },
-      {
-        vconcat: histogramSpecs,
+      }, {
+        transform: [{
+          filter: { param: 'brush' },
+        }],
+        mark: 'bar',
+        encoding: {
+          x: {
+            field: hist.attribute,
+            bin: { maxbins: hist.bins },
+          },
+          y: {
+            aggregate: 'count',
+            title: 'Frequency',
+          },
+          color: COLOR,
+          opacity: { value: 1 },
+        },
       },
     ],
   };
+}
 
-  return base as VisualizationSpec;
+// export function generateVega(
+//   scatterplots: Scatterplot[],
+//   histograms: Histogram[],
+//   selectColor: string,
+//   selection? : NumericalQuery,
+// ): VisualizationSpec {
+//   // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
+//   const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;
+//   const scatterplotSpecs = createScatterplotRow(scatterplots, newSelection, selectColor);
+//   const histogramSpecs = createHistogramRow(histograms, newSelection);
+//   const base = {
+//     data: {
+//       name: 'elements',
+//     },
+//     hconcat: [
+//       {
+//         vconcat: scatterplotSpecs,
+//       },
+//       {
+//         vconcat: histogramSpecs,
+//       },
+//     ],
+//   };
+
+//   return base as VisualizationSpec;
+// }
+
+/**
+ * Generates a vega spec for a plot.
+ * @param plot The plot to generate a spec for
+ * @param selection The current selection
+ * @param selectColor The color to use for selected points
+ * @returns The vega spec for the plot
+ */
+export function generateVegaSpec(plot: Plot, selection: NumericalQuery | undefined, selectColor: string): VisualizationSpec {
+  const BASE = {
+    data: { name: 'elements' },
+  };
+
+  if (isScatterplot(plot)) {
+    return { ...BASE, ...generateScatterplotSpec(plot, selection, selectColor) } as VisualizationSpec;
+  }
+  if (isHistogram(plot)) {
+    return { ...BASE, ...generateHistogramSpec(plot, selection) } as VisualizationSpec;
+  }
+  throw new Error('Invalid plot type');
 }

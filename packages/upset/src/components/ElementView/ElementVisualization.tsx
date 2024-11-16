@@ -3,16 +3,18 @@ import {
   useCallback,
   useContext, useMemo, useRef, useState,
 } from 'react';
-import { SignalListener, VegaLite } from 'react-vega';
+import { SignalListener, VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
-import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } from '@visdesignlab/upset2-core';
+import {
+  numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, Plot,
+} from '@visdesignlab/upset2-core';
 import { Alert, Button } from '@mui/material';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { currentNumericalQuery, elementsInBookmarkSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
-import { generateVega } from './generatePlotSpec';
+import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
@@ -40,13 +42,13 @@ export const ElementVisualization = () => {
    */
 
   const draftSelection = useRef(numericalQuery);
-  const vegaSpec = useMemo(
-    () => generateVega(scatterplots, histograms, selectColor, numericalQuery),
-    [scatterplots, histograms, selectColor, numericalQuery],
-  );
   const data = useMemo(() => ({
     elements: Object.values(structuredClone(items)),
   }), [items]);
+  const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
+  const specs = useMemo(() => plots.map((plot) => (
+    { plot, spec: generateVegaSpec(plot, numericalQuery, selectColor) }
+  )), [plots, numericalQuery, selectColor]);
 
   /**
    * Functions
@@ -71,6 +73,8 @@ export const ElementVisualization = () => {
   const signalListeners = useMemo(() => ({
     brush: brushHandler,
   }), [brushHandler]);
+
+  const [vegaView, setView] = useState<View | null>(null);
 
   return (
     <Box
@@ -103,15 +107,19 @@ export const ElementVisualization = () => {
       )}
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{ overflowX: 'auto' }}>
-        {(scatterplots.length > 0 || histograms.length > 0) && (
+        {(plots.length > 0) && specs.map(({ plot, spec }) => (
           <VegaLite
-            spec={vegaSpec}
+            spec={spec}
             data={data}
             actions={false}
             signalListeners={signalListeners}
+            onNewView={(view) => {
+              setView(view);
+            }}
           />
-        )}
+        ))}
       </Box>
+      <Button onClick={() => vegaView?.signal('brush', { ReleaseDate: [1950, 2000], Watches: [200, 400] })}>Clear Brush</Button>
     </Box>
   );
 };
