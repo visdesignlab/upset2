@@ -208,7 +208,6 @@ test('Query Selection', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
   await page.getByLabel('Element View Sidebar Toggle').click();
   await page.locator('[id="Subset_School\\~\\&\\~Male"] g').filter({ hasText: /^Blue Hair$/ }).locator('circle').click();
-  await page.getByLabel('Selected intersection School').click();
 
   // Selected elements for testing
   const ralphCell = page.getByRole('cell', { name: 'Ralph' });
