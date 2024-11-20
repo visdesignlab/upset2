@@ -3,11 +3,14 @@ import {
   useCallback,
   useContext, useMemo, useRef, useState,
 } from 'react';
-import { SignalListener, VegaLite, View } from 'react-vega';
+import { VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
 import {
   numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, Plot,
+  NumericalQuery,
+  isScatterplot,
+  isHistogram,
 } from '@visdesignlab/upset2-core';
 import { Alert, Button } from '@mui/material';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
@@ -17,6 +20,45 @@ import { AddPlotDialog } from './AddPlotDialog';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
+
+const BRUSH_NAME = 'brush';
+
+/**
+ * Updates Vega visualization signals based on numerical queries for either scatterplots or histograms
+ * and re-runs the view asynchronously.
+ *
+ * @param plot - The plot configuration (scatterplot or histogram)
+ * @param view - The Vega view instance to update
+ * @param val - Object containing numerical range queries
+ */
+function signalView(plot: Plot, view: View, val: NumericalQuery) {
+  if (isScatterplot(plot)) {
+    const inclX = Object.keys(val).includes(plot.x);
+    const inclY = Object.keys(val).includes(plot.y);
+    if ((!inclX && !inclY)) {
+      view.signal(`${BRUSH_NAME}_${plot.x}`, undefined);
+      view.signal(`${BRUSH_NAME}_${plot.y}`, undefined);
+      view.runAsync();
+      return;
+    }
+
+    if (inclX) {
+      view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
+    } else {
+      view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
+    }
+
+    if (inclY) {
+      view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
+    } else {
+      view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
+    }
+  } else if (isHistogram(plot)) {
+    if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
+    else view.signal(`${BRUSH_NAME}_${plot.attribute}`, []);
+  }
+  view.runAsync();
+}
 
 /**
  * Displays a matrix of plots representing the elements in the current intersection selection & bookmarks.
@@ -42,13 +84,15 @@ export const ElementVisualization = () => {
    */
 
   const draftSelection = useRef(numericalQuery);
+  const views = useRef<{view: View, plot: Plot}[]>([]);
+  const currentClick = useRef<Plot |null>(null);
   const data = useMemo(() => ({
     elements: Object.values(structuredClone(items)),
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (
-    { plot, spec: generateVegaSpec(plot, numericalQuery, selectColor) }
-  )), [plots, numericalQuery, selectColor]);
+    { plot, spec: generateVegaSpec(plot, selectColor) }
+  )), [plots, selectColor]);
 
   /**
    * Functions
@@ -61,35 +105,32 @@ export const ElementVisualization = () => {
 
   /**
    * Saves brush bounds to state when the interactive brush is used.
-   * @param {string}  _     Name of the signal: "brush" (defined in the vega spec & signalListeners of VegaLite element)
+   * @param {Plot}    signaled  The plot that this signal fired on
    * @param {unknown} value Should be an object mapping the names of the attributes being brushed over
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
-  const brushHandler: SignalListener = useCallback((_: string, value: unknown) => {
-    if (!isNumericalQuery(value)) return;
+  const brushHandler = useCallback((signaled: Plot, value: unknown) => {
+    if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id) return;
     draftSelection.current = value;
+    views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view, plot }) => {
+      signalView(plot, view, value);
+    });
   }, [draftSelection]);
-
-  const signalListeners = useMemo(() => ({
-    brush: brushHandler,
-  }), [brushHandler]);
-
-  const [vegaView, setView] = useState<View | null>(null);
 
   return (
     <Box
       onClick={() => {
         // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
-        if (
-          draftSelection.current
-          && Object.keys(draftSelection.current).length > 0
-          && !numericalQueriesEqual(draftSelection.current, numericalQuery)
-        ) {
-          actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
-        } else {
-          actions.setElementSelection(null);
-        }
-        draftSelection.current = undefined;
+        // if (
+        //   draftSelection.current
+        //   && Object.keys(draftSelection.current).length > 0
+        //   && !numericalQueriesEqual(draftSelection.current, numericalQuery)
+        // ) {
+        //   actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
+        // } else {
+        //   actions.setElementSelection(null);
+        // }
+        // draftSelection.current = undefined;
       }}
     >
       <Button style={{ marginTop: '0.5em' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
@@ -112,14 +153,16 @@ export const ElementVisualization = () => {
             spec={spec}
             data={data}
             actions={false}
-            signalListeners={signalListeners}
+            signalListeners={{
+              [BRUSH_NAME]: (_, val) => brushHandler(plot, val),
+            }}
             onNewView={(view) => {
-              setView(view);
+              views.current.push({ view, plot });
+              view.addEventListener('mouseover', () => { currentClick.current = plot; });
             }}
           />
         ))}
       </Box>
-      <Button onClick={() => vegaView?.signal('brush', { ReleaseDate: [1950, 2000], Watches: [200, 400] })}>Clear Brush</Button>
     </Box>
   );
 };

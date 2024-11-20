@@ -13,7 +13,7 @@ import { SelectionParameter } from 'vega-lite/build/src/selection';
  * @returns An object which can be assigned to the 'value' field of a vega param in the plot
  *          to display the selection in the plot.
  */
-function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
+export function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
   let val: NumericalQuery | undefined;
   if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
     val = {
@@ -83,30 +83,34 @@ export function createAddScatterplotSpec(
  */
 export function generateScatterplotSpec(
   spec: Scatterplot,
-  selection: NumericalQuery | undefined,
+  // selection: NumericalQuery | undefined,
   selectColor: string,
 ): VisualizationSpec {
   return {
     width: 200,
     height: 200,
+    signals: [
+      { name: 'brush', value: {} },
+    ],
     mark: {
       type: 'point',
     },
     // We only add the 'params' field if this object has a selection OR if there is no selection
     // This works around a Vega bug where providing the value field to a param doesn't always work in concatenated plots
-    ...((!selection || (selection && convertSelection(spec, selection))) && {
-      params: [
-        {
-          name: 'brush',
-          select: {
-            type: 'interval',
-            clear: 'mousedown',
-          },
-          // We only add the 'value' field if selection is defined
-          ...(selection && convertSelection(spec, selection) && { value: convertSelection(spec, selection) }),
+    // ..((!selection || (selection && convertSelection(spec, selection))) && {
+    // eslint disable-next-line indent
+    params: [
+      {
+        name: 'brush',
+        select: {
+          type: 'interval',
+          clear: 'mousedown',
         },
-      ],
-    }),
+        // We only add the 'value' field if selection is defined
+        // ...(selection && convertSelection(spec, selection) && { value: convertSelection(spec, selection) }),
+      },
+    ],
+    // }),
     encoding: {
       x: {
         field: spec.x,
@@ -219,7 +223,7 @@ export function createAddHistogramSpec(
  */
 export function generateHistogramSpec(
   hist: Histogram,
-  selection: NumericalQuery | undefined,
+  // selection: NumericalQuery | undefined,
 )
 : VisualizationSpec {
   function makeParams(plot: Histogram): SelectionParameter<'interval'>[] {
@@ -231,7 +235,7 @@ export function generateHistogramSpec(
           encodings: ['x'],
           clear: 'mousedown',
         },
-        ...(selection && convertSelection(plot, selection) && { value: convertSelection(plot, selection) }),
+        // ...(selection && convertSelection(plot, selection) && { value: convertSelection(plot, selection) }),
       },
     ];
   }
@@ -303,6 +307,9 @@ export function generateHistogramSpec(
   return {
     width: 200,
     height: 200,
+    signals: [
+      { name: 'brush', value: {} },
+    ],
     layer: [
       {
         params: makeParams(hist),
@@ -375,16 +382,16 @@ export function generateHistogramSpec(
  * @param selectColor The color to use for selected points
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot, selection: NumericalQuery | undefined, selectColor: string): VisualizationSpec {
+export function generateVegaSpec(plot: Plot, /* selection: NumericalQuery | undefined, */ selectColor: string): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
 
   if (isScatterplot(plot)) {
-    return { ...BASE, ...generateScatterplotSpec(plot, selection, selectColor) } as VisualizationSpec;
+    return { ...BASE, ...generateScatterplotSpec(plot, selectColor) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot, selection) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }
