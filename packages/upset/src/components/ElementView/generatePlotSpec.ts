@@ -16,8 +16,8 @@ import { SelectionParameter } from 'vega-lite/build/src/selection';
 function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
   if (isScatterplot(plot) && (select[plot.x] || select[plot.y])) {
     return {
-      x: select[plot.x] ?? [-Number.MAX_VALUE, Number.MAX_VALUE],
-      y: select[plot.y] ?? [-Number.MAX_VALUE, Number.MAX_VALUE],
+      x: select[plot.x] ?? [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1],
+      y: select[plot.y] ?? [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1],
     };
   }
   if (isHistogram(plot) && select[plot.attribute]) {

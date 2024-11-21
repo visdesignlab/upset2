@@ -48,13 +48,13 @@ function signalView(plot: Plot, view: View, val: NumericalQuery) {
       if (inclX) {
         view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
       } else {
-        view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
+        view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1]);
       }
 
       if (inclY) {
         view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
       } else {
-        view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
+        view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1]);
       }
     } else if (isHistogram(plot)) {
       if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
