@@ -7,25 +7,25 @@ import { SelectionParameter } from 'vega-lite/build/src/selection';
 /**
  * Converts an NumericalQuery to a value for a vega param.
  * Plots want x and y ranges instead of attribute ranges, so we need to convert the selection to match.
- * If this plot's axis don't match the selection attributes, we return undefined to avoid conflicting selections.
+ * If none of the selection atts appear in the plot, we return undefined as there is no selection on this plot.
  * @param plot   The plot that we need a selection value for
  * @param select The element selection to use to generate the selection value
  * @returns An object which can be assigned to the 'value' field of a vega param in the plot
  *          to display the selection in the plot.
  */
-export function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
-  let val: NumericalQuery | undefined;
-  if (isScatterplot(plot) && select[plot.x] && select[plot.y]) {
-    val = {
-      x: select[plot.x],
-      y: select[plot.y],
+function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
+  if (isScatterplot(plot) && (select[plot.x] || select[plot.y])) {
+    return {
+      x: select[plot.x] ?? [-Number.MAX_VALUE, Number.MAX_VALUE],
+      y: select[plot.y] ?? [-Number.MAX_VALUE, Number.MAX_VALUE],
     };
-  } else if (isHistogram(plot) && Object.keys(select).length === 1 && select[plot.attribute]) {
-    val = {
+  }
+  if (isHistogram(plot) && select[plot.attribute]) {
+    return {
       x: select[plot.attribute],
     };
-  } else val = undefined;
-  return val;
+  }
+  return undefined;
 }
 
 /**
@@ -83,7 +83,7 @@ export function createAddScatterplotSpec(
  */
 export function generateScatterplotSpec(
   spec: Scatterplot,
-  // selection: NumericalQuery | undefined,
+  selection: NumericalQuery | undefined,
   selectColor: string,
 ): VisualizationSpec {
   return {
@@ -95,10 +95,6 @@ export function generateScatterplotSpec(
     mark: {
       type: 'point',
     },
-    // We only add the 'params' field if this object has a selection OR if there is no selection
-    // This works around a Vega bug where providing the value field to a param doesn't always work in concatenated plots
-    // ..((!selection || (selection && convertSelection(spec, selection))) && {
-    // eslint disable-next-line indent
     params: [
       {
         name: 'brush',
@@ -107,10 +103,9 @@ export function generateScatterplotSpec(
           clear: 'mousedown',
         },
         // We only add the 'value' field if selection is defined
-        // ...(selection && convertSelection(spec, selection) && { value: convertSelection(spec, selection) }),
+        ...(selection && convertSelection(spec, selection) && { value: convertSelection(spec, selection) }),
       },
     ],
-    // }),
     encoding: {
       x: {
         field: spec.x,
@@ -223,7 +218,7 @@ export function createAddHistogramSpec(
  */
 export function generateHistogramSpec(
   hist: Histogram,
-  // selection: NumericalQuery | undefined,
+  selection: NumericalQuery | undefined,
 )
 : VisualizationSpec {
   function makeParams(plot: Histogram): SelectionParameter<'interval'>[] {
@@ -235,7 +230,7 @@ export function generateHistogramSpec(
           encodings: ['x'],
           clear: 'mousedown',
         },
-        // ...(selection && convertSelection(plot, selection) && { value: convertSelection(plot, selection) }),
+        ...(selection && convertSelection(plot, selection) && { value: convertSelection(plot, selection) }),
       },
     ];
   }
@@ -348,33 +343,6 @@ export function generateHistogramSpec(
   };
 }
 
-// export function generateVega(
-//   scatterplots: Scatterplot[],
-//   histograms: Histogram[],
-//   selectColor: string,
-//   selection? : NumericalQuery,
-// ): VisualizationSpec {
-//   // If we have an empty selection {}, we need to feed undefined to the specs, but !!{} is true
-//   const newSelection = selection && Object.keys(selection).length > 0 ? selection : undefined;
-//   const scatterplotSpecs = createScatterplotRow(scatterplots, newSelection, selectColor);
-//   const histogramSpecs = createHistogramRow(histograms, newSelection);
-//   const base = {
-//     data: {
-//       name: 'elements',
-//     },
-//     hconcat: [
-//       {
-//         vconcat: scatterplotSpecs,
-//       },
-//       {
-//         vconcat: histogramSpecs,
-//       },
-//     ],
-//   };
-
-//   return base as VisualizationSpec;
-// }
-
 /**
  * Generates a vega spec for a plot.
  * @param plot The plot to generate a spec for
@@ -382,16 +350,16 @@ export function generateHistogramSpec(
  * @param selectColor The color to use for selected points
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot, /* selection: NumericalQuery | undefined, */ selectColor: string): VisualizationSpec {
+export function generateVegaSpec(plot: Plot, selection: NumericalQuery | undefined, selectColor: string): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
 
   if (isScatterplot(plot)) {
-    return { ...BASE, ...generateScatterplotSpec(plot, selectColor) } as VisualizationSpec;
+    return { ...BASE, ...generateScatterplotSpec(plot, selection, selectColor) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot, selection) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }

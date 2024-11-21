@@ -94,8 +94,8 @@ export const ElementVisualization = () => {
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (
-    { plot, spec: generateVegaSpec(plot, selectColor) }
-  )), [plots, selectColor]);
+    { plot, spec: generateVegaSpec(plot, numericalQuery, selectColor) }
+  )), [plots, numericalQuery, selectColor]);
 
   /**
    * Functions
@@ -124,16 +124,16 @@ export const ElementVisualization = () => {
     <Box
       onClick={() => {
         // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
-        // if (
-        //   draftSelection.current
-        //   && Object.keys(draftSelection.current).length > 0
-        //   && !numericalQueriesEqual(draftSelection.current, numericalQuery)
-        // ) {
-        //   actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
-        // } else {
-        //   actions.setElementSelection(null);
-        // }
-        // draftSelection.current = undefined;
+        if (
+          draftSelection.current
+          && Object.keys(draftSelection.current).length > 0
+          && !numericalQueriesEqual(draftSelection.current, numericalQuery)
+        ) {
+          actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
+        } else {
+          actions.setElementSelection(null);
+        }
+        draftSelection.current = undefined;
       }}
     >
       <Button style={{ marginTop: '0.5em' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
