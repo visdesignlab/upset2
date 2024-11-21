@@ -34,11 +34,12 @@ const BRUSH_NAME = 'brush';
 function signalView(plot: Plot, view: View, val: NumericalQuery) {
   // Clear view of any previous selection
   if (isScatterplot(plot)) {
-    view.signal(`${BRUSH_NAME}_${plot.x}`, undefined);
-    view.signal(`${BRUSH_NAME}_${plot.y}`, undefined);
+    view.signal(`${BRUSH_NAME}_x`, []);
+    view.signal(`${BRUSH_NAME}_y`, []);
   } else if (isHistogram(plot)) {
-    view.signal(`${BRUSH_NAME}_${plot.attribute}`, undefined);
+    view.signal(`${BRUSH_NAME}_x`, []);
   }
+
   view.runAsync().then(() => {
     if (isScatterplot(plot)) {
       const inclX = Object.keys(val).includes(plot.x);
