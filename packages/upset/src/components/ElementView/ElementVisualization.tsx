@@ -32,32 +32,35 @@ const BRUSH_NAME = 'brush';
  * @param val - Object containing numerical range queries
  */
 function signalView(plot: Plot, view: View, val: NumericalQuery) {
+  // Clear view of any previous selection
   if (isScatterplot(plot)) {
-    const inclX = Object.keys(val).includes(plot.x);
-    const inclY = Object.keys(val).includes(plot.y);
-    if ((!inclX && !inclY)) {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, undefined);
-      view.signal(`${BRUSH_NAME}_${plot.y}`, undefined);
-      view.runAsync();
-      return;
-    }
-
-    if (inclX) {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
-    } else {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
-    }
-
-    if (inclY) {
-      view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
-    } else {
-      view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
-    }
+    view.signal(`${BRUSH_NAME}_${plot.x}`, undefined);
+    view.signal(`${BRUSH_NAME}_${plot.y}`, undefined);
   } else if (isHistogram(plot)) {
-    if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
-    else view.signal(`${BRUSH_NAME}_${plot.attribute}`, []);
+    view.signal(`${BRUSH_NAME}_${plot.attribute}`, undefined);
   }
-  view.runAsync();
+  view.runAsync().then(() => {
+    if (isScatterplot(plot)) {
+      const inclX = Object.keys(val).includes(plot.x);
+      const inclY = Object.keys(val).includes(plot.y);
+      if ((!inclX && !inclY)) return;
+
+      if (inclX) {
+        view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
+      } else {
+        view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
+      }
+
+      if (inclY) {
+        view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
+      } else {
+        view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_VALUE, Number.MAX_VALUE]);
+      }
+    } else if (isHistogram(plot)) {
+      if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
+    }
+    view.runAsync();
+  });
 }
 
 /**
