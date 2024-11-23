@@ -44,7 +44,11 @@ function signalView(plot: Plot, view: View, val: NumericalQuery) {
     if (isScatterplot(plot)) {
       const inclX = Object.keys(val).includes(plot.x);
       const inclY = Object.keys(val).includes(plot.y);
-      if ((!inclX && !inclY)) return;
+      if ((!inclX && !inclY)) {
+        view.signal(`${BRUSH_NAME}_${plot.x}`, []);
+        view.signal(`${BRUSH_NAME}_${plot.y}`, []);
+        return;
+      }
 
       if (inclX) {
         view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
@@ -119,7 +123,7 @@ export const ElementVisualization = () => {
     views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view, plot }) => {
       signalView(plot, view, value);
     });
-  }, [draftSelection]);
+  }, [draftSelection, currentClick.current, views.current]);
 
   return (
     <Box
@@ -163,6 +167,7 @@ export const ElementVisualization = () => {
             onNewView={(view) => {
               views.current.push({ view, plot });
               view.addEventListener('mouseover', () => { currentClick.current = plot; });
+              view.addEventListener('mouseout', () => { currentClick.current = null; });
             }}
           />
         ))}
