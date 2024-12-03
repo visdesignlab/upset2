@@ -22,6 +22,7 @@ import { ElementVisualization } from './ElementVisualization';
 import { UpsetActions } from '../../provenance';
 import { ProvenanceContext } from '../Root';
 import { QueryInterface } from './QueryInterface';
+import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 
 /**
  * Props for the ElementSidebar component
@@ -33,8 +34,14 @@ type Props = {
   close: () => void
 }
 
-const initialDrawerWidth = 450;
-const minDrawerWidth = 100;
+/**
+ * The *exact* width at which we don't get a horizontal scrollbar in the table controls
+ */
+const initialDrawerWidth = 462;
+/**
+ * The *exact* width at which the 'apply' button in the element query controls is forced onto a new line
+ */
+const minDrawerWidth = 368;
 
 /**
  * Immediately downloads a csv containing items with the given columns
@@ -80,12 +87,14 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 export const ElementSidebar = ({ open, close }: Props) => {
   const [fullWidth, setFullWidth] = useState(false);
   const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
-  const currentSelection = useRecoilValue(selectedElementSelector);
+  const currentElementSelection = useRecoilValue(selectedElementSelector);
   const selectedItems = useRecoilValue(selectedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
   const [hideElementSidebar, setHideElementSidebar] = useState(!open);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const bookmarked = useRecoilValue(bookmarkSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
   /**
    * Effects
@@ -156,6 +165,9 @@ export const ElementSidebar = ({ open, close }: Props) => {
           left: 0,
           zIndex: 100,
           backgroundColor: '#f4f7f9',
+          // I cannot comprehend why this is the value that works. It is.
+          // The 'rows per page' controls overflow otherwise (:
+          paddingBottom: '1625px',
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
@@ -189,7 +201,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         <IconButton
           onClick={() => {
             setHideElementSidebar(true);
-            actions.setElementSelection(currentSelection);
+            actions.setElementSelection(currentElementSelection);
             close();
           }}
           aria-label="Close the sidebar"
@@ -198,16 +210,20 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </IconButton>
       </div>
       <div style={{ marginBottom: '1em' }}>
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" gutterBottom>
+        <Typography variant="h2" fontSize="1.4em" fontWeight="inherit" gutterBottom>
           Element View
         </Typography>
         <Divider />
       </div>
-      <Typography variant="h3" fontSize="1.2em">
-        Bookmarked Queries
-      </Typography>
-      <Divider />
-      <BookmarkChips />
+      {(bookmarked.length > 0 || currentIntersection || currentElementSelection) && (
+        <>
+          <Typography variant="h3" fontSize="1.2em">
+            Bookmarked Queries
+          </Typography>
+          <Divider />
+          <BookmarkChips />
+        </>
+      )}
       <Typography variant="h3" fontSize="1.2em">
         Element Visualization
       </Typography>
@@ -226,7 +242,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
               downloadElementsAsCSV(
                 selectedItems,
                 columns,
-                currentSelection?.label ?? 'upset_elements',
+                currentElementSelection?.label ?? 'upset_elements',
               );
             }}
           >
