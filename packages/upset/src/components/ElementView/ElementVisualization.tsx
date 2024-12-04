@@ -53,13 +53,13 @@ function signalView(plot: Plot, view: View, val: NumericalQuery) {
       if (inclX) {
         view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
       } else {
-        view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1]);
+        view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
       }
 
       if (inclY) {
         view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
       } else {
-        view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1]);
+        view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
       }
     } else if (isHistogram(plot)) {
       if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
@@ -92,7 +92,7 @@ export const ElementVisualization = () => {
    */
 
   const draftSelection = useRef(numericalQuery);
-  const signalHold = useRef(false);
+  const preventSignal = useRef(false);
   const views = useRef<{view: View, plot: Plot}[]>([]);
   const currentClick = useRef<Plot |null>(null);
   const data = useMemo(() => ({
@@ -119,15 +119,16 @@ export const ElementVisualization = () => {
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
   const brushHandler = useCallback((signaled: Plot, value: unknown) => {
-    if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id || signalHold.current) return;
+    if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id || preventSignal.current) return;
     draftSelection.current = value;
     views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view, plot }) => {
       signalView(plot, view, value);
     });
   }, [draftSelection, currentClick.current, views.current]);
 
+  // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
-    signalHold.current = true;
+    preventSignal.current = true;
     if (numericalQuery) {
       views.current.forEach(({ view, plot }) => {
         signalView(plot, view, numericalQuery);
@@ -137,7 +138,7 @@ export const ElementVisualization = () => {
         signalView(plot, view, {});
       });
     }
-    signalHold.current = false;
+    preventSignal.current = false;
   }, [views.current, numericalQuery]);
 
   return (
