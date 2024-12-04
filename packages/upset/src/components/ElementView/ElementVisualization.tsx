@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 import {
   useCallback,
-  useContext, useMemo, useRef, useState,
+  useContext, useEffect, useMemo, useRef, useState,
 } from 'react';
 import { VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
@@ -92,6 +92,7 @@ export const ElementVisualization = () => {
    */
 
   const draftSelection = useRef(numericalQuery);
+  const signalHold = useRef(false);
   const views = useRef<{view: View, plot: Plot}[]>([]);
   const currentClick = useRef<Plot |null>(null);
   const data = useMemo(() => ({
@@ -99,8 +100,8 @@ export const ElementVisualization = () => {
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (
-    { plot, spec: generateVegaSpec(plot, numericalQuery, selectColor) }
-  )), [plots, numericalQuery, selectColor]);
+    { plot, spec: generateVegaSpec(plot, selectColor) }
+  )), [plots, selectColor]);
 
   /**
    * Functions
@@ -118,12 +119,26 @@ export const ElementVisualization = () => {
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
   const brushHandler = useCallback((signaled: Plot, value: unknown) => {
-    if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id) return;
+    if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id || signalHold.current) return;
     draftSelection.current = value;
     views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view, plot }) => {
       signalView(plot, view, value);
     });
   }, [draftSelection, currentClick.current, views.current]);
+
+  useEffect(() => {
+    signalHold.current = true;
+    if (numericalQuery) {
+      views.current.forEach(({ view, plot }) => {
+        signalView(plot, view, numericalQuery);
+      });
+    } else {
+      views.current.forEach(({ view, plot }) => {
+        signalView(plot, view, {});
+      });
+    }
+    signalHold.current = false;
+  }, [views.current, numericalQuery]);
 
   return (
     <Box

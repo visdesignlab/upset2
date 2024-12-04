@@ -1,32 +1,8 @@
 import {
-  NumericalQuery, Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
+  Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
-
-/**
- * Converts an NumericalQuery to a value for a vega param.
- * Plots want x and y ranges instead of attribute ranges, so we need to convert the selection to match.
- * If none of the selection atts appear in the plot, we return undefined as there is no selection on this plot.
- * @param plot   The plot that we need a selection value for
- * @param select The element selection to use to generate the selection value
- * @returns An object which can be assigned to the 'value' field of a vega param in the plot
- *          to display the selection in the plot.
- */
-function convertSelection(plot: Plot, select: NumericalQuery): NumericalQuery | undefined {
-  if (isScatterplot(plot) && (select[plot.x] || select[plot.y])) {
-    return {
-      x: select[plot.x] ?? [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1],
-      y: select[plot.y] ?? [-Number.MAX_VALUE + 1, Number.MAX_VALUE - 1],
-    };
-  }
-  if (isHistogram(plot) && select[plot.attribute]) {
-    return {
-      x: select[plot.attribute],
-    };
-  }
-  return undefined;
-}
 
 /**
  * Creates the spec for a single scatterplot.
@@ -77,13 +53,11 @@ export function createAddScatterplotSpec(
 /**
  * Creates the spec for a single scatterplot in the element view matrix.
  * @param specs       Scatterplot objects with x and y attributes.
- * @param selection   The current brush selection, if extant
  * @param selectColor The color to use for brushed points
  * @returns The Vega-Lite spec for the scatterplots.
  */
 export function generateScatterplotSpec(
   spec: Scatterplot,
-  selection: NumericalQuery | undefined,
   selectColor: string,
 ): VisualizationSpec {
   return {
@@ -102,8 +76,6 @@ export function generateScatterplotSpec(
           type: 'interval',
           clear: 'mousedown',
         },
-        // We only add the 'value' field if selection is defined
-        ...(selection && convertSelection(spec, selection) && { value: convertSelection(spec, selection) }),
       },
     ],
     encoding: {
@@ -213,27 +185,23 @@ export function createAddHistogramSpec(
 /**
  * Creates the spec for a single histogram in the element view matrix.
  * @param histograms The histograms to plot.
- * @param selection  Current brush selection
  * @returns An array of Vega-Lite specs for the histograms.
  */
 export function generateHistogramSpec(
   hist: Histogram,
-  selection: NumericalQuery | undefined,
+  // selection: NumericalQuery | undefined,
 )
 : VisualizationSpec {
-  function makeParams(plot: Histogram): SelectionParameter<'interval'>[] {
-    return [
-      {
-        name: 'brush',
-        select: {
-          type: 'interval' as const,
-          encodings: ['x'],
-          clear: 'mousedown',
-        },
-        ...(selection && convertSelection(plot, selection) && { value: convertSelection(plot, selection) }),
+  const params = [
+    {
+      name: 'brush',
+      select: {
+        type: 'interval' as const,
+        encodings: ['x'],
+        clear: 'mousedown',
       },
-    ];
-  }
+    },
+  ] as SelectionParameter[];
 
   const COLOR = {
     field: 'subset',
@@ -307,7 +275,7 @@ export function generateHistogramSpec(
     ],
     layer: [
       {
-        params: makeParams(hist),
+        params,
         mark: 'bar',
         encoding: {
           x: {
@@ -346,20 +314,19 @@ export function generateHistogramSpec(
 /**
  * Generates a vega spec for a plot.
  * @param plot The plot to generate a spec for
- * @param selection The current selection
  * @param selectColor The color to use for selected points
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot, selection: NumericalQuery | undefined, selectColor: string): VisualizationSpec {
+export function generateVegaSpec(plot: Plot, selectColor: string): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
 
   if (isScatterplot(plot)) {
-    return { ...BASE, ...generateScatterplotSpec(plot, selection, selectColor) } as VisualizationSpec;
+    return { ...BASE, ...generateScatterplotSpec(plot, selectColor) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot, selection) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }
