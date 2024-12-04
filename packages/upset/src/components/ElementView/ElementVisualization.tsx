@@ -129,15 +129,9 @@ export const ElementVisualization = () => {
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
     preventSignal.current = true;
-    if (numericalQuery) {
-      views.current.forEach(({ view, plot }) => {
-        signalView(plot, view, numericalQuery);
-      });
-    } else {
-      views.current.forEach(({ view, plot }) => {
-        signalView(plot, view, {});
-      });
-    }
+    views.current.forEach(({ view, plot }) => {
+      signalView(plot, view, numericalQuery ?? {});
+    });
     preventSignal.current = false;
   }, [views.current, numericalQuery]);
 
