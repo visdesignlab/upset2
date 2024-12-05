@@ -30,8 +30,9 @@ const BRUSH_NAME = 'brush';
  * @param plot - The plot configuration (scatterplot or histogram)
  * @param view - The Vega view instance to update
  * @param val - Object containing numerical range queries
+ * @param sync - Whether to wait for the view to finish updating before returning
  */
-function signalView(plot: Plot, view: View, val: NumericalQuery) {
+async function signalView(plot: Plot, view: View, val: NumericalQuery, sync = false): Promise<void> {
   // Clear view of any previous selection
   if (isScatterplot(plot)) {
     view.signal(`${BRUSH_NAME}_x`, []);
@@ -40,32 +41,36 @@ function signalView(plot: Plot, view: View, val: NumericalQuery) {
     view.signal(`${BRUSH_NAME}_x`, []);
   }
 
-  view.runAsync().then(() => {
-    if (isScatterplot(plot)) {
-      const inclX = Object.keys(val).includes(plot.x);
-      const inclY = Object.keys(val).includes(plot.y);
-      if ((!inclX && !inclY)) {
-        view.signal(`${BRUSH_NAME}_${plot.x}`, []);
-        view.signal(`${BRUSH_NAME}_${plot.y}`, []);
-        return;
-      }
+  if (sync) await view.runAsync();
+  else view.run();
 
-      if (inclX) {
-        view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
-      } else {
-        view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
-      }
-
-      if (inclY) {
-        view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
-      } else {
-        view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
-      }
-    } else if (isHistogram(plot)) {
-      if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
+  if (isScatterplot(plot)) {
+    const inclX = Object.keys(val).includes(plot.x);
+    const inclY = Object.keys(val).includes(plot.y);
+    if ((!inclX && !inclY)) {
+      view.signal(`${BRUSH_NAME}_${plot.x}`, []);
+      view.signal(`${BRUSH_NAME}_${plot.y}`, []);
+      return;
     }
-    view.runAsync();
-  });
+
+    if (inclX) {
+      view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
+    } else {
+      view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
+    }
+
+    if (inclY) {
+      view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
+    } else {
+      view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
+    }
+  } else if (isHistogram(plot)) {
+    if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
+    else view.signal(`${BRUSH_NAME}_${plot.attribute}`, undefined);
+  }
+
+  if (sync) await view.runAsync();
+  else view.run();
 }
 
 /**
@@ -129,10 +134,13 @@ export const ElementVisualization = () => {
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
     preventSignal.current = true;
+    const promises: Promise<void>[] = [];
     views.current.forEach(({ view, plot }) => {
-      signalView(plot, view, numericalQuery ?? {});
+      promises.push(signalView(plot, view, numericalQuery ?? {}, true));
     });
-    preventSignal.current = false;
+    Promise.allSettled(promises).then(() => {
+      preventSignal.current = false;
+    });
   }, [views.current, numericalQuery]);
 
   return (
