@@ -117,7 +117,10 @@ export function isNumericalQuery(value: unknown): value is NumericalQuery {
     && Object.values(value).every((v) => Array.isArray(v)
           && v.length === 2
           && typeof v[0] === 'number'
-          && typeof v[1] === 'number')
+          && typeof v[1] === 'number'
+          && v[0] <= v[1]
+          && !Number.isNaN(v[0])
+          && !Number.isNaN(v[1]))
   );
 }
 
