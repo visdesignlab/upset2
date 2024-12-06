@@ -48,8 +48,10 @@ async function signalView(plot: Plot, view: View, val: NumericalQuery, sync = fa
     const inclX = Object.keys(val).includes(plot.x);
     const inclY = Object.keys(val).includes(plot.y);
     if ((!inclX && !inclY)) {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, []);
-      view.signal(`${BRUSH_NAME}_${plot.y}`, []);
+      view.signal(`${BRUSH_NAME}_${plot.x}`, undefined);
+      view.signal(`${BRUSH_NAME}_${plot.y}`, undefined);
+      if (sync) await view.runAsync();
+      else view.run();
       return;
     }
 
