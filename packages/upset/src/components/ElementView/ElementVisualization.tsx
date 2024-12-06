@@ -30,7 +30,9 @@ const BRUSH_NAME = 'brush';
  * @param plot - The plot configuration (scatterplot or histogram)
  * @param view - The Vega view instance to update
  * @param val - Object containing numerical range queries
- * @param sync - Whether to wait for the view to finish updating before returning
+ * @param sync - Whether to wait for the view to finish updating before returning;
+ *               setting to true means that the returned promise can be awaited to indicate the end of plot updates
+ * @returns A promise that is meaningless if sync = false, and completes upon full view reevaluation if sync = true
  */
 async function signalView(plot: Plot, view: View, val: NumericalQuery, sync = false): Promise<void> {
   // Clear view of any previous selection

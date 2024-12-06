@@ -1,5 +1,7 @@
 import { Row } from '@visdesignlab/upset2-core';
-import { FC, useMemo, JSX } from 'react';
+import {
+  FC, useMemo, JSX, useCallback,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
@@ -47,6 +49,18 @@ type Rect = {
 
 const colors = ['rgb(189, 189, 189)', 'rgb(136, 136, 136)', 'rgb(37, 37, 37)'];
 
+/**
+ * Darkens a size bar color according to its nesting index.
+ * Used to darken the interior size bars when more than one size bar is necessary.
+ * @param index Index of the size bar: 0 is the lowermost/first bar, not nested.
+ *   In a size bar with no nested bars, the only index is 0.
+ *   If index is 0, the initial color is returned unmodified.
+ * @param color The initial color of the bar; to be darkened.
+ */
+function darkenColor(index: number, color: string): string {
+  return index === 0 ? color : newShade(color, -(12 + (index * 3)));
+}
+
 export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
@@ -70,24 +84,12 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
    */
 
   /**
-   * Darkens a size bar color according to its nesting index.
-   * Used to darken the interior size bars when more than one size bar is necessary.
-   * @param index Index of the size bar: 0 is the lowermost/first bar, not nested.
-   *   In a size bar with no nested bars, the only index is 0.
-   *   If index is 0, the initial color is returned unmodified.
-   * @param color The initial color of the bar; to be darkened.
-   */
-  function darkenColor(index: number, color: string): string {
-    return index === 0 ? color : newShade(color, -(12 + (index * 3)));
-  }
-
-  /**
    * Gets the fill color for the size bar. Returns a bookmark color if the row is bookmarked or selected
    * and has no selected elements; otherwise, returns grey
    * @param index Index of the bar.
    * @returns Fill color for the bar.
    */
-  function getFillColor(index: number): string {
+  const getFillColor: (index: number) => string = useCallback((index) => {
     // if the row is bookmarked, highlight the bar with the bookmark color
     if (row && selected === 0 && bookmarks.some((bookmark) => bookmark.id === row.id)) {
       // darken the color for advanced scale sub-bars
@@ -100,7 +102,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
       return nextColor;
     }
     return colors[index];
-  }
+  }, [row, selected, bookmarks, bookmarkedColorPallete, currentIntersection, nextColor]);
 
   /**
    * Calculates the number of size bars to display based on the size of the row.
@@ -109,7 +111,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
    *   fullBars  Number of full bars to display.
    *   rem       Remaining size after full bars are displayed.
    */
-  function calculateBars(rowSize: number): { fullBars: number; rem: number } {
+  const calculateBars: (rowSize: number) => { fullBars: number; rem: number } = useCallback((rowSize) => {
     let fullBars = rowSize > 0 ? Math.floor(rowSize / sizeDomain) : rowSize;
     const rem = rowSize % sizeDomain;
 
@@ -119,7 +121,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     if (rem === 0 && fullBars > 0) fullBars--;
 
     return { fullBars, rem };
-  }
+  }, [sizeDomain]);
 
   /**
    * Creates a vertical line capped by a bordered tick
@@ -129,42 +131,40 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
    * @param uniqueId Unique identifier for the elements
    * @returns SVG elements for the line and tick
    */
-  function lineAndTick(x: number, color: string, index: number): JSX.Element {
-    return (
-      <>
-        {/* White border for selection tick */}
-        <polygon
-          points={
+  const lineAndTick: (x: number, color: string, index: number) => JSX.Element = useCallback((x, color, index) => (
+    <>
+      {/* White border for selection tick */}
+      <polygon
+        points={
               `${x},${1} ` +
               `${x - 7},${-6} ` +
               `${x + 7},${-6}`
             }
-          fill="white"
-          transform={translate(0, (index * OFFSET) / 2)}
-        />
-        {/* Selection tick */}
-        <polygon
-          points={
+        fill="white"
+        transform={translate(0, (index * OFFSET) / 2)}
+      />
+      {/* Selection tick */}
+      <polygon
+        points={
               `${x},${0} ` +
               `${x - 5},${-5} ` +
               `${x + 5},${-5}`
             }
-          fill={color}
-          transform={translate(0, (index * OFFSET) / 2)}
-        />
-        {/* Vertical white line */}
-        <line
-          stroke="white"
-          strokeWidth="1px"
-          x1={x}
-          x2={x}
+        fill={color}
+        transform={translate(0, (index * OFFSET) / 2)}
+      />
+      {/* Vertical white line */}
+      <line
+        stroke="white"
+        strokeWidth="1px"
+        x1={x}
+        x2={x}
             // y1 is the top of the selection bar, y2 is the bottom of the row
-          y1={(index * OFFSET) / 2}
-          y2={dimensions.size.plotHeight}
-        />
-      </>
-    );
-  }
+        y1={(index * OFFSET) / 2}
+        y2={dimensions.size.plotHeight}
+      />
+    </>
+  ), [dimensions.size.plotHeight, OFFSET]);
 
   /*
    * Hooks
@@ -230,7 +230,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     }
     return result;
   }, [
-    fullBars, OFFSET, dimensions.size.plotHeight, dimensions.attribute.width, fullSelectBars, darkenColor,
+    fullBars, OFFSET, dimensions.size.plotHeight, dimensions.attribute.width, fullSelectBars,
     elementSelectionColor, getFillColor, SELECTION_OPACITY, translate, sizeWidth, selectedWidth,
   ]);
 
