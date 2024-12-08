@@ -18,7 +18,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { currentNumericalQuery, elementsInBookmarkSelector } from '../../atoms/elementsSelectors';
+import { currentNumericalQuery, elementsInBookmarkSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { AddPlotDialog } from './AddPlotDialog';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
@@ -95,6 +95,7 @@ export const ElementVisualization = () => {
   const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementsInBookmarkSelector);
   const numericalQuery = useRecoilValue(currentNumericalQuery);
+  const elementSelection = useRecoilValue(selectedElementSelector);
   const selectColor = useRecoilValue(elementColorSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
@@ -160,9 +161,7 @@ export const ElementVisualization = () => {
           && !numericalQueriesEqual(draftSelection.current, numericalQuery)
         ) {
           actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
-        } else {
-          actions.setElementSelection(null);
-        }
+        } else if (elementSelection) actions.setElementSelection(null);
         draftSelection.current = undefined;
       }}
     >
