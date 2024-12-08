@@ -12,7 +12,10 @@ import {
   isScatterplot,
   isHistogram,
 } from '@visdesignlab/upset2-core';
-import { Alert, Button } from '@mui/material';
+import {
+  Alert, Button, IconButton,
+} from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { currentNumericalQuery, elementsInBookmarkSelector } from '../../atoms/elementsSelectors';
@@ -179,19 +182,35 @@ export const ElementVisualization = () => {
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{ overflowX: 'auto' }}>
         {(plots.length > 0) && specs.map(({ plot, spec }) => (
-          <VegaLite
-            spec={spec}
-            data={data}
-            actions={false}
-            signalListeners={{
-              [BRUSH_NAME]: (_, val) => brushHandler(plot, val),
-            }}
-            onNewView={(view) => {
-              views.current.push({ view, plot });
-              view.addEventListener('mouseover', () => { currentClick.current = plot; });
-              view.addEventListener('mouseout', () => { currentClick.current = null; });
-            }}
-          />
+          // Relative position is necessary so this serves as a positioning container for the close button
+          <Box style={{ display: 'inline-block', position: 'relative' }}>
+            <IconButton
+              style={{
+                position: 'absolute', top: 0, left: 0, zIndex: 100, padding: 0,
+              }}
+              onClick={() => {
+                actions.removePlot(plot);
+                views.current = views.current.filter(({ plot: p }) => p.id !== plot.id);
+              }}
+            >
+              <CloseIcon color="primary" />
+            </IconButton>
+            <VegaLite
+              spec={spec}
+              data={data}
+              actions={false}
+              signalListeners={{
+                [BRUSH_NAME]: (_, val) => brushHandler(plot, val),
+              }}
+              // Making room for the close buttonl
+              style={{ marginLeft: '5px' }}
+              onNewView={(view) => {
+                views.current.push({ view, plot });
+                view.addEventListener('mouseover', () => { currentClick.current = plot; });
+                view.addEventListener('mouseout', () => { currentClick.current = null; });
+              }}
+            />
+          </Box>
         ))}
       </Box>
     </Box>
