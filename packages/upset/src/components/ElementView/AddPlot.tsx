@@ -1,10 +1,9 @@
-import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   FormControl,
   FormControlLabel,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -24,8 +23,60 @@ type Props = {
   handleClose: () => void;
 };
 
-export const AddScatterplot: FC<Props> = ({ handleClose }) => {
+type ButtonProps = {
+  handleClose: () => void;
+  type: 'Scatterplot' | 'Histogram';
+  disabled?: boolean;
+  attribute?: string;
+  bins?: number;
+  frequency?: boolean;
+  x?: string;
+  y?: string;
+  xLogScale?: boolean;
+  yLogScale?: boolean;
+}
+
+/**
+ * Add button for adding a plot
+ * @param param0
+ * @returns
+ */
+const AddButton: FC<ButtonProps> = ({
+  handleClose, type, bins, attribute, frequency, x, y, xLogScale, yLogScale, disabled,
+}) => {
   const { actions } = useContext(ProvenanceContext);
+
+  return (
+    <Button
+      style={{ display: 'block', margin: 'auto', width: '100%' }}
+      disabled={disabled}
+      variant="outlined"
+      color="success"
+      onClick={() => {
+        actions.addPlot({
+          id: Date.now().toString(),
+          type,
+          ...(type === 'Scatterplot' && {
+            x,
+            y,
+            xLogScale,
+            yLogScale,
+          }),
+          ...(type === 'Histogram' && {
+            attribute,
+            bins,
+            frequency,
+          }),
+        });
+        handleClose();
+      }}
+    >
+      Add Plot
+    </Button>
+  );
+};
+
+export const AddScatterplot: FC<Props> = ({ handleClose }) => {
   const attributeColumns = useRecoilValue(attributeAtom);
   const items = useRecoilValue(itemsAtom);
   const [x, setX] = useState<string>(attributeColumns[0]);
@@ -112,33 +163,22 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
                 elements: Object.values(JSON.parse(JSON.stringify(items))),
               }}
             />
-
-            <div>
-              <IconButton
-                onClick={() => {
-                  actions.addPlot({
-                    id: Date.now().toString(),
-                    type: 'Scatterplot',
-                    x,
-                    y,
-                    xScaleLog: xLogscale,
-                    yScaleLog: yLogscale,
-                  });
-                  handleClose();
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </div>
-          </Box>
-        )}
+          </Box>)}
       </Grid>
+      <AddButton
+        disabled={!(x && y && Object.values(items).length)}
+        handleClose={handleClose}
+        type="Scatterplot"
+        x={x}
+        y={y}
+        xLogScale={xLogscale}
+        yLogScale={yLogscale}
+      />
     </Grid>
   );
 };
 
 export const AddHistogram: FC<Props> = ({ handleClose }) => {
-  const { actions } = useContext(ProvenanceContext);
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(attributeAtom);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
@@ -215,25 +255,17 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
               }}
             />
 
-            <div>
-              <IconButton
-                onClick={() => {
-                  actions.addPlot({
-                    id: Date.now().toString(),
-                    type: 'Histogram',
-                    attribute,
-                    bins,
-                    frequency,
-                  });
-                  handleClose();
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </div>
           </Box>
         )}
       </Grid>
+      <AddButton
+        disabled={!(attribute && bins > 0 && Object.values(items).length)}
+        handleClose={handleClose}
+        type="Histogram"
+        attribute={attribute}
+        bins={bins}
+        frequency={frequency}
+      />
     </Grid>
   );
 };
