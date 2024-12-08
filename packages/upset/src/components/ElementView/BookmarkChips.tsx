@@ -115,6 +115,7 @@ export const BookmarkChips = () => {
             });
           }
         }}
+        onClick={() => actions.setSelected(null)}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
         onDelete={() => {
           actions.addBookmark<BookmarkedIntersection>({
@@ -144,6 +145,7 @@ export const BookmarkChips = () => {
             actions.addBookmark(structuredClone(currentSelection));
           }
         }}
+        onClick={() => actions.setElementSelection(null)}
         label={`${currentSelection.label}`}
         onDelete={() => {
           actions.addBookmark(structuredClone(currentSelection));
