@@ -5,7 +5,6 @@ import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { selectedItemsSelector } from '../../atoms/elementsSelectors';
-import { columnsAtom } from '../../atoms/columnAtom';
 import { setColumnsSelector } from '../../atoms/dataAtom';
 import { attributeAtom } from '../../atoms/attributeAtom';
 
