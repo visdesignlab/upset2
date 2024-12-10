@@ -7,6 +7,7 @@ import { useRecoilValue } from 'recoil';
 import { selectedItemsSelector } from '../../atoms/elementsSelectors';
 import { columnsAtom } from '../../atoms/columnAtom';
 import { setColumnsSelector } from '../../atoms/dataAtom';
+import { attributeAtom } from '../../atoms/attributeAtom';
 
 /**
  * Hook to generate rows for the DataGrid
@@ -41,24 +42,13 @@ function useColumns(columns: string[]) {
  * Table to display elements
  */
 export const ElementTable: FC = () => {
-  const allColumns = useRecoilValue(columnsAtom);
+  const attColumns = useRecoilValue(attributeAtom);
   const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
-  let columns = useColumns(['_label', ...allColumns.filter((col) => !col.startsWith('_'))]);
+  let columns = useColumns(['_label', ...([...attColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
   // Sort set columns to the right of other columns & add a boolean type to
-  columns = columns.sort((a, b) => {
-    if (setColumns.includes(a.field) && setColumns.includes(b.field)) {
-      return 0;
-    }
-    if (setColumns.includes(a.field)) {
-      return 1;
-    }
-    if (setColumns.includes(b.field)) {
-      return -1;
-    }
-    return 0;
-  }).map((col) => ({
+  columns = columns.map((col) => ({
     ...col,
     type: setColumns.includes(col.field) ? 'boolean' : 'string',
   }));
