@@ -22,3 +22,14 @@ export const queryColumnsSelector = selector<ColumnName[]>({
       && !BUILTIN_COLS.includes(col));
   },
 });
+
+/**
+ * Returns the boolean columns that indicate set membership
+ */
+export const setColumnsSelector = selector<ColumnName[]>({
+  key: 'set-columns',
+  get: ({ get }) => {
+    const data = get(dataAtom);
+    return data.setColumns;
+  },
+});
