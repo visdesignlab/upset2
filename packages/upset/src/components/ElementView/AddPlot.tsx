@@ -24,22 +24,52 @@ type Props = {
 };
 
 type ButtonProps = {
+  /**
+   * Function to close the dialog box
+   */
   handleClose: () => void;
+  /**
+   * Type of plot to add
+   */
   type: 'Scatterplot' | 'Histogram';
+  /**
+   * Whether the button is disabled
+   */
   disabled?: boolean;
+  /**
+   * If type is histogram, the attribute to plot
+   */
   attribute?: string;
+  /**
+   * If type is histogram, the number of bins
+   */
   bins?: number;
+  /**
+   * If type is histogram, whether to plot frequency (when true; binned) or density (when false; continuous)
+   */
   frequency?: boolean;
+  /**
+   * If type is scatterplot, the x attribute
+   */
   x?: string;
+  /**
+   * If type is scatterplot, the y attribute
+   */
   y?: string;
+  /**
+   * If type is scatterplot, whether to use log scale for x axis
+   */
   xLogScale?: boolean;
+  /**
+   * If type is scatterplot, whether to use log scale for y axis
+   */
   yLogScale?: boolean;
 }
 
 /**
  * Add button for adding a plot
- * @param param0
- * @returns
+ * @param param0 @see ButtonProps
+ * @returns Button
  */
 const AddButton: FC<ButtonProps> = ({
   handleClose, type, bins, attribute, frequency, x, y, xLogScale, yLogScale, disabled,
@@ -76,6 +106,10 @@ const AddButton: FC<ButtonProps> = ({
   );
 };
 
+/**
+ * UI for adding a scatterplot to the element view
+ * @param param0 @see Props
+ */
 export const AddScatterplot: FC<Props> = ({ handleClose }) => {
   const attributeColumns = useRecoilValue(attributeAtom);
   const items = useRecoilValue(itemsAtom);
@@ -178,6 +212,10 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
   );
 };
 
+/**
+ * UI for adding a histogram to the element view
+ * @param param0 @see Props
+ */
 export const AddHistogram: FC<Props> = ({ handleClose }) => {
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(attributeAtom);
