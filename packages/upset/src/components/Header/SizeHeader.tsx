@@ -18,6 +18,7 @@ import { Axis } from '../custom/Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
+import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -36,7 +37,7 @@ export const SizeHeader: FC = () => {
   const sliderParentRef = useRef<SVGGElement>(null);
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
-  const subsets = useRecoilValue(subsetSelector);
+  const subsets = useRecoilValue(flattenedRowsSelector).map((r) => r.row);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
 
@@ -109,11 +110,9 @@ export const SizeHeader: FC = () => {
    * control and set a value
    */
   useEffect(() => {
-    if (advancedScale) return;
-    const subs = Object.values(subsets.values);
-    if (subs.length === 0) return;
+    if (advancedScale || subsets.length === 0) return;
 
-    const sizes = subs.map((s) => s.size);
+    const sizes = subsets.map((s) => s.size);
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
   }, [subsets, maxSize, advancedScale]);
