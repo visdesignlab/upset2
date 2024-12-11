@@ -41,12 +41,12 @@ function useColumns(columns: string[]) {
  * Table to display elements
  */
 export const ElementTable: FC = () => {
-  const attColumns = useRecoilValue(attributeAtom);
+  const attributeColumns = useRecoilValue(attributeAtom);
   const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
-  let columns = useColumns(['_label', ...([...attColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
-  // Sort set columns to the right of other columns & add a boolean type to
+  let columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
+  // Add a boolean type to set columns so they display properly
   columns = columns.map((col) => ({
     ...col,
     type: setColumns.includes(col.field) ? 'boolean' : 'string',
