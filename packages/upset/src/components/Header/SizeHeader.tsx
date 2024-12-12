@@ -11,7 +11,6 @@ import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAt
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
 import { maxSize } from '../../atoms/maxSizeAtom';
-import { subsetSelector } from '../../atoms/subsetAtoms';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { Axis } from '../custom/Axis';
@@ -31,6 +30,9 @@ const show = css`
   transition: opacity 0.5s;
 `;
 
+/**
+ * Header showing label & axis for cardinality bars
+ */
 export const SizeHeader: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
@@ -118,7 +120,6 @@ export const SizeHeader: FC = () => {
   }, [subsets, maxSize, advancedScale]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
-
   const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
   useEffect(() => {
