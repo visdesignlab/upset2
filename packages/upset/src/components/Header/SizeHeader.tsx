@@ -11,13 +11,13 @@ import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAt
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
 import { maxSize } from '../../atoms/maxSizeAtom';
-import { subsetSelector } from '../../atoms/subsetAtoms';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { Axis } from '../custom/Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
+import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -30,13 +30,16 @@ const show = css`
   transition: opacity 0.5s;
 `;
 
+/**
+ * Header showing label & axis for cardinality bars
+ */
 export const SizeHeader: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
-  const subsets = useRecoilValue(subsetSelector);
+  const subsets = useRecoilValue(flattenedRowsSelector).map((r) => r.row);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
 
@@ -109,17 +112,14 @@ export const SizeHeader: FC = () => {
    * control and set a value
    */
   useEffect(() => {
-    if (advancedScale) return;
-    const subs = Object.values(subsets.values);
-    if (subs.length === 0) return;
+    if (advancedScale || subsets.length === 0) return;
 
-    const sizes = subs.map((s) => s.size);
+    const sizes = subsets.map((s) => s.size);
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
   }, [subsets, maxSize, advancedScale]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
-
   const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
   useEffect(() => {
