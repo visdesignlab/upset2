@@ -4,8 +4,9 @@ import { Item } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { attributeAtom } from '../../atoms/attributeAtom';
 import { selectedItemsSelector } from '../../atoms/elementsSelectors';
+import { setColumnsSelector } from '../../atoms/dataAtom';
+import { attributeAtom } from '../../atoms/attributeAtom';
 
 /**
  * Hook to generate rows for the DataGrid
@@ -43,7 +44,13 @@ export const ElementTable: FC = () => {
   const attributeColumns = useRecoilValue(attributeAtom);
   const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
-  const columns = useColumns(['_label', ...attributeColumns]);
+  const setColumns = useRecoilValue(setColumnsSelector);
+  let columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
+  // Add a boolean type to set columns so they display properly
+  columns = columns.map((col) => ({
+    ...col,
+    type: setColumns.includes(col.field) ? 'boolean' : 'string',
+  }));
 
   return (
     <Box
