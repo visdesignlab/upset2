@@ -8,8 +8,6 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { ProvenanceContext } from './Root';
 
-/** @jsxImportSource @emotion/react */
-
 type Props = {
   open: boolean,
   close: () => void

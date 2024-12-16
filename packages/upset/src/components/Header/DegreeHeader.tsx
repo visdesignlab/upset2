@@ -10,8 +10,6 @@ import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { ProvenanceContext } from '../Root';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 
-/** @jsxImportSource @emotion/react */
-
 export const DegreeHeader = () => {
   const { actions } = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);

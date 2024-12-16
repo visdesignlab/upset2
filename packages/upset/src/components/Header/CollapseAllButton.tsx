@@ -10,8 +10,6 @@ import { firstAggregateSelector } from '../../atoms/config/aggregateAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { rowsSelector } from '../../atoms/renderRowsAtom';
 
-/** @jsxImportSource @emotion/react */
-
 const iconSize = 16;
 
 const hidden = 'none';

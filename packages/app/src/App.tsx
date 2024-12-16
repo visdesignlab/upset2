@@ -13,7 +13,6 @@ import { getMultinetSession } from './api/session';
 import { CircularProgress } from '@mui/material';
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 
-/** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 const defaultVisibleSets = 6;

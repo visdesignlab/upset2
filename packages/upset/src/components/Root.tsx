@@ -28,8 +28,6 @@ import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
 
-/** @jsxImportSource @emotion/react */
-
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;

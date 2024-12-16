@@ -19,8 +19,6 @@ import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 
-/** @jsxImportSource @emotion/react */
-
 const hide = css`
   opacity: 0;
   transition: opacity 0.5s;

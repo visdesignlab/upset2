@@ -39,8 +39,6 @@ import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
-/** @jsxImportSource @emotion/react */
-
 const itemDivCSS = css`
   display: flex;
   justify-content: space-between;
@@ -51,7 +49,6 @@ const sidebarHeaderCSS = css`
   font-size: 0.95rem;
 `;
 
-/** @jsxImportSource @emotion/react */
 export const Sidebar = () => {
   const { actions } = useContext(
     ProvenanceContext,

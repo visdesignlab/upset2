@@ -17,6 +17,7 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "moduleResolution": "node",
+    "jsxImportSource": "@emotion/react",
     "jsx": "preserve",
     "esModuleInterop": true,
     "skipLibCheck": true,

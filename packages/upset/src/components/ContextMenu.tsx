@@ -2,8 +2,6 @@ import { useRecoilState } from 'recoil';
 import { Menu, MenuItem, css } from '@mui/material';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 
-/** @jsxImportSource @emotion/react */
-
 /**
  * Renders a context menu based on the provided context menu state.
  * @returns The rendered context menu component.

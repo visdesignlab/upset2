@@ -52,7 +52,7 @@ export function filterItems(items: Item[], filter: ElementSelection): Item[] {
     const { query } = filter.selection;
 
     return items.filter((item) => {
-      if (!Object.prototype.hasOwnProperty.call(item, att)) return false;
+      if (!Object.hasOwn(item, att)) return false;
 
       switch (filter.selection.type) {
         case ElementQueryType.CONTAINS:
