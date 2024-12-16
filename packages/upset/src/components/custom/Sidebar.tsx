@@ -74,12 +74,12 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
     <Drawer
       aria-hidden={!open}
       sx={{
-        width: fullWidth ? '100%' : drawerWidth,
+        width: open ? fullWidth ? '100%' : drawerWidth : 0,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           padding: '1em',
           marginTop: '2em',
-          width: fullWidth ? '100%' : drawerWidth,
+          width: open ? fullWidth ? '100%' : drawerWidth : 0,
           boxSizing: 'border-box',
           zIndex: 0,
         },
