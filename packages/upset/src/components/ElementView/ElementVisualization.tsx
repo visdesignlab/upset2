@@ -6,7 +6,7 @@ import {
 import { SignalListener, VegaLite } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
-import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery } from '@visdesignlab/upset2-core';
+import { numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, deepCopy } from '@visdesignlab/upset2-core';
 import { Alert, Button } from '@mui/material';
 import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
@@ -45,7 +45,7 @@ export const ElementVisualization = () => {
     [scatterplots, histograms, selectColor, numericalQuery],
   );
   const data = useMemo(() => ({
-    elements: Object.values(structuredClone(items)),
+    elements: Object.values(deepCopy(items)),
   }), [items]);
 
   /**

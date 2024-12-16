@@ -9,6 +9,7 @@ import { highlight } from '../utils/styles';
 import translate from '../utils/transform';
 
 /** @jsxImportSource @emotion/react */
+
 export const BackgroundRects = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);

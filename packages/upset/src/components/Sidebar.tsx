@@ -39,6 +39,8 @@ import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 
+/** @jsxImportSource @emotion/react */
+
 const itemDivCSS = css`
   display: flex;
   justify-content: space-between;

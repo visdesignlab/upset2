@@ -8,6 +8,7 @@ import { ProvenanceContext } from './Root';
 import { currentIntersectionSelector } from '../atoms/config/currentIntersectionAtom';
 
 /** @jsxImportSource @emotion/react */
+
 type SvgBaseSettings = {
   margin: number;
   height: number;

@@ -11,6 +11,8 @@ import translate from '../../utils/transform';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { hiddenSetSortAtom } from '../../atoms/config/visibleSetsAtoms';
 
+/** @jsxImportSource @emotion/react */
+
 type Props = {
     hiddenSets: string[];
     scale: ScaleLinear<number, number>;

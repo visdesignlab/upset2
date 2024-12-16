@@ -6,7 +6,7 @@ import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
 import { Root } from './components/Root';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { DataTable } from './components/DataTable';
-import { convertConfig, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
+import { convertConfig, deepCopy, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
 import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
@@ -76,7 +76,7 @@ function App() {
       );
 
       if (sessionState && sessionState !== 'not found') {
-        provenance.importObject(structuredClone(sessionState));
+        provenance.importObject(deepCopy(sessionState));
       }
 
       // Make sure the config atom stays up-to-date with the provenance

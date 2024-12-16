@@ -3,6 +3,7 @@ import { FC } from 'react';
 import translate from '../../utils/transform';
 
 /** @jsxImportSource @emotion/react */
+
 const shadow = css`
   textshadow: 0 0 5px white;
 `;

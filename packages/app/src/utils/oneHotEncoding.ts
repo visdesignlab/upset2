@@ -1,8 +1,8 @@
-import { CoreUpsetData, process } from "@visdesignlab/upset2-core";
+import { CoreUpsetData, deepCopy, process } from "@visdesignlab/upset2-core";
 
 export const oneHotEncode = (encodeList: string[], data: CoreUpsetData, empty?: boolean) => {
     const newColNames: string[] = []
-    const encodedData: CoreUpsetData = structuredClone(data);
+    const encodedData: CoreUpsetData = deepCopy(data);
 
     // close the error window
     if (empty) {

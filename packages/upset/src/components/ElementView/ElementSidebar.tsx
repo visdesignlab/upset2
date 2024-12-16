@@ -24,6 +24,8 @@ import { ProvenanceContext } from '../Root';
 import { QueryInterface } from './QueryInterface';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 
+/** @jsxImportSource @emotion/react */
+
 /**
  * Props for the ElementSidebar component
  */

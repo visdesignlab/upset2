@@ -26,6 +26,8 @@ import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 
+/** @jsxImportSource @emotion/react */
+
 /**
  * Props for the AltTextSidebar component.
  */

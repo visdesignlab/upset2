@@ -2,7 +2,7 @@ import { isNumericalBookmark, isElementBookmark } from './typecheck';
 import { ElementSelection, Item, ElementQueryType } from './types';
 
 /**
- * DEPRECATED: Currently serves only as an alias for structuredClone; use that instead.
+ * Version safe deep copy using structured cloning.
  * Create a deep copy (with all fields recursively copied) of an object using structured cloning;
  * if structured cloning fails, falls back to JSON serialization.
  * @param obj the object to copy
@@ -52,7 +52,7 @@ export function filterItems(items: Item[], filter: ElementSelection): Item[] {
     const { query } = filter.selection;
 
     return items.filter((item) => {
-      if (!Object.hasOwn(item, att)) return false;
+      if (!Object.prototype.hasOwnProperty.call(item, att)) return false;
 
       switch (filter.selection.type) {
         case ElementQueryType.CONTAINS:
