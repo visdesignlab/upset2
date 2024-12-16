@@ -21,7 +21,7 @@ import {
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
-import { Sidebar } from './Sidebar';
+import { SettingsSidebar } from './SettingsSidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
@@ -154,7 +154,7 @@ export const Root: FC<Props> = ({
           ${baseStyle};
         `}
       >
-        <Sidebar />
+        <SettingsSidebar />
       </div>}
       <h2
         id="desc"
