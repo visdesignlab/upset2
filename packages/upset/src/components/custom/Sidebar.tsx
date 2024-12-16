@@ -9,14 +9,20 @@ import { useRecoilValue } from 'recoil';
 import { footerHeightAtom } from '../../atoms/dimensionsAtom';
 
 type Props= {
+  /** Whether the sidebar is open */
   open: boolean;
+  /** Function to close the sidebar */
   close: () => void;
+  /** Tab index for the close button */
+  closeButtonTabIndex?: number;
 }
 
 /**
  * A collapsible, right-sidebar for the plot
  */
-export const Sidebar: FC<PropsWithChildren<Props>> = ({ open, close, children }) => {
+export const Sidebar: FC<PropsWithChildren<Props>> = ({
+  open, close, closeButtonTabIndex, children,
+}) => {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
   /** Chosen so we don't get a new line for the "Apply" button in the element query controls */
@@ -124,6 +130,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({ open, close, children })
           onClick={() => {
             close();
           }}
+          tabIndex={closeButtonTabIndex}
           aria-label="Close the sidebar"
         >
           <CloseIcon />

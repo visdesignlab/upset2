@@ -164,7 +164,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   );
 
   return (
-    <Sidebar open={open} close={close}>
+    <Sidebar open={open} close={close} closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}>
       <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
         {displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
       </Typography>
