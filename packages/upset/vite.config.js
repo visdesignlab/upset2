@@ -25,6 +25,7 @@ export default defineConfig({
   build: {
     sourcemap: true,
     emptyOutDir: false,
+    outDir: './dist/',
     lib: {
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.tsx',
