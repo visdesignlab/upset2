@@ -4,6 +4,7 @@
   "license": "MIT",
   "author": "Kiran Gadhave, Jake Wagoner, Nate Lanza",
   "description": "React component for UpSet2 visualization",
+  "type": "commonjs",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/visdesignlab/upset2.git",
@@ -16,7 +17,7 @@
   "homepage": "https://upset.multinet.app/",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/index.mjs",
+  "module": "dist/upset2-react.esm.js",
   "files": [
     "dist",
     "src"
