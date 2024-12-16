@@ -16,7 +16,7 @@
   "homepage": "https://upset.multinet.app/",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
-  "module": "dist/upset2-react.esm.js",
+  "module": "dist/index.mjs",
   "files": [
     "dist",
     "src"
