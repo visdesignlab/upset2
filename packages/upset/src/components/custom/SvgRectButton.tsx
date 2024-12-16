@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { styled } from '@mui/material';
 import { ComponentProps, FC } from 'react';
 
