@@ -1,4 +1,4 @@
-import { selector } from 'recoil';
+import { atom, selector } from 'recoil';
 import { calculateDimensions } from '../dimensions';
 import { visibleAttributesSelector } from './config/visibleAttributes';
 import { hiddenSetSelector, visibleSetSelector } from './config/visibleSetsAtoms';
@@ -21,4 +21,15 @@ ReturnType<typeof calculateDimensions>
       attributes.length,
     );
   },
+});
+
+/**
+ * The spacing height necessary to prevent Upset sidebars from overlapping the footer.
+ * This is some multiple of the footer height provided to the Upset component;
+ * I don't know why it has to be multiplied but it does.
+ * @default 'auto'
+ */
+export const footerHeightAtom = atom<string>({
+  key: 'footerHeight',
+  default: 'auto',
 });

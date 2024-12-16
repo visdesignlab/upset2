@@ -1,7 +1,9 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
@@ -15,6 +17,7 @@ import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
 import { api } from '../api/api';
 import { rowsSelector } from '../atoms/selectors';
+import { FOOTER_HEIGHT } from './Root';
 
 type Props = {
   data: any;
@@ -132,6 +135,7 @@ export const Body = ({ data, config }: Props) => {
             provVis={provVis}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
+            footerHeight={FOOTER_HEIGHT}
             generateAltText={getAltText}
             visualizeUpsetAttributes
             allowAttributeRemoval

@@ -38,7 +38,7 @@ import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
 import { ProvenanceContext } from './Root';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText';
-import { dimensionsSelector } from '../atoms/dimensionsAtom';
+import { dimensionsSelector, footerHeightAtom } from '../atoms/dimensionsAtom';
 
 const itemDivCSS = css`
   display: flex;
@@ -66,6 +66,7 @@ export const Sidebar = () => {
   const hideEmpty = useRecoilValue(hideEmptySelector);
   const hideNoSet = useRecoilValue(hideNoSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
+  const footerHeight = useRecoilValue(footerHeightAtom);
 
   const [secondaryAccordionOpen, setSecondaryAccordionOpen] = useState(
     secondAggregateBy !== 'None',
@@ -87,55 +88,56 @@ export const Sidebar = () => {
   };
 
   return (
-    <Box
-      width={dimensions.sidebar.width}
-      paddingTop="1em"
-      // This matches the accordion's default styles, with 1px added to the right
-      boxShadow="rgba(0, 0, 0, 0.2) 1px 2px 1px"
-    >
-      <Typography
-        variant="h2"
-        fontSize="1.2em"
-        fontWeight="inherit"
-        // Half the indentation of the accordion titles
-        paddingLeft="8px"
+    <Box>
+      <Box
+        width={dimensions.sidebar.width}
+        paddingTop="1em"
+        // This matches the accordion's default styles, with 1px added to the right
+        boxShadow="rgba(0, 0, 0, 0.2) 1px 2px 1px"
       >
-        Settings
-      </Typography>
-      <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormControl sx={{ width: '100%' }}>
-            <RadioGroup
-              value={firstAggregateBy}
-              onChange={(ev) => {
-                const newAggBy: AggregateBy = ev.target.value as AggregateBy;
-                actions.firstAggregateBy(newAggBy);
-              }}
-            >
-              {aggregateByList.map((agg) => (
-                <Fragment key={agg}>
-                  <Box
-                    css={itemDivCSS}
-                    key={agg}
-                    aria-label={agg !== 'None' ? helpText.aggregation[agg] : undefined}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        actions.firstAggregateBy(agg);
-                      }
-                    }}
-                  >
-                    <FormControlLabel
+        <Typography
+          variant="h2"
+          fontSize="1.2em"
+          fontWeight="inherit"
+          // Half the indentation of the accordion titles
+          paddingLeft="8px"
+        >
+          Settings
+        </Typography>
+        <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FormControl sx={{ width: '100%' }}>
+              <RadioGroup
+                value={firstAggregateBy}
+                onChange={(ev) => {
+                  const newAggBy: AggregateBy = ev.target.value as AggregateBy;
+                  actions.firstAggregateBy(newAggBy);
+                }}
+              >
+                {aggregateByList.map((agg) => (
+                  <Fragment key={agg}>
+                    <Box
+                      css={itemDivCSS}
                       key={agg}
-                      value={agg}
-                      label={agg}
-                      control={<Radio size="small" />}
-                    />
-                    {agg !== 'None' && <HelpCircle key={`${agg} 1st`} text={helpText.aggregation[agg]} />}
-                  </Box>
-                  {agg === 'Overlaps' && firstAggregateBy === agg && (
+                      aria-label={agg !== 'None' ? helpText.aggregation[agg] : undefined}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') {
+                          actions.firstAggregateBy(agg);
+                        }
+                      }}
+                    >
+                      <FormControlLabel
+                        key={agg}
+                        value={agg}
+                        label={agg}
+                        control={<Radio size="small" />}
+                      />
+                      {agg !== 'None' && <HelpCircle key={`${agg} 1st`} text={helpText.aggregation[agg]} />}
+                    </Box>
+                    {agg === 'Overlaps' && firstAggregateBy === agg && (
                     <TextField
                       aria-label="Select the overlap degree (minimum 2)"
                       label="Degree"
@@ -151,56 +153,56 @@ export const Sidebar = () => {
                         actions.firstOverlapBy(val);
                       }}
                     />
-                  )}
-                </Fragment>
-              ))}
-            </RadioGroup>
-          </FormControl>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion
-        expanded={secondaryAccordionOpen}
-        onChange={() => {
-          setSecondaryAccordionOpen(!secondaryAccordionOpen);
-        }}
-        disableGutters
-        disabled={firstAggregateBy === 'None'}
-        style={ACCORDION_CSS}
-      >
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS} variant="h3">Second Aggregation</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormControl sx={{ width: '100%' }}>
-            <RadioGroup
-              value={secondAggregateBy}
-              onChange={(ev) => {
-                const newAggBy: AggregateBy = ev.target.value as AggregateBy;
-                actions.secondAggregateBy(newAggBy);
-              }}
-            >
-              {aggregateByList
-                .filter((agg) => agg !== firstAggregateBy)
-                .map((agg) => (
-                  <Fragment key={agg}>
-                    <Box
-                      css={itemDivCSS}
-                      key={agg}
-                      aria-label={agg !== 'None' ? helpText.aggregation[agg] : 'No aggregation'}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') {
-                          actions.secondAggregateBy(agg);
-                        }
-                      }}
-                    >
-                      <FormControlLabel
-                        value={agg}
-                        label={agg}
-                        control={<Radio size="small" />}
-                      />
-                      {agg !== 'None' && <HelpCircle key={`${agg} 2nd`} text={helpText.aggregation[agg]} />}
-                    </Box>
-                    {agg === 'Overlaps' && secondAggregateBy === agg && (
+                    )}
+                  </Fragment>
+                ))}
+              </RadioGroup>
+            </FormControl>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion
+          expanded={secondaryAccordionOpen}
+          onChange={() => {
+            setSecondaryAccordionOpen(!secondaryAccordionOpen);
+          }}
+          disableGutters
+          disabled={firstAggregateBy === 'None'}
+          style={ACCORDION_CSS}
+        >
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography css={sidebarHeaderCSS} variant="h3">Second Aggregation</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FormControl sx={{ width: '100%' }}>
+              <RadioGroup
+                value={secondAggregateBy}
+                onChange={(ev) => {
+                  const newAggBy: AggregateBy = ev.target.value as AggregateBy;
+                  actions.secondAggregateBy(newAggBy);
+                }}
+              >
+                {aggregateByList
+                  .filter((agg) => agg !== firstAggregateBy)
+                  .map((agg) => (
+                    <Fragment key={agg}>
+                      <Box
+                        css={itemDivCSS}
+                        key={agg}
+                        aria-label={agg !== 'None' ? helpText.aggregation[agg] : 'No aggregation'}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            actions.secondAggregateBy(agg);
+                          }
+                        }}
+                      >
+                        <FormControlLabel
+                          value={agg}
+                          label={agg}
+                          control={<Radio size="small" />}
+                        />
+                        {agg !== 'None' && <HelpCircle key={`${agg} 2nd`} text={helpText.aggregation[agg]} />}
+                      </Box>
+                      {agg === 'Overlaps' && secondAggregateBy === agg && (
                       <TextField
                         aria-label="Select the overlap degree (minimum 2)"
                         label="Degree"
@@ -216,110 +218,112 @@ export const Sidebar = () => {
                           actions.secondOverlapBy(val);
                         }}
                       />
-                    )}
-                  </Fragment>
-                ))}
-            </RadioGroup>
-          </FormControl>
-        </AccordionDetails>
-      </Accordion>
-      <Accordion disableGutters style={ACCORDION_CSS}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-          <Typography css={sidebarHeaderCSS} variant="h3">Filter Intersections</Typography>
-        </AccordionSummary>
-        <AccordionDetails>
-          <FormGroup sx={{ mb: 2.5, width: '100%' }}>
-            <Box
-              css={itemDivCSS}
-              aria-label={helpText.filter.HideEmptySets}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  actions.setHideEmpty(!hideEmpty);
-                }
-              }}
-            >
-              <FormControlLabel
-                sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
-                label="Hide Empty Intersections"
-                control={
-                  <Switch
-                    size="small"
-                    checked={hideEmpty}
-                    onChange={(ev) => {
-                      actions.setHideEmpty(ev.target.checked);
-                    }}
-                  />
-                }
-                labelPlacement="start"
-              />
-              <HelpCircle text={helpText.filter.HideEmptySets} margin={{ ...defaultMargin, left: 12 }} />
-            </Box>
-            <Box
-              css={itemDivCSS}
-              aria-label={helpText.filter.HideNoSet}
-              onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  actions.setHideNoSet(!hideNoSet);
-                }
-              }}
-            >
-              <FormControlLabel
-                sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
-                label="Hide No-Set Intersection"
-                control={
-                  <Switch
-                    size="small"
-                    checked={hideNoSet}
-                    onChange={(ev) => {
-                      actions.setHideNoSet(ev.target.checked);
-                    }}
-                  />
-                }
-                labelPlacement="start"
-              />
-              <HelpCircle text={helpText.filter.HideNoSet} margin={{ ...defaultMargin, left: 12 }} />
-            </Box>
-          </FormGroup>
-          <FormGroup>
-            <Box
-              css={itemDivCSS}
-            >
-              <FormLabel>
-                <Typography>Filter by Degree</Typography>
-              </FormLabel>
-              <HelpCircle text={helpText.filter.Degree} />
-            </Box>
-            <Box
-              css={itemDivCSS}
-              aria-label={helpText.filter.Degree}
-            >
-              <Slider
-                value={degreeFilters}
-                min={0}
-                max={10}
-                valueLabelDisplay="auto"
-                onChange={(_, newVal: number | number[]) => {
-                  if (typeof newVal === 'number') { // if the sliders are set to the same value
-                    setDegreeFilters([newVal, newVal]);
-                  } else {
-                    setDegreeFilters(newVal);
+                      )}
+                    </Fragment>
+                  ))}
+              </RadioGroup>
+            </FormControl>
+          </AccordionDetails>
+        </Accordion>
+        <Accordion disableGutters style={ACCORDION_CSS}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography css={sidebarHeaderCSS} variant="h3">Filter Intersections</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FormGroup sx={{ mb: 2.5, width: '100%' }}>
+              <Box
+                css={itemDivCSS}
+                aria-label={helpText.filter.HideEmptySets}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    actions.setHideEmpty(!hideEmpty);
                   }
                 }}
-                onChangeCommitted={() => {
+              >
+                <FormControlLabel
+                  sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+                  label="Hide Empty Intersections"
+                  control={
+                    <Switch
+                      size="small"
+                      checked={hideEmpty}
+                      onChange={(ev) => {
+                        actions.setHideEmpty(ev.target.checked);
+                      }}
+                    />
+                }
+                  labelPlacement="start"
+                />
+                <HelpCircle text={helpText.filter.HideEmptySets} margin={{ ...defaultMargin, left: 12 }} />
+              </Box>
+              <Box
+                css={itemDivCSS}
+                aria-label={helpText.filter.HideNoSet}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+                    actions.setHideNoSet(!hideNoSet);
+                  }
+                }}
+              >
+                <FormControlLabel
+                  sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+                  label="Hide No-Set Intersection"
+                  control={
+                    <Switch
+                      size="small"
+                      checked={hideNoSet}
+                      onChange={(ev) => {
+                        actions.setHideNoSet(ev.target.checked);
+                      }}
+                    />
+                }
+                  labelPlacement="start"
+                />
+                <HelpCircle text={helpText.filter.HideNoSet} margin={{ ...defaultMargin, left: 12 }} />
+              </Box>
+            </FormGroup>
+            <FormGroup>
+              <Box
+                css={itemDivCSS}
+              >
+                <FormLabel>
+                  <Typography>Filter by Degree</Typography>
+                </FormLabel>
+                <HelpCircle text={helpText.filter.Degree} />
+              </Box>
+              <Box
+                css={itemDivCSS}
+                aria-label={helpText.filter.Degree}
+              >
+                <Slider
+                  value={degreeFilters}
+                  min={0}
+                  max={10}
+                  valueLabelDisplay="auto"
+                  onChange={(_, newVal: number | number[]) => {
+                    if (typeof newVal === 'number') { // if the sliders are set to the same value
+                      setDegreeFilters([newVal, newVal]);
+                    } else {
+                      setDegreeFilters(newVal);
+                    }
+                  }}
+                  onChangeCommitted={() => {
                   // Prevents unncessary Trrack state changes
-                  if (prevFilters[0] !== degreeFilters[0]) {
-                    actions.setMinVisible(degreeFilters[0]);
-                  }
-                  if (prevFilters[1] !== degreeFilters[1]) {
-                    actions.setMaxVisible(degreeFilters[1]);
-                  }
-                  setPrevFilters(degreeFilters);
-                }}
-              />
-            </Box>
-          </FormGroup>
-        </AccordionDetails>
-      </Accordion>
+                    if (prevFilters[0] !== degreeFilters[0]) {
+                      actions.setMinVisible(degreeFilters[0]);
+                    }
+                    if (prevFilters[1] !== degreeFilters[1]) {
+                      actions.setMaxVisible(degreeFilters[1]);
+                    }
+                    setPrevFilters(degreeFilters);
+                  }}
+                />
+              </Box>
+            </FormGroup>
+          </AccordionDetails>
+        </Accordion>
+      </Box>
+      <Box height={footerHeight} />
     </Box>
   );
 };

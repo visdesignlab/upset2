@@ -27,6 +27,7 @@ import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
+import { footerHeightAtom } from '../atoms/dimensionsAtom';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -59,11 +60,12 @@ type Props = {
     open: boolean;
     close: () => void;
   };
+  footerHeight?: number;
   generateAltText?: () => Promise<AltText>;
 };
 
 export const Root: FC<Props> = ({
-  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
+  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, footerHeight, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
@@ -133,6 +135,11 @@ export const Root: FC<Props> = ({
       document.removeEventListener('contextmenu', removeContextMenu, false);
     };
   }, []);
+
+  // Sets the footer height atom if provided as an argument
+  const setFooterHeight = useSetRecoilState(footerHeightAtom);
+  // Footer height needs to be doubled to work right... idk why that is!
+  useEffect(() => { if (footerHeight) setFooterHeight(`${2 * footerHeight}px`); }, [footerHeight]);
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 

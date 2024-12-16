@@ -6,6 +6,7 @@ import { accessibilityStatementAtom } from '../../atoms/accessibilityStatementAt
 import { AccessibilityStatement } from '../AccessiblityStatement';
 import { About } from '../About';
 import { aboutAtom } from '../../atoms/aboutAtom';
+import { FOOTER_HEIGHT } from '../Root';
 
 const Footer = () => {
   const categoryCSS = {
@@ -18,7 +19,10 @@ const Footer = () => {
   const [aboutModal, setAboutModal] = useRecoilState(aboutAtom);
 
   return (
-    <Box sx={{ position: 'absolute', bottom: 0, width: '100%' }}>
+    <Box sx={{
+      position: 'absolute', bottom: 0, width: '100%', height: `${FOOTER_HEIGHT}px`,
+    }}
+    >
       <footer>
         <Box sx={{
           backgroundColor: '#e0e0e0', width: '100%', display: 'flex', justifyContent: 'space-around', padding: '5px 0',

@@ -16,6 +16,9 @@ type Props = {
     config?: UpsetConfig
 }
 
+/** Height for the footer */
+export const FOOTER_HEIGHT = 46.5;
+
 export const Root = ({
   provenance, actions, data, config,
 }: Props) => {
