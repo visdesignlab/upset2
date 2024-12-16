@@ -20,6 +20,7 @@ import {
   AggregateBy, aggregateByList,
 } from '@visdesignlab/upset2-core';
 import {
+  CSSProperties,
   Fragment, useContext, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -80,16 +81,28 @@ export const Sidebar = () => {
     }
   }, [firstAggregateBy]);
 
+  /** Styles for the 3 accordions in the sidebar */
+  const ACCORDION_CSS: CSSProperties = {
+    boxShadow: 'none',
+  };
+
   return (
-    <div
-      css={css`
-        width: ${dimensions.sidebar.width}px
-      `}
+    <Box
+      width={dimensions.sidebar.width}
+      paddingTop="1em"
+      // This matches the accordion's default styles, with 1px added to the right
+      boxShadow="rgba(0, 0, 0, 0.2) 1px 2px 1px"
     >
-      <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
+      <Typography
+        variant="h2"
+        fontSize="1.2em"
+        fontWeight="inherit"
+        // Half the indentation of the accordion titles
+        paddingLeft="8px"
+      >
         Settings
       </Typography>
-      <Accordion disableGutters defaultExpanded>
+      <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
         </AccordionSummary>
@@ -152,6 +165,7 @@ export const Sidebar = () => {
         }}
         disableGutters
         disabled={firstAggregateBy === 'None'}
+        style={ACCORDION_CSS}
       >
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography css={sidebarHeaderCSS} variant="h3">Second Aggregation</Typography>
@@ -209,7 +223,7 @@ export const Sidebar = () => {
           </FormControl>
         </AccordionDetails>
       </Accordion>
-      <Accordion disableGutters>
+      <Accordion disableGutters style={ACCORDION_CSS}>
         <AccordionSummary expandIcon={<ExpandMoreIcon />}>
           <Typography css={sidebarHeaderCSS} variant="h3">Filter Intersections</Typography>
         </AccordionSummary>
@@ -306,6 +320,6 @@ export const Sidebar = () => {
           </FormGroup>
         </AccordionDetails>
       </Accordion>
-    </div>
+    </Box>
   );
 };
