@@ -29,7 +29,7 @@ export default defineConfig({
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.ts',
       fileName: 'index',
-      formats: ['es', 'cjs'],
+      formats: ['es'],
     },
     rollupOptions: {
       // External packages that should not be bundled into your library.

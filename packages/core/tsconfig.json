@@ -1,10 +1,7 @@
 {
-  "include": ["src", "types", "vite.config.ts"],
-  "exclude": ["node_modules"],
+  "include": ["src", "types"],
   "compilerOptions": {
-    "module": "ESNext",
-    "target": "ESNext",
-    "types": ["@emotion/react/types/css-prop"],
+    "module": "esnext",
     "lib": ["dom", "esnext"],
     "importHelpers": true,
     "declaration": true,
@@ -13,17 +10,13 @@
     "strict": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
-    "downlevelIteration": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "moduleResolution": "node",
-    "jsxImportSource": "@emotion/react",
-    "jsx": "preserve",
+    "jsx": "react",
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true,
-    "isolatedModules": true,
-    "composite": true,
+    "noEmit": true
   }
 }
