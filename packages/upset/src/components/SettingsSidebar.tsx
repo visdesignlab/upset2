@@ -51,7 +51,7 @@ const sidebarHeaderCSS = css`
 `;
 
 /** @jsxImportSource @emotion/react */
-export const Sidebar = () => {
+export const SettingsSidebar = () => {
   const { actions } = useContext(
     ProvenanceContext,
   );
@@ -323,7 +323,7 @@ export const Sidebar = () => {
           </AccordionDetails>
         </Accordion>
       </Box>
-      <Box height={footerHeight} />
+      <Box minHeight={footerHeight} />
     </Box>
   );
 };
