@@ -1,14 +1,8 @@
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
-import CloseIcon from '@mui/icons-material/Close';
 import {
-  Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
+  Divider, IconButton, Tooltip, Typography,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
-import React, {
-  useCallback, useContext, useEffect, useState,
-} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { columnsAtom } from '../../atoms/columnAtom';
@@ -19,10 +13,9 @@ import {
 import { BookmarkChips } from './BookmarkChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
-import { UpsetActions } from '../../provenance';
-import { ProvenanceContext } from '../Root';
 import { QueryInterface } from './QueryInterface';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { Sidebar } from '../custom/Sidebar';
 
 /**
  * Props for the ElementSidebar component
@@ -33,15 +26,6 @@ type Props = {
   /** Function to close the sidebar */
   close: () => void
 }
-
-/**
- * The *exact* width at which we don't get a horizontal scrollbar in the table controls
- */
-const initialDrawerWidth = 462;
-/**
- * The *exact* width at which the 'apply' button in the element query controls is forced onto a new line
- */
-const minDrawerWidth = 368;
 
 /**
  * Immediately downloads a csv containing items with the given columns
@@ -85,130 +69,15 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  * @param close Function to close the sidebar
  */
 export const ElementSidebar = ({ open, close }: Props) => {
-  const [fullWidth, setFullWidth] = useState(false);
-  const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
   const currentElementSelection = useRecoilValue(selectedElementSelector);
   const selectedItems = useRecoilValue(selectedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
-  const [hideElementSidebar, setHideElementSidebar] = useState(!open);
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
-  /**
-   * Effects
-   */
-
-  useEffect(() => {
-    setHideElementSidebar(!open);
-  }, [open]);
-
-  /**
-   * Callbacks
-   */
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const newWidth = document.body.clientWidth - e.clientX;
-
-    if (newWidth > minDrawerWidth) {
-      setDrawerWidth(newWidth);
-    }
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    document.removeEventListener('mouseup', handleMouseUp, true);
-    document.removeEventListener('mousemove', handleMouseMove, true);
-  }, [handleMouseMove]);
-
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      document.addEventListener('mouseup', handleMouseUp, true);
-      document.addEventListener('mousemove', handleMouseMove, true);
-    },
-    [handleMouseUp, handleMouseMove],
-  );
-
   return (
-    <Drawer
-      aria-hidden={!open}
-      sx={{
-        width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          padding: '1em',
-          marginTop: '2em',
-          width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-          boxSizing: 'border-box',
-          zIndex: 0,
-        },
-      }}
-      open={open}
-      onClose={close}
-      variant="persistent"
-      anchor="right"
-      aria-label="Element View sidebar"
-    >
-      <Box
-        sx={{
-          width: '5px',
-          cursor: 'ew-resize',
-          padding: '4px 0 0',
-          borderTop: '1px solid #ddd',
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          zIndex: 100,
-          backgroundColor: '#f4f7f9',
-          // I cannot comprehend why this is the value that works. It is.
-          // The 'rows per page' controls overflow otherwise (:
-          paddingBottom: '1625px',
-        }}
-        onMouseDown={(e) => handleMouseDown(e)}
-      />
-      <div css={css`
-          display: flex;
-          justify-content: space-between;
-        `}
-      >
-        { !fullWidth ?
-          <IconButton
-            onClick={() => {
-              setFullWidth(true);
-            }}
-            aria-label="Expand the sidebar in full screen"
-          >
-            <OpenInFullIcon />
-          </IconButton>
-          :
-          <IconButton
-            onClick={() => {
-              if (fullWidth) {
-                setFullWidth(false);
-              } else {
-                setHideElementSidebar(true);
-              }
-            }}
-            aria-label="Reduce the sidebar to normal size"
-          >
-            <CloseFullscreen />
-          </IconButton>}
-        <IconButton
-          onClick={() => {
-            setHideElementSidebar(true);
-            actions.setElementSelection(currentElementSelection);
-            close();
-          }}
-          aria-label="Close the sidebar"
-        >
-          <CloseIcon />
-        </IconButton>
-      </div>
+    <Sidebar open={open} close={close}>
       <div style={{ marginBottom: '1em' }}>
         <Typography variant="h2" fontSize="1.4em" fontWeight="inherit" gutterBottom>
           Element View
@@ -252,6 +121,6 @@ export const ElementSidebar = ({ open, close }: Props) => {
       </Typography>
       <Divider />
       <ElementTable />
-    </Drawer>
+    </Sidebar>
   );
 };
