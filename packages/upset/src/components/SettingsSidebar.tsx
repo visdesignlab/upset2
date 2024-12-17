@@ -132,9 +132,17 @@ export const SettingsSidebar = () => {
    */
   const handleAttChange = useCallback((event: SelectChangeEvent<string[]>) => {
     const newAtts = typeof event.target.value === 'string' ? [event.target.value] : event.target.value;
-    const { added, removed } = findChange(visibleAtts, newAtts);
-    added.forEach((a) => actions.addAttribute(a));
-    removed.forEach((a) => actions.removeAttribute(a));
+    // Ensures that the order is always Degree, Deviation, then the rest;
+    // this keeps the plot consistent & prevents graphical bugs
+    newAtts.sort((a, b) => {
+      if (a === 'Degree') return -1;
+      if (b === 'Degree') return 1;
+      if (a === 'Deviation') return -1;
+      if (b === 'Deviation') return 1;
+      return 0;
+    });
+    // This simply sets the config visibleAtts to all newAtts, so it removes atts as well
+    actions.addMultipleAttributes(newAtts);
   }, [visibleAtts, actions]);
 
   return (
@@ -179,7 +187,13 @@ export const SettingsSidebar = () => {
               </Select>
             </FormControl>
             <FormControl sx={{ width: '100%', marginTop: '1em' }}>
-              <InputLabel id="atts-multiselect-label">Attributes</InputLabel>
+              <InputLabel
+                // Matches style of above label; prevents select border from overlapping text
+                style={{ backgroundColor: 'white', paddingRight: '5px' }}
+                id="atts-multiselect-label"
+              >
+                Attributes
+              </InputLabel>
               <Select
                 labelId="atts-multiselect-label"
                 id="atts-multiselect"
