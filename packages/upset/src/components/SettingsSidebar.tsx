@@ -127,7 +127,6 @@ const ToggleSwitch: FC<ToggleProps> = ({
 
 /**
  * Settings sidebar; appears to the left of the plot
- * @jsxImportSource @emotion/react
  */
 export const SettingsSidebar = () => {
   const { actions }: {actions: UpsetActions} = useContext(
@@ -215,7 +214,28 @@ export const SettingsSidebar = () => {
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography css={SIDEBAR_HEADER_CSS} variant="h3">General</Typography>
           </AccordionSummary>
-          <FormControl sx={{ width: '100%' }} />
+          <AccordionDetails>
+            <FormGroup style={{ width: '100%' }}>
+              <ToggleSwitch
+                shortLabel="Intersection Size Labels"
+                longLabel={helpText.general.IntersectionSizeLabels}
+                checked
+                onChange={() => undefined}
+              />
+              <ToggleSwitch
+                shortLabel="Set Size Labels"
+                longLabel={helpText.general.SetSizeLabels}
+                checked
+                onChange={() => undefined}
+              />
+              <ToggleSwitch
+                shortLabel="Hidden Sets"
+                longLabel={helpText.general.HiddenSets}
+                checked
+                onChange={() => undefined}
+              />
+            </FormGroup>
+          </AccordionDetails>
         </Accordion>
         <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
