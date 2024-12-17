@@ -2,6 +2,9 @@ import { atom, selectorFamily } from 'recoil';
 
 import { itemsAtom } from './itemsAtoms';
 
+/**
+ * All attributes, including degree and deviation
+ */
 export const attributeAtom = atom<string[]>({
   key: 'attribute-columns',
   default: [],

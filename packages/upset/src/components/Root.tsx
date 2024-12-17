@@ -116,7 +116,7 @@ export const Root: FC<Props> = ({
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
-    setAttributeColumns(data.attributeColumns);
+    setAttributeColumns(['Degree', 'Deviation', ...data.attributeColumns]);
     setAllColumns(data.columns);
     setData(data);
     // if it is defined, pass through the provided value, else, default to true

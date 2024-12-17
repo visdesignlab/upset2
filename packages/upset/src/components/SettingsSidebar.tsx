@@ -29,7 +29,7 @@ import {
 } from '@visdesignlab/upset2-core';
 import {
   CSSProperties,
-  Fragment, useContext, useEffect, useState,
+  Fragment, useCallback, useContext, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -49,6 +49,8 @@ import { helpText } from '../utils/helpText';
 import { dimensionsSelector, footerHeightAtom } from '../atoms/dimensionsAtom';
 import { setsAtom } from '../atoms/setsAtoms';
 import { UpsetActions } from '../provenance';
+import { attributeAtom } from '../atoms/attributeAtom';
+import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
 
 const itemDivCSS = css`
   display: flex;
@@ -80,10 +82,14 @@ export const SettingsSidebar = () => {
 
   const visibleSets = useRecoilValue(visibleSetSelector);
   const allSets = useRecoilValue(setsAtom);
+  const allAtts = useRecoilValue(attributeAtom);
+  const visibleAtts = useRecoilValue(visibleAttributesSelector);
+
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
   const secondAggregateBy = useRecoilValue(secondAggregateSelector);
   const secondOverlapDegree = useRecoilValue(secondOverlapDegreeSelector);
+
   const maxVisible = useRecoilValue(maxVisibleSelector);
   const minVisible = useRecoilValue(minVisibleSelector);
   const hideEmpty = useRecoilValue(hideEmptySelector);
@@ -110,12 +116,26 @@ export const SettingsSidebar = () => {
     boxShadow: 'none',
   };
 
-  const handleSetChange = (event: SelectChangeEvent<string[]>) => {
+  /**
+   * Handles a change in the visible sets multiselect by adding or removing the sets that changed
+   */
+  const handleSetChange = useCallback((event: SelectChangeEvent<string[]>) => {
     const newSets = typeof event.target.value === 'string' ? [event.target.value] : event.target.value;
     const { added, removed } = findChange(visibleSets, newSets);
     added.forEach((s) => actions.addVisibleSet(s));
     removed.forEach((s) => actions.removeVisibleSet(s));
-  };
+  }, [visibleSets, actions]);
+
+  /**
+   * Handles a change in the visible attributes multiselect
+   * by adding or removing the attributes that changed
+   */
+  const handleAttChange = useCallback((event: SelectChangeEvent<string[]>) => {
+    const newAtts = typeof event.target.value === 'string' ? [event.target.value] : event.target.value;
+    const { added, removed } = findChange(visibleAtts, newAtts);
+    added.forEach((a) => actions.addAttribute(a));
+    removed.forEach((a) => actions.removeAttribute(a));
+  }, [visibleAtts, actions]);
 
   return (
     <Box>
@@ -154,6 +174,25 @@ export const SettingsSidebar = () => {
                   <MenuItem key={set.id} value={set.id}>
                     <Checkbox checked={visibleSets.includes(set.id)} />
                     <ListItemText primary={set.elementName} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ width: '100%', marginTop: '1em' }}>
+              <InputLabel id="atts-multiselect-label">Attributes</InputLabel>
+              <Select
+                labelId="atts-multiselect-label"
+                id="atts-multiselect"
+                multiple
+                value={visibleAtts}
+                input={<OutlinedInput label="atts" />}
+                renderValue={(selected) => selected.join(', ')}
+                onChange={handleAttChange}
+              >
+                {Object.values(allAtts).map((att: string) => (
+                  <MenuItem key={att} value={att}>
+                    <Checkbox checked={visibleAtts.includes(att)} />
+                    <ListItemText primary={att} />
                   </MenuItem>
                 ))}
               </Select>
