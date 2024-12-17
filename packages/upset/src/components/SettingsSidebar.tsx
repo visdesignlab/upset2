@@ -27,8 +27,9 @@ import {
   AggregateBy, aggregateByList,
   BaseElement,
 } from '@visdesignlab/upset2-core';
-import {
+import React, {
   CSSProperties,
+  FC,
   Fragment, useCallback, useContext, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -52,15 +53,20 @@ import { UpsetActions } from '../provenance';
 import { attributeAtom } from '../atoms/attributeAtom';
 import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
 
-const itemDivCSS = css`
+const ITEM_DIV_CSS = css`
   display: flex;
   justify-content: space-between;
   align-items: center;
 `;
 
-const sidebarHeaderCSS = css`
+const SIDEBAR_HEADER_CSS = css`
   font-size: 0.95rem;
 `;
+
+/** Styles for the 3 accordions in the sidebar */
+const ACCORDION_CSS: CSSProperties = {
+  boxShadow: 'none',
+};
 
 /**
  * Finds the added and removed elements between two arrays
@@ -74,7 +80,55 @@ function findChange(old: string[], current: string[]): {added: string[], removed
   return { added, removed };
 }
 
-/** @jsxImportSource @emotion/react */
+/**
+ * Props for the toggle switch
+ */
+type ToggleProps = {
+  /** A short title for the toggle switch's functionality; displays directly to the user */
+  shortLabel: string;
+  /** A longer description of the functionality; used for the help circle text */
+  longLabel: string;
+  /** Whether the toggle switch is currently checked */
+  checked: boolean;
+  /** The function to call when the toggle changes */
+  onChange: (ev: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLDivElement>) => void;
+}
+
+/**
+ * A toggle switch for a boolean setting
+ */
+const ToggleSwitch: FC<ToggleProps> = ({
+  shortLabel, longLabel, checked, onChange,
+}: ToggleProps) => (
+  <Box
+    css={ITEM_DIV_CSS}
+    aria-label={shortLabel}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter') {
+        onChange(e);
+      }
+    }}
+  >
+    <FormControlLabel
+      sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+      label={shortLabel}
+      control={
+        <Switch
+          size="small"
+          checked={checked}
+          onChange={onChange}
+        />
+      }
+      labelPlacement="start"
+    />
+    <HelpCircle text={longLabel} margin={{ ...defaultMargin, left: 12 }} />
+  </Box>
+);
+
+/**
+ * Settings sidebar; appears to the left of the plot
+ * @jsxImportSource @emotion/react
+ */
 export const SettingsSidebar = () => {
   const { actions }: {actions: UpsetActions} = useContext(
     ProvenanceContext,
@@ -110,11 +164,6 @@ export const SettingsSidebar = () => {
       setSecondaryAccordionOpen(false);
     }
   }, [firstAggregateBy]);
-
-  /** Styles for the 3 accordions in the sidebar */
-  const ACCORDION_CSS: CSSProperties = {
-    boxShadow: 'none',
-  };
 
   /**
    * Handles a change in the visible sets multiselect by adding or removing the sets that changed
@@ -162,9 +211,15 @@ export const SettingsSidebar = () => {
         >
           Settings
         </Typography>
+        <Accordion disableGutters style={ACCORDION_CSS}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">General</Typography>
+          </AccordionSummary>
+          <FormControl sx={{ width: '100%' }} />
+        </Accordion>
         <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={sidebarHeaderCSS} variant="h3">Sets and Attributes</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Sets and Attributes</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl sx={{ width: '100%' }}>
@@ -215,7 +270,7 @@ export const SettingsSidebar = () => {
         </Accordion>
         <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Aggregation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl sx={{ width: '100%' }}>
@@ -229,7 +284,7 @@ export const SettingsSidebar = () => {
                 {aggregateByList.map((agg) => (
                   <Fragment key={agg}>
                     <Box
-                      css={itemDivCSS}
+                      css={ITEM_DIV_CSS}
                       key={agg}
                       aria-label={agg !== 'None' ? helpText.aggregation[agg] : undefined}
                       onKeyDown={(e) => {
@@ -279,7 +334,7 @@ export const SettingsSidebar = () => {
           style={ACCORDION_CSS}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={sidebarHeaderCSS} variant="h3">Second Aggregation</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Second Aggregation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl sx={{ width: '100%' }}>
@@ -295,7 +350,7 @@ export const SettingsSidebar = () => {
                   .map((agg) => (
                     <Fragment key={agg}>
                       <Box
-                        css={itemDivCSS}
+                        css={ITEM_DIV_CSS}
                         key={agg}
                         aria-label={agg !== 'None' ? helpText.aggregation[agg] : 'No aggregation'}
                         onKeyDown={(e) => {
@@ -336,64 +391,26 @@ export const SettingsSidebar = () => {
         </Accordion>
         <Accordion disableGutters style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={sidebarHeaderCSS} variant="h3">Filter Intersections</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Filter Intersections</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormGroup sx={{ mb: 2.5, width: '100%' }}>
-              <Box
-                css={itemDivCSS}
-                aria-label={helpText.filter.HideEmptySets}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    actions.setHideEmpty(!hideEmpty);
-                  }
-                }}
-              >
-                <FormControlLabel
-                  sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
-                  label="Hide Empty Intersections"
-                  control={
-                    <Switch
-                      size="small"
-                      checked={hideEmpty}
-                      onChange={(ev) => {
-                        actions.setHideEmpty(ev.target.checked);
-                      }}
-                    />
-                }
-                  labelPlacement="start"
-                />
-                <HelpCircle text={helpText.filter.HideEmptySets} margin={{ ...defaultMargin, left: 12 }} />
-              </Box>
-              <Box
-                css={itemDivCSS}
-                aria-label={helpText.filter.HideNoSet}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    actions.setHideNoSet(!hideNoSet);
-                  }
-                }}
-              >
-                <FormControlLabel
-                  sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
-                  label="Hide No-Set Intersection"
-                  control={
-                    <Switch
-                      size="small"
-                      checked={hideNoSet}
-                      onChange={(ev) => {
-                        actions.setHideNoSet(ev.target.checked);
-                      }}
-                    />
-                }
-                  labelPlacement="start"
-                />
-                <HelpCircle text={helpText.filter.HideNoSet} margin={{ ...defaultMargin, left: 12 }} />
-              </Box>
+              <ToggleSwitch
+                shortLabel="Hide Empty Sets"
+                longLabel={helpText.filter.HideEmptySets}
+                checked={hideEmpty}
+                onChange={() => actions.setHideEmpty(!hideEmpty)}
+              />
+              <ToggleSwitch
+                shortLabel="Hide No-Set Intersection"
+                longLabel={helpText.filter.HideNoSet}
+                checked={hideNoSet}
+                onChange={() => actions.setHideNoSet(!hideNoSet)}
+              />
             </FormGroup>
             <FormGroup>
               <Box
-                css={itemDivCSS}
+                css={ITEM_DIV_CSS}
               >
                 <FormLabel>
                   <Typography>Filter by Degree</Typography>
@@ -401,7 +418,7 @@ export const SettingsSidebar = () => {
                 <HelpCircle text={helpText.filter.Degree} />
               </Box>
               <Box
-                css={itemDivCSS}
+                css={ITEM_DIV_CSS}
                 aria-label={helpText.filter.Degree}
               >
                 <Slider
