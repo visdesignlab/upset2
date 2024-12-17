@@ -5,12 +5,19 @@ import {
   AccordionDetails,
   AccordionSummary,
   Box,
+  Checkbox,
   FormControl,
   FormControlLabel,
   FormGroup,
   FormLabel,
+  InputLabel,
+  ListItemText,
+  MenuItem,
+  OutlinedInput,
   Radio,
   RadioGroup,
+  Select,
+  SelectChangeEvent,
   Slider,
   Switch,
   TextField,
@@ -18,6 +25,7 @@ import {
 } from '@mui/material';
 import {
   AggregateBy, aggregateByList,
+  BaseElement,
 } from '@visdesignlab/upset2-core';
 import {
   CSSProperties,
@@ -39,6 +47,8 @@ import { ProvenanceContext } from './Root';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText';
 import { dimensionsSelector, footerHeightAtom } from '../atoms/dimensionsAtom';
+import { setsAtom } from '../atoms/setsAtoms';
+import { UpsetActions } from '../provenance';
 
 const itemDivCSS = css`
   display: flex;
@@ -50,13 +60,26 @@ const sidebarHeaderCSS = css`
   font-size: 0.95rem;
 `;
 
+/**
+ * Finds the added and removed elements between two arrays
+ * @param old The old array
+ * @param current The new array
+ * @returns An object with the added and removed elements
+ */
+function findChange(old: string[], current: string[]): {added: string[], removed: string[]} {
+  const added = current.filter((s) => !old.includes(s));
+  const removed = old.filter((s) => !current.includes(s));
+  return { added, removed };
+}
+
 /** @jsxImportSource @emotion/react */
 export const SettingsSidebar = () => {
-  const { actions } = useContext(
+  const { actions }: {actions: UpsetActions} = useContext(
     ProvenanceContext,
   );
 
   const visibleSets = useRecoilValue(visibleSetSelector);
+  const allSets = useRecoilValue(setsAtom);
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
   const secondAggregateBy = useRecoilValue(secondAggregateSelector);
@@ -87,6 +110,13 @@ export const SettingsSidebar = () => {
     boxShadow: 'none',
   };
 
+  const handleSetChange = (event: SelectChangeEvent<string[]>) => {
+    const newSets = typeof event.target.value === 'string' ? [event.target.value] : event.target.value;
+    const { added, removed } = findChange(visibleSets, newSets);
+    added.forEach((s) => actions.addVisibleSet(s));
+    removed.forEach((s) => actions.removeVisibleSet(s));
+  };
+
   return (
     <Box>
       <Box
@@ -104,6 +134,32 @@ export const SettingsSidebar = () => {
         >
           Settings
         </Typography>
+        <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography css={sidebarHeaderCSS} variant="h3">Sets and Attributes</Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <FormControl sx={{ width: '100%' }}>
+              <InputLabel id="sets-multiselect-label">Sets</InputLabel>
+              <Select
+                labelId="sets-multiselect-label"
+                id="sets-multiselect"
+                multiple
+                value={visibleSets}
+                input={<OutlinedInput label="Sets" />}
+                renderValue={(selected) => selected.map((s) => allSets[s].elementName).join(', ')}
+                onChange={handleSetChange}
+              >
+                {Object.values(allSets).map((set: BaseElement) => (
+                  <MenuItem key={set.id} value={set.id}>
+                    <Checkbox checked={visibleSets.includes(set.id)} />
+                    <ListItemText primary={set.elementName} />
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </AccordionDetails>
+        </Accordion>
         <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography css={sidebarHeaderCSS} variant="h3">Aggregation</Typography>
