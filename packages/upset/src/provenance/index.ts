@@ -375,7 +375,7 @@ export function initializeProvenanceTracking(
   );
 
   if (setter) {
-    provenance.currentChange(() => setter(provenance.getState()));
+    provenance.currentChange(() => setter(convertConfig(provenance.getState())));
   }
 
   provenance.done();
