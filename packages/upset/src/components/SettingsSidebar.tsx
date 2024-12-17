@@ -52,6 +52,7 @@ import { setsAtom } from '../atoms/setsAtoms';
 import { UpsetActions } from '../provenance';
 import { attributeAtom } from '../atoms/attributeAtom';
 import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
+import { showHiddenSetsSelector, showIntersectionSizesSelector, showSetSizesSelector } from '../atoms/config/displayAtoms';
 
 const ITEM_DIV_CSS = css`
   display: flex;
@@ -138,6 +139,10 @@ export const SettingsSidebar = () => {
   const allAtts = useRecoilValue(attributeAtom);
   const visibleAtts = useRecoilValue(visibleAttributesSelector);
 
+  const showIntersectionSizes = useRecoilValue(showIntersectionSizesSelector);
+  const showSetSizes = useRecoilValue(showSetSizesSelector);
+  const showHiddenSets = useRecoilValue(showHiddenSetsSelector);
+
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
   const firstOverlapDegree = useRecoilValue(firstOvelapDegreeSelector);
   const secondAggregateBy = useRecoilValue(secondAggregateSelector);
@@ -219,20 +224,20 @@ export const SettingsSidebar = () => {
               <ToggleSwitch
                 shortLabel="Intersection Size Labels"
                 longLabel={helpText.general.IntersectionSizeLabels}
-                checked
-                onChange={() => undefined}
+                checked={showIntersectionSizes}
+                onChange={() => actions.setIntersectionSizeLabels(!showIntersectionSizes)}
               />
               <ToggleSwitch
                 shortLabel="Set Size Labels"
                 longLabel={helpText.general.SetSizeLabels}
-                checked
-                onChange={() => undefined}
+                checked={showSetSizes}
+                onChange={() => actions.setSetSizeLabels(!showSetSizes)}
               />
               <ToggleSwitch
                 shortLabel="Hidden Sets"
                 longLabel={helpText.general.HiddenSets}
-                checked
-                onChange={() => undefined}
+                checked={showHiddenSets}
+                onChange={() => actions.setShowHiddenSets(!showHiddenSets)}
               />
             </FormGroup>
           </AccordionDetails>

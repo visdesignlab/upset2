@@ -6,6 +6,7 @@ import {
   AltText,
 } from './types';
 import { isUpsetConfig } from './typecheck';
+import { DefaultConfig } from './defaultConfig';
 
 /**
  * Developer notes:
@@ -16,7 +17,7 @@ import { isUpsetConfig } from './typecheck';
  * 2. Make your changes to UpsetConfig in types.ts
  * 3. Change the return type of the most recent version conversion function to the old type that you copied.
  * 4. Implement a version conversion function that takes the old type and returns the new type (UpsetConfig).
- *    This function must modify the input config in place.
+ *    This function must modify the input config in place; it should not create a new object.
  * 5. Add a new case to the switch statement in convertConfig.
  *    - The case version number should be the current version number, as your conversion function starts
  *      with the previous version (which the current version will become) and converts it to the current version.
@@ -98,9 +99,11 @@ type PreVersionConfig = {
  */
 // eslint-disable-next-line camelcase
 function convert0_1_0(config: Version0_1_0): UpsetConfig {
-  return {
-    ...config, version: '0.1.1', intersectionSizeLabels: true, setSizeLabels: true, showHiddenSets: true,
-  };
+  (config as unknown as UpsetConfig).version = '0.1.1';
+  (config as unknown as UpsetConfig).intersectionSizeLabels = DefaultConfig.intersectionSizeLabels;
+  (config as unknown as UpsetConfig).setSizeLabels = DefaultConfig.setSizeLabels;
+  (config as unknown as UpsetConfig).showHiddenSets = DefaultConfig.showHiddenSets;
+  return (config as unknown as UpsetConfig);
 }
 
 /**
@@ -112,11 +115,11 @@ function preVersionConversion(config: PreVersionConfig): Version0_1_0 {
   // TS won't allow a conversion directly to UpsetConfig, so we have to cast it to unknown first.
   // This is necessary to add and remove properties from the object.
   (config as unknown as Version0_1_0).version = '0.1.0';
-  (config as unknown as Version0_1_0).elementSelection = null;
+  (config as unknown as Version0_1_0).elementSelection = DefaultConfig.elementSelection;
   (config as unknown as Version0_1_0).bookmarks = config.bookmarkedIntersections;
-  (config as unknown as Version0_1_0).useUserAlt = false;
-  (config as unknown as Version0_1_0).userAltText = null;
-  (config as unknown as Version0_1_0).attributePlots = {};
+  (config as unknown as Version0_1_0).useUserAlt = DefaultConfig.useUserAlt;
+  (config as unknown as Version0_1_0).userAltText = DefaultConfig.userAltText;
+  (config as unknown as Version0_1_0).attributePlots = DefaultConfig.attributePlots;
   // Any cast required because bookmarkedIntersections isn't optional in PreversionConfig
   delete (config as any).bookmarkedIntersections;
 
