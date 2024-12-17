@@ -22,7 +22,6 @@ import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
 import { ProvenanceContext } from '../../App';
 import { ImportModal } from '../ImportModal';
-import { AttributeDropdown } from '../AttributeDropdown';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
 import { altTextSidebarAtom } from '../../atoms/altTextSidebarAtom';
 import { loadingAtom } from '../../atoms/loadingAtom';
@@ -42,7 +41,6 @@ const Header = ({ data }: { data: any }) => {
   const { provenance } = useContext(ProvenanceContext);
   const rows = useRecoilValue(rowsSelector);
 
-  const [attributeDialog, setAttributeDialog] = useState(false);
   const [showImportModal, setShowImportModal] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loginMenuOpen, setLoginMenuOpen] = useState(false);
@@ -91,16 +89,6 @@ const Header = ({ data }: { data: any }) => {
   const handleLoginClose = () => {
     setAnchorEl(null);
     setLoginMenuOpen(false);
-  };
-
-  const handleAttributeClick = (event: React.MouseEvent<any>) => {
-    setAnchorEl(event.currentTarget);
-    setAttributeDialog(true);
-  };
-
-  const handleAttributeClose = () => {
-    setAnchorEl(null);
-    setAttributeDialog(false);
   };
 
   const closeAnySidebar = () => {
@@ -234,15 +222,6 @@ const Header = ({ data }: { data: any }) => {
                 </Button>
               </Link>
               <Button
-                color="inherit"
-                onClick={(e) => { handleAttributeClick(e); }}
-                aria-label="Attributes selection menu"
-                aria-haspopup="menu"
-                tabIndex={4 + ALTTEXT_SIDEBAR_TABS}
-              >
-                Attributes
-              </Button>
-              <Button
                 onClick={() => {
                   closeAnySidebar();
 
@@ -258,8 +237,6 @@ const Header = ({ data }: { data: any }) => {
                 Element View
               </Button>
             </>}
-          {attributeDialog &&
-            <AttributeDropdown anchorEl={anchorEl as HTMLElement} close={handleAttributeClose} />}
           {importError &&
             <Tooltip title="The imported state is missing fields. Default values have been used." arrow>
               <ErrorOutline color="error" sx={{ mr: '10px' }} />
