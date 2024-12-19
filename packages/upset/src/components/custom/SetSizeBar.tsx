@@ -87,7 +87,7 @@ export const SetSizeBar: FC<Props> = ({
       <rect
         fill="#636363"
         stroke="#fff"
-        strokeWidth="1px"
+        strokeWidth="0px"
         height={barSize}
         width={dimensions.set.width}
         opacity={foregroundOpacity}
@@ -125,7 +125,7 @@ export const SetSizeBar: FC<Props> = ({
       )}
       {showLabel && (
         <foreignObject
-          transform={`${translate(0, dimensions.set.label.height - 5)}rotate(-90)`}
+          transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
           height={dimensions.set.width}
           width={dimensions.set.label.height - (dimensions.set.width / 2)}
           z={100}
