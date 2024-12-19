@@ -10,6 +10,9 @@ import { HiddenSets } from './HiddenSets';
 import translate from '../../utils/transform';
 import { showHiddenSetsSelector } from '../../atoms/config/displayAtoms';
 
+/**
+ * Header for the plot: shows both visible and hidden sets at the top of the page
+ */
 export const MatrixHeader = () => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
