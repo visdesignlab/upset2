@@ -1,5 +1,5 @@
 import { UpsetActions, UpsetProvenance } from '@visdesignlab/upset2-react';
-import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { Box, css } from '@mui/material';
 import {
   useMemo,
@@ -12,7 +12,7 @@ import { Home } from './Home';
 type Props = {
     provenance: UpsetProvenance,
     actions: UpsetActions,
-    data: any,
+    data: CoreUpsetData | null,
     config?: UpsetConfig
 }
 
@@ -37,10 +37,9 @@ export const Root = ({
           position: 'relative',
         }}
       >
-        <Header data={data} />
+        {data && <Header data={data} />}
       </Box>
-      {data === null && <Home />}
-      <Body data={data} config={config} />
+      {data ? <Body data={data} config={config} /> : <Home />}
       <Footer />
     </div>
   );

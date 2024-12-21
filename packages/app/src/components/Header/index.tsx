@@ -1,22 +1,20 @@
-import { exportState, getAccessibleData, downloadSVG } from '@visdesignlab/upset2-react';
-import { Column } from '@visdesignlab/upset2-core';
+import { exportState, downloadSVG } from '@visdesignlab/upset2-react';
+import { Column, CoreUpsetData } from '@visdesignlab/upset2-core';
 import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
 import {
   AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography,
 } from '@mui/material';
-import { useRecoilValue, useRecoilState, useSetRecoilState } from 'recoil';
+import { useRecoilValue, useRecoilState } from 'recoil';
 import React, {
-  useCallback, useContext, useEffect, useState,
+  useContext, useEffect, useState,
 } from 'react';
-import localforage from 'localforage';
 import { Link } from 'react-router-dom';
 import {
-  getQueryParam, queryParamAtom, saveQueryParam, restoreQueryParam,
+  getQueryParam, queryParamAtom, restoreQueryParam,
 } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
@@ -24,19 +22,18 @@ import { ProvenanceContext } from '../../App';
 import { ImportModal } from '../ImportModal';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
 import { altTextSidebarAtom } from '../../atoms/altTextSidebarAtom';
-import { loadingAtom } from '../../atoms/loadingAtom';
 import { getMultinetDataUrl } from '../../api/getMultinetDataUrl';
 import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
+import { dispatchState } from '../../utils/dispatchState';
 
-const Header = ({ data }: { data: any }) => {
+const Header = ({ data }: { data: CoreUpsetData }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
   const [isProvVisOpen, setIsProvVisOpen] = useRecoilState(provenanceVisAtom);
   const [isElementSidebarOpen, setIsElementSidebarOpen] = useRecoilState(elementSidebarAtom);
   const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] = useRecoilState(altTextSidebarAtom);
   const importError = useRecoilValue(importErrorAtom);
-  const setLoading = useSetRecoilState(loadingAtom);
 
   const { provenance } = useContext(ProvenanceContext);
   const rows = useRecoilValue(rowsSelector);
@@ -102,24 +99,6 @@ const Header = ({ data }: { data: any }) => {
       setIsAltTextSidebarOpen(false);
     }
   };
-
-  /**
-   * Dispatches the state by saving relevant data to the local storage.
-   * This function saves the 'data', 'rows', 'visibleSets', 'hiddenSets', and query parameters to the local storage.
-   */
-  const dispatchState = useCallback(async () => {
-    setLoading(true);
-    await Promise.all([
-      localforage.clear(),
-      localforage.setItem('data', data),
-      localforage.setItem('rows', getAccessibleData(rows, true)),
-      localforage.setItem('visibleSets', visibleSets),
-      localforage.setItem('hiddenSets', hiddenSets.map((set: Column) => set.name)),
-    ]);
-
-    saveQueryParam();
-    setLoading(false);
-  }, [data, rows, visibleSets, hiddenSets]);
 
   const [userInfo, setUserInfo] = useState<UserSpec | null>(null);
 
@@ -205,22 +184,6 @@ const Header = ({ data }: { data: any }) => {
               >
                 Text Descriptions
               </Button>
-              <Link
-                to={`/datatable${getQueryParam()}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={dispatchState}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-                aria-label="Data Tables (raw and computed)"
-                tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
-              >
-                <Button
-                  color="inherit"
-                >
-                  Data Table
-                  <OpenInNewIcon sx={{ height: '14px', opacity: 0.8 }} />
-                </Button>
-              </Link>
               <Button
                 onClick={() => {
                   closeAnySidebar();
@@ -255,6 +218,19 @@ const Header = ({ data }: { data: any }) => {
           <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
             <MenuItem onClick={() => { if (window) { window.location.href = getMultinetDataUrl(workspace); } }}>
               Load Data
+            </MenuItem>
+            <MenuItem>
+              <Link
+                to={`/datatable${getQueryParam()}`}
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => dispatchState(data, rows, visibleSets, hiddenSets)}
+                style={{ textDecoration: 'none', color: 'inherit' }}
+                aria-label="Data Tables (raw and computed)"
+                tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
+              >
+                Data Table
+              </Link>
             </MenuItem>
             <MenuItem onClick={() => setShowImportModal(true)} color="inherit" aria-label="Import UpSet JSON state file">
               Import State

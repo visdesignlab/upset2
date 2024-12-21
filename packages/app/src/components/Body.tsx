@@ -1,5 +1,5 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
   useCallback, useContext, useEffect, useState,
@@ -20,7 +20,7 @@ import { rowsSelector } from '../atoms/selectors';
 import { FOOTER_HEIGHT } from './Root';
 
 type Props = {
-  data: any;
+  data: CoreUpsetData;
   config?: UpsetConfig;
 };
 
