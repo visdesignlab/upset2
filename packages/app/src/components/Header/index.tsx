@@ -242,18 +242,6 @@ const Header = ({ data }: { data: any }) => {
               <ErrorOutline color="error" sx={{ mr: '10px' }} />
             </Tooltip>}
           <Button
-            color="inherit"
-            onClick={() => {
-              if (window) {
-                window.location.href = getMultinetDataUrl(workspace);
-              }
-            }}
-            aria-label="Load data from Multinet"
-            tabIndex={6 + ALTTEXT_SIDEBAR_TABS}
-          >
-            Load Data
-          </Button>
-          <Button
             sx={{ minWidth: '24px' }}
             onKeyDown={(e) => handleMenuKeypress(e)}
             aria-label="Additional options menu"
@@ -265,6 +253,9 @@ const Header = ({ data }: { data: any }) => {
             />
           </Button>
           <Menu open={isMenuOpen} onClose={handleMenuClose} anchorEl={anchorEl}>
+            <MenuItem onClick={() => { if (window) { window.location.href = getMultinetDataUrl(workspace); } }}>
+              Load Data
+            </MenuItem>
             <MenuItem onClick={() => setShowImportModal(true)} color="inherit" aria-label="Import UpSet JSON state file">
               Import State
             </MenuItem>
