@@ -125,7 +125,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
   }, []);
 
   return (
-    <AppBar sx={{ position: 'static', boxShadow: 'none', height: '40px' }}>
+    <AppBar sx={{ position: 'static', boxShadow: 'none', height: '48px' }}>
       <Toolbar
         variant="dense"
         sx={{
