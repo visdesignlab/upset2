@@ -24,12 +24,12 @@ ReturnType<typeof calculateDimensions>
 });
 
 /**
- * The spacing height necessary to prevent Upset sidebars from overlapping the footer.
+ * The spacing height necessary to prevent Upset sidebars from overlapping the footer in px.
  * This is some multiple of the footer height provided to the Upset component;
  * I don't know why it has to be multiplied but it does.
  * @default 'auto'
  */
-export const footerHeightAtom = atom<string>({
+export const footerHeightAtom = atom<number>({
   key: 'footerHeight',
-  default: 'auto',
+  default: 0,
 });

@@ -139,7 +139,7 @@ export const Root: FC<Props> = ({
   // Sets the footer height atom if provided as an argument
   const setFooterHeight = useSetRecoilState(footerHeightAtom);
   // Footer height needs to be doubled to work right... idk why that is!
-  useEffect(() => { if (footerHeight) setFooterHeight(`${2 * footerHeight}px`); }, [footerHeight]);
+  useEffect(() => { if (footerHeight) setFooterHeight(2 * footerHeight); }, [footerHeight]);
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 
