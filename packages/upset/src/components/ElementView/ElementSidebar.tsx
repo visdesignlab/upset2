@@ -1,10 +1,11 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import {
-  Divider, IconButton, Tooltip, Typography,
+  IconButton, Tooltip,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
 
+import { useMemo } from 'react';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
   selectedElementSelector, selectedItemsCounter,
@@ -16,6 +17,7 @@ import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { Sidebar } from '../custom/Sidebar';
+import { UpsetHeading } from '../custom/theme/heading';
 
 /**
  * Props for the ElementSidebar component
@@ -76,34 +78,36 @@ export const ElementSidebar = ({ open, close }: Props) => {
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
+  /** Whether to show the 'Element Queries' section */
+  const showQueries = useMemo(
+    () => bookmarked.length > 0 || currentIntersection || currentElementSelection,
+    [bookmarked.length, currentIntersection, currentElementSelection],
+  );
+
   return (
     <Sidebar open={open} close={close}>
       <div style={{ marginBottom: '1em' }}>
-        <Typography variant="h2" fontSize="1.4em" fontWeight="inherit" gutterBottom>
+        <UpsetHeading level="h1">
           Element View
-        </Typography>
-        <Divider />
+        </UpsetHeading>
       </div>
-      {(bookmarked.length > 0 || currentIntersection || currentElementSelection) && (
+      {showQueries && (
         <>
-          <Typography variant="h3" fontSize="1.2em">
+          <UpsetHeading level="h2">
             Bookmarked Queries
-          </Typography>
-          <Divider />
+          </UpsetHeading>
           <BookmarkChips />
         </>
       )}
-      <Typography variant="h3" fontSize="1.2em">
+      <UpsetHeading level="h2" marginTop={showQueries ? '1em' : undefined}>
         Element Visualization
-      </Typography>
-      <Divider />
+      </UpsetHeading>
       <ElementVisualization />
-      <Typography variant="h3" fontSize="1.2em">
+      <UpsetHeading level="h2" marginTop="1em">
         Element Queries
-      </Typography>
-      <Divider />
+      </UpsetHeading>
       <QueryInterface />
-      <Typography variant="h3" fontSize="1.2em">
+      <UpsetHeading level="h2" marginTop="1em">
         Query Result
         <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton
@@ -114,12 +118,13 @@ export const ElementSidebar = ({ open, close }: Props) => {
                 currentElementSelection?.label ?? 'upset_elements',
               );
             }}
+            // This needs to stay shorter than the h2 text or the divider spacing gets off
+            style={{ height: '1.2em' }}
           >
             <DownloadIcon />
           </IconButton>
         </Tooltip>
-      </Typography>
-      <Divider />
+      </UpsetHeading>
       <ElementTable />
     </Sidebar>
   );

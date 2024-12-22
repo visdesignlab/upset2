@@ -3,10 +3,11 @@ import {
 } from 'react';
 import { ProvVis } from '@trrack/vis-react';
 import {
-  Divider, Drawer, IconButton, Typography, css,
+  Divider, Drawer, IconButton, css,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ProvenanceContext } from './Root';
+import { UpsetHeading } from './custom/theme/heading';
 
 type Props = {
   open: boolean,
@@ -67,9 +68,9 @@ export const ProvenanceVis = ({ open, close }: Props) => {
             width: 95%;
           `}
         >
-          <Typography variant="h2" fontSize="1.2em" fontWeight="inherit">
+          <UpsetHeading level="h2">
             History
-          </Typography>
+          </UpsetHeading>
           <IconButton onClick={close}>
             <CloseIcon />
           </IconButton>

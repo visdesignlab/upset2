@@ -53,6 +53,7 @@ import { UpsetActions } from '../provenance';
 import { attributeAtom } from '../atoms/attributeAtom';
 import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
 import { showHiddenSetsSelector, showIntersectionSizesSelector, showSetSizesSelector } from '../atoms/config/displayAtoms';
+import { UpsetHeading } from './custom/theme/heading';
 
 const ITEM_DIV_CSS = css`
   display: flex;
@@ -206,16 +207,19 @@ export const SettingsSidebar = () => {
         // This matches the accordion's default styles, with 1px added to the right
         boxShadow="rgba(0, 0, 0, 0.2) 1px 2px 1px"
       >
-        <Typography
-          variant="h2"
-          fontSize="1.2em"
-          fontWeight="inherit"
+        <UpsetHeading
+          level="h1"
           // Half the indentation of the accordion titles
           paddingLeft="8px"
         >
           Settings
-        </Typography>
-        <Accordion disableGutters style={ACCORDION_CSS}>
+        </UpsetHeading>
+        <Accordion
+          disableGutters
+          style={ACCORDION_CSS}
+          // Remove the top border; it look weird with the divider under the title
+          sx={{ '&:before': { display: 'none' } }}
+        >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography css={SIDEBAR_HEADER_CSS} variant="h3">General</Typography>
           </AccordionSummary>

@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  Divider,
   Icon,
   TextField,
   Typography,
@@ -24,6 +23,7 @@ import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import { Sidebar } from './custom/Sidebar';
+import { UpsetHeading } from './custom/theme/heading';
 
 /**
  * Props for the AltTextSidebar component.
@@ -145,16 +145,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     return userShortText ?? altText?.shortDescription ?? '';
   }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription]);
 
-  const divider = <Divider
-    style={{
-      width: '100%',
-      margin: 'auto',
-      marginTop: 0,
-      marginBottom: '1em',
-    }}
-    aria-hidden
-  />;
-
   /**
    * Whether to display the plot information section
    */
@@ -165,10 +155,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
   return (
     <Sidebar open={open} close={close} closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}>
-      <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
+      <UpsetHeading level="h1">
         {displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
-      </Typography>
-      {divider}
+      </UpsetHeading>
       {displayPlotInfo &&
           // We only want to display plotInfo if the user is editing OR if they've entered some field other than title
           (plotInfoEditing || Object.entries(plotInfo).filter(([k, _]) => k !== 'title').some(([_, v]) => !!v)) ? (
@@ -189,12 +178,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           ) : null
         )}
       {displayPlotInfo && (
-      <>
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          Text Description
-        </Typography>
-        {divider}
-      </>
+      <UpsetHeading level="h2">Text Description</UpsetHeading>
       )}
       <Box css={css`overflow-y: auto;`}>
         {textGenErr && !userLongText && !userShortText ? (
