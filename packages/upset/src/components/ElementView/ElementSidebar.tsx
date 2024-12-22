@@ -99,15 +99,15 @@ export const ElementSidebar = ({ open, close }: Props) => {
           <BookmarkChips />
         </>
       )}
-      <UpsetHeading level="h2" marginTop={showQueries ? '1em' : undefined}>
+      <UpsetHeading level="h2" style={{ marginTop: showQueries ? '1em' : undefined }}>
         Element Visualization
       </UpsetHeading>
       <ElementVisualization />
-      <UpsetHeading level="h2" marginTop="1em">
+      <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
         Element Queries
       </UpsetHeading>
       <QueryInterface />
-      <UpsetHeading level="h2" marginTop="1em">
+      <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
         Query Result
         <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton

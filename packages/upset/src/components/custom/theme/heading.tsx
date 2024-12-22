@@ -1,5 +1,5 @@
 import { Typography, Divider } from '@mui/material';
-import { FC, PropsWithChildren } from 'react';
+import { CSSProperties, FC, PropsWithChildren } from 'react';
 
 /**
  * The level of the heading
@@ -13,10 +13,10 @@ export type HeadingLevel= 'h1' | 'h2' | 'h3' | 'h4';
 type Props = {
   /** The heading level: only supports up to h4 */
   level: HeadingLevel;
-  /** Left padding for the typography element */
+  /** Left padding for the typography */
   paddingLeft?: string;
-  /** Top margin */
-  marginTop?: string;
+  /** CSS for the wrapper div */
+  style?: CSSProperties;
 }
 
 /**
@@ -33,12 +33,12 @@ const LEVELS: {[level in HeadingLevel]: { fontSize: string; }} = {
  * A heading for use in the UI; keeps styles consistent
  */
 export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
-  level, paddingLeft, marginTop, children,
+  level, paddingLeft, style, children,
 }) => {
   const IS_MAJOR = level === 'h1' || level === 'h2';
 
   return (
-    <div style={{ marginTop, marginBottom: '.5em' }}>
+    <div style={{ marginBottom: '.5em', ...style }}>
       <Typography
         variant={level}
         fontSize={LEVELS[level].fontSize}
