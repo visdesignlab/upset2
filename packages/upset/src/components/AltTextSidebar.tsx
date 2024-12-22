@@ -4,7 +4,6 @@ import {
   Icon,
   TextField,
   Typography,
-  css,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
@@ -180,7 +179,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       {displayPlotInfo && (
       <UpsetHeading level="h2">Text Description</UpsetHeading>
       )}
-      <Box css={css`overflow-y: auto;`}>
+      {/* 0.875em for default 16px = 1em makes 14px, which is the standard for much of the UI */}
+      <Box style={{ overflowY: 'auto', fontSize: '0.875em' }}>
         {textGenErr && !userLongText && !userShortText ? (
           <Typography variant="body1" color="error">{textGenErr}</Typography>
         ) : (
