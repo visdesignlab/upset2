@@ -1,14 +1,27 @@
 import { AccessibilityNew, BugReport } from '@mui/icons-material';
 import { Box, Button, Link } from '@mui/material';
 import { useRecoilState } from 'recoil';
-import vdl_logo from '../../assets/vdl_logo.svg';
+import { CoreUpsetData } from '@visdesignlab/upset2-core';
+import { FC } from 'react';
+import vdlLogo from '../../assets/vdl_logo.svg';
 import { accessibilityStatementAtom } from '../../atoms/accessibilityStatementAtom';
 import { AccessibilityStatement } from '../AccessiblityStatement';
 import { About } from '../About';
 import { aboutAtom } from '../../atoms/aboutAtom';
 import { FOOTER_HEIGHT } from '../Root';
 
-const Footer = () => {
+/**
+ * Props for the Footer component
+ */
+type Props = {
+  /** The data for this plot */
+  data: CoreUpsetData;
+}
+
+/**
+ * The footer below the plot
+ */
+const Footer: FC<Props> = ({ data }) => {
   const categoryCSS = {
     display: 'flex',
     justifyContent: 'space-around',
@@ -37,10 +50,11 @@ const Footer = () => {
             aria-label="About Us"
             aria-haspopup="dialog"
             onClick={() => setAboutModal(true)}
+            // 2px is exactly the max amount of vertical padding you can have
+            // without getting a scrollbar on the whole page
+            style={{ padding: '2px 20px' }}
           >
-            {/* TEMPORARY REMOVAL UNTIL AFTER CHI SUBMISSION */}
-            {/* <img src={vdl_logo} alt="About Us" height="32px" width="100%" /> */}
-            About Us
+            <img src={vdlLogo} alt="About Us" height="32px" width="100%" />
           </Button>
           <Link
             sx={categoryCSS}
@@ -76,7 +90,7 @@ const Footer = () => {
           </Button>
 
           {/* Accessibility Statement dialog */}
-          <AccessibilityStatement open={accessibilityStatement} close={() => setAccessibilityStatement(false)} />
+          <AccessibilityStatement data={data} open={accessibilityStatement} close={() => setAccessibilityStatement(false)} />
           {/* About dialog */}
           <About open={aboutModal} close={() => setAboutModal(false)} />
         </Box>

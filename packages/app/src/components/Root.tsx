@@ -40,7 +40,7 @@ export const Root = ({
         {data && <Header data={data} />}
       </Box>
       {data ? <Body data={data} config={config} /> : <Home />}
-      <Footer />
+      {data && <Footer data={data} />}
     </div>
   );
 };

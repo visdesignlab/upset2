@@ -12,9 +12,8 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import React, {
   useContext, useEffect, useState,
 } from 'react';
-import { Link } from 'react-router-dom';
 import {
-  getQueryParam, queryParamAtom, restoreQueryParam,
+  queryParamAtom, restoreQueryParam,
 } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
@@ -26,7 +25,7 @@ import { getMultinetDataUrl } from '../../api/getMultinetDataUrl';
 import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
-import { dispatchState } from '../../utils/dispatchState';
+import { DataTableLink } from '../../utils/dataTableLink';
 
 const Header = ({ data }: { data: CoreUpsetData }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
@@ -219,19 +218,17 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
             <MenuItem onClick={() => { if (window) { window.location.href = getMultinetDataUrl(workspace); } }}>
               Load Data
             </MenuItem>
-            <MenuItem>
-              <Link
-                to={`/datatable${getQueryParam()}`}
-                target="_blank"
-                rel="noreferrer"
-                onClick={() => dispatchState(data, rows, visibleSets, hiddenSets)}
-                style={{ textDecoration: 'none', color: 'inherit' }}
-                aria-label="Data Tables (raw and computed)"
-                tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
-              >
+            <DataTableLink
+              data={data}
+              rows={rows}
+              visibleSets={visibleSets}
+              hiddenSets={hiddenSets}
+              tabIndex={3 + ALTTEXT_SIDEBAR_TABS}
+            >
+              <MenuItem>
                 Data Table
-              </Link>
-            </MenuItem>
+              </MenuItem>
+            </DataTableLink>
             <MenuItem onClick={() => setShowImportModal(true)} color="inherit" aria-label="Import UpSet JSON state file">
               Import State
             </MenuItem>
