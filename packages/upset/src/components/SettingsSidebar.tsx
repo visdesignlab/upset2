@@ -10,6 +10,7 @@ import {
   FormControlLabel,
   FormGroup,
   FormLabel,
+  IconButton,
   InputLabel,
   ListItemText,
   MenuItem,
@@ -33,7 +34,8 @@ import React, {
   Fragment, useCallback, useContext, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
-
+import MenuIcon from '@mui/icons-material/Menu';
+import MenuOpenIcon from '@mui/icons-material/MenuOpen';
 import {
   firstAggregateSelector,
   firstOvelapDegreeSelector,
@@ -69,6 +71,15 @@ const SIDEBAR_HEADER_CSS = css`
 const ACCORDION_CSS: CSSProperties = {
   boxShadow: 'none',
 };
+
+/**
+ * Square dimensions for the collapsed sidebar
+ */
+const COLLAPSED_DIM = '40px';
+/**
+ * Padding on the left side of the open/close buttons
+ */
+const BUTTON_PAD_LEFT = '8px';
 
 /**
  * Finds the added and removed elements between two arrays
@@ -159,6 +170,7 @@ export const SettingsSidebar = () => {
   const [secondaryAccordionOpen, setSecondaryAccordionOpen] = useState(
     secondAggregateBy !== 'None',
   );
+  const [collapsed, setCollapsed] = useState(false);
 
   const [degreeFilters, setDegreeFilters] = useState([minVisible, maxVisible]);
   // Tracking the previous state of the filters to avoid unnecessary updates
@@ -200,24 +212,49 @@ export const SettingsSidebar = () => {
   }, [visibleAtts, actions]);
 
   return (
-    <Box>
+    <Box
+      marginTop={collapsed ? '8px' : undefined}
+    >
       <Box
-        width={dimensions.sidebar.width}
-        paddingTop="1em"
-        // This matches the accordion's default styles, with 1px added to the right
-        boxShadow="rgba(0, 0, 0, 0.2) 1px 2px 1px"
+        width={collapsed ? COLLAPSED_DIM : dimensions.sidebar.width}
+        // If maxHeight is too big, it messes up the transition, but it still needs to be larger than the content
+        maxHeight={collapsed ? COLLAPSED_DIM : '1100px'}
+        overflow="hidden"
+        paddingTop="16px"
+        boxShadow="rgba(0, 0, 0, 0.2) 1px 2px 3px"
+        // Keeps the expand/close button from repositioning on collapse
+        padding={collapsed ? '8px' : undefined}
+        // Gives a nice rounded edge to the closed sidebar button
+        borderRadius={collapsed ? '0 32px 32px 0' : undefined}
+        // Swaps height/width order depending on collapsed state so that width always transitions while height is min
+        style={{
+          transition: `all ease-out, border-radius .3s, ${collapsed
+            ? 'max-height .2s, width .1s .2s'
+            : 'max-height .2s .1s, width .1s'}`,
+        }}
       >
-        <UpsetHeading
-          level="h1"
-          // Half the indentation of the accordion titles
-          paddingLeft="8px"
-        >
-          Settings
-        </UpsetHeading>
+        {collapsed ?
+          <IconButton
+            style={{ paddingLeft: BUTTON_PAD_LEFT, display: collapsed ? undefined : 'none' }}
+            onClick={() => setCollapsed(false)}
+          >
+            <MenuIcon />
+          </IconButton>
+          :
+          <UpsetHeading
+            level="h1"
+            // Half the indentation of the accordion titles
+            paddingLeft={BUTTON_PAD_LEFT}
+          >
+            <IconButton onClick={() => setCollapsed(true)}>
+              <MenuOpenIcon />
+            </IconButton>
+            Settings
+          </UpsetHeading>}
         <Accordion
           disableGutters
           style={ACCORDION_CSS}
-          // Remove the top border; it look weird with the divider under the title
+              // Remove the top border; it look weird with the divider under the title
           sx={{ '&:before': { display: 'none' } }}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -463,7 +500,7 @@ export const SettingsSidebar = () => {
                     }
                   }}
                   onChangeCommitted={() => {
-                  // Prevents unncessary Trrack state changes
+                    // Prevents unncessary Trrack state changes
                     if (prevFilters[0] !== degreeFilters[0]) {
                       actions.setMinVisible(degreeFilters[0]);
                     }

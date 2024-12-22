@@ -36,6 +36,7 @@ export const ProvenanceContext = createContext<{
 
 const baseStyle = css`
   padding: 0.25em;
+  padding-left: 0;
 `;
 
 type Props = {
