@@ -3,7 +3,6 @@ import { Column, CoreUpsetData } from '@visdesignlab/upset2-core';
 import { UserSpec } from 'multinet';
 import RedoIcon from '@mui/icons-material/Redo';
 import UndoIcon from '@mui/icons-material/Undo';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
 import { AccountCircle, ErrorOutline } from '@mui/icons-material';
 import {
   AppBar, Avatar, Box, Button, ButtonGroup, IconButton, Menu, MenuItem, Toolbar, Tooltip, Typography,
@@ -12,6 +11,7 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import React, {
   useContext, useEffect, useState,
 } from 'react';
+import SettingsIcon from '@mui/icons-material/Settings';
 import {
   queryParamAtom, restoreQueryParam,
 } from '../../atoms/queryParamAtom';
@@ -27,6 +27,9 @@ import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
 import { DataTableLink } from '../../utils/dataTableLink';
 
+/**
+ * Header component; displays above the plot
+ */
 const Header = ({ data }: { data: CoreUpsetData }) => {
   const { workspace } = useRecoilValue(queryParamAtom);
   const [isProvVisOpen, setIsProvVisOpen] = useRecoilState(provenanceVisAtom);
@@ -210,7 +213,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
             aria-haspopup="menu"
             tabIndex={7 + ALTTEXT_SIDEBAR_TABS}
           >
-            <MoreVertIcon
+            <SettingsIcon
               onClick={(e) => handleMenuClick(e.currentTarget)}
             />
           </Button>
@@ -229,18 +232,6 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
                 Data Table
               </MenuItem>
             </DataTableLink>
-            <MenuItem onClick={() => setShowImportModal(true)} color="inherit" aria-label="Import UpSet JSON state file">
-              Import State
-            </MenuItem>
-            <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="UpSet JSON state file download">
-              Export State
-            </MenuItem>
-            <MenuItem onClick={() => exportState(provenance, data, rows)} aria-label="Download UpSet JSON state file with table data included">
-              Export State + Data
-            </MenuItem>
-            <MenuItem onClick={() => downloadSVG()} aria-label="SVG Download of this upset plot">
-              Download SVG
-            </MenuItem>
             <MenuItem
               onClick={() => {
                 closeAnySidebar();
@@ -251,6 +242,18 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
               aria-label="History tree sidebar"
             >
               Show History
+            </MenuItem>
+            <MenuItem onClick={() => downloadSVG()} aria-label="SVG Download of this upset plot">
+              Download SVG
+            </MenuItem>
+            <MenuItem onClick={() => setShowImportModal(true)} color="inherit" aria-label="Import UpSet JSON state file">
+              Import State
+            </MenuItem>
+            <MenuItem onClick={() => exportState(provenance)} color="inherit" aria-label="UpSet JSON state file download">
+              Export State
+            </MenuItem>
+            <MenuItem onClick={() => exportState(provenance, data, rows)} aria-label="Download UpSet JSON state file with table data included">
+              Export State + Data
             </MenuItem>
           </Menu>
           <IconButton
@@ -282,11 +285,12 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
               >
                 Login
               </MenuItem>
-              : <MenuItem
-                  onClick={() => {
-                    oAuth.logout();
-                    window.location.reload();
-                  }}
+              :
+              <MenuItem
+                onClick={() => {
+                  oAuth.logout();
+                  window.location.reload();
+                }}
               >
                 Log out
               </MenuItem>}
