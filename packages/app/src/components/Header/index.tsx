@@ -26,6 +26,7 @@ import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
 import { DataTableLink } from '../../utils/dataTableLink';
+import vdlFlask from '../../assets/vdl_flask.svg';
 
 /**
  * Header component; displays above the plot
@@ -142,8 +143,14 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
           display: 'flex', flexGrow: '1', justifyContent: 'start', alignItems: 'center', margin: 0, padding: 0,
         }}
         >
-          {/* TEMPORARY REMOVAL UNTIL CHI SUBMISSION */}
-          {/* <img className="logo" id="multinet-logo" src="https://raw.githubusercontent.com/multinet-app/multinet-components/main/src/assets/multinet_logo.svg" alt="Multinet Logo"/> */}
+          <img
+            className="logo"
+            id="multinet-logo"
+            src={vdlFlask}
+            alt="Multinet Logo"
+            // Puts the flask a bit more in line with the text
+            style={{ paddingBottom: '4px' }}
+          />
           <Typography
             id="upset-title"
             variant="h1"
@@ -153,7 +160,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
               marginRight: '5px', lineHeight: '1.5', fontWeight: 'normal', fontSize: '1.3em',
             }}
           >
-            Upset - Visualizing Intersecting Sets
+            Upset — Visualizing Intersecting Sets
           </Typography>
           <ButtonGroup>
             <IconButton color="inherit" onClick={() => provenance.undo()} disabled={trrackPosition.isAtRoot} aria-label="Undo">
