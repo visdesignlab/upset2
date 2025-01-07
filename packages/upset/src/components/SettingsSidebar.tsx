@@ -390,13 +390,13 @@ export const SettingsSidebar = () => {
             </FormControl>
           </AccordionDetails>
         </Accordion>
+        {firstAggregateBy !== 'None' &&
         <Accordion
           expanded={secondaryAccordionOpen}
           onChange={() => {
             setSecondaryAccordionOpen(!secondaryAccordionOpen);
           }}
           disableGutters
-          disabled={firstAggregateBy === 'None'}
           style={ACCORDION_CSS}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -454,7 +454,7 @@ export const SettingsSidebar = () => {
               </RadioGroup>
             </FormControl>
           </AccordionDetails>
-        </Accordion>
+        </Accordion>}
         <Accordion disableGutters style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
             <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Filter Intersections</Typography>
