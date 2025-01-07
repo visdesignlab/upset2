@@ -17,6 +17,9 @@ type Props= {
   closeButtonTabIndex?: number;
 }
 
+/** Dimension for the square button wrappers */
+const BUTTON_DIMS = { height: '40px', width: '40px' };
+
 /**
  * A collapsible, right-sidebar for the plot
  */
@@ -105,18 +108,22 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
-      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+      <div style={{ display: 'flex', justifyContent: 'end' }}>
         { !fullWidth ?
           <IconButton
+            style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
             onClick={() => {
               setFullWidth(true);
             }}
             aria-label="Expand the sidebar in full screen"
           >
-            <OpenInFullIcon />
+            {/* CRAZY, I know. So basically 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
+            EXACTLY the font size needed to get this icon SVG to be the same dimensions as the close button: 14x14 */}
+            <OpenInFullIcon style={{ fontSize: '18.67px' }} />
           </IconButton>
           :
           <IconButton
+            style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
             onClick={() => {
               if (fullWidth) {
                 setFullWidth(false);
