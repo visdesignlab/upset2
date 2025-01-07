@@ -272,6 +272,7 @@ export const SizeHeader: FC = () => {
               `}
               dominantBaseline="middle"
               textAnchor="middle"
+              transform={translate(0, 1)} // Vertical centering correction
             >
               Size
             </text>
