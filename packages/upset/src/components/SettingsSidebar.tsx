@@ -124,13 +124,16 @@ const ToggleSwitch: FC<ToggleProps> = ({
     }}
   >
     <FormControlLabel
-      sx={{ ml: 0, '& span': { fontSize: '0.8rem' } }}
+      sx={{
+        ml: 0, width: '100%', justifyContent: 'space-between', '& span': { fontSize: '0.8rem' },
+      }}
       label={shortLabel}
       control={
         <Switch
           size="small"
           checked={checked}
           onChange={onChange}
+          style={{ marginLeft: 'auto' }}
         />
       }
       labelPlacement="start"
