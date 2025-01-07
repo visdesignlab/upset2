@@ -64,8 +64,8 @@ const ITEM_DIV_CSS = css`
 `;
 
 const SIDEBAR_HEADER_CSS = css`
-  font-size: 1.05rem;
-  font-weight: 400;
+  font-size: 1.1rem;
+  font-weight: 450;
 `;
 
 /** Styles for the 3 accordions in the sidebar */
