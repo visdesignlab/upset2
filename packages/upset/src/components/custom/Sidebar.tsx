@@ -85,6 +85,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
           width: open ? fullWidth ? '100%' : drawerWidth : 0,
           boxSizing: 'border-box',
           zIndex: 0,
+          paddingTop: '25px',
         },
       }}
       open={open}
@@ -108,7 +109,10 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
-      <div style={{ display: 'flex', justifyContent: 'end' }}>
+      <div style={{
+        display: 'flex', justifyContent: 'end', position: 'absolute', top: '20px', right: 0,
+      }}
+      >
         { !fullWidth ?
           <IconButton
             style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
