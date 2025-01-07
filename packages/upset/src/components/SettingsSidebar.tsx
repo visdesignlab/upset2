@@ -64,7 +64,8 @@ const ITEM_DIV_CSS = css`
 `;
 
 const SIDEBAR_HEADER_CSS = css`
-  font-size: 0.95rem;
+  font-size: 1.05rem;
+  font-weight: 400;
 `;
 
 /** Styles for the 3 accordions in the sidebar */
@@ -258,7 +259,7 @@ export const SettingsSidebar = () => {
           sx={{ '&:before': { display: 'none' } }}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">General</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h2">General</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormGroup style={{ width: '100%' }}>
@@ -285,7 +286,7 @@ export const SettingsSidebar = () => {
         </Accordion>
         <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Sets and Attributes</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h2">Sets and Attributes</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl sx={{ width: '100%' }}>
@@ -336,7 +337,7 @@ export const SettingsSidebar = () => {
         </Accordion>
         <Accordion disableGutters defaultExpanded style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Aggregation</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h2">Aggregation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl sx={{ width: '100%' }}>
@@ -400,7 +401,7 @@ export const SettingsSidebar = () => {
           style={ACCORDION_CSS}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Second Aggregation</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h2">Second Aggregation</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormControl sx={{ width: '100%' }}>
@@ -457,7 +458,7 @@ export const SettingsSidebar = () => {
         </Accordion>}
         <Accordion disableGutters style={ACCORDION_CSS}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography css={SIDEBAR_HEADER_CSS} variant="h3">Filter Intersections</Typography>
+            <Typography css={SIDEBAR_HEADER_CSS} variant="h2">Filter Intersections</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <FormGroup sx={{ mb: 2.5, width: '100%' }}>
