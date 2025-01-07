@@ -89,11 +89,11 @@ export const SetSizeBar: FC<Props> = ({
         stroke="#fff"
         strokeWidth="0px"
         height={barSize}
-        width={dimensions.set.width}
+        width={dimensions.set.width - 1} // -1 to add half a pixel of spacing on each side
         opacity={foregroundOpacity}
         z={2}
         transform={translate(
-          0,
+          0.5, // Center the bar so there's a half pixel of spacing on each side
           dimensions.set.size.height - barSize,
         )}
       />
