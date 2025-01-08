@@ -1,4 +1,4 @@
-import { atom, selectorFamily } from 'recoil';
+import { atom, selector, selectorFamily } from 'recoil';
 
 import { itemsAtom } from './itemsAtoms';
 
@@ -8,6 +8,17 @@ import { itemsAtom } from './itemsAtoms';
 export const attributeAtom = atom<string[]>({
   key: 'attribute-columns',
   default: [],
+});
+
+/**
+ * All attribute columns except Degree and Deviation
+ */
+export const dataAttributeSelector = selector<string[]>({
+  key: 'data-attribute-columns',
+  get: ({ get }) => {
+    const atts = get(attributeAtom);
+    return atts.filter((att) => att !== 'Degree' && att !== 'Deviation');
+  },
 });
 
 /**

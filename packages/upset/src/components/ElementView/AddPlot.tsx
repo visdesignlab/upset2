@@ -14,7 +14,7 @@ import {
 import { FC, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { attributeAtom } from '../../atoms/attributeAtom';
+import { attributeAtom, dataAttributeSelector } from '../../atoms/attributeAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
 import { ProvenanceContext } from '../Root';
 import { HistogramPlot } from './HistogramPlot';
@@ -140,7 +140,7 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
 export const AddHistogram: FC<Props> = ({ handleClose }) => {
   const { actions } = useContext(ProvenanceContext);
   const items = useRecoilValue(itemsAtom);
-  const attributeColumns = useRecoilValue(attributeAtom);
+  const attributeColumns = useRecoilValue(dataAttributeSelector);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
   const [bins, setBins] = useState(20);
   // Frequency plots are temporarily disabled, see comment further down
