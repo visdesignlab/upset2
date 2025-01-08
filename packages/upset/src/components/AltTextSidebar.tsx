@@ -153,7 +153,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
   );
 
   return (
-    <Sidebar open={open} close={close} closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}>
+    <Sidebar
+      open={open}
+      close={close}
+      closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
+      label="Alt Text and Plot Information Sidebar"
+    >
       <UpsetHeading level="h1">
         {displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
       </UpsetHeading>

@@ -15,6 +15,8 @@ type Props= {
   close: () => void;
   /** Tab index for the close button */
   closeButtonTabIndex?: number;
+  /** Aria-label for the sidebar */
+  label: string;
 }
 
 /** Dimension for the square button wrappers */
@@ -24,7 +26,7 @@ const BUTTON_DIMS = { height: '40px', width: '40px' };
  * A collapsible, right-sidebar for the plot
  */
 export const Sidebar: FC<PropsWithChildren<Props>> = ({
-  open, close, closeButtonTabIndex, children,
+  open, close, closeButtonTabIndex, children, label,
 }) => {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
@@ -92,7 +94,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
       onClose={close}
       variant="persistent"
       anchor="right"
-      aria-label="Element View sidebar"
+      aria-label={label}
     >
       <Box
         sx={{
@@ -121,7 +123,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
             }}
             aria-label="Expand the sidebar in full screen"
           >
-            {/* CRAZY, I know. So basically 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
+            {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
             EXACTLY the font size needed to get this icon SVG to be the same dimensions as the close button: 14x14 */}
             <OpenInFullIcon style={{ fontSize: '18.67px' }} />
           </IconButton>

@@ -85,7 +85,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
   );
 
   return (
-    <Sidebar open={open} close={close}>
+    <Sidebar open={open} close={close} label="Element View Sidebar">
       <div style={{ marginBottom: '1em' }}>
         <UpsetHeading level="h1">
           Element View
