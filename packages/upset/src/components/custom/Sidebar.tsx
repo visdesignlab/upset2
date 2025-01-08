@@ -86,7 +86,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
           marginTop: '2em',
           width: open ? fullWidth ? '100%' : drawerWidth : 0,
           boxSizing: 'border-box',
-          zIndex: 0,
+          zIndex: 1,
           paddingTop: '25px',
         },
       }}

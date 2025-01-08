@@ -33,7 +33,7 @@ const Footer: FC<Props> = ({ data }) => {
 
   return (
     <Box sx={{
-      position: 'absolute', bottom: 0, width: '100%', height: `${FOOTER_HEIGHT}px`,
+      position: 'absolute', bottom: 0, width: '100%', height: `${FOOTER_HEIGHT}px`, zIndex: 2,
     }}
     >
       <footer>
