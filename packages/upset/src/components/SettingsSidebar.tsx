@@ -250,7 +250,7 @@ export const SettingsSidebar = () => {
             // Half the indentation of the accordion titles
             paddingLeft={BUTTON_PAD_LEFT}
           >
-            <IconButton onClick={() => setCollapsed(true)}>
+            <IconButton onClick={() => setCollapsed(true)} style={{ marginRight: BUTTON_PAD_LEFT }}>
               <MenuOpenIcon />
             </IconButton>
             Settings

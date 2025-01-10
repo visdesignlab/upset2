@@ -265,7 +265,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
           </Menu>
           <IconButton
             color="inherit"
-            sx={{ width: '32px', height: '32px' }}
+            sx={{ width: '32px', height: '32px', margin: '0 8px' }}
             onClick={(e) => {
               handleLoginOpen(e);
             }}
