@@ -2,20 +2,18 @@ import {
   useContext, useState, useEffect, useMemo,
 } from 'react';
 import { ProvVis } from '@trrack/vis-react';
-import {
-  Divider, Drawer, IconButton, css,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import { ProvenanceContext } from './Root';
 import { UpsetHeading } from './custom/theme/heading';
+import { Sidebar } from './custom/Sidebar';
 
 type Props = {
   open: boolean,
   close: () => void
 }
 
-const initialDrawerWidth = 450;
-
+/**
+ * Sidebar containing the Trrack provenance visualization.
+ */
 export const ProvenanceVis = ({ open, close }: Props) => {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
@@ -39,50 +37,16 @@ export const ProvenanceVis = ({ open, close }: Props) => {
   }, [provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
 
   return (
-    <Drawer
+    <Sidebar
       aria-hidden={!open}
-      anchor="right"
       open={open}
-      onClose={close}
-      variant="persistent"
-      aria-label="History Sidebar"
-      sx={{
-        width: (open) ? initialDrawerWidth : 0,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          padding: '1em',
-          marginTop: '3em',
-          width: (open) ? initialDrawerWidth : 0,
-          boxSizing: 'border-box',
-          zIndex: 0,
-          maxHeight: 'calc(100% - 3em)',
-        },
-      }}
+      close={close}
+      label="History Sidebar"
     >
-      <div css={css`width:${initialDrawerWidth}`}>
-        <div
-          css={css`
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 95%;
-          `}
-        >
-          <UpsetHeading level="h2">
-            History
-          </UpsetHeading>
-          <IconButton onClick={close}>
-            <CloseIcon />
-          </IconButton>
-        </div>
-        <Divider
-          css={css`
-            width: 95%;
-            margin: auto;
-          `}
-        />
-        {provVis}
-      </div>
-    </Drawer>
+      <UpsetHeading level="h1">
+        History
+      </UpsetHeading>
+      {provVis}
+    </Sidebar>
   );
 };
