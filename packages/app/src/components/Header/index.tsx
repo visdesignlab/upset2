@@ -25,7 +25,7 @@ import { getMultinetDataUrl } from '../../api/getMultinetDataUrl';
 import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
-import { DataTableLink } from '../../utils/dataTableLink';
+import { DataTableLink } from '../../utils/DataTableLink';
 import vdlFlask from '../../assets/vdl_flask.svg';
 
 /**

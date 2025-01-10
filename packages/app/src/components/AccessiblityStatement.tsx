@@ -4,7 +4,7 @@ import {
 import { Column, CoreUpsetData } from '@visdesignlab/upset2-core';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
-import { DataTableLink } from '../utils/dataTableLink';
+import { DataTableLink } from '../utils/DataTableLink';
 import { ProvenanceContext } from '../App';
 import { rowsSelector } from '../atoms/selectors';
 

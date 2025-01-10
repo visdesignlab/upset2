@@ -18,7 +18,10 @@ code {
   margin-right: 10px;
 }
 
-/* Ensure that the Upset title is hidden on smaller screens to not compete with other menu bar items */
+/* 
+ * Ensure that the Upset title is hidden on smaller screens to not compete with other menu bar items
+ * This value is exact; the title overlaps at narrower widths
+ */
 @media only screen and (max-width: 820px) {
   #upset-title {
     display: none;

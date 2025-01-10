@@ -190,7 +190,7 @@ export const SettingsSidebar = () => {
    * Handles a change in the visible sets multiselect by adding or removing the sets that changed
    */
   const handleSetChange = useCallback((event: SelectChangeEvent<string[]>) => {
-    const newSets = typeof event.target.value === 'string' ? [event.target.value] : event.target.value;
+    const newSets = ([] as string[]).concat(...[event.target.value]);
     const { added, removed } = findChange(visibleSets, newSets);
     added.forEach((s) => actions.addVisibleSet(s));
     removed.forEach((s) => actions.removeVisibleSet(s));
@@ -258,7 +258,7 @@ export const SettingsSidebar = () => {
         <Accordion
           disableGutters
           style={ACCORDION_CSS}
-              // Remove the top border; it look weird with the divider under the title
+          // Remove the top border; it look weird with the divider under the title
           sx={{ '&:before': { display: 'none' } }}
         >
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
