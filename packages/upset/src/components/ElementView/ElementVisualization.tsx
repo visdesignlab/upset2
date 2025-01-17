@@ -9,8 +9,6 @@ import { useRecoilValue } from 'recoil';
 import {
   numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, Plot,
   NumericalQuery,
-  isScatterplot,
-  isHistogram,
 } from '@visdesignlab/upset2-core';
 import {
   Alert, Button, IconButton,
@@ -30,51 +28,23 @@ const BRUSH_NAME = 'brush';
  * Updates Vega visualization signals based on numerical queries for either scatterplots or histograms
  * and re-runs the view asynchronously.
  *
- * @param plot - The plot configuration (scatterplot or histogram)
  * @param view - The Vega view instance to update
  * @param val - Object containing numerical range queries
  * @param sync - Whether to wait for the view to finish updating before returning;
  *               setting to true means that the returned promise can be awaited to indicate the end of plot updates
  * @returns A promise that is meaningless if sync = false, and completes upon full view reevaluation if sync = true
  */
-async function signalView(plot: Plot, view: View, val: NumericalQuery, sync = false): Promise<void> {
-  // Clear view of any previous selection
-  if (isScatterplot(plot)) {
-    view.signal(`${BRUSH_NAME}_x`, []);
-    view.signal(`${BRUSH_NAME}_y`, []);
-  } else if (isHistogram(plot)) {
-    view.signal(`${BRUSH_NAME}_x`, []);
+async function signalView(view: View, val: NumericalQuery, sync = false): Promise<void> {
+  const state = view.getState();
+  if (Object.entries(val).length === 0) {
+    state.data[`${BRUSH_NAME}_store`] = [];
+  } else {
+    state.data[`${BRUSH_NAME}_store`] = [{
+      fields: Object.keys(val).map((key) => ({ type: 'R', field: key })),
+      values: Object.values(val).map((value) => (value)),
+    }];
   }
-
-  if (sync) await view.runAsync();
-  else view.run();
-
-  if (isScatterplot(plot)) {
-    const inclX = Object.keys(val).includes(plot.x);
-    const inclY = Object.keys(val).includes(plot.y);
-    if ((!inclX && !inclY)) {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, undefined);
-      view.signal(`${BRUSH_NAME}_${plot.y}`, undefined);
-      if (sync) await view.runAsync();
-      else view.run();
-      return;
-    }
-
-    if (inclX) {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, val[plot.x]);
-    } else {
-      view.signal(`${BRUSH_NAME}_${plot.x}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
-    }
-
-    if (inclY) {
-      view.signal(`${BRUSH_NAME}_${plot.y}`, val[plot.y]);
-    } else {
-      view.signal(`${BRUSH_NAME}_${plot.y}`, [-Number.MAX_SAFE_INTEGER + 1, Number.MAX_SAFE_INTEGER - 1]);
-    }
-  } else if (isHistogram(plot)) {
-    if (Object.keys(val).includes(plot.attribute)) view.signal(`${BRUSH_NAME}_${plot.attribute}`, val[plot.attribute]);
-    else view.signal(`${BRUSH_NAME}_${plot.attribute}`, undefined);
-  }
+  view.setState(state);
 
   if (sync) await view.runAsync();
   else view.run();
@@ -134,8 +104,8 @@ export const ElementVisualization = () => {
   const brushHandler = useCallback((signaled: Plot, value: unknown) => {
     if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id || preventSignal.current) return;
     draftSelection.current = value;
-    views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view, plot }) => {
-      signalView(plot, view, value);
+    views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view }) => {
+      signalView(view, value);
     });
   }, [draftSelection, currentClick.current, views.current]);
 
@@ -143,8 +113,8 @@ export const ElementVisualization = () => {
   useEffect(() => {
     preventSignal.current = true;
     const promises: Promise<void>[] = [];
-    views.current.forEach(({ view, plot }) => {
-      promises.push(signalView(plot, view, numericalQuery ?? {}, true));
+    views.current.forEach(({ view }) => {
+      promises.push(signalView(view, numericalQuery ?? {}, true));
     });
     Promise.allSettled(promises).then(() => {
       preventSignal.current = false;
