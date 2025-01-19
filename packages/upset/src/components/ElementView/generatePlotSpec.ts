@@ -185,11 +185,12 @@ export function createAddHistogramSpec(
 /**
  * Creates the spec for a single histogram in the element view matrix.
  * @param histograms The histograms to plot.
+ * @param selectColor The color to use for the line showing density of selected values.
  * @returns An array of Vega-Lite specs for the histograms.
  */
 export function generateHistogramSpec(
   hist: Histogram,
-  // selection: NumericalQuery | undefined,
+  selectColor: string,
 )
 : VisualizationSpec {
   const params = [
@@ -214,7 +215,7 @@ export function generateHistogramSpec(
       width: 200,
       height: 200,
       layer: [
-        { // This layer displays the overall probability lines for selected/bookmarked intersections
+        { // This layer displays probability density for all elements, grouped by subset
           transform: [
             {
               density: hist.attribute,
@@ -233,17 +234,16 @@ export function generateHistogramSpec(
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: { value: 0.4 },
+            opacity: { value: 1 },
           },
         },
-        { // This layer displays probability lines for selected elements, grouped by subset
+        { // This layer displays probability density for selected elements, ungrouped
           transform: [
             {
-              density: hist.attribute,
-              groupby: ['subset', 'color'],
+              filter: { param: 'brush' },
             },
             {
-              filter: { param: 'brush' },
+              density: hist.attribute,
             },
             {
               calculate: 'datum["value"]',
@@ -254,8 +254,16 @@ export function generateHistogramSpec(
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
-            color: COLOR,
-            opacity: { value: 1 },
+            color: { value: selectColor },
+            // Hide if there's no active selection
+            opacity: {
+              condition: {
+                param: 'brush',
+                empty: false,
+                value: 1,
+              },
+              value: 0,
+            },
           },
         },
       ],
@@ -321,7 +329,7 @@ export function generateVegaSpec(plot: Plot, selectColor: string): Visualization
     return { ...BASE, ...generateScatterplotSpec(plot, selectColor) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot, selectColor) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }
