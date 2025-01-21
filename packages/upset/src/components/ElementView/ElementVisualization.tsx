@@ -171,7 +171,7 @@ export const ElementVisualization = () => {
               signalListeners={{
                 [BRUSH_NAME]: (_, val) => brushHandler(plot, val),
               }}
-              // Making room for the close buttonl
+              // Making room for the close button
               style={{ marginLeft: '5px' }}
               onNewView={(view) => {
                 views.current.push({ view, plot });

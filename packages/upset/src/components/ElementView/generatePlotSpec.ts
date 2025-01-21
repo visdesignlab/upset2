@@ -190,7 +190,6 @@ export function createAddHistogramSpec(
  */
 export function generateHistogramSpec(
   hist: Histogram,
-  selectColor: string,
 )
 : VisualizationSpec {
   const params = [
@@ -214,6 +213,9 @@ export function generateHistogramSpec(
     return {
       width: 200,
       height: 200,
+      signals: [
+        { name: 'brush', value: {} },
+      ],
       layer: [
         { // This layer displays probability density for all elements, grouped by subset
           transform: [
@@ -234,16 +236,17 @@ export function generateHistogramSpec(
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: { value: 1 },
+            opacity: { value: 0.4 },
           },
         },
-        { // This layer displays probability density for selected elements, ungrouped
+        { // This layer displays probability density for selected elements, grouped
           transform: [
             {
               filter: { param: 'brush' },
             },
             {
               density: hist.attribute,
+              groupby: ['subset', 'color'],
             },
             {
               calculate: 'datum["value"]',
@@ -254,16 +257,8 @@ export function generateHistogramSpec(
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
-            color: { value: selectColor },
-            // Hide if there's no active selection
-            opacity: {
-              condition: {
-                param: 'brush',
-                empty: false,
-                value: 1,
-              },
-              value: 0,
-            },
+            color: COLOR,
+            opacity: { value: 1 },
           },
         },
       ],
@@ -329,7 +324,7 @@ export function generateVegaSpec(plot: Plot, selectColor: string): Visualization
     return { ...BASE, ...generateScatterplotSpec(plot, selectColor) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot, selectColor) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }
