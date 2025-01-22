@@ -130,7 +130,8 @@ test('Element View', async ({ page, browserName }) => {
 
   // Check that the selection chip is visible after selecting
   await elementViewToggle.click();
-  await dragElement(page.locator('canvas'), 150, 0, page);
+  // 120 is exactly enough to select through Age 10 but not drag off the canvas, which doesn't fire the click event
+  await dragElement(page.locator('canvas'), 120, 0, page);
   // For some reason, in firefox, the dragElement() method doesn't quite work right and the end of the drag
   // is off the element, which doesn't fire the select handler. Clicking the canvas in firefox fires the event,
   // but clicking in chromium/webkit resets the selection & breaks the test
