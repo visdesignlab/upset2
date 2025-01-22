@@ -9,8 +9,9 @@ test('Datatable', async ({ page }) => {
   // //////////////////
   // Open the datatable
   // //////////////////
+  await page.getByLabel('Additional options menu').click();
   const page1Promise = page.waitForEvent('popup');
-  await page.getByRole('button', { name: 'Data Table' }).click();
+  await page.getByLabel('Data Tables (raw and computed)').click();
 
   // //////////////////
   // Test downloads
