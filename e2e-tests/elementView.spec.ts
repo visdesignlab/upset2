@@ -178,6 +178,13 @@ test('Element View', async ({ page, browserName }) => {
   await expect(schoolMaleSelectionRect).toBeVisible();
   await expect(schoolBlueHairMaleSelectionRect).toBeVisible();
   await expect(schoolMale3rdPoly).toBeVisible();
+
+  /*
+    * Plot removal
+    */
+  await page.locator('div').filter({ hasText: /^Add Plot$/ }).getByRole('button').nth(1)
+    .click();
+  await expect(page.locator('canvas')).not.toBeVisible();
 });
 
 /**
