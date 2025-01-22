@@ -1,55 +1,46 @@
-import { UpsetActions, UpsetProvenance } from "@visdesignlab/upset2-react"
-import { UpsetConfig } from "@visdesignlab/upset2-core"
-import { Box, css } from "@mui/material"
-import { Body } from "./Body"
-import Header from "./Header"
-import { useRef, useState, useEffect, useMemo } from "react"
-import Footer from "./Footer"
-import { Home } from "./Home"
+import { UpsetActions, UpsetProvenance } from '@visdesignlab/upset2-react';
+import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import { Box, css } from '@mui/material';
+import {
+  useMemo,
+} from 'react';
+import { Body } from './Body';
+import Header from './Header';
+import Footer from './Footer';
+import { Home } from './Home';
 
 type Props = {
     provenance: UpsetProvenance,
     actions: UpsetActions,
-    data: any,
+    data: CoreUpsetData | null,
     config?: UpsetConfig
 }
 
-export const Root = ({provenance, actions, data, config}: Props) => {
-    const headerDiv = useRef<HTMLDivElement>(null);
-    const [headerHeight, setHeaderHeight] = useState(-1);
+/** Height for the footer */
+export const FOOTER_HEIGHT = 46.5;
 
-    const AppCss = useMemo(() => {
-      return css`
-        overflow: ${data === null ? "auto" : "hidden"};
+export const Root = ({
+  provenance, actions, data, config,
+}: Props) => {
+  const AppCss = useMemo(() => css`
+        overflow: ${data === null ? 'auto' : 'hidden'};
         height: 100vh;
         display: grid;
         grid-template-rows: min-content auto;
-      `;
-    }, [data]);
+      `, [data]);
 
-    useEffect(() => {
-      const { current } = headerDiv;
-      if (!current) return;
-  
-      if (headerHeight > 0) return;
-  
-      setHeaderHeight(current.clientHeight);
-    }, [headerHeight, headerDiv]);
-  
-    return (
-      <div css={AppCss}>
-          <Box
-              sx={{
-                  zIndex: theme => theme.zIndex.drawer + 1,
-                  position: 'relative',
-              }}
-              ref={headerDiv}
-          >
-              <Header data={data}/>
-          </Box>
-          {data === null && <Home />}
-          <Body data={data} config={config}/>
-          <Footer />
-      </div>
-    )
-}
+  return (
+    <div css={AppCss}>
+      <Box
+        sx={{
+          zIndex: (theme) => theme.zIndex.drawer + 1,
+          position: 'relative',
+        }}
+      >
+        {data && <Header data={data} />}
+      </Box>
+      {data ? <Body data={data} config={config} /> : <Home />}
+      {data && <Footer data={data} />}
+    </div>
+  );
+};

@@ -21,12 +21,13 @@ import {
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
-import { Sidebar } from './Sidebar';
+import { SettingsSidebar } from './SettingsSidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
+import { footerHeightAtom } from '../atoms/dimensionsAtom';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -35,6 +36,7 @@ export const ProvenanceContext = createContext<{
 
 const baseStyle = css`
   padding: 0.25em;
+  padding-left: 0;
 `;
 
 type Props = {
@@ -59,11 +61,12 @@ type Props = {
     open: boolean;
     close: () => void;
   };
+  footerHeight?: number;
   generateAltText?: () => Promise<AltText>;
 };
 
 export const Root: FC<Props> = ({
-  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
+  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, footerHeight, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
@@ -114,7 +117,7 @@ export const Root: FC<Props> = ({
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
-    setAttributeColumns(data.attributeColumns);
+    setAttributeColumns(['Degree', 'Deviation', ...data.attributeColumns]);
     setAllColumns(data.columns);
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
@@ -134,6 +137,11 @@ export const Root: FC<Props> = ({
     };
   }, []);
 
+  // Sets the footer height atom if provided as an argument
+  const setFooterHeight = useSetRecoilState(footerHeightAtom);
+  // Footer height needs to be doubled to work right... idk why that is!
+  useEffect(() => { if (footerHeight) setFooterHeight(2 * footerHeight); }, [footerHeight]);
+
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 
   return (
@@ -147,7 +155,7 @@ export const Root: FC<Props> = ({
           ${baseStyle};
         `}
       >
-        <Sidebar />
+        <SettingsSidebar />
       </div>}
       <h2
         id="desc"

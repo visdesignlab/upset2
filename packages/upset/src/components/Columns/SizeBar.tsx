@@ -12,6 +12,7 @@ import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { newShade } from '../../utils/colors';
+import { showIntersectionSizesSelector } from '../../atoms/config/displayAtoms';
 
 /**
  * A bar that represents the size of a row in the upset plot.
@@ -61,6 +62,9 @@ function darkenColor(index: number, color: string): string {
   return index === 0 ? color : newShade(color, -(12 + (index * 3)));
 }
 
+/*
+ * Size bar for a row in the upset plot, showing number of elements in the subset.
+ */
 export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
@@ -69,6 +73,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const elementSelectionColor = useRecoilValue(elementColorSelector);
+  const showText = useRecoilValue(showIntersectionSizesSelector);
 
   /*
    * Constants
@@ -294,16 +299,18 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
           />
         </>
       )}
-      <text
-        textAnchor="start"
-        dominantBaseline="middle"
-        transform={translate(
-          (fullBars > 0 ? dimensions.attribute.width : sizeWidth) + 5,
-          dimensions.body.rowHeight / 2,
-        )}
-      >
-        {size}
-      </text>
+      {showText && (
+        <text
+          textAnchor="start"
+          dominantBaseline="middle"
+          transform={translate(
+            (fullBars > 0 ? dimensions.attribute.width : sizeWidth) + 5,
+            dimensions.body.rowHeight / 2,
+          )}
+        >
+          {size}
+        </text>
+      )}
     </g>
   );
 };

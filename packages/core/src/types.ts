@@ -472,9 +472,21 @@ export type UpsetConfig = {
    * Selected elements (data points) in the Element View.
    */
   elementSelection: ElementSelection | null;
-  version: '0.1.0';
+  version: '0.1.1';
   useUserAlt: boolean;
   userAltText: AltText | null;
+  /**
+   * Whether to display numerical size labels on the intersection size bars.
+   */
+  intersectionSizeLabels: boolean;
+  /**
+   * Whether to display numerical size labels on the set size bars.
+   */
+  setSizeLabels: boolean;
+  /**
+   * Whether to display the hidden sets & their sizes above the plot
+   */
+  showHiddenSets: boolean;
 };
 
 export type AccessibleDataEntry = {

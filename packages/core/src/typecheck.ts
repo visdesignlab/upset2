@@ -355,6 +355,9 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'version')
     && Object.hasOwn(config, 'useUserAlt')
     && Object.hasOwn(config, 'userAltText')
+    && Object.hasOwn(config, 'intersectionSizeLabels')
+    && Object.hasOwn(config, 'setSizeLabels')
+    && Object.hasOwn(config, 'showHiddenSets')
   )) {
     console.warn('Upset config is missing required fields');
     return false;
@@ -364,7 +367,8 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   const {
     plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, attributePlots, bookmarks, collapsed,
-    plots, allSets, selected, elementSelection, version, useUserAlt, userAltText,
+    plots, allSets, selected, elementSelection, version, useUserAlt, userAltText, intersectionSizeLabels, setSizeLabels,
+    showHiddenSets,
   } = config as UpsetConfig;
 
   // Check that the fields are of the correct type
@@ -549,7 +553,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // version
-  if (version !== '0.1.0') {
+  if (version !== '0.1.1') {
     console.warn('Upset config error: Invalid version');
     return false;
   }
@@ -569,6 +573,24 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // Attribute plots
   if (!isAttributePlots(attributePlots)) {
     console.warn('Upset config error: Attribute plots are not correct', attributePlots);
+    return false;
+  }
+
+  // intersectionSizeLabels
+  if (typeof intersectionSizeLabels !== 'boolean') {
+    console.warn('Upset config error: Intersection size labels is not a boolean');
+    return false;
+  }
+
+  // setSizeLabels
+  if (typeof setSizeLabels !== 'boolean') {
+    console.warn('Upset config error: Set size labels is not a boolean');
+    return false;
+  }
+
+  // showHiddenSets
+  if (typeof showHiddenSets !== 'boolean') {
+    console.warn('Upset config error: Show hidden sets is not a boolean');
     return false;
   }
 
