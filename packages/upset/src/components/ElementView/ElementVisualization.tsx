@@ -149,7 +149,10 @@ export const ElementVisualization = () => {
         </Alert>
       )}
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
-      <Box sx={{ overflowX: 'auto' }}>
+      <Box sx={{
+        overflowX: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around',
+      }}
+      >
         {(plots.length > 0) && specs.map(({ plot, spec }) => (
           // Relative position is necessary so this serves as a positioning container for the close button
           <Box style={{ display: 'inline-block', position: 'relative' }}>
