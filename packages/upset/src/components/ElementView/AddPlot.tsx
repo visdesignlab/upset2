@@ -106,6 +106,7 @@ const AddButton: FC<ButtonProps> = ({
   );
 };
 
+const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: 'center' };
 /**
  * UI for adding a scatterplot to the element view
  * @param param0 @see Props
@@ -181,24 +182,22 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
           }
         />
       </Grid>
-      <Grid container item xs={12}>
-        {x && y && Object.values(items).length && (
-          <Box sx={{ display: 'flex' }}>
-            <ScatterplotPlot
-              spec={{
-                id: Date.now().toString(),
-                type: 'Scatterplot',
-                x,
-                y,
-                xScaleLog: xLogscale,
-                yScaleLog: yLogscale,
-              }}
-              data={{
-                elements: Object.values(JSON.parse(JSON.stringify(items))),
-              }}
-            />
-          </Box>)}
-      </Grid>
+      {x && y && Object.values(items).length && (
+      <Box sx={PLOT_CONTAINER_STYLE}>
+        <ScatterplotPlot
+          spec={{
+            id: Date.now().toString(),
+            type: 'Scatterplot',
+            x,
+            y,
+            xScaleLog: xLogscale,
+            yScaleLog: yLogscale,
+          }}
+          data={{
+            elements: Object.values(JSON.parse(JSON.stringify(items))),
+          }}
+        />
+      </Box>)}
       <AddButton
         disabled={!(x && y && Object.values(items).length)}
         handleClose={handleClose}
@@ -276,26 +275,23 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
         />
       </Grid>
       */}
+      {attribute && bins > 0 && Object.values(items).length && (
+      <Box sx={PLOT_CONTAINER_STYLE}>
+        <HistogramPlot
+          spec={{
+            id: Date.now().toString(),
+            type: 'Histogram',
+            attribute,
+            bins,
+            frequency,
+          }}
+          data={{
+            elements: Object.values(JSON.parse(JSON.stringify(items))),
+          }}
+        />
 
-      <Grid container item xs={12}>
-        {attribute && bins > 0 && Object.values(items).length && (
-          <Box sx={{ display: 'flex' }}>
-            <HistogramPlot
-              spec={{
-                id: Date.now().toString(),
-                type: 'Histogram',
-                attribute,
-                bins,
-                frequency,
-              }}
-              data={{
-                elements: Object.values(JSON.parse(JSON.stringify(items))),
-              }}
-            />
-
-          </Box>
-        )}
-      </Grid>
+      </Box>
+      )}
       <AddButton
         disabled={!(attribute && bins > 0 && Object.values(items).length)}
         handleClose={handleClose}
