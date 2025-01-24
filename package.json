@@ -42,7 +42,7 @@
   },
   "packageManager": "yarn@1.22.19",
   "dependencies": {
-    "@playwright/test": "^1.15.0",
+    "@playwright/test": "^1.49.1",
     "@vitejs/plugin-react": "^4.0.4",
     "eslint-config-react-app": "^7.0.1",
     "react": "^18.0.2",

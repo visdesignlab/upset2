@@ -220,9 +220,7 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
   const [bins, setBins] = useState(20);
-  // Frequency plots are temporarily disabled, see comment further down
-  // const [frequency, setFrequency] = useState(true);
-  const frequency = false;
+  const [frequency, setFrequency] = useState(true);
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -259,10 +257,6 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
         />
       </Grid>
 
-      {/*
-        * Frequency plots are disabled currently due to a bug in Vega-Lite
-        * To re-enable, uncomment this, change frequency back to a useState at the top of this component,
-        * and find the section in generatePlotSpec.ts which also needs uncommenting
       <Grid container item xs={4}>
         <FormControlLabel
           label="Frequency"
@@ -274,21 +268,22 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
           }
         />
       </Grid>
-      */}
-      {attribute && bins > 0 && Object.values(items).length && (
-      <Box sx={PLOT_CONTAINER_STYLE}>
-        <HistogramPlot
-          spec={{
-            id: Date.now().toString(),
-            type: 'Histogram',
-            attribute,
-            bins,
-            frequency,
-          }}
-          data={{
-            elements: Object.values(JSON.parse(JSON.stringify(items))),
-          }}
-        />
+
+      <Grid container item xs={12}>
+        {attribute && bins > 0 && Object.values(items).length && (
+          <Box sx={PLOT_CONTAINER_STYLE}>
+            <HistogramPlot
+              spec={{
+                id: Date.now().toString(),
+                type: 'Histogram',
+                attribute,
+                bins,
+                frequency,
+              }}
+              data={{
+                elements: Object.values(JSON.parse(JSON.stringify(items))),
+              }}
+            />
 
       </Box>
       )}
@@ -301,5 +296,6 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
         frequency={frequency}
       />
     </Grid>
+  </Grid>
   );
 };
