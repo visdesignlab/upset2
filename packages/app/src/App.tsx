@@ -57,7 +57,7 @@ function App() {
           bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
           type: 'Histogram',
           frequency: false,
-          id: Date.now().toString(), // Same calculation as in upset/.../AddPlot.tsx
+          id: Date.now().toString() + attr, // Add the attribute name so that the IDs aren't duplicated
         }));
       }
 
