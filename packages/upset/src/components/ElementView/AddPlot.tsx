@@ -59,11 +59,11 @@ type ButtonProps = {
   /**
    * If type is scatterplot, whether to use log scale for x axis
    */
-  xLogScale?: boolean;
+  xScaleLog?: boolean;
   /**
    * If type is scatterplot, whether to use log scale for y axis
    */
-  yLogScale?: boolean;
+  yScaleLog?: boolean;
 }
 
 /**
@@ -72,7 +72,7 @@ type ButtonProps = {
  * @returns Button
  */
 const AddButton: FC<ButtonProps> = ({
-  handleClose, type, bins, attribute, frequency, x, y, xLogScale, yLogScale, disabled,
+  handleClose, type, bins, attribute, frequency, x, y, xScaleLog, yScaleLog, disabled,
 }) => {
   const { actions } = useContext(ProvenanceContext);
 
@@ -89,8 +89,8 @@ const AddButton: FC<ButtonProps> = ({
           ...(type === 'Scatterplot' && {
             x,
             y,
-            xLogScale,
-            yLogScale,
+            xScaleLog,
+            yScaleLog,
           }),
           ...(type === 'Histogram' && {
             attribute,
@@ -116,8 +116,8 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
   const items = useRecoilValue(itemsAtom);
   const [x, setX] = useState<string>(attributeColumns[0]);
   const [y, setY] = useState<string>(attributeColumns[1]);
-  const [xLogscale, setXLogScale] = useState(false);
-  const [yLogscale, setYLogScale] = useState(false);
+  const [xScaleLog, setXLogScale] = useState(false);
+  const [yScaleLog, setYLogScale] = useState(false);
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -164,8 +164,8 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
           label="Use logscale"
           control={
             <Switch
-              value={xLogscale}
-              onChange={() => setXLogScale(!xLogscale)}
+              value={xScaleLog}
+              onChange={() => setXLogScale(!xScaleLog)}
             />
           }
         />
@@ -176,8 +176,8 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
           label="Use logscale"
           control={
             <Switch
-              value={yLogscale}
-              onChange={() => setYLogScale(!yLogscale)}
+              value={yScaleLog}
+              onChange={() => setYLogScale(!yScaleLog)}
             />
           }
         />
@@ -190,8 +190,8 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
             type: 'Scatterplot',
             x,
             y,
-            xScaleLog: xLogscale,
-            yScaleLog: yLogscale,
+            xScaleLog,
+            yScaleLog,
           }}
           data={{
             elements: Object.values(JSON.parse(JSON.stringify(items))),
@@ -204,8 +204,8 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
         type="Scatterplot"
         x={x}
         y={y}
-        xLogScale={xLogscale}
-        yLogScale={yLogscale}
+        xScaleLog={xScaleLog}
+        yScaleLog={yScaleLog}
       />
     </Grid>
   );
