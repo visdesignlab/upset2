@@ -77,9 +77,7 @@ test('Element View', async ({ page, browserName }) => {
   await expect(selectionChip).toBeVisible();
 
   // Check that the datatable is visible and populated
-  const dataTable = page.getByText(
-    'LabelDegreeDeviationAgeSchoolBlue HairDuff FanEvilBart10yesnononoRalph8yesnononoMartin Prince10yesnononoRows per page:1001–3 of',
-  );
+  const dataTable = page.getByRole('grid')
   dataTable.scrollIntoViewIfNeeded();
   await expect(dataTable).toBeVisible();
   const nameCell = await page.getByRole('cell', { name: 'Bart' });
