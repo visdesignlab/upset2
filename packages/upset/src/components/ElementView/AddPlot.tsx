@@ -1,10 +1,9 @@
-import AddIcon from '@mui/icons-material/Add';
 import {
   Box,
+  Button,
   FormControl,
   FormControlLabel,
   Grid,
-  IconButton,
   InputLabel,
   MenuItem,
   Select,
@@ -24,14 +23,101 @@ type Props = {
   handleClose: () => void;
 };
 
-export const AddScatterplot: FC<Props> = ({ handleClose }) => {
+type ButtonProps = {
+  /**
+   * Function to close the dialog box
+   */
+  handleClose: () => void;
+  /**
+   * Type of plot to add
+   */
+  type: 'Scatterplot' | 'Histogram';
+  /**
+   * Whether the button is disabled
+   */
+  disabled?: boolean;
+  /**
+   * If type is histogram, the attribute to plot
+   */
+  attribute?: string;
+  /**
+   * If type is histogram, the number of bins
+   */
+  bins?: number;
+  /**
+   * If type is histogram, whether to plot frequency (when true; binned) or density (when false; continuous)
+   */
+  frequency?: boolean;
+  /**
+   * If type is scatterplot, the x attribute
+   */
+  x?: string;
+  /**
+   * If type is scatterplot, the y attribute
+   */
+  y?: string;
+  /**
+   * If type is scatterplot, whether to use log scale for x axis
+   */
+  xScaleLog?: boolean;
+  /**
+   * If type is scatterplot, whether to use log scale for y axis
+   */
+  yScaleLog?: boolean;
+}
+
+/**
+ * Add button for adding a plot
+ * @param param0 @see ButtonProps
+ * @returns Button
+ */
+const AddButton: FC<ButtonProps> = ({
+  handleClose, type, bins, attribute, frequency, x, y, xScaleLog, yScaleLog, disabled,
+}) => {
   const { actions } = useContext(ProvenanceContext);
+
+  return (
+    <Button
+      style={{ display: 'block', margin: 'auto', width: '100%' }}
+      disabled={disabled}
+      variant="outlined"
+      color="success"
+      onClick={() => {
+        actions.addPlot({
+          id: Date.now().toString(),
+          type,
+          ...(type === 'Scatterplot' && {
+            x,
+            y,
+            xScaleLog,
+            yScaleLog,
+          }),
+          ...(type === 'Histogram' && {
+            attribute,
+            bins,
+            frequency,
+          }),
+        });
+        handleClose();
+      }}
+    >
+      Add Plot
+    </Button>
+  );
+};
+
+const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: 'center' };
+/**
+ * UI for adding a scatterplot to the element view
+ * @param param0 @see Props
+ */
+export const AddScatterplot: FC<Props> = ({ handleClose }) => {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const items = useRecoilValue(itemsAtom);
   const [x, setX] = useState<string>(attributeColumns[0]);
   const [y, setY] = useState<string>(attributeColumns[1]);
-  const [xLogscale, setXLogScale] = useState(false);
-  const [yLogscale, setYLogScale] = useState(false);
+  const [xScaleLog, setXLogScale] = useState(false);
+  const [yScaleLog, setYLogScale] = useState(false);
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -78,8 +164,8 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
           label="Use logscale"
           control={
             <Switch
-              value={xLogscale}
-              onChange={() => setXLogScale(!xLogscale)}
+              value={xScaleLog}
+              onChange={() => setXLogScale(!xScaleLog)}
             />
           }
         />
@@ -90,55 +176,46 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
           label="Use logscale"
           control={
             <Switch
-              value={yLogscale}
-              onChange={() => setYLogScale(!yLogscale)}
+              value={yScaleLog}
+              onChange={() => setYLogScale(!yScaleLog)}
             />
           }
         />
       </Grid>
-      <Grid container item xs={12}>
-        {x && y && Object.values(items).length && (
-          <Box sx={{ display: 'flex' }}>
-            <ScatterplotPlot
-              spec={{
-                id: Date.now().toString(),
-                type: 'Scatterplot',
-                x,
-                y,
-                xScaleLog: xLogscale,
-                yScaleLog: yLogscale,
-              }}
-              data={{
-                elements: Object.values(JSON.parse(JSON.stringify(items))),
-              }}
-            />
-
-            <div>
-              <IconButton
-                onClick={() => {
-                  actions.addPlot({
-                    id: Date.now().toString(),
-                    type: 'Scatterplot',
-                    x,
-                    y,
-                    xScaleLog: xLogscale,
-                    yScaleLog: yLogscale,
-                  });
-                  handleClose();
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </div>
-          </Box>
-        )}
-      </Grid>
+      {x && y && Object.values(items).length && (
+      <Box sx={PLOT_CONTAINER_STYLE}>
+        <ScatterplotPlot
+          spec={{
+            id: Date.now().toString(),
+            type: 'Scatterplot',
+            x,
+            y,
+            xScaleLog,
+            yScaleLog,
+          }}
+          data={{
+            elements: Object.values(JSON.parse(JSON.stringify(items))),
+          }}
+        />
+      </Box>)}
+      <AddButton
+        disabled={!(x && y && Object.values(items).length)}
+        handleClose={handleClose}
+        type="Scatterplot"
+        x={x}
+        y={y}
+        xScaleLog={xScaleLog}
+        yScaleLog={yScaleLog}
+      />
     </Grid>
   );
 };
 
+/**
+ * UI for adding a histogram to the element view
+ * @param param0 @see Props
+ */
 export const AddHistogram: FC<Props> = ({ handleClose }) => {
-  const { actions } = useContext(ProvenanceContext);
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
@@ -198,42 +275,31 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
         />
       </Grid>
       */}
+      {attribute && bins > 0 && Object.values(items).length && (
+      <Box sx={PLOT_CONTAINER_STYLE}>
+        <HistogramPlot
+          spec={{
+            id: Date.now().toString(),
+            type: 'Histogram',
+            attribute,
+            bins,
+            frequency,
+          }}
+          data={{
+            elements: Object.values(JSON.parse(JSON.stringify(items))),
+          }}
+        />
 
-      <Grid container item xs={12}>
-        {attribute && bins > 0 && Object.values(items).length && (
-          <Box sx={{ display: 'flex' }}>
-            <HistogramPlot
-              spec={{
-                id: Date.now().toString(),
-                type: 'Histogram',
-                attribute,
-                bins,
-                frequency,
-              }}
-              data={{
-                elements: Object.values(JSON.parse(JSON.stringify(items))),
-              }}
-            />
-
-            <div>
-              <IconButton
-                onClick={() => {
-                  actions.addPlot({
-                    id: Date.now().toString(),
-                    type: 'Histogram',
-                    attribute,
-                    bins,
-                    frequency,
-                  });
-                  handleClose();
-                }}
-              >
-                <AddIcon />
-              </IconButton>
-            </div>
-          </Box>
-        )}
-      </Grid>
+      </Box>
+      )}
+      <AddButton
+        disabled={!(attribute && bins > 0 && Object.values(items).length)}
+        handleClose={handleClose}
+        type="Histogram"
+        attribute={attribute}
+        bins={bins}
+        frequency={frequency}
+      />
     </Grid>
   );
 };
