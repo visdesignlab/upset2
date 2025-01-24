@@ -13,7 +13,7 @@ import {
 import { FC, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { attributeAtom, dataAttributeSelector } from '../../atoms/attributeAtom';
+import { dataAttributeSelector } from '../../atoms/attributeAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
 import { ProvenanceContext } from '../Root';
 import { HistogramPlot } from './HistogramPlot';
@@ -112,7 +112,7 @@ const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: '
  * @param param0 @see Props
  */
 export const AddScatterplot: FC<Props> = ({ handleClose }) => {
-  const attributeColumns = useRecoilValue(attributeAtom);
+  const attributeColumns = useRecoilValue(dataAttributeSelector);
   const items = useRecoilValue(itemsAtom);
   const [x, setX] = useState<string>(attributeColumns[0]);
   const [y, setY] = useState<string>(attributeColumns[1]);
