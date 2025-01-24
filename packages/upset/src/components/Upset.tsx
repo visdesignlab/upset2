@@ -25,6 +25,7 @@ const defaultVisibleSets = 6;
  * @param {SidebarProps} [provVis] - The provenance visualization sidebar options.
  * @param {SidebarProps} [elementSidebar] - The element sidebar options. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
  * @param {SidebarProps} [altTextSidebar] - The alternative text sidebar options. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
+ * @param {number} [footerHeight] - Height of the footer overlayed on the upset plot, in px, if one exists. Used to prevent the bottom of the sidebars from overlapping with the footer.
  * @param {() => Promise<AltText>} [generateAltText] - The function to generate alternative text.
  * @returns {JSX.Element} The rendered Upset component.
  */
@@ -41,6 +42,7 @@ export const Upset: FC<UpsetProps> = ({
   provVis,
   elementSidebar,
   altTextSidebar,
+  footerHeight,
   generateAltText,
 }) => {
   // If the provided data is not already processed by UpSet core, process it
@@ -115,6 +117,7 @@ export const Upset: FC<UpsetProps> = ({
             provVis={provVis}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
+            footerHeight={footerHeight}
             generateAltText={generateAltText}
           />
         </RecoilRoot>

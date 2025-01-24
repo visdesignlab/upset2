@@ -59,7 +59,7 @@ test('Element View', async ({ page, browserName }) => {
   await row.dispatchEvent('click');
 
   // test expansion buttons
-  await page.getByLabel('Expand the sidebar in full').click();
+  await page.getByRole('button', { name: 'Expand the sidebar in full' }).click();
   await page.getByLabel('Reduce the sidebar to normal').click();
 
   // Ensure all headings are visible
@@ -77,7 +77,10 @@ test('Element View', async ({ page, browserName }) => {
   await expect(selectionChip).toBeVisible();
 
   // Check that the datatable is visible and populated
-  const dataTable = page.locator('div').filter({ hasText: /^LabelAge$/ }).first();
+  const dataTable = page.getByText(
+    'LabelDegreeDeviationAgeSchoolBlue HairDuff FanEvilBart10yesnononoRalph8yesnononoMartin Prince10yesnononoRows per page:1001–3 of',
+  );
+  dataTable.scrollIntoViewIfNeeded();
   await expect(dataTable).toBeVisible();
   const nameCell = await page.getByRole('cell', { name: 'Bart' });
   await expect(nameCell).toBeVisible();
@@ -120,7 +123,7 @@ test('Element View', async ({ page, browserName }) => {
   await downloadPromise;
 
   // Check that the close button is visible and works
-  const elementViewClose = await page.getByLabel('Close the sidebar');
+  const elementViewClose = await page.getByRole('button', { name: 'Close the sidebar' });
   await expect(elementViewClose).toBeVisible();
   await elementViewClose.click();
 

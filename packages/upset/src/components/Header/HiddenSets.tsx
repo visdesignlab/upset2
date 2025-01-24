@@ -98,6 +98,7 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
             foregroundOpacity={0.4}
             label={sets[item.id].elementName}
             showLabel
+            hideSizeText
           />
         </a.g>
       ))}

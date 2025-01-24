@@ -31,7 +31,7 @@ type Props = {
 };
 
 /**
- * Renders the header component for the set.
+ * Renders a header for the set matrix column, showing each set and its size.
  *
  * @component
  * @param {Object} props - The component props.
@@ -109,7 +109,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
 
   /**
    * Opens the context menu for a given setName.
-   * 
+   *
    * @param e - The mouse event that triggered the context menu.
    * @param setName - The name of the set.
    */

@@ -1,24 +1,26 @@
-import { Backdrop, Box, Button, CircularProgress } from "@mui/material"
-import { AccessibleDataEntry, CoreUpsetData, SixNumberSummary } from "@visdesignlab/upset2-core";
-import { useEffect, useMemo, useState } from "react";
+import {
+  Backdrop, Box, Button, CircularProgress,
+} from '@mui/material';
+import { AccessibleDataEntry, CoreUpsetData, SixNumberSummary } from '@visdesignlab/upset2-core';
+import { useEffect, useMemo, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
-import { getAccessibleData } from "@visdesignlab/upset2-react";
+import { getAccessibleData } from '@visdesignlab/upset2-react';
 import DownloadIcon from '@mui/icons-material/Download';
-import localforage from "localforage";
-import { rowsSelector } from "../atoms/selectors";
-import { useRecoilValue } from "recoil";
+import localforage from 'localforage';
+import { useRecoilValue } from 'recoil';
+import { rowsSelector } from '../atoms/selectors';
 
 const downloadCSS = {
-  m: "4px",
-  height: "40%",
-}
+  m: '4px',
+  height: '40%',
+};
 
 const headerCSS = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  m: "2px"
-}
+  display: 'flex',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  m: '2px',
+};
 
 /**
  * Represents the columns configuration for the data table.
@@ -32,7 +34,7 @@ const setColumns: GridColDef[] = [
     headerName: 'Set',
     width: 250,
     editable: false,
-    description: 'The name of the set.'
+    description: 'The name of the set.',
   },
   /**
    * Represents the column for the set size.
@@ -42,9 +44,9 @@ const setColumns: GridColDef[] = [
     headerName: 'Size',
     width: 250,
     editable: false,
-    description: 'The number of elements within the set.'
-  }
-]
+    description: 'The number of elements within the set.',
+  },
+];
 
 /**
  * Converts an AccessibleDataEntry object into a row data object.
@@ -54,18 +56,18 @@ const setColumns: GridColDef[] = [
 const getRowData = (row: AccessibleDataEntry) => {
   const retVal: { [key: string]: any } = {
     id: row.id,
-    elementName: `${(row.type === "Aggregate") ? "Aggregate: " : ""}${row.elementName.replaceAll("~&~", " & ")}`,
+    elementName: `${(row.type === 'Aggregate') ? 'Aggregate: ' : ''}${row.elementName.replaceAll('~&~', ' & ')}`,
     size: row.size,
     deviation: row.attributes?.deviation.toFixed(2),
-  }
+  };
 
   for (const key in row.attributes) {
-    if (key === "deviation" || key === "degree") continue;
+    if (key === 'deviation' || key === 'degree') continue;
     retVal[key] = (row.attributes[key] as SixNumberSummary).mean?.toFixed(2);
   }
 
   return retVal;
-}
+};
 
 /**
  * Retrieves the aggregated rows from the given row of accessible data.
@@ -79,13 +81,13 @@ const getAggRows = (row: AccessibleDataEntry) => {
   Object.values(row.items).forEach((r: AccessibleDataEntry) => {
     retVal.push(getRowData(r));
 
-    if (r.type === "Aggregate") {
+    if (r.type === 'Aggregate') {
       retVal.push(...getAggRows(r));
     }
   });
 
   return retVal;
-}
+};
 
 /**
  * Generates a CSV file and downloads it.
@@ -99,18 +101,18 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
 
   const saveText: string[] = [];
 
-  saveText.push(columns.map(h => (h.includes(',') ? `"${h}"` : h)).join(','));
+  saveText.push(columns.map((h) => (h.includes(',') ? `"${h}"` : h)).join(','));
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const row: string[] = [];
 
-    columns.forEach(col => {
+    columns.forEach((col) => {
       row.push(item[col]?.toString() || '-');
     });
 
-    saveText.push(row.map(r => (r.includes(',') ? `"${r}"` : r)).join(','));
+    saveText.push(row.map((r) => (r.includes(',') ? `"${r}"` : r)).join(','));
   });
-  
+
   const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
   const blobUrl = URL.createObjectURL(blob);
 
@@ -139,21 +141,19 @@ type DownloadButtonProps = {
  * @param {Function} props.onClick - The click event handler for the button.
  * @returns {JSX.Element} The DownloadButton component.
  */
-const DownloadButton = ({onClick}: DownloadButtonProps) => {
-  return (
-    <Button 
-      sx={downloadCSS}
-      color="info"
-      size="medium"
-      variant="contained"
-      disableElevation
-      onClick={onClick}
-      endIcon={<DownloadIcon />}
-    >
-      Download
-    </Button>
-  )
-}
+const DownloadButton = ({ onClick }: DownloadButtonProps) => (
+  <Button
+    sx={downloadCSS}
+    color="info"
+    size="medium"
+    variant="contained"
+    disableElevation
+    onClick={onClick}
+    endIcon={<DownloadIcon />}
+  >
+    Download
+  </Button>
+);
 
 /**
  * Renders a data table component that displays intersection data, visible sets, and hidden sets.
@@ -163,7 +163,7 @@ const DownloadButton = ({onClick}: DownloadButtonProps) => {
  * @returns The DataTable component.
  */
 export const DataTable = () => {
-  const [data , setData] = useState<CoreUpsetData | null>(null);
+  const [data, setData] = useState<CoreUpsetData | null>(null);
   const flatRows = useRecoilValue(rowsSelector);
   const [visibleSets, setVisibleSets] = useState<string[] | null>(null);
   const [hiddenSets, setHiddenSets] = useState<string[] | null>(null);
@@ -179,14 +179,14 @@ export const DataTable = () => {
   useEffect(() => {
     setLoading(true);
     Promise.all([
-      localforage.getItem("data"),
-      localforage.getItem("rows"),
-      localforage.getItem("visibleSets"),
-      localforage.getItem("hiddenSets")
+      localforage.getItem('data'),
+      localforage.getItem('rows'),
+      localforage.getItem('visibleSets'),
+      localforage.getItem('hiddenSets'),
     ]).then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
       if (storedData === null || storedRows === null || storedVisibleSets === null || storedHiddenSets === null) {
-        console.error("Data not found in local storage")
-        setError("Error: Data not found in local storage");
+        console.error('Data not found in local storage');
+        setError('Error: Data not found in local storage');
       } else {
         setData(storedData as CoreUpsetData);
         setVisibleSets(storedVisibleSets as string[]);
@@ -220,15 +220,15 @@ export const DataTable = () => {
         headerName: 'Size',
         width: 150,
         editable: false,
-        description: 'The number of intersections within the subset or aggregate.'
+        description: 'The number of intersections within the subset or aggregate.',
       },
       {
         field: 'deviation',
         headerName: 'Deviation',
         width: 150,
         editable: false,
-        description: 'The deviation of the intersection from the expected value.'
-      }
+        description: 'The deviation of the intersection from the expected value.',
+      },
     ];
 
     // add the attributes to the dataColumns object
@@ -237,17 +237,17 @@ export const DataTable = () => {
         for (const key in r.attributes) {
           if (!cols.find((m) => m.field === key)) {
             // skip deviation and degree. Deviation is added above and degree is not needed in the table
-            if (key === "deviation" || key === "degree") continue;
+            if (key === 'deviation' || key === 'degree') continue;
             cols.push({
               field: key,
               headerName: key,
               width: 150,
               editable: false,
-              description: `Attribute: ${key}`
+              description: `Attribute: ${key}`,
             });
           }
         }
-      })
+      });
     }
 
     return cols;
@@ -272,7 +272,7 @@ export const DataTable = () => {
     Object.values(rows.values).forEach((r: AccessibleDataEntry) => {
       retVal.push(getRowData(r));
 
-      if (r.type === "Aggregate") {
+      if (r.type === 'Aggregate') {
         retVal.push(...getAggRows(r));
       }
     });
@@ -290,12 +290,10 @@ export const DataTable = () => {
    */
   const getSetRows = (sets: string[], data: CoreUpsetData) => {
     const retVal: { setName: string, size: number }[] = [];
-    retVal.push(...sets.map((s: string) => {
-      return { id: s, setName: s.replace('Set_', ''), size: data.sets[s].size };
-    }));
+    retVal.push(...sets.map((s: string) => ({ id: s, setName: s.replace('Set_', ''), size: data.sets[s].size })));
 
     return retVal;
-  }
+  };
 
   /**
    * Returns an array of visible set rows.
@@ -328,16 +326,16 @@ export const DataTable = () => {
 
   return (
     <>
-      { error ? 
-          <h1>{error}</h1>:
-        <Box sx={{display: "flex", justifyContent: "space-between"}}>
-          <Backdrop open={loading} style={{zIndex: 1000}}>
+      { error ?
+        <h1>{error}</h1> :
+        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+          <Backdrop open={loading} style={{ zIndex: 1000 }}>
             <CircularProgress color="inherit" />
           </Backdrop>
-          <Box sx={{width: "50%", margin: "20px"}}>
+          <Box sx={{ width: '50%', margin: '20px' }}>
             <div style={headerCSS}>
               <h2>Intersection Data</h2>
-              <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, dataColumns.map((m) => m.field), "upset2_intersection_data")} />
+              <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, dataColumns.map((m) => m.field), 'upset2_intersection_data')} />
             </div>
             <DataGrid
               columns={dataColumns}
@@ -352,12 +350,12 @@ export const DataTable = () => {
               }}
               paginationMode="client"
               rowsPerPageOptions={[5, 10, 20]}
-            ></DataGrid>
+            />
           </Box>
-          <Box sx={{width: "25%", margin: "20px"}}>
+          <Box sx={{ width: '25%', margin: '20px' }}>
             <div style={headerCSS}>
               <h2>Visible Sets</h2>
-              <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ["setName", "size"], "upset2_visiblesets_table")} />
+              <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ['setName', 'size'], 'upset2_visiblesets_table')} />
             </div>
             <DataGrid
               columns={setColumns}
@@ -372,12 +370,12 @@ export const DataTable = () => {
               }}
               paginationMode="client"
               rowsPerPageOptions={[5, 10, 20]}
-            ></DataGrid>
+            />
           </Box>
-          <Box sx={{width: "25%", margin: "20px"}}>
+          <Box sx={{ width: '25%', margin: '20px' }}>
             <div style={headerCSS}>
               <h2>Hidden Sets</h2>
-              <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ["setName", "size"], "upset2_hiddensets_table")} />
+              <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ['setName', 'size'], 'upset2_hiddensets_table')} />
             </div>
             <DataGrid
               columns={setColumns}
@@ -392,10 +390,9 @@ export const DataTable = () => {
               }}
               paginationMode="client"
               rowsPerPageOptions={[5, 10, 20]}
-            ></DataGrid>
+            />
           </Box>
-        </Box>
-      }
+        </Box>}
     </>
-  )   
-}
+  );
+};
