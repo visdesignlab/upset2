@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 
 import { selectedItemsSelector } from '../../atoms/elementsSelectors';
 import { setColumnsSelector } from '../../atoms/dataAtom';
-import { attributeAtom } from '../../atoms/attributeAtom';
+import { dataAttributeSelector } from '../../atoms/attributeAtom';
 
 /**
  * Hook to generate rows for the DataGrid
@@ -41,7 +41,7 @@ function useColumns(columns: string[]) {
  * Table to display elements
  */
 export const ElementTable: FC = () => {
-  const attributeColumns = useRecoilValue(attributeAtom);
+  const attributeColumns = useRecoilValue(dataAttributeSelector);
   const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
