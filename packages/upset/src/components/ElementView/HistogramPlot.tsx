@@ -2,7 +2,7 @@ import { Histogram } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { PlainObject, VegaLite } from 'react-vega';
 
-import { createHistogramSpec } from './generatePlotSpec';
+import { createAddHistogramSpec } from './generatePlotSpec';
 
 type Props = {
   spec: Histogram;
@@ -11,7 +11,7 @@ type Props = {
 
 export const HistogramPlot: FC<Props> = ({ spec, data }) => (
   <VegaLite
-    spec={createHistogramSpec(spec.attribute, spec.bins, spec.frequency)}
+    spec={createAddHistogramSpec(spec.attribute, spec.bins, spec.frequency)}
     data={data}
     actions={false}
   />

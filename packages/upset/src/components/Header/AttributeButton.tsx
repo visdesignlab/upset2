@@ -189,6 +189,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
             pointerEvents="default"
             dominantBaseline="middle"
             textAnchor="middle"
+            transform={translate(0, 1)} // Vertical centering correction
           >
             {label}
           </text>

@@ -1,5 +1,7 @@
 import { isNumericalBookmark, isElementBookmark } from './typecheck';
-import { ElementSelection, Item, ElementQueryType } from './types';
+import {
+  ElementSelection, Item, ElementQueryType, Plot,
+} from './types';
 
 /**
  * Version safe deep copy using structured cloning.
@@ -73,4 +75,17 @@ export function filterItems(items: Item[], filter: ElementSelection): Item[] {
     });
   }
   return result;
+}
+
+/**
+ * Converts a plot to a displable string
+ * @param plot Plot to convert.
+ * @returns Display string with type & axis of plot
+ */
+export function plotToString(plot: Plot): string {
+  switch (plot.type) {
+    case 'Scatterplot': return `Scatterplot: ${plot.x} by ${plot.y}`;
+    case 'Histogram': return `Histogram: ${plot.attribute}`;
+    default: throw Error(`Cannot convert plot ${plot} to string`);
+  }
 }

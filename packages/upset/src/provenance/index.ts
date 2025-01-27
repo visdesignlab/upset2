@@ -6,6 +6,7 @@ import {
   ColumnName,
   AltText,
   ElementSelection,
+  plotToString,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -363,6 +364,39 @@ const setUseUserAltTextAction = register<boolean>(
   },
 );
 
+/**
+ * Sets whether the intersection size labels should be shown
+ */
+const setIntersectionSizeLabelsAction = register<boolean>(
+  'set-intersection-size-labels',
+  (state, show) => {
+    state.intersectionSizeLabels = show;
+    return state;
+  },
+);
+
+/**
+ * Sets whether the set size labels should be shown
+ */
+const setSetSizeLabelsAction = register<boolean>(
+  'set-set-size-labels',
+  (state, show) => {
+    state.setSizeLabels = show;
+    return state;
+  },
+);
+
+/**
+ * Sets whether the hidden sets should be shown
+ */
+const setShowHiddenSetsAction = register<boolean>(
+  'set-show-hidden-sets',
+  (state, show) => {
+    state.showHiddenSets = show;
+    return state;
+  },
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -375,7 +409,7 @@ export function initializeProvenanceTracking(
   );
 
   if (setter) {
-    provenance.currentChange(() => setter(provenance.getState()));
+    provenance.currentChange(() => setter(convertConfig(provenance.getState())));
   }
 
   provenance.done();
@@ -423,7 +457,7 @@ export function getActions(provenance: UpsetProvenance) {
      * Removes a plot from the state
      * @param plot plot to remove
      */
-    removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
+    removePlot: (plot: Plot) => provenance.apply(`Remove ${plotToString(plot)}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
     addCollapsed: (id: string) => provenance.apply(`Collapsed ${id}`, addCollapsedAction(id)),
     removeCollapsed: (id: string) => provenance.apply(`Expanded ${id}`, removeCollapsedAction(id)),
@@ -455,6 +489,30 @@ export function getActions(provenance: UpsetProvenance) {
     setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
       useUserAlt ? 'Enabled user alt text' : 'Disabled user alt text',
       setUseUserAltTextAction(useUserAlt),
+    ),
+    /**
+     * Sets whether set intersection size labels should be shown
+     * @param show Whether to show intersection size labels
+     */
+    setIntersectionSizeLabels: (show: boolean) => provenance.apply(
+      show ? 'Show intersection size labels' : 'Hide intersection size labels',
+      setIntersectionSizeLabelsAction(show),
+    ),
+    /**
+     * Sets whether set size labels should be shown
+     * @param show Whether to show set size labels
+     */
+    setSetSizeLabels: (show: boolean) => provenance.apply(
+      show ? 'Show set size labels' : 'Hide set size labels',
+      setSetSizeLabelsAction(show),
+    ),
+    /**
+     * Sets whether hidden sets should be shown
+     * @param show Whether to show hidden sets
+     */
+    setShowHiddenSets: (show: boolean) => provenance.apply(
+      show ? 'Show hidden sets' : 'Hide hidden sets',
+      setShowHiddenSetsAction(show),
     ),
   };
 }

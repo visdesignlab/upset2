@@ -174,6 +174,12 @@ export interface UpsetProps {
   altTextSidebar?: SidebarProps;
 
   /**
+   * Height of the footer overlayed on the upset plot, in px, if one exists.
+   * Used to prevent the bottom of the sidebars from overlapping with the footer.
+   */
+  footerHeight?: number;
+
+  /**
   * Async function which should return a generated AltText object.
   */
   generateAltText?: () => Promise<AltText>;
