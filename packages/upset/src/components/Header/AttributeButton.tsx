@@ -13,7 +13,6 @@ import { ContextMenuItem } from '../../types';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 import { attributePlotsSelector } from '../../atoms/config/plotAtoms';
 
-/** @jsxImportSource @emotion/react */
 type Props = {
   /**
    * Text to display on the attribute button

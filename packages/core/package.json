@@ -24,7 +24,7 @@
       "pre-commit": "eslint src"
     }
   },
-  "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner",
+  "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner, Nate Lanza",
   "size-limit": [
     {
       "path": "dist/packagescore.cjs.production.min.js",
