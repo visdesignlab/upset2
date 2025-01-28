@@ -12,6 +12,9 @@ type Props = {
   name: string;
 };
 
+/**
+ * Label for the sets at the top of the membership matrix
+ */
 export const SetLabel: FC<Props> = ({ setId, name }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const columnHover = useRecoilValue(columnHoverAtom);
@@ -45,7 +48,6 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
           color: '#000000',
           fontSize: '14px',
           overflow: 'hidden',
-          textOverflow: 'ellipsis',
         }}
 
       >
@@ -55,6 +57,10 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
           margin: '2px 0 0 0',
           fontWeight: '500',
           textAlign: 'start',
+          textOverflow: 'ellipsis',
+          overflow: 'hidden',
+          whiteSpace: 'nowrap',
+          width: dimensions.set.label.height - gap,
         }}
         >
           {name}
