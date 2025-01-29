@@ -32,7 +32,7 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
           The Visualization Design Lab at the University of Utah is committed to ensuring accessibility for all individuals, including those with disabilities.
           We strive to make our software user-friendly, accessible, and compliant with the
           {' '}
-          <Link href="https://www.w3.org/TR/WCAG21/" target="_blank" rel="noreferrer" aria-label="Read more about web content accessibility guidelines">Web Content Accessibility Guidelines (WCAG)</Link>
+          <Link href="https://www.w3.org/TR/WCAG21/" style={{ color: 'blue' }} target="_blank" rel="noreferrer" aria-label="Read more about web content accessibility guidelines">Web Content Accessibility Guidelines (WCAG)</Link>
           {' '}
           2.1 Level AA.
         </p>
@@ -70,7 +70,7 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
         <p>
           To report any accessibility issues you may encounter or to provide suggestions for improvement, please contact us at
           {' '}
-          <Link type="email" href="mailto:vdl-faculty@sci.utah.edu" aria-label="VDL faculty email">vdl-faculty@sci.utah.edu</Link>
+          <Link type="email" style={{ color: 'blue' }} href="mailto:vdl-faculty@sci.utah.edu" aria-label="VDL faculty email">vdl-faculty@sci.utah.edu</Link>
           .
           We value your feedback and are committed to continuously enhancing the accessibility and usability of our software.
         </p>
