@@ -2,7 +2,7 @@ import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import { Chip, Stack } from '@mui/material';
-import { useContext } from 'react';
+import { useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
@@ -52,8 +52,15 @@ export const BookmarkChips = () => {
     }
   }
 
+  /** Whether there is at least 1 chip */
+  const hasChip = useMemo(
+    () => currentIntersection || currentSelection || bookmarked.length > 0,
+    [currentIntersection, currentSelection, bookmarked],
+  );
+
   return (
-    <Stack direction="row" sx={{ flexFlow: 'row wrap' }}>
+    // Silly goofy stack treats minHeight as maxHeight when we have chips... why??? idk
+    <Stack direction="row" sx={{ flexFlow: 'row wrap', minHeight: hasChip ? undefined : '40px' }}>
       {/* All chips from bookmarks */}
       {bookmarked.map((bookmark) => (
         <Chip
