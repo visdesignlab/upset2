@@ -141,7 +141,7 @@ export const ElementVisualization = () => {
                 views.current = views.current.filter(({ plot: p }) => p.id !== plot.id);
               }}
             >
-              <CloseIcon color="primary" />
+              <CloseIcon />
             </IconButton>
             <VegaLite
               spec={spec}
