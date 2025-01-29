@@ -91,17 +91,10 @@ export const ElementSidebar = ({ open, close }: Props) => {
           Element View
         </UpsetHeading>
       </div>
-      {showQueries && (
-        <>
-          <UpsetHeading level="h2">
-            Bookmarked Queries
-          </UpsetHeading>
-          <BookmarkChips />
-        </>
-      )}
-      <UpsetHeading level="h2" style={{ marginTop: showQueries ? '1em' : undefined }}>
-        Element Visualization
+      <UpsetHeading level="h3">
+        {showQueries ? 'Selections' : 'Selections Will Appear Here'}
       </UpsetHeading>
+      <BookmarkChips />
       <ElementVisualization />
       <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
         Element Queries
