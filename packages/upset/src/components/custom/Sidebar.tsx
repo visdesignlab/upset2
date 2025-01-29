@@ -17,6 +17,8 @@ type Props= {
   closeButtonTabIndex?: number;
   /** Aria-label for the sidebar */
   label: string;
+  /** Buttons to display at the top of the sidebar, left of the close & expand */
+  buttons?: React.ReactNode;
 }
 
 /** Dimension for the square button wrappers */
@@ -26,7 +28,7 @@ const BUTTON_DIMS = { height: '40px', width: '40px' };
  * A collapsible, right-sidebar for the plot
  */
 export const Sidebar: FC<PropsWithChildren<Props>> = ({
-  open, close, closeButtonTabIndex, children, label,
+  open, close, closeButtonTabIndex, children, label, buttons,
 }) => {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
@@ -115,6 +117,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         display: 'flex', justifyContent: 'end', position: 'absolute', top: '20px', right: 0,
       }}
       >
+        {buttons}
         { !fullWidth ?
           <IconButton
             style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
