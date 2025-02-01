@@ -134,14 +134,14 @@ export const ElementVisualization = () => {
           <Box style={{ display: 'inline-block', position: 'relative' }}>
             <IconButton
               style={{
-                position: 'absolute', top: 0, left: 0, zIndex: 100, padding: 0,
+                position: 'absolute', top: 0, right: -15, zIndex: 100, padding: 0,
               }}
               onClick={() => {
                 actions.removePlot(plot);
                 views.current = views.current.filter(({ plot: p }) => p.id !== plot.id);
               }}
             >
-              <CloseIcon />
+              <CloseIcon fontSize="small" />
             </IconButton>
             <VegaLite
               spec={spec}
