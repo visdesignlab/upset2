@@ -39,7 +39,11 @@ export const MemoizedDensityVega: FC<Props> = memo(
     );
 
     return (
-      <VegaLite renderer="svg" spec={spec} actions={false} height={height} />
+      // @ts-expect-error: VegaLite plots render with position: relative, which breaks the layout in webkit (safari).
+      // This fix does NOT affect the layout in other browsers, and is necessary to prevent the layout from breaking in safari.
+      // Part of the reason this is necessary is because we are required to use !important to override the position property set by react-vega;
+      // However, react does NOT support !important in inline styles, so we have to use the css prop to apply the style.
+      <VegaLite renderer="svg" spec={spec} actions={false} height={height} css={{ position: 'initial !important' }} />
     );
   },
   // Instead of checking all values, we assume that equal length & equal first & last elements are sufficient
