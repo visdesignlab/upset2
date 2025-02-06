@@ -3,6 +3,7 @@ import {
 } from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
+import { Tooltip } from '@mui/material';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import { useScale } from '../../../hooks/useScale';
@@ -87,12 +88,33 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
     return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
   }
 
+  /**
+   * Round a number to 3 decimal places
+   */
+  function round3(num: number | undefined): number {
+    if (num === undefined) {
+      return NaN;
+    }
+    return Math.round(num * 1000) / 1000;
+  }
+
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
       {
         typeof summary === 'number' ?
           <DeviationBar deviation={summary} /> :
-          getAttributePlotToRender()
+          <Tooltip
+            title={
+              <div style={{ whiteSpace: 'pre-line' }}>
+                {`Q1: ${round3(summary.first)}\nMean: ${round3(summary.mean)}\nMedian: ${round3(summary.median)}\nQ3: ${round3(summary.third)}`}
+              </div>
+            }
+          >
+            {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
+            <g>
+              {getAttributePlotToRender()}
+            </g>
+          </Tooltip>
       }
     </g>
   );
