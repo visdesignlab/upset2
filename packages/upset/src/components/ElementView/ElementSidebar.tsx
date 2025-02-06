@@ -98,9 +98,11 @@ export const ElementSidebar = ({ open, close }: Props) => {
       close={close}
       label="Element View Sidebar"
       buttons={
-        <IconButton onClick={() => setOpenAddPlot(true)}>
-          <AddchartIcon />
-        </IconButton>
+        <Tooltip title="Add Plot">
+          <IconButton onClick={() => setOpenAddPlot(true)}>
+            <AddchartIcon />
+          </IconButton>
+        </Tooltip>
       }
     >
       <div style={{ marginBottom: '1em' }}>

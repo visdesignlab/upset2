@@ -1,7 +1,9 @@
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Drawer, IconButton } from '@mui/material';
+import {
+  Box, Drawer, IconButton, Tooltip,
+} from '@mui/material';
 import React, {
   FC, PropsWithChildren, useCallback, useState,
 } from 'react';
@@ -119,38 +121,44 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
       >
         {buttons}
         { !fullWidth ?
-          <IconButton
-            style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
-            onClick={() => {
-              setFullWidth(true);
-            }}
-            aria-label="Expand the sidebar in full screen"
-          >
-            {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
+          <Tooltip title="Expand to full screen">
+            <IconButton
+              style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
+              onClick={() => {
+                setFullWidth(true);
+              }}
+              aria-label="Expand the sidebar in full screen"
+            >
+              {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
             EXACTLY the font size needed to get this icon SVG to be the same dimensions as the close button: 14x14 */}
-            <OpenInFullIcon style={{ fontSize: '18.67px' }} />
-          </IconButton>
+              <OpenInFullIcon style={{ fontSize: '18.67px' }} />
+            </IconButton>
+          </Tooltip>
           :
+          <Tooltip title="Reduce to normal size">
+            <IconButton
+              style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
+              onClick={() => {
+                if (fullWidth) {
+                  setFullWidth(false);
+                }
+              }}
+              aria-label="Reduce the sidebar to normal size"
+            >
+              <CloseFullscreen />
+            </IconButton>
+          </Tooltip>}
+        <Tooltip title="Close">
           <IconButton
-            style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
             onClick={() => {
-              if (fullWidth) {
-                setFullWidth(false);
-              }
+              close();
             }}
-            aria-label="Reduce the sidebar to normal size"
+            tabIndex={closeButtonTabIndex}
+            aria-label="Close the sidebar"
           >
-            <CloseFullscreen />
-          </IconButton>}
-        <IconButton
-          onClick={() => {
-            close();
-          }}
-          tabIndex={closeButtonTabIndex}
-          aria-label="Close the sidebar"
-        >
-          <CloseIcon />
-        </IconButton>
+            <CloseIcon />
+          </IconButton>
+        </Tooltip>
       </div>
       {children}
       <Box minHeight={footerHeight} />
