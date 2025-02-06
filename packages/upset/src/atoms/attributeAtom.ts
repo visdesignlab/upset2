@@ -1,6 +1,8 @@
 import { atom, selector, selectorFamily } from 'recoil';
 
+import { ColumnTypes } from '@visdesignlab/upset2-core';
 import { itemsAtom } from './itemsAtoms';
+import { dataAtom } from './dataAtom';
 
 /**
  * All attributes, including degree and deviation
@@ -8,6 +10,15 @@ import { itemsAtom } from './itemsAtoms';
 export const attributeAtom = atom<string[]>({
   key: 'attribute-columns',
   default: [],
+});
+
+/**
+ * Types of all attributes
+ * @returns {ColumnTypes} Object with attribute names as keys and their types as values
+ */
+export const attTypesSelector = selector<ColumnTypes>({
+  key: 'attribute-types',
+  get: ({ get }) => get(dataAtom).columnTypes,
 });
 
 /**

@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRecoilValue } from 'recoil';
-import { ElementQueryToBookmark, ElementQueryType } from '@visdesignlab/upset2-core';
+import { ElementQueryToBookmark, ElementQueryType, NumericalQueryType } from '@visdesignlab/upset2-core';
 import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
@@ -13,6 +13,12 @@ import { queryColumnsSelector } from '../../atoms/dataAtom';
 import { currentElementQuery } from '../../atoms/elementsSelectors';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
+import { attTypesSelector } from '../../atoms/attributeAtom';
+
+/**
+ * Default type for the element query
+ */
+const DEFAULT_TYPE = ElementQueryType.EQUALS;
 
 /**
  * Component showing a form allowing element queries to be created based on non-numeric fields
@@ -26,12 +32,13 @@ export const QueryInterface = () => {
   const atts = useRecoilValue(queryColumnsSelector);
   const currentSelection = useRecoilValue(currentElementQuery);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
+  const attTypes = useRecoilValue(attTypesSelector);
 
   const FIELD_MARGIN = '5px';
   const FIELD_CSS = { marginTop: FIELD_MARGIN, width: '50%' };
 
-  const [attField, setAttField] = useState(currentSelection?.att);
-  const [typeField, setTypeField] = useState<string | undefined>(currentSelection?.type);
+  const [attField, setAttField] = useState(currentSelection?.att ?? atts.length > 0 ? atts[0] : undefined);
+  const [typeField, setTypeField] = useState<string | undefined>(currentSelection?.type ?? DEFAULT_TYPE);
   const [queryField, setQueryField] = useState(currentSelection?.query);
 
   // Resets input state every time the current selection changes
@@ -41,8 +48,8 @@ export const QueryInterface = () => {
       setTypeField(currentSelection?.type);
       setQueryField(currentSelection?.query);
     } else {
-      setAttField(undefined);
-      setTypeField(undefined);
+      setAttField(atts.length > 0 ? atts[0] : undefined);
+      setTypeField(DEFAULT_TYPE);
       setQueryField(undefined);
     }
   }, [currentSelection]);
@@ -81,7 +88,7 @@ export const QueryInterface = () => {
           labelId="query-att-select-label"
           label="Attribute Name"
           value={attField ?? ''}
-          onChange={(e) => setAttField(e.target.value)}
+          onChange={(e) => { setAttField(e.target.value); setTypeField(DEFAULT_TYPE); }}
         >
           {atts.map((att) => (
             <MenuItem key={att} value={att}>{att}</MenuItem>
@@ -91,15 +98,17 @@ export const QueryInterface = () => {
       <FormControl css={FIELD_CSS}>
         <InputLabel id="query-type-select-label">Query Type</InputLabel>
         <Select
-          disabled={!!currentSelection}
+          disabled={!!currentSelection || !attField}
           label="Query Type"
           labelId="query-type-select-label"
           value={typeField ?? ''}
           onChange={(e) => setTypeField(e.target.value)}
         >
-          {Object.values(ElementQueryType).map((type) => (
-            <MenuItem key={type} value={type}>{type}</MenuItem>
-          ))}
+          {attField && Object.values(attTypes[attField] === 'number' ? NumericalQueryType : ElementQueryType).map(
+            (type) => (
+              <MenuItem key={type} value={type}>{type}</MenuItem>
+            ),
+          )}
         </Select>
       </FormControl>
       <Box css={{ height: '56px', marginTop: FIELD_MARGIN }}>
