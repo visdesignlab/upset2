@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 import {
   useCallback,
-  useContext, useEffect, useMemo, useRef, useState,
+  useContext, useEffect, useMemo, useRef,
 } from 'react';
 import { VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
@@ -11,13 +11,12 @@ import {
   NumericalQuery,
 } from '@visdesignlab/upset2-core';
 import {
-  Alert, Button, IconButton,
+  IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { bookmarkSelector, currentIntersectionSelector, elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
+import { elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { currentNumericalQuery, elementsInBookmarkSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
-import { AddPlotDialog } from './AddPlotDialog';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -58,16 +57,12 @@ export const ElementVisualization = () => {
   /**
    * External state
    */
-
-  const [openAddPlot, setOpenAddPlot] = useState(false);
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
-  const bookmarked = useRecoilValue(bookmarkSelector);
   const items = useRecoilValue(elementsInBookmarkSelector);
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const elementSelection = useRecoilValue(selectedElementSelector);
   const selectColor = useRecoilValue(elementColorSelector);
-  const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
@@ -89,11 +84,6 @@ export const ElementVisualization = () => {
   /**
    * Functions
    */
-
-  /**
-   * Closes the AddPlotDialog
-   */
-  const onClose = () => setOpenAddPlot(false);
 
   /**
    * Saves brush bounds to state when the interactive brush is used.
@@ -135,20 +125,6 @@ export const ElementVisualization = () => {
         draftSelection.current = undefined;
       }}
     >
-      <Button style={{ marginTop: '0.5em' }} onClick={() => setOpenAddPlot(true)}>Add Plot</Button>
-      {!currentIntersection && bookmarked.length === 0 && (
-        <Alert
-          severity="info"
-          variant="outlined"
-          role="generic"
-          sx={{
-            alignItems: 'center', marginBottom: '0.5em', border: 'none', color: '#777777',
-          }}
-        >
-          Currently visualizing all elements. Clicking on an intersection will visualize only its elements.
-        </Alert>
-      )}
-      <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <Box sx={{
         overflowX: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around',
       }}
@@ -158,14 +134,14 @@ export const ElementVisualization = () => {
           <Box style={{ display: 'inline-block', position: 'relative' }}>
             <IconButton
               style={{
-                position: 'absolute', top: 0, left: 0, zIndex: 100, padding: 0,
+                position: 'absolute', top: 0, right: -15, zIndex: 100, padding: 0,
               }}
               onClick={() => {
                 actions.removePlot(plot);
                 views.current = views.current.filter(({ plot: p }) => p.id !== plot.id);
               }}
             >
-              <CloseIcon color="primary" />
+              <CloseIcon fontSize="small" />
             </IconButton>
             <VegaLite
               spec={spec}

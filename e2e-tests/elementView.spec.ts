@@ -67,7 +67,7 @@ test('Element View', async ({ page, browserName }) => {
   await expect(elementViewHeading).toBeVisible();
   const elementQueriesHeading = await page.getByRole('heading', { name: 'Element Queries' });
   await expect(elementQueriesHeading).toBeVisible();
-  const elementVisualizationHeading = await page.getByRole('heading', { name: 'Element Visualization' });
+  const elementVisualizationHeading = await page.getByRole('heading', { name: 'Element View' });
   await expect(elementVisualizationHeading).toBeVisible();
   const queryResultHeading = await page.getByRole('heading', { name: 'Query Result' });
   await expect(queryResultHeading).toBeVisible();
@@ -86,7 +86,7 @@ test('Element View', async ({ page, browserName }) => {
   await expect(ageCell).toBeVisible();
 
   // Check that the add plot button is visible
-  const addPlot = await page.getByRole('button', { name: 'Add Plot' });
+  const addPlot = await page.locator('.MuiPaper-root > div:nth-child(2) > button').first();
   await expect(addPlot).toBeVisible();
   await addPlot.click();
 
@@ -185,8 +185,7 @@ test('Element View', async ({ page, browserName }) => {
   /*
     * Plot removal
     */
-  await page.locator('div').filter({ hasText: /^Add Plot$/ }).getByRole('button').nth(1)
-    .click();
+  await page.locator('.MuiBox-root > .MuiBox-root > .MuiButtonBase-root').first().click();
   await expect(page.locator('canvas')).not.toBeVisible();
 });
 
