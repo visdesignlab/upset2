@@ -25,7 +25,7 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
   const hiddenSets = provenance.getState().allSets.filter((set: Column) => !visibleSets.includes(set.name));
 
   return (
-    <Dialog open={open} onClose={close} sx={{ padding: '20px' }}>
+    <Dialog open={open} onClose={close} sx={{ padding: '20px' }} fullWidth maxWidth="lg">
       <Box sx={{ padding: '20px' }}>
         <Typography variant="h4" component="h4">UpSet 2 Accessibility Statement</Typography>
         <p>
