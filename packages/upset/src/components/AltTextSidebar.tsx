@@ -182,7 +182,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           ) : null
         )}
       {displayPlotInfo && (
-      <UpsetHeading level="h2">Text Description</UpsetHeading>
+      <UpsetHeading level="h2" style={{ marginTop: '10px' }}>Text Description</UpsetHeading>
       )}
       {/* 0.875em for default 16px = 1em makes 14px, which is the standard for much of the UI */}
       <Box style={{ overflowY: 'auto', fontSize: '0.875em' }}>

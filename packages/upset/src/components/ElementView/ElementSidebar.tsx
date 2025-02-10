@@ -5,7 +5,8 @@ import {
 import { Item } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
 
-import { useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import AddchartIcon from '@mui/icons-material/Addchart';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
   selectedElementSelector, selectedItemsCounter,
@@ -18,6 +19,7 @@ import { QueryInterface } from './QueryInterface';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { Sidebar } from '../custom/Sidebar';
 import { UpsetHeading } from '../custom/theme/heading';
+import { AddPlotDialog } from './AddPlotDialog';
 
 /**
  * Props for the ElementSidebar component
@@ -70,6 +72,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  * @param close Function to close the sidebar
  */
 export const ElementSidebar = ({ open, close }: Props) => {
+  const [openAddPlot, setOpenAddPlot] = useState(false);
   const currentElementSelection = useRecoilValue(selectedElementSelector);
   const selectedItems = useRecoilValue(selectedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
@@ -83,25 +86,35 @@ export const ElementSidebar = ({ open, close }: Props) => {
     [bookmarked.length, currentIntersection, currentElementSelection],
   );
 
+  /**
+   * Closes the AddPlotDialog
+   */
+  const onClose = useCallback(() => setOpenAddPlot(false), [setOpenAddPlot]);
+
   return (
-    <Sidebar open={open} close={close} label="Element View Sidebar">
+    <Sidebar
+      open={open}
+      close={close}
+      label="Element View Sidebar"
+      buttons={
+        <Tooltip title="Add Plot">
+          <IconButton onClick={() => setOpenAddPlot(true)}>
+            <AddchartIcon />
+          </IconButton>
+        </Tooltip>
+      }
+    >
       <div style={{ marginBottom: '1em' }}>
         <UpsetHeading level="h1">
           Element View
         </UpsetHeading>
       </div>
-      {showQueries && (
-        <>
-          <UpsetHeading level="h2">
-            Bookmarked Queries
-          </UpsetHeading>
-          <BookmarkChips />
-        </>
-      )}
-      <UpsetHeading level="h2" style={{ marginTop: showQueries ? '1em' : undefined }}>
-        Element Visualization
+      <UpsetHeading level="h3">
+        {showQueries ? 'Selections' : 'Selections Will Appear Here'}
       </UpsetHeading>
+      <BookmarkChips />
       <ElementVisualization />
+      <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
         Element Queries
       </UpsetHeading>

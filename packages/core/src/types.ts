@@ -224,8 +224,17 @@ export type Rows = Subsets | Aggregates;
  */
 export type Row = Subset | Aggregate;
 
+/**
+ * Possible column types.
+ * @private Taken from the TableTypeAnnotation in multinet-api
+ */
+export type ColumnType = 'primary key' | 'edge source' | 'edge target' | 'label' | 'string' | 'boolean' | 'category' | 'number' | 'date' | 'ignored';
+
+/**
+ * Maps column names to their string type
+ */
 export type ColumnTypes = {
-    [key: string]: string;
+    [key: string]: ColumnType;
 }
 
 export type CoreUpsetData = {
@@ -297,6 +306,17 @@ export enum ElementQueryType {
   CONTAINS = 'contains',
   LENGTH = 'length equals',
   REGEX = 'regex',
+  LESS_THAN = 'less than',
+  GREATER_THAN = 'greater than',
+}
+
+/**
+ * Possible string types for an element query on a numerical attribute
+ */
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum NumericalQueryType {
+  EQUALS = 'equals',
   LESS_THAN = 'less than',
   GREATER_THAN = 'greater than',
 }

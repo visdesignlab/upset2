@@ -35,7 +35,7 @@ const LEVELS: {[level in HeadingLevel]: { fontSize: string; }} = {
 export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
   level, paddingLeft, style, children,
 }) => {
-  const IS_MAJOR = level === 'h1' || level === 'h2';
+  const IS_MAJOR = level === 'h1' || level === 'h2' || level === 'h3';
 
   return (
     <div style={{ marginBottom: '.5em', ...style }}>
