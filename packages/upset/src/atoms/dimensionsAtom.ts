@@ -12,13 +12,17 @@ ReturnType<typeof calculateDimensions>
     const visibleSets = get(visibleSetSelector);
     const rowCount = get(rowCountSelector);
     const hiddenSets = get(hiddenSetSelector);
-    const attributes = get(visibleAttributesSelector);
+    let attributes = get(visibleAttributesSelector);
+
+    const degree = attributes.includes('Degree');
+    attributes = attributes.filter((a) => a !== 'Degree');
 
     return calculateDimensions(
       visibleSets.length,
       hiddenSets.length,
       rowCount,
       attributes.length,
+      degree,
     );
   },
 });
