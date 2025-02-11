@@ -1,8 +1,18 @@
+/**
+ * Calculates the dimensions of the plot
+ * @param nVisibleSets Number of visible sets
+ * @param nHiddenSets Number of hidden sets
+ * @param nIntersections Number of intersections
+ * @param nAttributes Number of visible attributes, excluding Degree
+ * @param degree Whether to show the Degree column
+ * @returns The dimensions of the plot, in an object with a variety of fields
+ */
 export function calculateDimensions(
   nVisibleSets: number = 0,
   nHiddenSets: number = 0,
   nIntersections: number = 0,
   nAttributes: number = 0,
+  degree: boolean = false,
 ) {
   const gap = 20;
 
@@ -83,11 +93,8 @@ export function calculateDimensions(
       bookmarkStar.gap +
       bookmarkStar.width + // Bookmark Star
       bookmarkStar.gap +
-      degreeColumn.gap +
-      degreeColumn.width + // Degree Column
-      degreeColumn.gap + // Add margin
-      attribute.width + // Deviation
-      attribute.vGap +
+      (degree ? degreeColumn.width + // Degree Column
+      degreeColumn.gap : 0) + // Add margin
       (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
     totalHeight: set.size.height + set.label.height,
   };

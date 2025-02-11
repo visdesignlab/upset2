@@ -1,7 +1,8 @@
 import { getAggSize } from './aggregate';
 import {
-  Aggregates, Intersections, areRowsSubsets, Rows, getDegreeFromSetMembership,
+  Aggregates, Intersections, Rows,
 } from './types';
+import { areRowsSubsets, getDegreeFromSetMembership } from './typeutils';
 import { deepCopy } from './utils';
 
 /**

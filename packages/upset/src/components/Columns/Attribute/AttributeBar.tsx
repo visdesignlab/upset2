@@ -1,5 +1,5 @@
 import {
-  Aggregate, SixNumberSummary, Items, Subset, isRowAggregate,
+  Aggregate, SixNumberSummary, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import React, { FC } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -11,9 +11,9 @@ import { BoxPlot } from './AttributePlots/BoxPlot';
 import { DotPlot } from './AttributePlots/DotPlot';
 import { StripPlot } from './AttributePlots/StripPlot';
 import { DensityPlot } from './AttributePlots/DensityPlot';
-import { itemsAtom } from '../../../atoms/itemsAtoms';
 import { DeviationBar } from '../DeviationBar';
 import { attributePlotsSelector } from '../../../atoms/config/plotAtoms';
+import { attValuesSelector } from '../../../atoms/elementsSelectors';
 
 /**
  * Attribute bar props
@@ -37,25 +37,25 @@ type Props = {
 // Threshold for when to render a dot plot regardless of selected plot type
 const DOT_PLOT_THRESHOLD = 5;
 
-const getValuesFromRow = (row: Subset | Aggregate, attribute: string, items: Items): number[] => {
-  if (isRowAggregate(row)) {
-    return Object.values(row.items.values).map((item) => getValuesFromRow(item, attribute, items)).flat();
-  }
-
-  return Object.entries(items).filter(([key, _]) => row.items.includes(key)).map(([_, value]) => value[attribute] as number);
-};
-
-// this is recomputing every hover event?
+/**
+ * A single attribute chart, visualizing one attribute's values for one intersection.
+ */
 export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
-  const items = useRecoilValue(itemsAtom);
-  const values = getValuesFromRow(row, attribute, items);
+  const values = useRecoilValue(attValuesSelector({ row, att: attribute }));
 
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
-  if (typeof summary !== 'number' && (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined)) {
+  if (
+    typeof summary !== 'number'
+    && (
+      summary.max === undefined
+      || summary.min === undefined
+      || summary.first === undefined
+      || summary.third === undefined
+      || summary.median === undefined)) {
     return null;
   }
 

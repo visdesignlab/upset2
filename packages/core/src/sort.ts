@@ -1,15 +1,13 @@
 import {
-  getDegreeFromSetMembership,
   Intersections,
   Aggregates,
-  areRowsSubsets,
   Rows,
   SortVisibleBy,
   Sets,
   SortByOrder,
   SixNumberSummary,
-  getBelongingSetsFromSetMembership,
 } from './types';
+import { areRowsSubsets, getBelongingSetsFromSetMembership, getDegreeFromSetMembership } from './typeutils';
 import { deepCopy } from './utils';
 
 /**

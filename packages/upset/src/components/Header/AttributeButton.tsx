@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { SortByOrder, AttributePlotType } from '@visdesignlab/upset2-core';
 
@@ -19,6 +19,12 @@ type Props = {
    * Text to display on the attribute button
    */
   label: string;
+  /**
+   * Text to display on the attribute button tooltip.
+   * Optional, defaults to label
+   * HTML will be rendered in the tooltip
+   */
+  tooltip?: string;
 };
 
 /**
@@ -30,7 +36,7 @@ type Props = {
  *   <AttributeButton label="Name" />
  * )
  */
-export const AttributeButton: FC<Props> = ({ label }) => {
+export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(
     ProvenanceContext,
@@ -57,12 +63,14 @@ export const AttributeButton: FC<Props> = ({ label }) => {
    * If the attribute is not currently sorted, it sorts it in ascending order.
    * If the attribute is already sorted, it toggles between ascending and descending order.
    */
-  const handleOnClick = () => {
+  const handleOnClick = (e: React.MouseEvent<SVGElement>) => {
     if (sortBy !== label) {
       sortByHeader('Ascending');
     } else {
       sortByHeader(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
+    // To prevent the handler on SvgBase that deselects the current intersection
+    e.stopPropagation();
   };
 
   /**
@@ -147,7 +155,7 @@ export const AttributeButton: FC<Props> = ({ label }) => {
   };
 
   return (
-    <Tooltip title={label} arrow placement="top">
+    <Tooltip title={<div dangerouslySetInnerHTML={{ __html: tooltip ?? label }} />} arrow placement="top">
       <g
         css={{
           '&:hover': {
@@ -182,6 +190,7 @@ export const AttributeButton: FC<Props> = ({ label }) => {
             pointerEvents="default"
             dominantBaseline="middle"
             textAnchor="middle"
+            transform={translate(0, 1)} // Vertical centering correction
           >
             {label}
           </text>

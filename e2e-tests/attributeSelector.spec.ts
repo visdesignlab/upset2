@@ -1,33 +1,19 @@
 import { test, expect } from '@playwright/test';
-import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
-import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';
-import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json';
+import { beforeTest } from './common';
 
-test.beforeEach(async ({ page }) => {
-  await page.route('*/**/api/**', async (route) => {
-    const url = route.request().url();
-    let json;
+test.beforeEach(beforeTest);
 
-    if (url) {
-      if (url.includes('workspaces/Upset%20Examples/tables/simpsons/rows/?limit=9007199254740991')) {
-        json = mockData;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/tables/simpsons/annotations/')) {
-        json = mockAnnotations;
-        await route.fulfill({ json });
-      } else if (url.includes('alttxt')) {
-        json = mockAltText;
-        await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/state/')) {
-        await route.fulfill({ status: 200 });
-      } else {
-        await route.continue();
-      }
-    } else {
-      await route.abort();
-    }
-  });
-});
+/**
+ * Selects or deselects an attribute from the attribute dropdown
+ * @param page the page to interact with
+ * @param attributeName the name of the attribute to toggle
+ * @param checked whether to select or deselect the attribute
+ */
+async function toggleAttribute(page, attributeName, checked) {
+  await page.getByLabel('Attributes').first().click();
+  await page.getByRole('option', { name: attributeName }).getByRole('checkbox').setChecked(checked);
+  await page.locator('#menu- > .MuiBackdrop-root').click();
+}
 
 test('Attribute Dropdown', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
@@ -36,44 +22,34 @@ test('Attribute Dropdown', async ({ page }) => {
   // Age
   /// /////////////////
   // Deseslect and assert that it's removed from the plot
-  await page.getByLabel('Attributes selection menu').click();
-  await page.getByRole('checkbox', { name: 'Age' }).uncheck();
-  await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
+  await toggleAttribute(page, 'Age', false);
   await expect(page.getByLabel('Age').locator('rect')).toHaveCount(0);
 
   // Reselect and assert that it's added back to the plot
-  await page.getByLabel('Attributes selection menu').click();
-  await page.getByLabel('Age').check();
-  await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.getByLabel('Age').locator('rect')).toBeVisible();
+  await toggleAttribute(page, 'Age', true);
+  // This doesn't make sense but it works to find the Age column header
+  await expect(page.locator('g').filter({ hasText: /^Age2020404060608080$/ }).locator('rect')).toBeVisible();
 
   /// /////////////////
   // Degree
   /// /////////////////
   // Deselect and assert that it's removed from the plot
-  await page.getByLabel('Attributes selection menu').click();
-  await page.getByRole('checkbox', { name: 'Degree' }).uncheck();
-  await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.locator('#upset-svg').getByLabel('Degree').locator('rect')).toHaveCount(0);
+  await toggleAttribute(page, 'Degree', false);
+  await expect(page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect')).toHaveCount(0);
 
   // Reselect and assert that it's added back to the plot
-  await page.getByLabel('Attributes selection menu').click();
-  await page.getByRole('checkbox', { name: 'Degree' }).check();
-  await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.locator('#upset-svg').getByLabel('Degree').locator('rect')).toBeVisible();
+  await toggleAttribute(page, 'Degree', true);
+  await expect(page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect')).toBeVisible();
 
   /// /////////////////
   // Deviation
   /// /////////////////
   // Deselect and assert that it's removed from the plot
-  await page.getByLabel('Attributes selection menu').click();
-  await page.getByRole('checkbox', { name: 'Deviation' }).uncheck();
-  await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
+  await toggleAttribute(page, 'Deviation', false);
   await expect(page.getByLabel('Deviation', { exact: true }).locator('rect')).toHaveCount(0);
 
   // Reselect and assert that it's added back to the plot
-  await page.getByLabel('Attributes selection menu').click();
-  await page.getByRole('checkbox', { name: 'Deviation' }).check();
-  await page.locator('.MuiPopover-root > .MuiBackdrop-root').click();
-  await expect(page.getByLabel('Deviation', { exact: true }).locator('rect')).toBeVisible();
+  await toggleAttribute(page, 'Deviation', true);
+  // This also doesn't make sense but uniquely selects the Deviation column header
+  await expect(page.locator('g').filter({ hasText: /^#Deviation-10%-10%-5%-5%0%0%5%5%10%10%Age2020404060608080$/ }).locator('rect').nth(1)).toBeVisible();
 });

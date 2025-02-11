@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { Tooltip } from '@mui/material';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import translate from '../../utils/transform';
@@ -23,12 +23,14 @@ export const DegreeHeader = () => {
     actions.sortBy('Degree', order);
   };
 
-  const handleOnClick = () => {
+  const handleOnClick = (e: React.MouseEvent<SVGElement>) => {
     if (sortBy !== 'Degree') {
       sortByDegree('Ascending');
     } else {
       sortByDegree(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
+    // To prevent the handler on SvgBase that deselects the current intersection
+    e.stopPropagation();
   };
 
   const handleContextMenuClose = () => {
@@ -89,7 +91,7 @@ export const DegreeHeader = () => {
       )}
 
     >
-      <Tooltip title="Degree" arrow placement="top">
+      <Tooltip title="Number of intersecting sets" arrow placement="top">
         <g
           className="degree-button"
           css={css`

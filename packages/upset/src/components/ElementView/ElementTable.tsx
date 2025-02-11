@@ -4,9 +4,9 @@ import { Item } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { attributeAtom } from '../../atoms/attributeAtom';
-import { elementSelector, selectedElementSelector, selectedItemsSelector } from '../../atoms/elementsSelectors';
-import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { selectedItemsSelector } from '../../atoms/elementsSelectors';
+import { setColumnsSelector } from '../../atoms/dataAtom';
+import { dataAttributeSelector } from '../../atoms/attributeAtom';
 
 /**
  * Hook to generate rows for the DataGrid
@@ -37,15 +37,20 @@ function useColumns(columns: string[]) {
   })), [columns]);
 }
 
+/**
+ * Table to display elements
+ */
 export const ElementTable: FC = () => {
-  const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const currentSelection = useRecoilValue(selectedElementSelector);
-  const attributeColumns = useRecoilValue(attributeAtom);
-  const elements = currentSelection?.selection 
-    ? useRecoilValue(selectedItemsSelector)
-    : useRecoilValue(elementSelector(currentIntersection?.id));
+  const attributeColumns = useRecoilValue(dataAttributeSelector);
+  const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
-  const columns = useColumns(['_id', '_label', ...attributeColumns]);
+  const setColumns = useRecoilValue(setColumnsSelector);
+  let columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
+  // Add a boolean type to set columns so they display properly
+  columns = columns.map((col) => ({
+    ...col,
+    type: setColumns.includes(col.field) ? 'boolean' : 'string',
+  }));
 
   return (
     <Box

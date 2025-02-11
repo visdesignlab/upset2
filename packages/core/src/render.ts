@@ -2,9 +2,15 @@ import { firstAggregation, secondAggregation } from './aggregate';
 import { filterRows } from './filter';
 import { getSubsets } from './process';
 import { sortRows } from './sort';
+import { areRowsAggregates, isRowAggregate } from './typeutils';
 import {
-  Row, Rows, Sets, UpsetConfig, areRowsAggregates, isRowAggregate,
+  Row, Rows, Sets, UpsetConfig,
 } from './types';
+
+/**
+ * Maps Row IDs to Row objects
+ */
+export type RowMap = Record<string, Row>;
 
 /**
  * Calculates the first aggregation for the given data and state.
@@ -12,7 +18,7 @@ import {
  * @param state - The UpsetConfig object containing the configuration state.
  * @returns The result of the first aggregation.
  */
-export const firstAggRR = (data: any, state: UpsetConfig) => {
+const firstAggRR = (data: any, state: UpsetConfig) => {
   const subsets = getSubsets(data.items, data.sets, state.visibleSets, data.attributeColumns);
   return firstAggregation(
     subsets,
@@ -33,7 +39,7 @@ export const firstAggRR = (data: any, state: UpsetConfig) => {
  * @param state - The configuration state for the aggregation.
  * @returns The second-level aggregation result.
  */
-export const secondAggRR = (data: any, state: UpsetConfig) => {
+const secondAggRR = (data: any, state: UpsetConfig) => {
   const rr = firstAggRR(data, state);
 
   if (areRowsAggregates(rr)) {
@@ -59,7 +65,9 @@ export const secondAggRR = (data: any, state: UpsetConfig) => {
  * @param state - The state configuration containing the visible sets and sorting options.
  * @returns The sorted rows based on the RR and the provided sorting options.
  */
-export const sortByRR = (data: any, state: UpsetConfig) => {
+const sortByRR = (data: any, state: UpsetConfig) => {
+  if (!data || typeof data !== 'object' || !Object.hasOwn(data, 'sets')) return { order: [], values: {} };
+
   const vSets: Sets = Object.fromEntries(Object.entries(data.sets as Sets).filter(([name, _set]) => state.visibleSets.includes(name)));
   const rr = secondAggRR(data, state);
 
@@ -73,7 +81,7 @@ export const sortByRR = (data: any, state: UpsetConfig) => {
  * @param state - The state object containing the Upset configuration.
  * @returns The filtered rows based on the RR algorithm and the provided filters.
  */
-export const filterRR = (data: any, state: UpsetConfig) => {
+const filterRR = (data: any, state: UpsetConfig) => {
   const rr = sortByRR(data, state);
 
   return filterRows(rr, state.filters);
@@ -141,7 +149,7 @@ export const flattenedRows = (data: any, state: UpsetConfig) => {
  * @param state - The UpsetConfig state.
  * @returns An object containing only the rows.
  */
-export const flattenedOnlyRows = (data: any, state: UpsetConfig) => {
+export function flattenedOnlyRows(data: any, state: UpsetConfig): RowMap {
   const rows = flattenedRows(data, state);
   const onlyRows: { [key: string]: Row } = {};
 
@@ -150,16 +158,4 @@ export const flattenedOnlyRows = (data: any, state: UpsetConfig) => {
   });
 
   return onlyRows;
-};
-
-/**
- * Calculates the number of rows in the data based on the provided state.
- *
- * @param data - The data to calculate the rows count from.
- * @param state - The state object containing the configuration for the calculation.
- * @returns The number of rows in the data.
- */
-export const rowsCount = (data: any, state: UpsetConfig) => {
-  const rr = flattenedRows(data, state);
-  return rr.length;
-};
+}

@@ -1,10 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
   AggregateBy, Plot, PlotInformation, SortByOrder, SortVisibleBy, UpsetConfig, DefaultConfig, Row,
-  Bookmark, BookmarkedSelection,
+  Bookmark,
   convertConfig,
   ColumnName,
   AltText,
+  ElementSelection,
+  plotToString,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -17,7 +19,7 @@ const registry = Registry.create();
 
 /**
  * Registers a new action that uses a StateChangeFunction with the provenance registry while also guaranteeing
- * that old upset config types (from outdated Trrack graph imports) 
+ * that old upset config types (from outdated Trrack graph imports)
  * are converted to the new upset config type before being passed to the StateChangeFunction.
  * One type parameter is required; for the payload argument received by the action function.
  * @param type Action type, string
@@ -28,12 +30,12 @@ const registry = Registry.create();
  * @returns An action creator that can be passed to provenance.apply
  */
 function register<DoActionPayload, UndoActionType extends string = string, UndoActionPayload = any>(
-  type: string, 
-  func: StateChangeFunction<UpsetConfig, DoActionPayload>
-): ReturnType<typeof registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>> {
+  type: string,
+  func: StateChangeFunction<UpsetConfig, DoActionPayload>,
+) {
   return registry.register<typeof type, UndoActionType, DoActionPayload, UndoActionPayload, UpsetConfig>(
-    type, 
-    (state, payload) => func(convertConfig(state), payload)
+    type,
+    (state, payload) => func(convertConfig(state), payload),
   );
 }
 
@@ -222,7 +224,7 @@ const addPlotAction = register<Plot>(
         state.plots.scatterplots = [...state.plots.scatterplots, plot];
         break;
       default:
-        throw new Error(`Unknown plot type`);
+        throw new Error('Unknown plot type');
     }
 
     return state;
@@ -244,7 +246,7 @@ const removePlotAction = register<Plot>(
         );
         break;
       default:
-        throw new Error(`Unknown plot type`);
+        throw new Error('Unknown plot type');
     }
 
     return state;
@@ -331,12 +333,12 @@ const setSelectedAction = register<Row | null>(
   },
 );
 
-const setElementSelectionAction = register<BookmarkedSelection | null>(
+const setElementSelectionAction = register<ElementSelection | null>(
   'select-elements',
-  (state: UpsetConfig, bookmarkedSelection) => {
-    state.elementSelection = bookmarkedSelection;
+  (state: UpsetConfig, elementSelection) => {
+    state.elementSelection = elementSelection;
     return state;
-  }
+  },
 );
 /**
  * Sets the alt text for the user
@@ -347,7 +349,7 @@ const setUserAltTextAction = register<AltText | null>(
   (state: UpsetConfig, altText) => {
     state.userAltText = altText;
     return state;
-  }
+  },
 );
 
 /**
@@ -359,7 +361,40 @@ const setUseUserAltTextAction = register<boolean>(
   (state: UpsetConfig, useUserAlt) => {
     state.useUserAlt = useUserAlt;
     return state;
-  }
+  },
+);
+
+/**
+ * Sets whether the intersection size labels should be shown
+ */
+const setIntersectionSizeLabelsAction = register<boolean>(
+  'set-intersection-size-labels',
+  (state, show) => {
+    state.intersectionSizeLabels = show;
+    return state;
+  },
+);
+
+/**
+ * Sets whether the set size labels should be shown
+ */
+const setSetSizeLabelsAction = register<boolean>(
+  'set-set-size-labels',
+  (state, show) => {
+    state.setSizeLabels = show;
+    return state;
+  },
+);
+
+/**
+ * Sets whether the hidden sets should be shown
+ */
+const setShowHiddenSetsAction = register<boolean>(
+  'set-show-hidden-sets',
+  (state, show) => {
+    state.showHiddenSets = show;
+    return state;
+  },
 );
 
 export function initializeProvenanceTracking(
@@ -374,7 +409,7 @@ export function initializeProvenanceTracking(
   );
 
   if (setter) {
-    provenance.currentChange(() => setter(provenance.getState()));
+    provenance.currentChange(() => setter(convertConfig(provenance.getState())));
   }
 
   provenance.done();
@@ -403,10 +438,26 @@ export function getActions(provenance: UpsetProvenance) {
     addMultipleAttributes: (attrs: string[]) => provenance.apply(`Show ${attrs.length} attributes`, addMultipleVisibleAttributes(attrs)),
     removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(`Hide ${attrs.length} attributes`, removeMultipleVisibleAttributes(attrs)),
     updateAttributePlotType: (attr: string, plotType: string) => provenance.apply(`Update ${attr} plot type to ${plotType}`, updateAttributePlotType({ attr, plotType })),
+    /**
+     * Adds a bookmark to the state
+     * @param b bookmark to add
+     */
     addBookmark: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
+    /**
+     * Removes a bookmark from the state
+     * @param b bookmark to remove
+     */
     removeBookmark: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
+    /**
+     * Adds a plot to the state
+     * @param plot plot to add
+     */
     addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
-    removePlot: (plot: Plot) => provenance.apply(`Remove ${plot}`, removePlotAction(plot)),
+    /**
+     * Removes a plot from the state
+     * @param plot plot to remove
+     */
+    removePlot: (plot: Plot) => provenance.apply(`Remove ${plotToString(plot)}`, removePlotAction(plot)),
     replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
     addCollapsed: (id: string) => provenance.apply(`Collapsed ${id}`, addCollapsedAction(id)),
     removeCollapsed: (id: string) => provenance.apply(`Expanded ${id}`, removeCollapsedAction(id)),
@@ -419,19 +470,49 @@ export function getActions(provenance: UpsetProvenance) {
         'Deselect intersection',
       setSelectedAction(intersection),
     ),
-    setElementSelection: (selection: BookmarkedSelection | null) => provenance.apply(
+    /**
+     * Sets a global element selection for the plot,
+     * which is a filter on items based on their attributes.
+     * @param selection The selection to set
+     */
+    setElementSelection: (selection: ElementSelection | null) => provenance.apply(
+      // Object.keys check is for numerical queries, which can come out of vega as {}
       selection && Object.keys(selection.selection).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
-          : "Deselected elements",
+        : 'Deselected elements',
       setElementSelectionAction(selection),
     ),
     setUserAltText: (altText: AltText | null) => provenance.apply(
-      altText ? `Set user alt text` : "Cleared user alt text",
-      setUserAltTextAction(altText)
+      altText ? 'Set user alt text' : 'Cleared user alt text',
+      setUserAltTextAction(altText),
     ),
     setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
-      useUserAlt ? "Enabled user alt text" : "Disabled user alt text",
+      useUserAlt ? 'Enabled user alt text' : 'Disabled user alt text',
       setUseUserAltTextAction(useUserAlt),
+    ),
+    /**
+     * Sets whether set intersection size labels should be shown
+     * @param show Whether to show intersection size labels
+     */
+    setIntersectionSizeLabels: (show: boolean) => provenance.apply(
+      show ? 'Show intersection size labels' : 'Hide intersection size labels',
+      setIntersectionSizeLabelsAction(show),
+    ),
+    /**
+     * Sets whether set size labels should be shown
+     * @param show Whether to show set size labels
+     */
+    setSetSizeLabels: (show: boolean) => provenance.apply(
+      show ? 'Show set size labels' : 'Hide set size labels',
+      setSetSizeLabelsAction(show),
+    ),
+    /**
+     * Sets whether hidden sets should be shown
+     * @param show Whether to show hidden sets
+     */
+    setShowHiddenSets: (show: boolean) => provenance.apply(
+      show ? 'Show hidden sets' : 'Hide hidden sets',
+      setShowHiddenSetsAction(show),
     ),
   };
 }

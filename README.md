@@ -32,6 +32,8 @@ IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983
 
 ## UpSet 2.0 as a React Component
 
+*Please note*: upset2-react is not currently released in the NPM registry. A large, config breaking feature ([back selection](https://github.com/visdesignlab/upset2/pull/370)) is in development and upset2-react will be released with the finalization of this feature.
+
 UpSet 2.0 can be imported as a React component using:
 
 ```console
@@ -202,12 +204,14 @@ const main = () => {
 - `visualizeAttributes` (optional)(`string[]`): List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
 - `visualizeUpsetAttributes` (optional)(`boolean`): Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
 - `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
+- `canEditPlotInformation` (optional)(`boolean`): Whether or not the user can edit the plot information in the text descriptions sidebar.
 - `hideSettings` (optional)(`boolean`): Hide the aggregations/filter settings sidebar.
 - `parentHasHeight` (optional)(`boolean`): Indicates if the parent component has a fixed height. If this is set to `false`, the plot will occupy the full viewport height. When set to `true`, the plot will fit entirely within the parent component. Defaults to `false`.
 - `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and the Trrack object you provide has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible. The provided provenance object must have a type compatible with the [extProvenance](https://vdl.sci.utah.edu/upset2/interfaces/_visdesignlab_upset2_react.UpsetProps.html#extProvenance) UpSet 2.0 prop type.
 - `provVis` (optional): [Sidebar options](#sidebar-options) for the provenance visualization sidebar. See [Trrack-Vis](https://github.com/Trrack/trrackvis) for more information about Trrack provenance visualization.
 - `elementSidebar` (optional): [Sidebar options](#sidebar-options) for the element visualization sidebar. This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
 - `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
+- `footerHeight` (optional)(`number`): Height of the footer overlayed on the upset plot, in px, if one exists. Used to prevent the bottom of the sidebars from overlapping with the footer.
 - `generateAltText` (optional)(`() => Promise<AltText>`): Async function which should return a generated AltText object. See [Alt Text Generation](#alt-text-generation) for more information about Alt Text generation.
 
 ##### Configuration (Grammar) options
@@ -443,7 +447,11 @@ Storybook can be used to test development of UpSet 2.0 as a react component. To 
 
 A new story can be added by adding a `{name}.stories.tsx` file to `packages/upset/stories/`. New data can be added to the `data` subfolder in the same directory.
 
-## Developer Documentation Guidelines
+## Developer Guidelines
+
+Changes to the `UpsetConfig` type require writing config conversion functions to ensure backwards compatibility. See the note at the top of `packages/core/src/convertConfig.ts` for details. Additionally, the typechecker for the `UpsetConfig` must be updated when the type is. See `packages/core/src/typecheck.ts`. Additionally, all the types used within `UpsetConfig` have their own typecheck functions; changes to these types must be reflected in the typechecker.
+
+### Developer Documentation Guidelines
 
 When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html). Also, please add testing via Playwright, outlined in [#end-to-end-e2e-testing](#end-to-end-e2e-testing).
 

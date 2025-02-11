@@ -3,11 +3,11 @@ import { UpsetConfig } from './types';
 export const DefaultConfig: UpsetConfig = {
   // Calls to the alttext API may error if these are not set
   plotInformation: {
-    description: '',
-    sets: '',
-    items: '',
-    caption: '[Caption]',
-    title: '[Title]',
+    description: null,
+    sets: null,
+    items: null,
+    caption: null,
+    title: null,
   },
   horizontal: false,
   firstAggregateBy: 'Degree',
@@ -37,5 +37,8 @@ export const DefaultConfig: UpsetConfig = {
   useUserAlt: false,
   userAltText: null,
   elementSelection: null,
-  version: '0.1.0',
+  version: '0.1.1',
+  intersectionSizeLabels: true,
+  setSizeLabels: true,
+  showHiddenSets: true,
 };

@@ -1,5 +1,3 @@
-import { hashString } from "./utils";
-
 export type ColumnName = string;
 
 /**
@@ -21,21 +19,25 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
- * @privateRemarks This is typechecked in isUpsetConfig; changes here must be reflected there
+ * @privateRemarks This is typechecked by isPlotinformation in typecheck.ts; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
-  description?: string;
+  description: string | null;
   /** User-generated name to use for sets in the plot (ie "genres") */
-  sets?: string;
+  sets: string | null;
   /** User-generated name for items in the dataset (ie "movies") */
-  items?: string;
+  items: string | null;
   /** User-defined plot title */
-  title?: string;
+  title: string | null;
   /** User-defined plot caption (for sighted users) */
-  caption?: string;
+  caption: string | null;
 };
 
+/**
+ * Represents a row in the UpSet plot.
+ * @privateRemarks typechecked by isRowType in typecheck.ts; changes here must be reflected there
+ */
 export type RowType =
   | 'Set'
   | 'Subset'
@@ -222,8 +224,17 @@ export type Rows = Subsets | Aggregates;
  */
 export type Row = Subset | Aggregate;
 
+/**
+ * Possible column types.
+ * @private Taken from the TableTypeAnnotation in multinet-api
+ */
+export type ColumnType = 'primary key' | 'edge source' | 'edge target' | 'label' | 'string' | 'boolean' | 'category' | 'number' | 'date' | 'ignored';
+
+/**
+ * Maps column names to their string type
+ */
 export type ColumnTypes = {
-    [key: string]: string;
+    [key: string]: ColumnType;
 }
 
 export type CoreUpsetData = {
@@ -268,7 +279,7 @@ export type Plot = Scatterplot | Histogram;
  * Represents the different types of attribute plots.
  * Enum value is used here so that the values can be used as keys in upset package.
 */
-// linter is saying this is already declared on line 226 (the line it is first declared...)
+// linter is saying this is already declared... on this line
 // eslint-disable-next-line no-shadow
 export enum AttributePlotType {
   BoxPlot = 'Box Plot',
@@ -280,8 +291,67 @@ export enum AttributePlotType {
 /**
  * Represents the different types of attribute plots.
  * Enum values (AttributePlotType) behave better in a Record object than in traditional dict types.
+ * @privateRemarks typechecked by isAttributePlots in typecheck.ts; changes here must be reflected there
  */
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
+
+/**
+ * Possible string types for an element query
+ */
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum ElementQueryType {
+  EQUALS = 'equals',
+  CONTAINS = 'contains',
+  LENGTH = 'length equals',
+  REGEX = 'regex',
+  LESS_THAN = 'less than',
+  GREATER_THAN = 'greater than',
+}
+
+/**
+ * Possible string types for an element query on a numerical attribute
+ */
+// linter is saying this is already declared... on this line
+// eslint-disable-next-line no-shadow
+export enum NumericalQueryType {
+  EQUALS = 'equals',
+  LESS_THAN = 'less than',
+  GREATER_THAN = 'greater than',
+}
+
+/**
+ * Represents a selection of elements based on a comparison between an attribute and a query string.
+ */
+export type ElementQuery = {
+  /**
+   * Name of the attribute being queried upon
+   */
+  att: string,
+  /**
+   * Type of the query; determines the mechanism used to evaluate whether the value of att
+   * on a given element matches this query
+   */
+  type: ElementQueryType,
+  /**
+   * The query string. To be included in this query, the value of att on a given
+   * element must match this query string according to the rules set by the type.
+   */
+  query: string,
+}
+
+/**
+ * Represents a selection of elements based on their numerical attributes,
+ * currently only from brushes in the element view.
+ * Maps attribute names to an array with the minimum and maximum
+ * values of the selection over each attribute.
+ *
+ * @privateRemarks
+ * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
+ * upset/src/components/ElementView/ElementVisualization.tsx.
+ * This is typechecked by isNumericalQuery in typecheck.ts; changes here must be reflected there.
+ */
+export type NumericalQuery = {[attName: string] : [number, number]};
 
 /**
  * Base representation of a bookmarkable type
@@ -299,7 +369,7 @@ export type Bookmark = {
   /**
    * Subtype of the bookmark; used to determine what fields are available at runtime
    */
-  type: 'intersection' | 'elements';
+  type: 'intersection' | 'numerical' | 'element';
 };
 
 /**
@@ -317,30 +387,40 @@ export type BookmarkedIntersection = Bookmark & {
 }
 
 /**
- * Represents a selection of elements in the Element View.
- * Maps attribute names to an array with the minimum and maximum
- * values of the selection over each attribute.
- * 
- * @privateRemarks
- * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in the Element View.
- * This is typechecked by isElementSelection in typecheck.ts; changes here must be reflected there.
+ * Represents a bookmarked element selection based on numerical attributes, created in the Element View.
+ * @privateRemarks typechecked by isNumericalBookmark in typecheck.ts; changes here must be reflected there
  */
-export type ElementSelection = {[attName: string] : [number, number]};
-
-/**
- * Represents a bookmarked element selection, created in the Element View.
- * @privateRemarks typechecked by isBookmarkedSelection in typecheck.ts; changes here must be reflected there
- */
-export type BookmarkedSelection = Bookmark & {
+export type NumericalBookmark = Bookmark & {
   /**
    * The selection parameters
    */
-  selection: ElementSelection;
+  selection: NumericalQuery;
   /**
    * Indicates type at runtime
    */
-  type: 'elements';
+  type: 'numerical';
 }
+
+/**
+ * Represents a bookmarked element selection based on attribute comparisons, created in the element view
+ * @privateRemarks typechecked by isElementBookmark in typecheck.ts; changes here must be reflected there
+ */
+export type ElementBookmark = Bookmark & {
+  /**
+   * Selection parameters
+   */
+  selection: ElementQuery;
+  /**
+   * Indicates type at runtim
+   */
+  type: 'element';
+}
+
+/**
+ * A bookmark which represents a selection of elements
+ * @privateRemarks typechecked by isElementSelection in typecheck.ts; changes here must be reflected there
+ */
+export type ElementSelection = NumericalBookmark | ElementBookmark;
 
 /**
  * Represents the alternative text for an Upset plot.
@@ -350,12 +430,12 @@ export type AltText = {
   /**
   * The long description for the Upset plot.
   */
-  longDescription: string;
+  longDescription: string | null;
 
   /**
   * The short description for the Upset plot.
   */
-  shortDescription: string;
+  shortDescription: string | null;
 
   /**
   * The technique description for the Upset plot.
@@ -373,7 +453,7 @@ export type AltText = {
  * A configuration object for an UpSet plot.
  * @version 0.1.0
  * @privateRemarks
- * Each breaking update to this config MUST be accompanied by an update to the config converter 
+ * Each breaking update to this config MUST be accompanied by an update to the config converter
  * in `convertConfig.ts`. Full instructions are provided in the converter file.
  * ANY update to this config must be accompanied by a change to the isUpsetConfig function in typecheck.ts
  */
@@ -397,7 +477,7 @@ export type UpsetConfig = {
   visibleAttributes: ColumnName[];
   attributePlots: AttributePlots;
   /**
-   * Bookmarked selections, can be intersections or element selections. 
+   * Bookmarked selections, can be intersections or element selections.
    */
   bookmarks: Bookmark[];
   collapsed: string[];
@@ -410,10 +490,22 @@ export type UpsetConfig = {
   /**
    * Selected elements (data points) in the Element View.
    */
-  elementSelection: BookmarkedSelection | null;
-  version: '0.1.0';
+  elementSelection: ElementSelection | null;
+  version: '0.1.1';
   useUserAlt: boolean;
   userAltText: AltText | null;
+  /**
+   * Whether to display numerical size labels on the intersection size bars.
+   */
+  intersectionSizeLabels: boolean;
+  /**
+   * Whether to display numerical size labels on the set size bars.
+   */
+  setSizeLabels: boolean;
+  /**
+   * Whether to display the hidden sets & their sizes above the plot
+   */
+  showHiddenSets: boolean;
 };
 
 export type AccessibleDataEntry = {
@@ -442,144 +534,3 @@ export type AltTextConfig = UpsetConfig & {
   processedData?: Rows;
   accessibleProcessedData?: AccessibleData
 };
-
-/**
- * Checks if the given rows are aggregates.
- * @param rr The rows to check.
- * @returns `true` if the rows are aggregates, `false` otherwise.
- */
-export function areRowsAggregates(rr: Rows): rr is Aggregates {
-  const { order } = rr;
-
-  if (order.length === 0) return false;
-
-  const row = rr.values[order[0]];
-
-  return row.type === 'Aggregate';
-}
-
-/**
- * Checks if the given rows are subsets.
- * @param rr - The rows to check.
- * @returns True if the rows are subsets, false otherwise.
- */
-export function areRowsSubsets(rr: Rows): rr is Subsets {
-  const { order } = rr;
-
-  if (order.length === 0) return false;
-
-  const row = rr.values[order[0]];
-
-  return row.type === 'Subset';
-}
-
-/**
- * Checks if a given row is an aggregate.
- * @param row - The row to check.
- * @returns True if the row is an aggregate, false otherwise.
- */
-export function isRowAggregate(row: Row): row is Aggregate {
-  return row.type === 'Aggregate';
-}
-
-/**
- * Checks if a given row is a subset.
- * @param row - The row to check.
- * @returns True if the row is a subset, false otherwise.
- */
-export function isRowSubset(row: Row): row is Subset {
-  return row.type === 'Subset';
-}
-
-
-/**
- * Checks if a bookmark is a BookmarkedIntersection.
- * @param b - The bookmark to check.
- * @returns True if the bookmark is a BookmarkedIntersection, false otherwise.
- */
-export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersection {
-  return b.type === 'intersection';
-}
-
-/**
- * Checks if two element selections are equal
- * {} is considered == to undefined 
- * @param a The first element selection
- * @param b The second element selection
- * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
- * @returns Whether a and b are equal
- */
-export function elementSelectionsEqual(a: ElementSelection | undefined, b: ElementSelection | undefined, decimalPlaces = 4): boolean {
-  // We want undefined == {}
-  if (!a || Object.keys(a).length == 0) {
-    return (!b || Object.keys(b).length == 0);
-  }
-  if (!a || !b) return false;
-  
-  const keys = Object.keys(a);
-  if (keys.length !== Object.keys(b).length) return false;
-
-  const round = 10 ** decimalPlaces;
-  function prep(num: number): number {
-    return Math.round(num * round);
-  }
-
-  for (const key of keys) {
-    if (!b.hasOwnProperty(key)) return false;
-    if (prep(a[key][0]) !== prep(b[key][0])) return false;
-    if (prep(a[key][1]) !== prep(b[key][1])) return false;
-  }
-
-  return true;
-}
-
-/**
- * Converts an element selection to a bookmark.
- * Generates the ID by hashing the selection and 
- * labels the bookmark with the selection attributes.
- * @param selection The numerical attribute query.
- * @returns The element selection.
- */
-export function elementSelectionToBookmark(selection: ElementSelection): BookmarkedSelection {
-  // Normalizing prevents floating point error from causing different hashes
-  const norm = (i : number) => Math.abs(Math.round(i * 10000));
-
-  let i = 1;
-  for (const [key, value] of Object.entries(selection)) {
-    i *= norm(hashString(key)) * norm(value[0]) * norm(value[1]);
-  }
-  i = norm(i);
-  return {
-    id: i.toString(),
-    label: `Atts: ${Object.keys(selection).join(', ')}`,
-    type: 'elements',
-    selection: selection,
-  };
-}
-
-/**
- * Calculates the degree of set membership based on the provided membership object.
- * The degree of set membership is the number of sets in which the subset is comprised of.
- *
- * @param membership - The membership object containing the set membership statuses.
- * @returns The degree of set membership.
- */
-export function getDegreeFromSetMembership(membership: {
-  [key: string]: SetMembershipStatus;
-}): number {
-  if (Object.values(membership).length === 0) return -1;
-  return Object.values(membership).filter((m) => m === 'Yes').length;
-}
-
-/**
- * Retrieves the belonging sets from a set membership object.
- * @param membership - The set membership object.
- * @returns An array of strings representing the belonging sets.
- */
-export function getBelongingSetsFromSetMembership(membership: {
-  [key: string]: SetMembershipStatus;
-}): string[] {
-  return Object.entries(membership)
-    .filter((mem) => mem[1] === 'Yes')
-    .map((mem) => mem[0]);
-}

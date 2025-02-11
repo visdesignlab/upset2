@@ -14,18 +14,20 @@ import { dataAtom } from '../atoms/dataAtom';
 import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemovalAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import {
   getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
 } from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
-import { Sidebar } from './Sidebar';
+import { SettingsSidebar } from './SettingsSidebar';
 import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
+import { footerHeightAtom } from '../atoms/dimensionsAtom';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -34,6 +36,7 @@ export const ProvenanceContext = createContext<{
 
 const baseStyle = css`
   padding: 0.25em;
+  padding-left: 0;
 `;
 
 type Props = {
@@ -41,6 +44,7 @@ type Props = {
   config: UpsetConfig;
   allowAttributeRemoval?: boolean;
   hideSettings?: boolean;
+  canEditPlotInformation?: boolean;
   extProvenance?: {
     provenance: UpsetProvenance;
     actions: UpsetActions;
@@ -57,17 +61,18 @@ type Props = {
     open: boolean;
     close: () => void;
   };
+  footerHeight?: number;
   generateAltText?: () => Promise<AltText>;
 };
 
 export const Root: FC<Props> = ({
-  data, config, allowAttributeRemoval, hideSettings, extProvenance, provVis, elementSidebar, altTextSidebar, generateAltText,
+  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, footerHeight, generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
-
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
+  const setcanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
@@ -75,9 +80,15 @@ export const Root: FC<Props> = ({
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
   useEffect(() => {
-    setState(convertConfig(config));
+    if (!extProvenance) setState(convertConfig(config));
     setData(data);
   }, []);
+
+  useEffect(() => {
+    if (canEditPlotInformation !== undefined) {
+      setcanEditPlotInformation(canEditPlotInformation);
+    }
+  }, [canEditPlotInformation]);
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
@@ -100,11 +111,13 @@ export const Root: FC<Props> = ({
     return { provenance, actions };
   }, [config]);
 
+  useEffect(() => setState(convertConfig(provenance.getState())), []);
+
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
-    setAttributeColumns(data.attributeColumns);
+    setAttributeColumns(['Degree', 'Deviation', ...data.attributeColumns]);
     setAllColumns(data.columns);
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
@@ -124,6 +137,11 @@ export const Root: FC<Props> = ({
     };
   }, []);
 
+  // Sets the footer height atom if provided as an argument
+  const setFooterHeight = useSetRecoilState(footerHeightAtom);
+  // Footer height needs to be doubled to work right... idk why that is!
+  useEffect(() => { if (footerHeight) setFooterHeight(2 * footerHeight); }, [footerHeight]);
+
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 
   return (
@@ -137,7 +155,7 @@ export const Root: FC<Props> = ({
           ${baseStyle};
         `}
       >
-        <Sidebar />
+        <SettingsSidebar />
       </div>}
       <h2
         id="desc"
@@ -169,7 +187,7 @@ export const Root: FC<Props> = ({
         </SvgBase>
       </div>
       <ContextMenu />
-      {elementSidebar && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
+      {elementSidebar && elementSidebar.open && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {(altTextSidebar && generateAltText) && <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />}
     </ProvenanceContext.Provider>

@@ -128,6 +128,11 @@ export interface UpsetProps {
   allowAttributeRemoval?: boolean;
 
   /**
+   * Whether or not the user has plot information edit permissions.
+   */
+  canEditPlotInformation?: boolean;
+
+  /**
    * Hide the aggregations/filter settings sidebar.
    */
   hideSettings?: boolean;
@@ -167,6 +172,12 @@ export interface UpsetProps {
   * This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
   */
   altTextSidebar?: SidebarProps;
+
+  /**
+   * Height of the footer overlayed on the upset plot, in px, if one exists.
+   * Used to prevent the bottom of the sidebars from overlapping with the footer.
+   */
+  footerHeight?: number;
 
   /**
   * Async function which should return a generated AltText object.

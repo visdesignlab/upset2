@@ -2,7 +2,7 @@ import { Scatterplot } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { PlainObject, VegaLite } from 'react-vega';
 
-import { createScatterplotSpec } from './generatePlotSpec';
+import { createAddScatterplotSpec } from './generatePlotSpec';
 
 type Props = {
   spec: Scatterplot;
@@ -11,7 +11,7 @@ type Props = {
 
 export const ScatterplotPlot: FC<Props> = ({ spec, data }) => (
   <VegaLite
-    spec={createScatterplotSpec(
+    spec={createAddScatterplotSpec(
       {
         attribute: spec.x,
         logScale: spec.xScaleLog || false,

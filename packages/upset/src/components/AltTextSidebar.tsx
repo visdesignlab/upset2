@@ -1,31 +1,29 @@
 import {
   Box,
   Button,
-  Divider,
-  Drawer,
-  FormControlLabel,
-  Switch,
+  Icon,
   TextField,
   Typography,
-  css,
 } from '@mui/material';
+import EditIcon from '@mui/icons-material/Edit';
 import {
   useState, useEffect, FC, useContext,
   useMemo,
+  useCallback,
 } from 'react';
 import { useRecoilValue } from 'recoil';
+import { AltText } from '@visdesignlab/upset2-core/';
 import { ProvenanceContext } from './Root';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
-import { AltText } from '@visdesignlab/upset2-core/';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import '../index.css';
-import { HelpCircle } from './custom/HelpCircle';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
+import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
+import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
+import { Sidebar } from './custom/Sidebar';
+import { UpsetHeading } from './custom/theme/heading';
 
-/**
- * Props for the AltTextSidebar component.
- */
 /**
  * Props for the AltTextSidebar component.
  */
@@ -36,7 +34,7 @@ type Props = {
   open: boolean;
 
   /**
-   * Called when the sidebar is closed.
+   * Callback to close the sidebar.
    */
   close: () => void;
 
@@ -46,8 +44,6 @@ type Props = {
    */
   generateAltText: () => Promise<AltText>;
 }
-
-const initialDrawerWidth = 450;
 
 /**
 * Displays a sidebar for generating alternative text
@@ -61,30 +57,56 @@ const initialDrawerWidth = 450;
 * @returns {JSX.Element} The AltTextSidebar component.
 */
 export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  
-  const currState = useRecoilValue(upsetConfigAtom);
+  /**
+   * State
+   */
 
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const currState = useRecoilValue(upsetConfigAtom);
+  const canEditPlotInformation = useRecoilValue(canEditPlotInformationAtom);
   const [altText, setAltText] = useState<AltText | null>(null);
   const [textGenErr, setTextGenErr] = useState<string | false>(false);
-  
-  // States for editing the alt text
   const [textEditing, setTextEditing] = useState(false);
   const [userLongText, setUserLongText] = useState(currState.userAltText?.longDescription);
   const [userShortText, setUserShortText] = useState(currState.userAltText?.shortDescription);
   const [useLong, setUseLong] = useState(false);
+  const [plotInfoEditing, setPlotInfoEditing] = useState(false);
+  const plotInfo = useRecoilValue(plotInformationSelector);
+
+  /**
+   * Functions
+   */
 
   /**
    * Handler for when the save button is clicked
    */
-  function saveButtonClick() {
+  const saveButtonClick: () => void = useCallback(() => {
+    // if the user doesn't have edit permissions, don't allow saving
+    // The user shouldn't be able to edit in this case, but this is a failsafe
+    if (!canEditPlotInformation) return;
+
     setTextEditing(false);
-    if (!currState.useUserAlt)
-      actions.setUseUserAltText(true);
-    if (currState.userAltText?.shortDescription !== userShortText 
-        || currState.userAltText?.longDescription !== userLongText)  
-      actions.setUserAltText({shortDescription: userShortText ?? "", longDescription: userLongText ?? ""});
-  }
+    if (!currState.useUserAlt) actions.setUseUserAltText(true);
+    if (currState.userAltText?.shortDescription !== userShortText
+        || currState.userAltText?.longDescription !== userLongText) { actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' }); }
+  }, [currState, userShortText, userLongText, actions]);
+
+  /**
+   * Sets text editing to true and sets default user alttexts if necessary
+   */
+  const enableTextEditing: () => void = useCallback(() => {
+    // if the user doesn't have edit permissions, don't allow editing
+    // The button should be hidden in this case, but this is a failsafe
+    if (!canEditPlotInformation) return;
+
+    setTextEditing(true);
+    if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
+    if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
+  }, [currState, altText]);
+
+  /**
+   * Effects
+   */
 
   // values added as a dependency here indicate values which are usable to the alt-text generator API call
   // When new options are added to the alt-text API, they should be added here as well
@@ -98,172 +120,153 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
         setTextGenErr(msg);
       }
     }
-    
-    generate();
+
+    if (open) generate();
   }, [currState]);
+
+  /**
+   * Constants
+   */
+
+  /**
+   * Number of tab indicies used by the PlotInformation component
+   * @see PlotInformation to count the number of tab indices used
+   */
+  const PLOT_INFO_TABS = 7;
+  /**
+   * The tab index, in this component, of the plot information component
+   */
+  const PLOT_INFO_TAB_INDEX = 9;
 
   // Current alt text to display to the user
   const displayAltText: string | undefined = useMemo(() => {
-    if (textEditing)
-      if (useLong) return userLongText ?? altText?.longDescription
-      else return userShortText ?? altText?.shortDescription
-    else if (useLong) return currState.useUserAlt ? userLongText : altText?.longDescription 
-    else return currState.useUserAlt ? userShortText : altText?.shortDescription;
-  }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription, currState.useUserAlt]);
-  
-  const divider = <Divider
-    css={css`
-      width: 100%;
-      margin: auto;
-      margin-bottom: 1em;
-    `}
-    aria-hidden={true}
-  />
-  
+    if (useLong) return userLongText ?? altText?.longDescription ?? '';
+    return userShortText ?? altText?.shortDescription ?? '';
+  }, [useLong, userLongText, userShortText, altText?.shortDescription, altText?.longDescription]);
+
+  /**
+   * Whether to display the plot information section
+   */
+  const displayPlotInfo: boolean = useMemo(
+    () => plotInfoEditing || (currState.plotInformation && Object.values(currState.plotInformation).some((v) => !!v)),
+    [currState.plotInformation, plotInfoEditing],
+  );
+
   return (
-    <Drawer
-      aria-hidden={!open}
-      anchor="right"
+    <Sidebar
       open={open}
-      onClose={close}
-      variant="persistent"
-      aria-label="Accessibility Sidebar"
-      sx={{
-        width: (open) ? initialDrawerWidth : 0,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          padding: '1em',
-          marginTop: '2em',
-          width: (open) ? initialDrawerWidth : 0,
-          boxSizing: 'border-box',
-          zIndex: 0,
-        },
-      }}
+      close={close}
+      closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
+      label="Alt Text and Plot Information Sidebar"
     >
-      <div css={css`width:${initialDrawerWidth}`}>
-        <br />
-        <Typography variant="h1" fontSize="1.4em" fontWeight="inherit" height="1.4em" padding="0">
-          Accessibility Sidebar
-        </Typography>
-        {divider}
-        <PlotInformation divider={divider} tabIndex={10} />
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" height="1.4em" padding="0" marginTop="1em">
-          Description
-        </Typography>
-        {divider}
-        <Box marginTop={2} css={css`overflow-y: auto;`}>
-          {!textGenErr ? (<>
-            <FormControlLabel
-              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
-              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="View User Description(s)"
-              control={
-                <Switch
-                  size="small"
-                  style={{marginRight: "10px"}}
-                  checked={currState.useUserAlt || textEditing}
-                  tabIndex={9}
-                  onChange={(ev) => {
-                    if (currState.useUserAlt !== ev.target.checked)
-                      actions.setUseUserAltText(ev.target.checked);
-                    if (!ev.target.checked) {
-                      setTextEditing(false);
-                    }
-                  }}
-                />
-              }
-              labelPlacement="start"
+      <UpsetHeading level="h1">
+        {displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
+      </UpsetHeading>
+      {displayPlotInfo &&
+          // We only want to display plotInfo if the user is editing OR if they've entered some field other than title
+          (plotInfoEditing || Object.entries(plotInfo).filter(([k, _]) => k !== 'title').some(([_, v]) => !!v)) ? (
+            <PlotInformation
+              tabIndex={PLOT_INFO_TAB_INDEX}
+              editing={plotInfoEditing}
+              setEditing={setPlotInfoEditing}
             />
-            <HelpCircle 
-              text={"When enabled, allows you to enter a custom alternative text description."}
-              margin={{left: 12, top: 0, right: 0, bottom: 0}}
-            />
-            <br />
-            <FormControlLabel
-              style={{marginLeft: "5px"}} // Align with below text; has 2px border & 3px padding
-              sx={{ '& span': { fontSize: '0.8rem' } }} // Fontsize can't be set in style prop for some reason
-              label="Display Long Description"
-              control={
-                <Switch
-                  size="small"
-                  checked={useLong}
-                  tabIndex={8}
-                  onChange={(ev) => {
-                    setUseLong(ev.target.checked);
-                  }}
-                />
-              }
-              labelPlacement="start"
-            />
-            <HelpCircle 
-              text={"When enabled, displays the long text description for this plot instead of the short version."}
-              margin={{left: 12, top: 0, right: 0, bottom: 0}} 
-            />
-          </>) : (
-            <Typography variant="body1" color="error">{textGenErr}</Typography>
-          )}
-          {textEditing ? (<>
-            <Button 
-              color="primary" 
-              style={{float: 'right'}} 
-              onClick={saveButtonClick}
-              tabIndex={7}
-            >Save</Button>
+        ) : (
+      // only show "Add Plot Information" if the user has edit permissions
+          canEditPlotInformation ? (
             <Button
-              color='warning'
-              style={{float: "right"}}
-              onClick={() => {
-                setUserLongText(altText?.longDescription);
-                setUserShortText(altText?.shortDescription);
-              }}
-              tabIndex={6}
-            >Reset Descriptions</Button>
-            <br />
-            <TextField multiline fullWidth
-              onChange={(e) => useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value)}
-              value={(displayAltText)}
-              tabIndex={5}
-            />
-            <br />
-          </>) : (
-            <div 
-              style={{
-                overflowY: 'auto',
-                cursor: 'pointer',
-                padding: '3px',
-                borderRadius: '4px',
-                width: 'calc(100% - 10px)', // We have 10px of padding + border
-                paddingBottom: '90px', // Necessary to keep it above the footer
-              }}
-              onClick={() => {
-                setTextEditing(true);
-                if (!currState.userAltText?.shortDescription)
-                  setUserShortText(altText?.shortDescription);
-                if (!currState.userAltText?.longDescription)
-                  setUserLongText(altText?.longDescription);
-              }}
-              tabIndex={3}  
+              onClick={() => setPlotInfoEditing(true)}
+              tabIndex={PLOT_INFO_TAB_INDEX}
             >
-              <ReactMarkdownWrapper 
-                text={
-                  displayAltText ?? (currState.useUserAlt 
-                    ? "No user-generated description available." 
-                    : "No description available.")
-                }
+              Add Plot Information
+            </Button>
+          ) : null
+        )}
+      {displayPlotInfo && (
+      <UpsetHeading level="h2" style={{ marginTop: '10px' }}>Text Description</UpsetHeading>
+      )}
+      {/* 0.875em for default 16px = 1em makes 14px, which is the standard for much of the UI */}
+      <Box style={{ overflowY: 'auto', fontSize: '0.875em' }}>
+        {textGenErr && !userLongText && !userShortText ? (
+          <Typography variant="body1" color="error">{textGenErr}</Typography>
+        ) : (
+          textEditing ? (
+            <>
+              <Button
+                color="primary"
+                style={{ float: 'right' }}
+                onClick={saveButtonClick}
+                id="saveAltTextButton"
+                tabIndex={7}
+              >
+                Save
+              </Button>
+              <Button
+                color="warning"
+                style={{ float: 'right' }}
+                onClick={() => {
+                  setUserLongText(altText?.longDescription);
+                  setUserShortText(altText?.shortDescription);
+                }}
+                tabIndex={8}
+              >
+                Reset Descriptions
+              </Button>
+              <br />
+              <TextField
+                multiline
+                fullWidth
+                onChange={(e) => (useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value))}
+                value={(displayAltText)}
+                tabIndex={6}
+                aria-flowto="saveAltTextButton"
               />
+              <br />
+            </>
+          ) : (
+            <Box
+              sx={{
+                overflowY: 'auto',
+                borderRadius: '4px',
+                border: '2px solid white',
+                width: 'calc(100% - 10px)', // We have 10px of padding + border
+              }}
+              tabIndex={3}
+            >
+              {canEditPlotInformation && (
+              // Only show the edit button if the user has edit permissions
               <Button
                 style={{
-                  width: '100%',
-                  textAlign: 'center',
+                  display: 'inline-block',
+                  width: '24px',
+                  float: 'right',
+                  cursor: 'pointer',
                 }}
-                onClick={() => setTextEditing(true)}
-                tabIndex={4}
-              >Edit Text Description</Button>
-            </div>
-          )}
-        </Box>
-      </div>
-    </Drawer>
+                onClick={enableTextEditing}
+                tabIndex={5}
+                aria-label="Alt Text Description Editor"
+              >
+                <Icon style={{ overflow: 'visible' }}>
+                  <EditIcon />
+                </Icon>
+              </Button>
+              )}
+              <ReactMarkdownWrapper
+                text={displayAltText}
+              />
+            </Box>
+          )
+        )}
+        <Button
+          onClick={() => setUseLong(!useLong)}
+          tabIndex={4}
+          style={{
+            width: '100%',
+            textAlign: 'center',
+          }}
+        >
+          {useLong ? 'Show Less' : 'Show More'}
+        </Button>
+      </Box>
+    </Sidebar>
   );
 };
-      

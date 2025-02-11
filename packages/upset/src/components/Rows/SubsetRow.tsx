@@ -1,5 +1,7 @@
 import { Subset, getBelongingSetsFromSetMembership, Row } from '@visdesignlab/upset2-core';
-import { FC, useState, useContext } from 'react';
+import {
+  FC, useState, useContext,
+} from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
@@ -14,8 +16,7 @@ import {
 import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
-import { countSubsetSelected } from './functions';
-import { elementSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
+import { subsetSelectedCount } from '../../atoms/elementsSelectors';
 
 type Props = {
   subset: Subset;
@@ -30,8 +31,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarks = useRecoilValue(bookmarkSelector);
-  const selectedElements = useRecoilValue(selectedElementSelector);
-  const items = useRecoilValue(elementSelector(subset.id));
+  const selected = useRecoilValue(subsetSelectedCount(subset.id));
 
   // Use trrack action for current intersection
   const { actions } = useContext(
@@ -94,9 +94,8 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         fillOpacity="0.0"
       />
       <Matrix sets={visibleSets} subset={subset} />
-      {bookmarks.find((b) => b.id === subset.id) &&
-        <BookmarkStar row={subset} />}
-      <SizeBar size={subset.size} row={subset} selected={countSubsetSelected(items, selectedElements?.selection)} />
+      <BookmarkStar row={subset} />
+      <SizeBar size={subset.size} row={subset} selected={selected} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );

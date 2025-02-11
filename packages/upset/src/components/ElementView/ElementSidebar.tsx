@@ -1,31 +1,42 @@
-import OpenInFullIcon from '@mui/icons-material/OpenInFull';
-import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import DownloadIcon from '@mui/icons-material/Download';
-import CloseIcon from '@mui/icons-material/Close';
 import {
-  Alert, Box, Divider, Drawer, IconButton, Tooltip, Typography, css,
+  IconButton, Tooltip,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
-import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
+import { useCallback, useMemo, useState } from 'react';
+import AddchartIcon from '@mui/icons-material/Addchart';
 import { columnsAtom } from '../../atoms/columnAtom';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
-import { elementSelector, intersectionCountSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
-import { ElementQueries } from './ElementQueries';
+import {
+  selectedElementSelector, selectedItemsCounter,
+  selectedItemsSelector,
+} from '../../atoms/elementsSelectors';
+import { BookmarkChips } from './BookmarkChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
-import { UpsetActions } from '../../provenance';
-import { ProvenanceContext } from '../Root';
+import { QueryInterface } from './QueryInterface';
+import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { Sidebar } from '../custom/Sidebar';
+import { UpsetHeading } from '../custom/theme/heading';
+import { AddPlotDialog } from './AddPlotDialog';
 
+/**
+ * Props for the ElementSidebar component
+ */
 type Props = {
+  /** Whether the sidebar is open */
   open: boolean,
+  /** Function to close the sidebar */
   close: () => void
 }
 
-const initialDrawerWidth = 450;
-const minDrawerWidth = 100;
-
+/**
+ * Immediately downloads a csv containing items with the given columns
+ * @param items Rows to download
+ * @param columns Data attributes to download
+ * @param name Name of the file
+ */
 function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
@@ -56,183 +67,78 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 }
 
 /** @jsxImportSource @emotion/react */
+/**
+ * Sidebar component for the Element View
+ * @param open Whether the sidebar is open
+ * @param close Function to close the sidebar
+ */
 export const ElementSidebar = ({ open, close }: Props) => {
-  const [fullWidth, setFullWidth] = useState(false);
-  const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const [drawerWidth, setDrawerWidth] = useState(initialDrawerWidth);
-  const intersectionCounter = useRecoilValue(
-    intersectionCountSelector(currentIntersection?.id),
-  );
-  const currentIntersectionElements = useRecoilValue(
-    elementSelector(currentIntersection?.id),
-  );
-  const bookmarks = useRecoilValue(bookmarkSelector);
-
+  const [openAddPlot, setOpenAddPlot] = useState(false);
+  const currentElementSelection = useRecoilValue(selectedElementSelector);
+  const selectedItems = useRecoilValue(selectedItemsSelector);
+  const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
+  const bookmarked = useRecoilValue(bookmarkSelector);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
-  const [hideElementSidebar, setHideElementSidebar] = useState(!open);
-
-  const {actions}: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const currentSelection = useRecoilValue(selectedElementSelector);
-
-  useEffect(() => {
-    setHideElementSidebar(!open);
-  }, [open]);
-
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const newWidth = document.body.clientWidth - e.clientX;
-
-    if (newWidth > minDrawerWidth) {
-      setDrawerWidth(newWidth);
-    }
-  }, []);
-
-  const handleMouseUp = useCallback(() => {
-    document.removeEventListener('mouseup', handleMouseUp, true);
-    document.removeEventListener('mousemove', handleMouseMove, true);
-  }, [handleMouseMove]);
-
-  const handleMouseDown = useCallback(
-    (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
-      e.preventDefault();
-      e.stopPropagation();
-      document.addEventListener('mouseup', handleMouseUp, true);
-      document.addEventListener('mousemove', handleMouseMove, true);
-    },
-    [handleMouseUp, handleMouseMove],
+  /** Whether to show the 'Element Queries' section */
+  const showQueries = useMemo(
+    () => bookmarked.length > 0 || currentIntersection || currentElementSelection,
+    [bookmarked.length, currentIntersection, currentElementSelection],
   );
+
+  /**
+   * Closes the AddPlotDialog
+   */
+  const onClose = useCallback(() => setOpenAddPlot(false), [setOpenAddPlot]);
 
   return (
-    <Drawer
-      aria-hidden={!open}
-      sx={{
-        width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-        flexShrink: 0,
-        '& .MuiDrawer-paper': {
-          padding: '1em',
-          marginTop: '2em',
-          width: hideElementSidebar ? 0 : fullWidth ? '100%' : drawerWidth,
-          boxSizing: 'border-box',
-          zIndex: 0,
-        },
-      }}
+    <Sidebar
       open={open}
-      onClose={close}
-      variant="persistent"
-      anchor="right"
-      aria-label="Element View sidebar"
-    >
-      <Box
-        sx={{
-          width: '5px',
-          cursor: 'ew-resize',
-          padding: '4px 0 0',
-          borderTop: '1px solid #ddd',
-          position: 'absolute',
-          top: 0,
-          bottom: 0,
-          left: 0,
-          zIndex: 100,
-          backgroundColor: '#f4f7f9',
-        }}
-        onMouseDown={(e) => handleMouseDown(e)}
-      />
-      <div css={css`
-          display: flex;
-          justify-content: space-between;
-        `}
-      >
-        { !fullWidth ?
-          <IconButton
-            onClick={() => {
-              setFullWidth(true);
-            }}
-            aria-label="Expand the sidebar in full screen"
-          >
-            <OpenInFullIcon />
+      close={close}
+      label="Element View Sidebar"
+      buttons={
+        <Tooltip title="Add Plot">
+          <IconButton onClick={() => setOpenAddPlot(true)}>
+            <AddchartIcon />
           </IconButton>
-          :
-          <IconButton
-            onClick={() => {
-              if (fullWidth) {
-                setFullWidth(false);
-              } else {
-                setHideElementSidebar(true);
-              }
-            }}
-            aria-label="Reduce the sidebar to normal size"
-          >
-            <CloseFullscreen />
-          </IconButton>}
-        <IconButton
-          onClick={() => {
-            setHideElementSidebar(true);
-            actions.setElementSelection(currentSelection);
-            close();
-          }}
-          aria-label="Close the sidebar"
-        >
-          <CloseIcon />
-        </IconButton>
-      </div>
+        </Tooltip>
+      }
+    >
       <div style={{ marginBottom: '1em' }}>
-        <Typography variant="h2" fontSize="1.2em" fontWeight="inherit" gutterBottom>
+        <UpsetHeading level="h1">
           Element View
-        </Typography>
-        <Divider />
+        </UpsetHeading>
       </div>
-      <Typography variant="h3" fontSize="1.2em">
-        Element Queries
-      </Typography>
-      <Divider />
-      <ElementQueries />
-      <Typography variant="h3" fontSize="1.2em">
-        Element Visualization
-      </Typography>
-      <Divider />
+      <UpsetHeading level="h3">
+        {showQueries ? 'Selections' : 'Selections Will Appear Here'}
+      </UpsetHeading>
+      <BookmarkChips />
       <ElementVisualization />
-      <Typography variant="h3" fontSize="1.2em">
+      <AddPlotDialog open={openAddPlot} onClose={onClose} />
+      <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
+        Element Queries
+      </UpsetHeading>
+      <QueryInterface />
+      <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
         Query Result
-        <Tooltip
-          title={
-              currentIntersection
-                ? `Download ${intersectionCounter} elements`
-                : ''
-            }
-        >
+        <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton
-            disabled={!currentIntersection}
             onClick={() => {
-              if (currentIntersection) {
-                downloadElementsAsCSV(
-                  currentIntersectionElements,
-                  columns,
-                  currentIntersection.elementName,
-                );
-              }
+              downloadElementsAsCSV(
+                selectedItems,
+                columns,
+                currentElementSelection?.label ?? 'upset_elements',
+              );
             }}
+            // This needs to stay shorter than the h2 text or the divider spacing gets off
+            style={{ height: '1.2em' }}
           >
             <DownloadIcon />
           </IconButton>
         </Tooltip>
-      </Typography>
-      <Divider />
-      {currentIntersection || (currentSelection?.selection && bookmarks.length > 0) ? (
-        <ElementTable />
-      ) : (
-        <Alert
-          severity="info"
-          variant="outlined"
-          role="generic"
-          sx={{
-            alignItems: 'center', marginTop: '0.5em', border: 'none', color: '#777777',
-          }}
-        >
-          Please select a query to view the elements.
-        </Alert>
-      )}
-    </Drawer>
+      </UpsetHeading>
+      <ElementTable />
+    </Sidebar>
   );
 };

@@ -1,22 +1,23 @@
 import { css } from '@emotion/react';
 import { drag } from 'd3-drag';
 import { select } from 'd3-selection';
-import {
+import React, {
   FC, useContext, useEffect, useRef, useState,
 } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
+import { Tooltip } from '@mui/material';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
 import { maxSize } from '../../atoms/maxSizeAtom';
-import { subsetSelector } from '../../atoms/subsetAtoms';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { Axis } from '../custom/Axis';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
+import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
 
 /** @jsxImportSource @emotion/react */
 const hide = css`
@@ -29,13 +30,16 @@ const show = css`
   transition: opacity 0.5s;
 `;
 
+/**
+ * Header showing label & axis for cardinality bars
+ */
 export const SizeHeader: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
-  const subsets = useRecoilValue(subsetSelector);
+  const subsets = useRecoilValue(flattenedRowsSelector).map((r) => r.row);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
 
@@ -50,12 +54,14 @@ export const SizeHeader: FC = () => {
     actions.sortBy('Size', order);
   };
 
-  const handleOnClick = () => {
+  const handleOnClick = (e: React.MouseEvent<SVGElement>) => {
     if (sortBy !== 'Size') {
       sortBySize('Ascending');
     } else {
       sortBySize(sortByOrder === 'Ascending' ? 'Descending' : 'Ascending');
     }
+    // To prevent the handler on SvgBase that deselects the current intersection
+    e.stopPropagation();
   };
 
   const handleContextMenuClose = () => {
@@ -103,20 +109,17 @@ export const SizeHeader: FC = () => {
 
   /**
    * Updates the scale of the header based on the largest subset as long as the advanced scale slider hasn't taken
-   * control and set a value 
+   * control and set a value
    */
   useEffect(() => {
-    if (advancedScale) return;
-    const subs = Object.values(subsets.values);
-    if (subs.length === 0) return;
+    if (advancedScale || subsets.length === 0) return;
 
-    const sizes = subs.map((s) => s.size);
+    const sizes = subsets.map((s) => s.size);
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
   }, [subsets, maxSize, advancedScale]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
-
   const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
   useEffect(() => {
@@ -226,55 +229,58 @@ export const SizeHeader: FC = () => {
             2 * dimensions.size.gap} H ${dimensions.attribute.width} z`}
         />
       </g>
-      <g
-        className="size-button"
-        css={css`
+      <Tooltip title="Size (cardinality)" arrow placement="top">
+        <g
+          className="size-button"
+          css={css`
           ${sliding ? hide : show};
           cursor: context-menu;
           &:hover {
             opacity: 0.7;
             transition: opacity 0s;
-          }
-        `}
-        transform={translate(
-          0,
-          dimensions.size.scaleHeight + dimensions.size.gap,
-        )}
-        onContextMenu={(e: any) => {
-          e.preventDefault();
-          e.stopPropagation();
-          openContextMenu(e);
-        }}
-        onClick={handleOnClick}
-      >
-        <rect
-          fill="#ccc"
-          stroke="#000"
-          opacity="0.5"
-          strokeWidth="0.3px"
-          height={dimensions.size.buttonHeight}
-          width={dimensions.attribute.width}
-        />
-        <g
-          transform={translate(
-            dimensions.attribute.width / 2,
-            dimensions.size.buttonHeight / 2,
-          )}
-        >
-          <text
-            id="header-text"
-            css={css`
-              pointer-event: none;
+            }
             `}
-            dominantBaseline="middle"
-            textAnchor="middle"
+          transform={translate(
+            0,
+            dimensions.size.scaleHeight + dimensions.size.gap,
+          )}
+          onContextMenu={(e: any) => {
+            e.preventDefault();
+            e.stopPropagation();
+            openContextMenu(e);
+          }}
+          onClick={handleOnClick}
+        >
+          <rect
+            fill="#ccc"
+            stroke="#000"
+            opacity="0.5"
+            strokeWidth="0.3px"
+            height={dimensions.size.buttonHeight}
+            width={dimensions.attribute.width}
+          />
+          <g
+            transform={translate(
+              dimensions.attribute.width / 2,
+              dimensions.size.buttonHeight / 2,
+            )}
           >
-            Size
-          </text>
-          { sortBy === 'Size' &&
+            <text
+              id="header-text"
+              css={css`
+              pointer-event: none;
+              `}
+              dominantBaseline="middle"
+              textAnchor="middle"
+              transform={translate(0, 1)} // Vertical centering correction
+            >
+              Size
+            </text>
+            { sortBy === 'Size' &&
             <HeaderSortArrow />}
+          </g>
         </g>
-      </g>
+      </Tooltip>
       <g
         className="details-scale"
         transform={translate(
