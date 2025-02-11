@@ -4,6 +4,7 @@ import {
 import { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
+import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import { columnHoverAtom, columnSelectAtom } from '../../../atoms/highlightAtom';
 import ConnectingLine from './ConnectingLine';
@@ -59,9 +60,6 @@ export const Matrix: FC<Props> = ({
               }
               onMouseLeave={() => setColumnHover([])}
             >
-              <title>
-                {setList[set].elementName}
-              </title>
               <rect
                 transform={translate(idx * dimensions.set.width - dimensions.set.width / 2, 0)}
                 height={dimensions.body.rowHeight}
@@ -73,15 +71,19 @@ export const Matrix: FC<Props> = ({
                 }
                 fillOpacity="0.0"
               />
-              <MemberShipCircle
-                key={`circle ${set}`}
-                membershipStatus={membershipStatus}
-                cx={idx * dimensions.set.width}
-                cy={dimensions.body.rowHeight / 2}
-                pointerEvents="all"
-                showoutline={isRowAggregate(subset)}
-                fillOpacity="1.0"
-              />
+              <Tooltip title={setList[set].elementName}>
+                <g>
+                  <MemberShipCircle
+                    key={`circle ${set}`}
+                    membershipStatus={membershipStatus}
+                    cx={idx * dimensions.set.width}
+                    cy={dimensions.body.rowHeight / 2}
+                    pointerEvents="all"
+                    showoutline={isRowAggregate(subset)}
+                    fillOpacity="1.0"
+                  />
+                </g>
+              </Tooltip>
             </Group>
           );
         })}
