@@ -8,7 +8,8 @@ import {
 } from 'react';
 import {
   getBelongingSetsFromSetMembership,
-  getRows, isRowAggregate, Row, Rows, SetMembershipStatus,
+  getRows, isRowAggregate, Row, Rows,
+  SetQueryMembership,
 } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
@@ -23,10 +24,12 @@ import { ProvenanceContext } from '../../Root';
 const EDIT_ICON_SIZE = 14;
 const CHECK_ICON_SIZE = 16;
 
-export type Membership = {
-  [key: string]: SetMembershipStatus;
-}
-
+/**
+ * Flattens a nested structure of rows into a single array of rows.
+ *
+ * @param r - The nested structure of rows to flatten.
+ * @returns An array of rows where all nested rows are flattened into a single level.
+ */
 function flattenRows(r: Rows): Row[] {
   const flattenedRows: Row[] = [];
   Object.values(r.values).forEach((row) => {
@@ -40,8 +43,19 @@ function flattenRows(r: Rows): Row[] {
   return flattenedRows;
 }
 
-function getQueryResult(r: Rows, membership: Membership): Row[] {
-  // for each row in flattened rows, check if it's set membership matches the query. If membership[set] is 'May', then it is by default a match for that set.
+/**
+ * Filters rows based on their set membership status according to the provided membership query.
+ *
+ * @param {Rows} r - The rows to be filtered.
+ * @param {SetQuery} membership - An object representing the membership query, where keys are set names and values are 'Yes', 'No', or 'May'.
+ * @returns {Row[]} - An array of rows that match the membership query.
+ *
+ * The function works by flattening the rows and then checking each row's set membership against the membership query.
+ * - If the membership status for a set is 'Yes', the row must belong to that set.
+ * - If the membership status for a set is 'No', the row must not belong to that set.
+ * - If the membership status for a set is 'May', the row is considered a match regardless of its membership in that set.
+ */
+function getQueryResult(r: Rows, membership: SetQueryMembership): Row[] {
   const queryResults: Row[] = [];
   flattenRows(r).forEach((row) => {
     let match = true;
@@ -69,19 +83,19 @@ function getQueryResult(r: Rows, membership: Membership): Row[] {
  * @returns {JSX.Element} The rendered QueryBySets component.
  */
 export const QueryBySet = () => {
-  const { provenance } = useContext(ProvenanceContext);
+  const { provenance, actions } = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const [queryName, setQueryName] = useState('Query');
-  const [membership, setMembership] = useState<Membership>({});
+  const [membership, setMembership] = useState<SetQueryMembership>({});
   const rows = useMemo(() => getRows(data, provenance.getState()), [data, provenance.getState()]);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
   // initialize membership with all visible sets set to 'May'
   useEffect(() => {
-    const initialMembership: Membership = {};
+    const initialMembership: SetQueryMembership = {};
     visibleSets.forEach((set) => {
       initialMembership[set] = 'May';
     });
@@ -91,7 +105,7 @@ export const QueryBySet = () => {
 
   // update membership when visible sets change
   useEffect(() => {
-    const newMembership: Membership = {};
+    const newMembership: SetQueryMembership = {};
     visibleSets.forEach((set) => {
       newMembership[set] = membership[set] || 'May';
     });
@@ -100,13 +114,9 @@ export const QueryBySet = () => {
   }, [visibleSets]);
 
   function handleEditQueryTitle() {
-    // TODO: Address better handling of editing query title
+    // There is likely a better way to do this, but for now alert works fine.
     // eslint-disable-next-line no-alert
     setQueryName(prompt('Edit Query Title', queryName) || 'Query');
-  }
-
-  function addQuery(): void {
-    // provenance action? should there be a config state for this?
   }
 
   /**
@@ -191,6 +201,18 @@ export const QueryBySet = () => {
     });
 
     return queryResultString;
+  }
+
+  function addQuery(): void {
+    // provenance action? should there be a config state for this?
+    const queryString = getQueryResultString();
+
+    const query = {
+      name: queryName,
+      query: membership,
+    };
+
+    actions.setSetQuery(query, queryString);
   }
 
   return (

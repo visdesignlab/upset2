@@ -3,7 +3,7 @@ import {
   SortByOrder, SortVisibleBy, UpsetConfig,
   AttributePlots,
   ElementSelection,
-  AltText,
+  AltText, SetQuery,
 } from './types';
 import { isUpsetConfig } from './typecheck';
 import { DefaultConfig } from './defaultConfig';
@@ -60,6 +60,79 @@ type Version0_1_0 = {
     userAltText: AltText | null;
 }
 
+type Version0_1_1 = {
+  plotInformation: PlotInformation;
+  horizontal: boolean;
+  firstAggregateBy: AggregateBy;
+  firstOverlapDegree: number;
+  secondAggregateBy: AggregateBy;
+  secondOverlapDegree: number;
+  sortVisibleBy: SortVisibleBy;
+  sortBy: string;
+  sortByOrder: SortByOrder;
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  };
+  visibleSets: ColumnName[];
+  visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
+  bookmarks: Bookmark[];
+  collapsed: string[];
+  plots: {
+    scatterplots: Scatterplot[];
+    histograms: Histogram[];
+  };
+  allSets: Column[];
+  selected: Row | null;
+  elementSelection: ElementSelection | null;
+  version: '0.1.1';
+  useUserAlt: boolean;
+  userAltText: AltText | null;
+  intersectionSizeLabels: boolean;
+  setSizeLabels: boolean;
+  showHiddenSets: boolean;
+}
+
+type Version0_1_2 = {
+  plotInformation: PlotInformation;
+  horizontal: boolean;
+  firstAggregateBy: AggregateBy;
+  firstOverlapDegree: number;
+  secondAggregateBy: AggregateBy;
+  secondOverlapDegree: number;
+  sortVisibleBy: SortVisibleBy;
+  sortBy: string;
+  sortByOrder: SortByOrder;
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  };
+  visibleSets: ColumnName[];
+  visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
+  bookmarks: Bookmark[];
+  collapsed: string[];
+  plots: {
+    scatterplots: Scatterplot[];
+    histograms: Histogram[];
+  };
+  allSets: Column[];
+  selected: Row | null;
+  elementSelection: ElementSelection | null;
+  version: '0.1.2';
+  useUserAlt: boolean;
+  userAltText: AltText | null;
+  intersectionSizeLabels: boolean;
+  setSizeLabels: boolean;
+  showHiddenSets: boolean;
+  setQuery: SetQuery | null;
+}
+
 /**
  * Config type before versioning was implemented.
  */
@@ -98,13 +171,26 @@ type PreVersionConfig = {
  * @returns The converted config.
  */
 // eslint-disable-next-line camelcase
-function convert0_1_0(config: Version0_1_0): UpsetConfig {
-  (config as unknown as UpsetConfig).version = '0.1.1';
-  (config as unknown as UpsetConfig).intersectionSizeLabels = DefaultConfig.intersectionSizeLabels;
-  (config as unknown as UpsetConfig).setSizeLabels = DefaultConfig.setSizeLabels;
-  (config as unknown as UpsetConfig).showHiddenSets = DefaultConfig.showHiddenSets;
-  return (config as unknown as UpsetConfig);
+function convert0_1_0(config: Version0_1_0): Version0_1_1 {
+  (config as unknown as Version0_1_1).version = '0.1.1';
+  (config as unknown as Version0_1_1).intersectionSizeLabels = DefaultConfig.intersectionSizeLabels;
+  (config as unknown as Version0_1_1).setSizeLabels = DefaultConfig.setSizeLabels;
+  (config as unknown as Version0_1_1).showHiddenSets = DefaultConfig.showHiddenSets;
+  return (config as unknown as Version0_1_1);
 }
+
+/**
+ * Converts a configuration object from version 0.1.1 to version 0.1.2.
+ *
+ * @param config - The configuration object of version 0.1.1 to be converted.
+ * @returns The updated configuration object with version 0.1.2.
+ */
+function convert0_1_1(config: Version0_1_1): UpsetConfig {
+  (config as unknown as Version0_1_2).version = '0.1.2';
+  (config as unknown as Version0_1_2).setQuery = DefaultConfig.setQuery;
+  return config as unknown as Version0_1_2;
+}
+
 
 /**
  * Converts a pre-versioned config to the current version.
@@ -150,6 +236,8 @@ export function convertConfig(config: unknown): UpsetConfig {
   switch ((config as {version: string}).version) {
     case '0.1.0':
       convert0_1_0(config as Version0_1_0);
+    case '0.1.1':
+      convert0_1_1(config as Version0_1_1);
     default:
       void 0;
   }

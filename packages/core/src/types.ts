@@ -354,6 +354,20 @@ export type ElementQuery = {
 export type NumericalQuery = {[attName: string] : [number, number]};
 
 /**
+ * Represents a query object where each key is a string and the value is a SetMembershipStatus.
+ * This type is used to define the membership status of elements in a set.
+ */
+export type SetQueryMembership = {[key: string]: SetMembershipStatus};
+
+/**
+ * Represents a query for a set.
+ */
+export type SetQuery = {
+  name: string;
+  query: SetQueryMembership;
+}
+
+/**
  * Base representation of a bookmarkable type
  * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
@@ -491,7 +505,7 @@ export type UpsetConfig = {
    * Selected elements (data points) in the Element View.
    */
   elementSelection: ElementSelection | null;
-  version: '0.1.1';
+  version: '0.1.2';
   useUserAlt: boolean;
   userAltText: AltText | null;
   /**
@@ -506,6 +520,10 @@ export type UpsetConfig = {
    * Whether to display the hidden sets & their sizes above the plot
    */
   showHiddenSets: boolean;
+  /**
+   * Query by set query
+   */
+  setQuery: SetQuery | null;
 };
 
 export type AccessibleDataEntry = {
