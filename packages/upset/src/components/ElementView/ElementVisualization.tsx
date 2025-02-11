@@ -16,7 +16,7 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { currentNumericalQuery, elementsInBookmarkSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
+import { currentNumericalQuery, coloredElementsSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -59,7 +59,7 @@ export const ElementVisualization = () => {
    */
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
-  const items = useRecoilValue(elementsInBookmarkSelector);
+  const items = useRecoilValue(coloredElementsSelector);
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const elementSelection = useRecoilValue(selectedElementSelector);
   const selectColor = useRecoilValue(elementColorSelector);
