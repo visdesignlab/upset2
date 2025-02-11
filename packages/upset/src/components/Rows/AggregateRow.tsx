@@ -18,7 +18,6 @@ import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 
-/** @jsxImportSource @emotion/react */
 /**
  * Props for the AggregateRow component.
  */

@@ -1,6 +1,6 @@
 {
   "name": "@visdesignlab/upset2-core",
-  "version": "0.1.0",
+  "version": "1.0.0-rc2",
   "license": "MIT",
   "type": "module",
   "main": "dist/index.cjs",
@@ -24,7 +24,7 @@
       "pre-commit": "eslint src"
     }
   },
-  "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner",
+  "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner, Nate Lanza",
   "devDependencies": {
     "@types/d3": "^7.1.0",
     "husky": "^7.0.4",

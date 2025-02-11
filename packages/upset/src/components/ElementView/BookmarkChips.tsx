@@ -6,7 +6,7 @@ import { useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, BookmarkedIntersection, flattenedOnlyRows, isBookmarkedIntersection,
+  Bookmark, BookmarkedIntersection, deepCopy, flattenedOnlyRows, isBookmarkedIntersection,
   isElementSelection,
 } from '@visdesignlab/upset2-core';
 import {
@@ -149,13 +149,13 @@ export const BookmarkChips = () => {
         aria-label={`Selected elements ${currentSelection.label}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            actions.addBookmark(structuredClone(currentSelection));
+            actions.addBookmark(deepCopy(currentSelection));
           }
         }}
         onClick={() => actions.setElementSelection(null)}
         label={`${currentSelection.label}`}
         onDelete={() => {
-          actions.addBookmark(structuredClone(currentSelection));
+          actions.addBookmark(deepCopy(currentSelection));
         }}
         deleteIcon={<StarBorderIcon />}
       />

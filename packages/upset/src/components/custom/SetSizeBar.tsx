@@ -51,8 +51,8 @@ export const SetSizeBar: FC<Props> = ({
 
       <rect
         css={
-          (columnHover.includes(setId) || columnSelect.includes(setId)) &&
-            hoverHighlight
+          (columnHover.includes(setId) || columnSelect.includes(setId)) ?
+            hoverHighlight : undefined
         }
         height={dimensions.set.size.height}
         width={dimensions.set.width}

@@ -19,7 +19,6 @@ import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
 
-/** @jsxImportSource @emotion/react */
 const hide = css`
   opacity: 0;
   transition: opacity 0.5s;

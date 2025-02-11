@@ -20,7 +20,8 @@ export default defineConfig({
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     sourcemap: true,
-    emptyOutDir: false,
+    emptyOutDir: true,
+    outDir: './dist/',
     lib: {
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.tsx',

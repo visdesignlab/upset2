@@ -1,5 +1,5 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import { CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import {
   useCallback, useContext, useEffect, useState,
@@ -83,7 +83,7 @@ export const Body = ({ data, config }: Props) => {
   const getAltText: () => Promise<AltText> = useCallback(async () => {
     const state = provObject.provenance.getState();
     // Rows must be cloned to avoid a recoil error triggered far down in this call chain when a function writes rows
-    const ATConfig = getAltTextConfig(state, data, structuredClone(rows));
+    const ATConfig = getAltTextConfig(state, data, deepCopy(rows));
 
     if (ATConfig.firstAggregateBy !== 'None') {
       throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
