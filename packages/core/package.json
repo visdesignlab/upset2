@@ -25,22 +25,9 @@
     }
   },
   "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner",
-  "size-limit": [
-    {
-      "path": "dist/packagescore.cjs.production.min.js",
-      "limit": "10 KB"
-    },
-    {
-      "path": "dist/packagescore.esm.js",
-      "limit": "10 KB"
-    }
-  ],
   "devDependencies": {
-    "@size-limit/preset-small-lib": "^7.0.5",
     "@types/d3": "^7.1.0",
     "husky": "^7.0.4",
-    "size-limit": "^7.0.5",
-    "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4"
   },

@@ -23,15 +23,12 @@
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=18"
   },
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
     "lint": "eslint src --fix",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
@@ -50,17 +47,13 @@
     "@chromatic-com/storybook": "^1.6.1",
     "@emotion/babel-plugin": "^11.7.2",
     "@emotion/babel-preset-css-prop": "^11.2.0",
-    "@size-limit/preset-small-lib": "^7.0.5",
     "@storybook/react-vite": "^8.2.8",
     "@types/d3": "^7.1.0",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^17.0.11",
     "babel-loader": "^8.2.3",
     "husky": "^7.0.4",
-    "react-is": "^17.0.2",
-    "size-limit": "^7.0.5",
     "storybook": "^8.2.8",
-    "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4"
   },
