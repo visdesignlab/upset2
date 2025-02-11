@@ -2,6 +2,7 @@
   "name": "@visdesignlab/upset2-react",
   "version": "0.1.0",
   "license": "MIT",
+  "type": "module",
   "author": "Kiran Gadhave, Jake Wagoner, Nate Lanza",
   "description": "React component for UpSet2 visualization",
   "repository": {
@@ -25,10 +26,8 @@
     "node": ">=10"
   },
   "scripts": {
-    "start": "vite build --watch",
-    "dev": "yarn run start",
+    "dev": "vite build --watch",
     "build": "vite build",
-    "test": "tsdx test --passWithNoTests",
     "lint": "eslint src --fix",
     "prepare": "tsdx build",
     "size": "size-limit",

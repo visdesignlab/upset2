@@ -3,7 +3,6 @@ import { defineConfig } from 'vite';
 
 import { join } from 'path';
 import dts from 'vite-plugin-dts';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/core',
@@ -12,10 +11,6 @@ export default defineConfig({
       tsConfigFilePath: join(__dirname, 'tsconfig.json'),
       // Faster builds by skipping tests. Set this to false to enable type checking.
       skipDiagnostics: true,
-    }),
-
-    viteTsConfigPaths({
-      root: '../../',
     }),
   ],
   server: { hmr: process.env.NODE_TESTING !== 'true' },

@@ -15,7 +15,6 @@ logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-lerna-debug.log*
 .pnpm-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
@@ -163,3 +162,4 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/react,node,joed
 .turbo/cookies/0.cookie
+.turbo/
