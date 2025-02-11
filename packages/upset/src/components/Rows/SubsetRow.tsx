@@ -8,7 +8,7 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -30,7 +30,6 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const bookmarks = useRecoilValue(bookmarkSelector);
   const selected = useRecoilValue(subsetSelectedCount(subset.id));
 
   // Use trrack action for current intersection
