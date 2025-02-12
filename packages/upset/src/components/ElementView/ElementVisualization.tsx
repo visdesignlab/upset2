@@ -97,6 +97,20 @@ export const ElementVisualization = () => {
     });
   }, [draftSelection, currentClick.current, views.current]);
 
+  /**
+   * Saves the current selection to the state.
+   */
+  const saveSelection = useCallback(() => {
+    if (
+      draftSelection.current
+      && Object.keys(draftSelection.current).length > 0
+      && !numericalQueriesEqual(draftSelection.current, numericalQuery)
+    ) {
+      actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
+    } else if (elementSelection) actions.setElementSelection(null);
+    draftSelection.current = undefined;
+  }, [draftSelection.current, numericalQuery, elementSelection, actions]);
+
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
     preventSignal.current = true;
@@ -111,17 +125,9 @@ export const ElementVisualization = () => {
 
   return (
     <Box
-      onClick={() => {
-        // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
-        if (
-          draftSelection.current
-          && Object.keys(draftSelection.current).length > 0
-          && !numericalQueriesEqual(draftSelection.current, numericalQuery)
-        ) {
-          actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
-        } else if (elementSelection) actions.setElementSelection(null);
-        draftSelection.current = undefined;
-      }}
+      // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
+      onClick={saveSelection}
+      onMouseLeave={saveSelection}
     >
       <Box sx={{
         overflowX: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around',
