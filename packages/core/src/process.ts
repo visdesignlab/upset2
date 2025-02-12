@@ -1,11 +1,12 @@
 import { DSVRowArray } from 'd3-dsv';
 
 import {
- max, mean, median, min, quantile,
+  max, mean, median, min, quantile,
 } from 'd3-array';
 
 import {
   AttributeList,
+  BaseIntersection,
   ColumnDefs,
   ColumnName,
   CoreUpsetData,
@@ -223,11 +224,14 @@ function getSets(
       type: 'Set',
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
-      attributes: getSixNumberSummary(
-        items,
-        setMembership[col],
-        attributeColumns,
-      ),
+      attributes: {
+        ...getSixNumberSummary(
+          items,
+          setMembership[col],
+          attributeColumns,
+        ),
+        deviation: 0,
+      },
     };
 
     sets[set.id] = set;

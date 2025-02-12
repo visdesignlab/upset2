@@ -1,4 +1,3 @@
-/** @jsxImportSource @emotion/react */
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';

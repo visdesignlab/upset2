@@ -72,7 +72,7 @@ export const DensityPlot: FC<Props> = ({
       id="Density"
       transform={`translate(0, ${-dimensions.attribute.plotHeight / 1.5})`}
     >
-      <foreignObject width={dimensions.attribute.width} height={dimensions.attribute.plotHeight + 20}>
+      <foreignObject width={dimensions.attribute.width} height={dimensions.attribute.plotHeight}>
         <MemoizedDensityVega
           values={values}
           fillColor={fillColor}

@@ -241,8 +241,6 @@ export function convertConfig(config: unknown): UpsetConfig {
     default:
       void 0;
   }
-  /* eslint-enable no-fallthrough */
-  /* eslint-enable no-void */
 
   if (!isUpsetConfig(config)) {
     // eslint-disable-next-line no-console

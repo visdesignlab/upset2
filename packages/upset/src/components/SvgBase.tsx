@@ -9,7 +9,6 @@ import { currentIntersectionSelector } from '../atoms/config/currentIntersection
 import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/queryBySetsAtoms';
 
-/** @jsxImportSource @emotion/react */
 type SvgBaseSettings = {
   margin: number;
   height: number;
