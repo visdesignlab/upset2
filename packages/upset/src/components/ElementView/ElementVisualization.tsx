@@ -127,7 +127,6 @@ export const ElementVisualization = () => {
     <Box
       // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
       onClick={saveSelection}
-      onMouseLeave={saveSelection}
     >
       <Box sx={{
         overflowX: 'auto', display: 'flex', flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-around',
