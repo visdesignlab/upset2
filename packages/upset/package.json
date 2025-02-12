@@ -75,7 +75,7 @@
     "@storybook/react-vite": "^8.2.8",
     "@trrack/core": "^1.3.0-beta.1",
     "@trrack/vis-react": "^1.3.0",
-    "@visdesignlab/upset2-core": "^1.0.0-rc2",
+    "@visdesignlab/upset2-core": "*",
     "d3-array": "^3.2.4",
     "d3-drag": "^3.0.0",
     "d3-dsv": "^3.0.1",
