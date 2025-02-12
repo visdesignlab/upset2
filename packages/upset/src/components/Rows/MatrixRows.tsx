@@ -1,4 +1,4 @@
-import { isRowAggregate, Row, RenderRow } from '@visdesignlab/upset2-core';
+import { isRowAggregate, Row, RenderRow, isPopulatedSetQuery } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
@@ -8,7 +8,7 @@ import translate from '../../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
-import { queryBySetsInterfaceAtom } from '../../atoms/queryBySetsAtoms';
+import { queryBySetsInterfaceAtom, setQueryAtom } from '../../atoms/queryBySetsAtoms';
 
 type Props = {
   rows: RenderRow[];
@@ -26,27 +26,39 @@ export function rowRenderer(row: Row) {
   return <SubsetRow subset={row} />;
 }
 
+/**
+   * Determines whether a row should be rendered based on its parent ID and the list of collapsed IDs.
+   *
+   * @param {Row} row - The row object to check.
+   * @returns {boolean} - Returns `true` if the row should be rendered, otherwise `false`.
+   *
+   * The function checks the following conditions:
+   * 1. If the row has no parent ID, it should be rendered.
+   * 2. If the parent ID contains a hyphen, it extracts the top-level aggregate ID and checks if it is in the list of collapsed IDs.
+   * 3. If the parent ID is in the list of collapsed IDs, the row should not be rendered.
+   */
+const shouldRender = (row: Row, collapsedIds: string[]) => {
+  const parentId = row.parent;
+
+  if (parentId === undefined) return true;
+
+  if (parentId.includes('-')) {
+    const topLevelAggId = parentId.substring(0, parentId.indexOf('-'));
+    if (collapsedIds.includes(topLevelAggId)) {
+      return false;
+    }
+  }
+
+  if (collapsedIds.includes(parentId)) return false;
+
+  return true;
+};
+
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
+  const setQuery = useRecoilValue(setQueryAtom);
   const queryBySetsInterface = useRecoilValue(queryBySetsInterfaceAtom);
-
-  const shouldRender = (row: Row) => {
-    const parentId = row.parent;
-
-    if (parentId === undefined) return true;
-
-    if (parentId.includes('-')) {
-      const topLevelAggId = parentId.substring(0, parentId.indexOf('-'));
-      if (collapsedIds.includes(topLevelAggId)) {
-        return false;
-      }
-    }
-
-    if (collapsedIds.includes(parentId)) return false;
-
-    return true;
-  };
 
   let yTransform = 0;
 
@@ -55,11 +67,20 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
   * If queryBySetsInterface is true, all rows are shifted down by the height of the interface
   */
   const calculateYTransform = (row: Row, index: number) => {
-    if (shouldRender(row) && index > 0) {
+    if (shouldRender(row, collapsedIds) && index > 0) {
       yTransform += dimensions.body.rowHeight;
     }
 
-    return yTransform + (queryBySetsInterface ? dimensions.setQuery.height + dimensions.setQuery.spacer : 0);
+    // Shift the rows down by the height of the set query interface or the set query row if populated
+    let transformShift = 0;
+    if (queryBySetsInterface) {
+      transformShift += dimensions.setQuery.height + dimensions.setQuery.spacer;
+    }
+    if (isPopulatedSetQuery(setQuery)) {
+      transformShift += dimensions.body.rowHeight;
+    }
+
+    return yTransform + transformShift;
   };
 
   const rowTransitions = useTransition(
@@ -93,8 +114,9 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   return (
     <g id="matrixRows" onClick={(e) => e.stopPropagation()}>
+      { isPopulatedSetQuery(setQuery) && <g id="setQuery" />}
       {rowTransitions(({ transform }, item) => (
-        shouldRender(item.row) &&
+        shouldRender(item.row, collapsedIds) &&
           <a.g key={item.id} transform={transform}>{rowRenderer(item.row)}</a.g>
       ))}
     </g>

@@ -1,4 +1,4 @@
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilState, useRecoilValue } from 'recoil';
 
 import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
@@ -19,6 +19,8 @@ import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
 import { ProvenanceContext } from '../../Root';
+import { upsetConfigAtom } from '../../../atoms/config/upsetConfigAtoms';
+import { queryBySetsInterfaceAtom } from '../../../atoms/queryBySetsAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -82,14 +84,15 @@ function getQueryResult(r: Rows, membership: SetQueryMembership): Row[] {
  * @component
  * @returns {JSX.Element} The rendered QueryBySets component.
  */
-export const QueryBySet = () => {
+export const QueryBySetInterface = () => {
   const { provenance, actions } = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
+  const [_, setQueryInterface] = useRecoilState(queryBySetsInterfaceAtom);
   const [queryName, setQueryName] = useState('Query');
   const [membership, setMembership] = useState<SetQueryMembership>({});
-  const rows = useMemo(() => getRows(data, provenance.getState()), [data, provenance.getState()]);
+  const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
@@ -212,7 +215,8 @@ export const QueryBySet = () => {
       query: membership,
     };
 
-    actions.setSetQuery(query, queryString);
+    actions.addSetQuery(query, queryString);
+    setQueryInterface(false);
   }
 
   return (
@@ -260,6 +264,11 @@ export const QueryBySet = () => {
             transform={translate(-EDIT_ICON_SIZE, EDIT_ICON_SIZE / 4)}
             onClick={handleEditQueryTitle}
           >
+            <rect
+              height={EDIT_ICON_SIZE}
+              width={EDIT_ICON_SIZE}
+              fill="transparent"
+            />
             <SvgIcon
               height={EDIT_ICON_SIZE}
               width={EDIT_ICON_SIZE}

@@ -1,22 +1,21 @@
 import { Dispatch, FC, SetStateAction } from 'react';
 import { useRecoilValue } from 'recoil';
-import { SetMembershipStatus } from '@visdesignlab/upset2-core';
+import { SetMembershipStatus, SetQueryMembership } from '@visdesignlab/upset2-core';
 import { css } from '@emotion/react';
 import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
 import translate from '../../../utils/transform';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
-import { Membership } from './QueryBySet';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 
 type Props = {
   /**
    * Members objects
    */
-  members: Membership;
+  members: SetQueryMembership;
   /**
    * Function to set members
    */
-  setMembers: Dispatch<SetStateAction<Membership>>;
+  setMembers: Dispatch<SetStateAction<SetQueryMembership>>;
   /**
    * Membership type for the row, can only be 'not', 'maybe', or 'must'.
    */

@@ -4,13 +4,16 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import translate from '../utils/transform';
 import { MatrixRows } from './Rows/MatrixRows';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
-import { QueryBySet } from './custom/QueryBySet/QueryBySet';
-import { queryBySetsInterfaceAtom } from '../atoms/queryBySetsAtoms';
+import { QueryBySetInterface } from './custom/QueryBySet/QueryBySetInterface';
+import { SetQueryRow } from './custom/QueryBySet/SetQueryRow';
+import { queryBySetsInterfaceAtom, setQueryAtom } from '../atoms/queryBySetsAtoms';
+import { isPopulatedSetQuery } from '@visdesignlab/upset2-core';
 
 export const Body = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(flattenedRowsSelector);
   const queryBySetInterface = useRecoilValue(queryBySetsInterfaceAtom);
+  const setQuery = useRecoilValue(setQueryAtom);
 
   return (
     <g transform={translate(0, dimensions.header.totalHeight + 5)}>
@@ -31,7 +34,8 @@ export const Body = () => {
         </text> :
         (
           <g>
-            { queryBySetInterface && <QueryBySet /> }
+            { queryBySetInterface && <QueryBySetInterface /> }
+            { isPopulatedSetQuery(setQuery) ? <SetQueryRow /> : null }
             <MatrixRows rows={rows} />
           </g>
         )}
