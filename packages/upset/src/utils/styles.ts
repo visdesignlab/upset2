@@ -38,8 +38,8 @@ export const queryColorPalette = [
   '#17becf',
 ];
 
-/** Color for the active element selections: 'Vivid Magenta' */
-export const elementSelectionColor = '#d81b60';
+/** Color for the active element selections: 'Rich Amber' */
+export const elementSelectionColor = '#e49b0f';
 
 export const mousePointer = css`
   cursor: pointer;

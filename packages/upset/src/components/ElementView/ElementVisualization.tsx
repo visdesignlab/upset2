@@ -14,7 +14,6 @@ import {
   IconButton,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { elementColorSelector } from '../../atoms/config/currentIntersectionAtom';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { currentNumericalQuery, coloredElementsSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
@@ -62,7 +61,6 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(coloredElementsSelector);
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const elementSelection = useRecoilValue(selectedElementSelector);
-  const selectColor = useRecoilValue(elementColorSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
@@ -78,8 +76,8 @@ export const ElementVisualization = () => {
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (
-    { plot, spec: generateVegaSpec(plot, selectColor) }
-  )), [plots, selectColor]);
+    { plot, spec: generateVegaSpec(plot) }
+  )), [plots]);
 
   /**
    * Functions

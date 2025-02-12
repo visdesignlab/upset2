@@ -13,13 +13,13 @@ import {
   bookmarkedColorPalette,
   bookmarkSelector,
   currentIntersectionSelector,
-  elementColorSelector,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
 import { selectedElementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionColor } from '../../utils/styles';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -35,7 +35,6 @@ export const BookmarkChips = () => {
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const currentSelection = useRecoilValue(selectedElementSelector);
-  const elementSelectionColor = useRecoilValue(elementColorSelector);
 
   /**
    * Handles when a chip in the bookmark stack is clicked

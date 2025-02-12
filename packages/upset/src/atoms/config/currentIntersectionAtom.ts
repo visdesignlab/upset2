@@ -3,7 +3,6 @@ import { selector, selectorFamily } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
-import { selectedElementSelector } from '../elementsSelectors';
 
 /**
  * Represents the currently selected intersection,
@@ -77,7 +76,7 @@ export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
   key: 'is-row-bookmarked',
   get: (row: Row) => ({ get }) => {
     const bookmarks = get(bookmarkSelector);
-    return bookmarks.some(b => b.id === row.id);
+    return bookmarks.some((b) => b.id === row.id);
   },
 });
 
@@ -96,25 +95,5 @@ export const bookmarkedColorSelector = selectorFamily<string, Row>({
     const palette = get(bookmarkedColorPalette);
     const nextColor = get(nextColorSelector);
     return palette[row.id] || nextColor;
-  },
-});
-
-/**
- * The color to use for the current element selection stored in the config
- */
-export const elementColorSelector = selector<string>({
-  key: 'element-selection-atom-color',
-  get: ({ get }) => {
-    const selection = get(selectedElementSelector);
-    const bookmarkColors = get(bookmarkedColorPalette);
-    const palette = get(bookmarkedColorPalette);
-
-    if (selection && Object.keys(bookmarkColors).includes(selection.id)) {
-      return bookmarkColors[selection.id];
-    }
-
-    return get(currentIntersectionSelector)
-      ? queryColorPalette[Object.values(palette).length + 1]
-      : get(nextColorSelector);
   },
 });
