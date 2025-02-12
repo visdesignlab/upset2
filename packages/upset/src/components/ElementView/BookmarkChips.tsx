@@ -1,6 +1,7 @@
 import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import { Chip, Stack } from '@mui/material';
 import { useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -135,7 +136,7 @@ export const BookmarkChips = () => {
       />
       )}
       {/* Chip for the current element selection */}
-      {currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
+      {currentSelection && (
       <Chip
         sx={(theme) => ({
           margin: theme.spacing(0.5),
@@ -144,19 +145,10 @@ export const BookmarkChips = () => {
           },
           backgroundColor: 'rgba(0,0,0,0.2)',
         })}
-        icon={<SquareIcon fontSize={'1em' as any} />}
+        icon={<WorkspacesIcon fontSize={'1em' as any} />}
         aria-label={`Selected elements ${currentSelection.label}`}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            actions.addBookmark(structuredClone(currentSelection));
-          }
-        }}
         onClick={() => actions.setElementSelection(null)}
         label={`${currentSelection.label}`}
-        onDelete={() => {
-          actions.addBookmark(structuredClone(currentSelection));
-        }}
-        deleteIcon={<StarBorderIcon />}
       />
       )}
     </Stack>
