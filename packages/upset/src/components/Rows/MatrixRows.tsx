@@ -77,7 +77,7 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
       transformShift += dimensions.setQuery.height + dimensions.setQuery.spacer;
     }
     if (isPopulatedSetQuery(setQuery)) {
-      transformShift += dimensions.body.rowHeight;
+      transformShift += dimensions.body.rowHeight * 2;
     }
 
     return yTransform + transformShift;
