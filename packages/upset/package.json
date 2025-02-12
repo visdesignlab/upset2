@@ -1,6 +1,6 @@
 {
   "name": "@visdesignlab/upset2-react",
-  "version": "1.0.0-rc2",
+  "version": "1.0.0",
   "license": "MIT",
   "type": "module",
   "author": "Kiran Gadhave, Jake Wagoner, Nate Lanza",

@@ -5,6 +5,7 @@
   "workspaces": [
     "packages/*"
   ],
+  "nohoist": [],
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache",
     "storybook": "turbo run storybook",
