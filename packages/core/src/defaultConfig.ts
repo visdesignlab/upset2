@@ -42,14 +42,7 @@ export const DefaultConfig: UpsetConfig = {
   setSizeLabels: true,
   showHiddenSets: true,
   setQuery: {
-    name: 'Query',
-    query: {
-      Set_Action: 'May',
-      Set_Adventure: 'No',
-      Set_Children: 'May',
-      Set_Comedy: 'May',
-      Set_Crime: 'No',
-      Set_Documentary: 'May',
-    },
+    name: '',
+    query: {},
   },
 };
