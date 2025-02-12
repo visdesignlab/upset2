@@ -6,6 +6,12 @@
   "main": "dist/index.cjs",
   "typings": "dist/index.d.ts",
   "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist",
     "src"
