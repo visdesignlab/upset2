@@ -1,6 +1,5 @@
 import { Typography } from '@mui/material';
 import Markdown from 'react-markdown';
-import '../../index.css';
 
 // Wrapper for the Markdown component to parse and render the alt-txt json
 export default function ReactMarkdownWrapper({ text }: { text: string }) {

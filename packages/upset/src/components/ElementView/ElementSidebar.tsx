@@ -66,7 +66,6 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   anchor.remove();
 }
 
-/** @jsxImportSource @emotion/react */
 /**
  * Sidebar component for the Element View
  * @param open Whether the sidebar is open

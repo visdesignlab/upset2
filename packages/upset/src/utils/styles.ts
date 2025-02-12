@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 
-/** @jsxImportSource @emotion/react */
 export const highlight = css`
   fill: #fed9a6;
   stroke: #feca82;

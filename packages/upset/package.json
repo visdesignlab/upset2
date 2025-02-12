@@ -1,7 +1,8 @@
 {
   "name": "@visdesignlab/upset2-react",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "MIT",
+  "type": "module",
   "author": "Kiran Gadhave, Jake Wagoner, Nate Lanza",
   "description": "React component for UpSet2 visualization",
   "repository": {
@@ -14,31 +15,32 @@
     "registry": "https://registry.npmjs.org/"
   },
   "homepage": "https://upset.multinet.app/",
-  "main": "dist/index.js",
+  "main": "dist/index.cjs",
   "typings": "dist/index.d.ts",
-  "module": "dist/index.mjs",
+  "module": "dist/index.js",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
   "files": [
     "dist",
     "src"
   ],
   "engines": {
-    "node": ">=10"
+    "node": ">=18"
   },
   "scripts": {
-    "start": "vite build --watch",
-    "dev": "yarn run start",
+    "dev": "vite build --watch",
     "build": "vite build",
-    "test": "tsdx test --passWithNoTests",
     "lint": "eslint src --fix",
-    "prepare": "tsdx build",
-    "size": "size-limit",
-    "analyze": "size-limit --why",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "peerDependencies": {
-    "react": "^18.0.2",
-    "react-dom": "^18.0.2"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "husky": {
     "hooks": {
@@ -51,17 +53,13 @@
     "@chromatic-com/storybook": "^1.6.1",
     "@emotion/babel-plugin": "^11.7.2",
     "@emotion/babel-preset-css-prop": "^11.2.0",
-    "@size-limit/preset-small-lib": "^7.0.5",
     "@storybook/react-vite": "^8.2.8",
     "@types/d3": "^7.1.0",
     "@types/react": "^17.0.38",
-    "@types/react-dom": "^17.0.11",
+    "@types/react-dom": "^18.3.1",
     "babel-loader": "^8.2.3",
     "husky": "^7.0.4",
-    "react-is": "^17.0.2",
-    "size-limit": "^7.0.5",
     "storybook": "^8.2.8",
-    "tsdx": "^0.14.1",
     "tslib": "^2.3.1",
     "typescript": "^4.5.4"
   },
@@ -83,7 +81,7 @@
     "d3-dsv": "^3.0.1",
     "d3-scale": "^4.0.2",
     "d3-selection": "^3.0.0",
-    "react": "^18.0.2",
+    "react": "^18.3.1",
     "react-dom": "^18.0.2",
     "react-markdown": "^8.0.7",
     "react-spring": "^9.4.4",

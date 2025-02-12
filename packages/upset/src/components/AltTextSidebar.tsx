@@ -16,7 +16,6 @@ import { AltText } from '@visdesignlab/upset2-core/';
 import { ProvenanceContext } from './Root';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
-import '../index.css';
 import { PlotInformation } from './custom/PlotInformation';
 import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';

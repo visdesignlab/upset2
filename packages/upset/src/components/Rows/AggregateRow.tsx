@@ -7,10 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import {
-  bookmarkSelector,
-  currentIntersectionSelector,
-} from '../../atoms/config/currentIntersectionAtom';
+import { currentIntersectionSelector  } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
 import { highlight, mousePointer } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
@@ -21,7 +18,6 @@ import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 
-/** @jsxImportSource @emotion/react */
 /**
  * Props for the AggregateRow component.
  */

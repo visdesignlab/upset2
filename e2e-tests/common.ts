@@ -1,7 +1,7 @@
 import { Page } from '@playwright/test';
-import mockData from '../playwright/mock-data/simpsons/simpsons_data.json';
-import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json';
-import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json';
+import mockData from '../playwright/mock-data/simpsons/simpsons_data.json' assert { type: 'json' };
+import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json' assert { type: 'json' };
+import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json' assert { type: 'json' };
 
 export const alttxt = {
   upsetIntroduction: 'This is an UpSet plot that visualizes set intersection. To learn about UpSet plots, visit https://upset.app.',

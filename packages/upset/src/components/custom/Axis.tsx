@@ -1,5 +1,5 @@
 import { ScaleLinear } from 'd3-scale';
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 
 import translate from '../../utils/transform';
 import { TickLine, AxisType } from './AxisTickLine';
