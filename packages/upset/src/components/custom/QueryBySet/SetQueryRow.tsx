@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import { FC, useCallback, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { SetMembershipStatus } from '@visdesignlab/upset2-core';
@@ -11,6 +11,8 @@ import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
 import { setQueryAtom } from '../../../atoms/queryBySetsAtoms';
 import { ProvenanceContext } from '../../Root';
+import { SizeBar } from '../../Columns/SizeBar';
+import { flattenedRowsSelector } from '../../../atoms/renderRowsAtom';
 
 const REMOVE_ICON_SIZE = 16;
 
@@ -19,6 +21,7 @@ export const SetQueryRow: FC = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQuery = useRecoilValue(setQueryAtom);
+  const rows = useRecoilValue(flattenedRowsSelector);
 
   /**
    * Retrieves the membership status for a given set.
@@ -29,9 +32,25 @@ export const SetQueryRow: FC = () => {
     return setQuery?.query?.[set] ?? 'No';
   }
 
+  /**
+   * Removes the current set query from the list of set queries.
+   *
+   * This function calls the `removeSetQuery` action from the `actions` object,
+   * passing the current `setQuery` as an argument to remove it from the list.
+   *
+   * @returns {void} This function does not return a value.
+   */
   function removeSetQuery(): void {
     actions.removeSetQuery(setQuery);
   }
+
+  const totalQuerySize = useCallback(() => {
+    let total = 0;
+    rows.forEach((rr) => {
+      total += rr.row.size;
+    });
+    return total;
+  }, [rows]);
 
   return (
     <g transform={translate(0, 0)}>
@@ -88,6 +107,9 @@ export const SetQueryRow: FC = () => {
                 showoutline
               />
             ))}
+          </g>
+          <g transform={translate(0, dimensions.body.rowHeight - 2)}>
+            <SizeBar size={totalQuerySize()} color="rgb(161, 217, 155)" />
           </g>
         </g>
       </g>
