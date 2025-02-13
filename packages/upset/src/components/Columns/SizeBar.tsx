@@ -28,7 +28,6 @@ type Props = {
   selected: number;
   /** Row object which the size is being displayed for */
   row?: Row;
-  color?: string;
 };
 
 /**

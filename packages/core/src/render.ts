@@ -80,11 +80,11 @@ const firstAggRR = (data: any, state: UpsetConfig) => {
  * @returns The second-level aggregation result.
  */
 const secondAggRR = (data: any, state: UpsetConfig) => {
-  const rr = firstAggRR(data, state);
+  const renderRows = firstAggRR(data, state);
 
-  if (areRowsAggregates(rr)) {
+  if (areRowsAggregates(renderRows)) {
     const secondAgg = secondAggregation(
-      rr,
+      renderRows,
       state.secondAggregateBy,
       state.secondOverlapDegree,
       data.sets,
@@ -95,25 +95,32 @@ const secondAggRR = (data: any, state: UpsetConfig) => {
     return secondAgg;
   }
 
-  return rr;
+  return renderRows;
 };
 
-function getQueryResult(r: Rows, membership: SetQueryMembership): Rows {
+/**
+ * Filters and returns rows based on the specified set membership query.
+ *
+ * @param rows - The rows to be filtered.
+ * @param membership - An object representing the set membership query. The keys are set names and the values are 'Yes' or 'No' indicating whether the row should belong to the set or not.
+ * @returns The filtered rows that match the set membership query.
+ */
+function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows {
   const queryResults: Rows = { order: [], values: {} };
-  flattenRows(r).forEach((rr) => {
+  flattenRows(rows).forEach((renderRow) => {
     let match = true;
     Object.entries(membership).forEach(([set, status]) => {
-      if (status === 'Yes' && !getBelongingSetsFromSetMembership(rr.row.setMembership).includes(set)) {
+      if (status === 'Yes' && !getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
         match = false;
       }
-      if (status === 'No' && getBelongingSetsFromSetMembership(rr.row.setMembership).includes(set)) {
+      if (status === 'No' && getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
         match = false;
       }
     });
 
     if (match) {
-      queryResults.order.push(rr.id);
-      queryResults.values[rr.id] = rr.row;
+      queryResults.order.push(renderRow.id);
+      queryResults.values[renderRow.id] = renderRow.row;
     }
   });
 
@@ -133,16 +140,16 @@ const sortByRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
 
   const vSets: Sets = Object.fromEntries(Object.entries(data.sets as Sets).filter(([name, _set]) => state.visibleSets.includes(name)));
 
-  let rr: Rows;
+  let renderRows: Rows;
 
   if (!ignoreQuery && state.setQuery !== null && isPopulatedSetQuery(state.setQuery)) {
     const subsets: Rows = getSubsets(data.items, data.sets, state.visibleSets, data.attributeColumns);
-    rr = getQueryResult(subsets, state.setQuery.query);
+    renderRows = getQueryResult(subsets, state.setQuery.query);
   } else {
-    rr = secondAggRR(data, state);
+    renderRows = secondAggRR(data, state);
   }
 
-  return sortRows(rr, state.sortBy, state.sortVisibleBy, vSets, state.sortByOrder);
+  return sortRows(renderRows, state.sortBy, state.sortVisibleBy, vSets, state.sortByOrder);
 };
 
 /**
@@ -154,9 +161,9 @@ const sortByRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
  * @returns The filtered rows based on the RR algorithm and the provided filters.
  */
 const filterRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
-  const rr = sortByRR(data, state, ignoreQuery);
+  const renderRows = sortByRR(data, state, ignoreQuery);
 
-  return filterRows(rr, state.filters);
+  return filterRows(renderRows, state.filters);
 };
 
 /**

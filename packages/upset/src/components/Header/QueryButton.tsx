@@ -13,11 +13,6 @@ import { queryBySetsInterfaceAtom } from '../../atoms/queryBySetsAtoms';
 const iconSize = 16;
 
 /**
- * The horizontal offset of the button in pixels.
- */
-const xOffset = 5;
-
-/**
  * Query By Sets button to open the query by sets interface.
  */
 export const QueryButton = () => {
@@ -45,7 +40,7 @@ export const QueryButton = () => {
   }, [queryBySetsInterface]);
 
   return (
-    <Group tx={xOffset} ty={dimensions.header.totalHeight - iconSize}>
+    <Group tx={dimensions.header.buttonXOffset} ty={dimensions.header.totalHeight - iconSize}>
       <Tooltip title="Query By Sets">
         <g>
           {/* OnClick needs to be in both places here to avoid some missed clicks */}

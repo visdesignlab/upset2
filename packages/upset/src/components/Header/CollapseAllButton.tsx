@@ -12,8 +12,6 @@ import { rowsSelector } from '../../atoms/renderRowsAtom';
 
 const iconSize = 16;
 
-const xOffset = 5;
-
 const hidden = 'none';
 
 const collapseAllStyle = css`
@@ -69,7 +67,7 @@ export const CollapseAllButton = () => {
   }, [allCollapsed, iconSize]);
 
   return (
-    <Group tx={iconSize + xOffset} ty={dimensions.header.totalHeight - (iconSize * 2)} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
+    <Group tx={iconSize + dimensions.header.buttonXOffset} ty={dimensions.header.totalHeight - (iconSize * 2)} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
       <Tooltip placement="top" title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
         <g>
           <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0} />

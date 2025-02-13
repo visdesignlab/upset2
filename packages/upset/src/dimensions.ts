@@ -97,6 +97,7 @@ export function calculateDimensions(
       degreeColumn.gap : 0) + // Add margin
       (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
     totalHeight: set.size.height + set.label.height,
+    buttonXOffset: 5,
   };
 
   const body = {
