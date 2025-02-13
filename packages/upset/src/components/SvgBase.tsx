@@ -9,18 +9,8 @@ import { currentIntersectionSelector } from '../atoms/config/currentIntersection
 import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/queryBySetsAtoms';
 
-type SvgBaseSettings = {
-  margin: number;
-  height: number;
-  width: number;
-};
-
-type Props = {
-  defaultSettings?: SvgBaseSettings;
-};
-
-export const SvgBase: FC<Props> = ({ children, defaultSettings }) => {
-  const dimensions = useRecoilValue(dimensionsSelector) || defaultSettings;
+export const SvgBase: FC = ({ children }) => {
+  const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
   const queryBySetsInterfaceOpen = useRecoilValue(queryBySetsInterfaceAtom);

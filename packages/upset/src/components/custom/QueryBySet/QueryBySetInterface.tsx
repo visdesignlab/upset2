@@ -1,5 +1,4 @@
-import { useRecoilState, useRecoilState, useRecoilValue } from 'recoil';
-
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
 import { SvgIcon, Tooltip } from '@mui/material';
@@ -7,9 +6,9 @@ import {
   useContext, useEffect, useMemo, useState,
 } from 'react';
 import {
-  getBelongingSetsFromSetMembership,
-  getRows, isRowAggregate, Row, Rows,
+  getRows, getQueryResult,
   SetQueryMembership,
+  isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
@@ -19,31 +18,11 @@ import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
 import { ProvenanceContext } from '../../Root';
-import { upsetConfigAtom } from '../../../atoms/config/upsetConfigAtoms';
 import { queryBySetsInterfaceAtom } from '../../../atoms/queryBySetsAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
 const CHECK_ICON_SIZE = 16;
-
-/**
- * Flattens a nested structure of rows into a single array of rows.
- *
- * @param r - The nested structure of rows to flatten.
- * @returns An array of rows where all nested rows are flattened into a single level.
- */
-function flattenRows(r: Rows): Row[] {
-  const flattenedRows: Row[] = [];
-  Object.values(r.values).forEach((row) => {
-    if (isRowAggregate(row)) {
-      flattenedRows.push(...flattenRows(row.items));
-    } else {
-      flattenedRows.push(row);
-    }
-  });
-
-  return flattenedRows;
-}
 
 /**
  * Filters rows based on their set membership status according to the provided membership query.
@@ -57,26 +36,26 @@ function flattenRows(r: Rows): Row[] {
  * - If the membership status for a set is 'No', the row must not belong to that set.
  * - If the membership status for a set is 'May', the row is considered a match regardless of its membership in that set.
  */
-function getQueryResult(r: Rows, membership: SetQueryMembership): Row[] {
-  const queryResults: Row[] = [];
-  flattenRows(r).forEach((row) => {
-    let match = true;
-    Object.entries(membership).forEach(([set, status]) => {
-      if (status === 'Yes' && !getBelongingSetsFromSetMembership(row.setMembership).includes(set)) {
-        match = false;
-      }
-      if (status === 'No' && getBelongingSetsFromSetMembership(row.setMembership).includes(set)) {
-        match = false;
-      }
-    });
+// function getQueryResult(r: Rows, membership: SetQueryMembership): Row[] {
+//   const queryResults: Row[] = [];
+//   flattenRows(r).forEach((renderRow) => {
+//     let match = true;
+//     Object.entries(membership).forEach(([set, status]) => {
+//       if (status === 'Yes' && !getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
+//         match = false;
+//       }
+//       if (status === 'No' && getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
+//         match = false;
+//       }
+//     });
 
-    if (match) {
-      queryResults.push(row);
-    }
-  });
+//     if (match) {
+//       queryResults.push(renderRow.row);
+//     }
+//   });
 
-  return queryResults;
-}
+//   return queryResults;
+// }
 
 /**
  * Query by Set interface component.
@@ -129,9 +108,10 @@ export const QueryBySetInterface = () => {
   function getQuerySize() {
     let size = 0;
 
-    const queryResults = queryResult;
-    queryResults.forEach((result) => {
-      size += result.size;
+    const queryResults = Object.values(queryResult.values);
+    queryResults.forEach((row) => {
+      if (!isRowAggregate(row))
+        size += row.size;
     });
 
     return size;
@@ -328,7 +308,7 @@ export const QueryBySetInterface = () => {
       </g>
       {/* Query size bar */}
       <g transform={translate(0, dimensions.body.rowHeight)}>
-        <SizeBar size={getQuerySize()} color="rgb(161, 217, 155)" />
+        <SizeBar size={getQuerySize()} selected={0} />
       </g>
       {/* Query result text */}
       <g

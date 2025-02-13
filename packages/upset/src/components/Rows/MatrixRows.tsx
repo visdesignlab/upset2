@@ -54,6 +54,30 @@ const shouldRender = (row: Row, collapsedIds: string[]) => {
   return true;
 };
 
+/**
+ * Component that renders matrix rows with transitions.
+ *
+ * @component
+ * @param {Props} props - The properties object.
+ * @param {Row[]} props.rows - The array of rows to render.
+ *
+ * @returns {JSX.Element} The rendered matrix rows component.
+ *
+ * @function calculateYTransform
+ * Calculates the y-transform for a given row.
+ * If `queryBySetsInterface` is true, all rows are shifted down by the height of the interface.
+ *
+ * @function rowTransitions
+ * Generates transitions for the rows using react-spring's `useTransition`.
+ * 
+ * @param {Row} row - The row object.
+ * @param {number} index - The index of the row.
+ * @returns {number} The calculated y-transform value.
+ *
+ * @param {Array} rows - The array of rows with their respective ids and indices.
+ * @param {Object} config - The configuration object for the transitions.
+ * @returns {Array} The array of transition objects.
+ */
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);

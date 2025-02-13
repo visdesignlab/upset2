@@ -109,7 +109,7 @@ export const SetQueryRow: FC = () => {
             ))}
           </g>
           <g transform={translate(0, dimensions.body.rowHeight - 2)}>
-            <SizeBar size={totalQuerySize()} color="rgb(161, 217, 155)" />
+            <SizeBar size={totalQuerySize()} selected={0} />
           </g>
         </g>
       </g>

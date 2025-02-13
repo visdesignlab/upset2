@@ -32,7 +32,7 @@ export type RenderRow = {
  * @param idPrefix - The prefix to add to the IDs of the flattened rows (optional, defaults to an empty string).
  * @returns The flattened array of RenderRow objects.
  */
-const flattenRows = (
+export const flattenRows = (
   rows: Rows,
   flattenedRows: RenderRow[] = [],
   idPrefix: string = '',
@@ -105,7 +105,7 @@ const secondAggRR = (data: any, state: UpsetConfig) => {
  * @param membership - An object representing the set membership query. The keys are set names and the values are 'Yes' or 'No' indicating whether the row should belong to the set or not.
  * @returns The filtered rows that match the set membership query.
  */
-function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows {
+export function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows {
   const queryResults: Rows = { order: [], values: {} };
   flattenRows(rows).forEach((renderRow) => {
     let match = true;
