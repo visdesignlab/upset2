@@ -1,4 +1,4 @@
-import { useRecoilState, useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
 import { SvgIcon, Tooltip } from '@mui/material';
@@ -25,39 +25,6 @@ const EDIT_ICON_SIZE = 14;
 const CHECK_ICON_SIZE = 16;
 
 /**
- * Filters rows based on their set membership status according to the provided membership query.
- *
- * @param {Rows} r - The rows to be filtered.
- * @param {SetQuery} membership - An object representing the membership query, where keys are set names and values are 'Yes', 'No', or 'May'.
- * @returns {Row[]} - An array of rows that match the membership query.
- *
- * The function works by flattening the rows and then checking each row's set membership against the membership query.
- * - If the membership status for a set is 'Yes', the row must belong to that set.
- * - If the membership status for a set is 'No', the row must not belong to that set.
- * - If the membership status for a set is 'May', the row is considered a match regardless of its membership in that set.
- */
-// function getQueryResult(r: Rows, membership: SetQueryMembership): Row[] {
-//   const queryResults: Row[] = [];
-//   flattenRows(r).forEach((renderRow) => {
-//     let match = true;
-//     Object.entries(membership).forEach(([set, status]) => {
-//       if (status === 'Yes' && !getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
-//         match = false;
-//       }
-//       if (status === 'No' && getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
-//         match = false;
-//       }
-//     });
-
-//     if (match) {
-//       queryResults.push(renderRow.row);
-//     }
-//   });
-
-//   return queryResults;
-// }
-
-/**
  * Query by Set interface component.
  *
  * @component
@@ -68,7 +35,7 @@ export const QueryBySetInterface = () => {
   const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
-  const [_, setQueryInterface] = useRecoilState(queryBySetsInterfaceAtom);
+  const setQueryInterface = useSetRecoilState(queryBySetsInterfaceAtom);
   const [queryName, setQueryName] = useState('Query');
   const [membership, setMembership] = useState<SetQueryMembership>({});
   const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
