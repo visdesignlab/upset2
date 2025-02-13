@@ -20,7 +20,7 @@ const MemberShipCircle: FC<Props> = (props) => {
       <circle
         {...base}
         stroke={
-          showoutline && membershipStatus === 'No'
+          showoutline && membershipStatus !== 'Yes'
             ? theme.matrix.member.yes
             : theme.matrix.member.no
         }
@@ -37,6 +37,7 @@ const MemberShipCircle: FC<Props> = (props) => {
           fill={
             theme.matrix.member.yes
           }
+          strokeOpacity={0}
           r={3}
         />}
     </>

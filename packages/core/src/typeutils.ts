@@ -1,6 +1,6 @@
 import {
   Aggregate,
-  Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, Subset, Subsets,
+  Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, SetQuery, Subset, Subsets,
 } from './types';
 import { hashString } from './utils';
 
@@ -172,4 +172,14 @@ export function getBelongingSetsFromSetMembership(membership: {
   return Object.entries(membership)
     .filter((mem) => mem[1] === 'Yes')
     .map((mem) => mem[0]);
+}
+
+/**
+ * Checks if the given SetQuery is populated.
+ *
+ * @param query - The SetQuery object to check, or null.
+ * @returns True if the query is not null and contains at least one query value, otherwise false.
+ */
+export function isPopulatedSetQuery(query: SetQuery | null) {
+  return query !== null && Object.values(query.query).length > 0;
 }

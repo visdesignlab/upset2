@@ -4,6 +4,9 @@ import {
   ElementQueryType,
   ElementBookmark,
   ElementSelection,
+  SetQueryMembership,
+  SetQuery,
+  SetMembershipStatus,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -322,6 +325,54 @@ export function isPlotInformation(p: unknown): p is PlotInformation {
 }
 
 /**
+ * Checks if the given value is a valid SetMembershipStatus.
+ *
+ * A valid SetMembershipStatus is one of the following strings:
+ * - 'Yes'
+ * - 'No'
+ * - 'May'
+ *
+ * @param s - The value to check.
+ * @returns True if the value is a valid SetMembershipStatus, false otherwise.
+ */
+export function isSetMembershipStatus(s: unknown): s is SetMembershipStatus {
+  return s === 'Yes' || s === 'No' || s === 'May';
+}
+
+/**
+ * Checks if the given value is a `SetQueryMembership` object.
+ *
+ * A `SetQueryMembership` object is considered valid if it is an object
+ * where all keys are strings and all values are valid `SetMembershipStatus`.
+ *
+ * @param s - The value to check.
+ * @returns `true` if the value is a `SetQueryMembership` object, otherwise `false`.
+ */
+export function isSetQueryMembership(s: unknown): s is SetQueryMembership {
+  return isObject(s)
+    && Object.entries(s).every(
+      ([k, v]) => typeof k === 'string' && isSetMembershipStatus(v)); 
+}
+
+/**
+ * Checks if the given value is a SetQuery object.
+ *
+ * A SetQuery object is expected to have the following properties:
+ * - `name`: a string representing the name of the query.
+ * - `query`: an object that satisfies the isSetQueryMembership check.
+ *
+ * @param s - The value to check.
+ * @returns `true` if the value is a SetQuery object, otherwise `false`.
+ */
+export function isSetQuery(s: unknown): s is SetQuery {
+  return isObject(s)
+    && Object.hasOwn(s, 'name')
+    && Object.hasOwn(s, 'query')
+    && typeof (s as SetQuery).name === 'string'
+    && isSetQueryMembership((s as SetQuery).query);
+}
+
+/**
  * Determines if the given object is a valid UpsetConfig using the CURRENT version.
  * @privateRemarks
  * This needs to be updated each time a new version is added. Since it's intended to be an exhaustive
@@ -358,6 +409,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'intersectionSizeLabels')
     && Object.hasOwn(config, 'setSizeLabels')
     && Object.hasOwn(config, 'showHiddenSets')
+    && Object.hasOwn(config, 'setQuery')
   )) {
     console.warn('Upset config is missing required fields');
     return false;
@@ -368,7 +420,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, attributePlots, bookmarks, collapsed,
     plots, allSets, selected, elementSelection, version, useUserAlt, userAltText, intersectionSizeLabels, setSizeLabels,
-    showHiddenSets,
+    showHiddenSets, setQuery,
   } = config as UpsetConfig;
 
   // Check that the fields are of the correct type
@@ -553,7 +605,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // version
-  if (version !== '0.1.1') {
+  if (version !== '0.1.2') {
     console.warn('Upset config error: Invalid version');
     return false;
   }
@@ -591,6 +643,12 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // showHiddenSets
   if (typeof showHiddenSets !== 'boolean') {
     console.warn('Upset config error: Show hidden sets is not a boolean');
+    return false;
+  }
+
+  // setQuery
+  if (setQuery !== null && !isSetQuery(setQuery)) {
+    console.warn('Upset config error: Set query is not an object');
     return false;
   }
 
