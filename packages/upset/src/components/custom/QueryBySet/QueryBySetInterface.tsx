@@ -3,6 +3,7 @@ import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
 import { SvgIcon, Tooltip } from '@mui/material';
 import {
+  useCallback,
   useContext, useEffect, useMemo, useState,
 } from 'react';
 import {
@@ -42,16 +43,6 @@ export const QueryBySetInterface = () => {
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
-  // initialize membership with all visible sets set to 'May'
-  useEffect(() => {
-    const initialMembership: SetQueryMembership = {};
-    visibleSets.forEach((set) => {
-      initialMembership[set] = 'May';
-    });
-
-    setMembership(initialMembership);
-  }, []);
-
   // update membership when visible sets change
   useEffect(() => {
     const newMembership: SetQueryMembership = {};
@@ -72,7 +63,7 @@ export const QueryBySetInterface = () => {
    * Calculates and returns the total size of the query results.
    * @returns The total size of the query results.
    */
-  function getQuerySize() {
+  const querySize = useMemo(() => {
     let size = 0;
 
     const queryResults = Object.values(queryResult.values);
@@ -82,7 +73,7 @@ export const QueryBySetInterface = () => {
     });
 
     return size;
-  }
+  }, [queryResult]);
 
   /**
    * Generates and returns the query string.
@@ -90,7 +81,7 @@ export const QueryBySetInterface = () => {
    * This is done in chunks based on the order of the string above
    * @returns The query string.
    */
-  function getQueryResultString() {
+  const queryResultString = useMemo(() => {
     const membershipValues = Object.values(membership);
 
     // Edge cases for all columns the same
@@ -151,20 +142,30 @@ export const QueryBySetInterface = () => {
     });
 
     return queryResultString;
-  }
+  }, [membership, queryResult]);
 
-  function addQuery(): void {
-    // provenance action? should there be a config state for this?
-    const queryString = getQueryResultString();
-
+  /**
+   * Adds a new query to the set of queries.
+   * 
+   * This function creates a query object with the current query name and membership,
+   * then calls the `addSetQuery` action with the query object and the query result string.
+   * Finally, it sets the query interface to false.
+   * 
+   * @callback addQuery
+   * @param {string} queryName - The name of the query.
+   * @param {string} membership - The membership information for the query.
+   * @param {string} queryResultString - The result string of the query.
+   * @returns {void}
+   */
+  const addQuery = useCallback(() =>{
     const query = {
       name: queryName,
       query: membership,
     };
 
-    actions.addSetQuery(query, queryString);
+    actions.addSetQuery(query, queryResultString);
     setQueryInterface(false);
-  }
+  }, [queryName, membership, queryResultString]);
 
   return (
     <g
@@ -275,7 +276,7 @@ export const QueryBySetInterface = () => {
       </g>
       {/* Query size bar */}
       <g transform={translate(0, dimensions.body.rowHeight)}>
-        <SizeBar size={getQuerySize()} selected={0} />
+        <SizeBar size={querySize} selected={0} />
       </g>
       {/* Query result text */}
       <g
@@ -300,7 +301,7 @@ export const QueryBySetInterface = () => {
           <p
             css={css`text-wrap: normal; margin: 0; padding: 0;`}
           >
-            {getQueryResultString()}
+            {queryResultString}
           </p>
         </foreignObject>
       </g>
