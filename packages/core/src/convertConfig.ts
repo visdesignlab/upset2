@@ -150,6 +150,7 @@ export function convertConfig(config: unknown): UpsetConfig {
   switch ((config as {version: string}).version) {
     case '0.1.0':
       convert0_1_0(config as Version0_1_0);
+      break;
     default:
       void 0;
   }

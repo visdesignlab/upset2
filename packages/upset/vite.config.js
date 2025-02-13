@@ -1,9 +1,7 @@
-/// <reference types="vitest" />
 import react from '@vitejs/plugin-react';
 import { join } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-import viteTsConfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/react',
@@ -14,9 +12,6 @@ export default defineConfig({
       skipDiagnostics: true,
     }),
     react(),
-    viteTsConfigPaths({
-      root: '../../',
-    }),
   ],
   server: { hmr: process.env.NODE_TESTING !== 'true' },
 
@@ -24,7 +19,8 @@ export default defineConfig({
   // See: https://vitejs.dev/guide/build.html#library-mode
   build: {
     sourcemap: true,
-    emptyOutDir: false,
+    emptyOutDir: true,
+    outDir: './dist/',
     lib: {
       // Could also be a dictionary or array of multiple entry points.
       entry: 'src/index.tsx',

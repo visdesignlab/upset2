@@ -7,7 +7,7 @@ import {
 } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { convertConfig, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
+import { convertConfig, deepCopy, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -17,7 +17,6 @@ import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
 
-/** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 
 const defaultVisibleSets = 6;
@@ -80,7 +79,7 @@ function App() {
       );
 
       if (sessionState && sessionState !== 'not found') {
-        prov.importObject(structuredClone(sessionState));
+        prov.importObject(deepCopy(sessionState));
       }
 
       // Make sure the config atom stays up-to-date with the provenance

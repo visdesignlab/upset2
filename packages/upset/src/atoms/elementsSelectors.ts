@@ -239,7 +239,7 @@ export const aggregateSelectedCount = selectorFamily<number, Aggregate>({
   get: (agg: Aggregate) => ({ get }) => {
     let total = 0;
     Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate }).forEach(([id, value]) => {
-      total += Object.hasOwn(value, 'aggregateBy')
+      total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
         ? get(aggregateSelectedCount(value as Aggregate))
         : get(subsetSelectedCount(id));
     });

@@ -27,8 +27,8 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
       <rect
         className={setId}
         css={
-          (columnHover.includes(setId) || columnSelect.includes(setId)) &&
-            hoverHighlight
+          (columnHover.includes(setId) || columnSelect.includes(setId)) ?
+            hoverHighlight : undefined
         }
         height={dimensions.set.label.height - gap}
         width={dimensions.set.width - gap / 2}

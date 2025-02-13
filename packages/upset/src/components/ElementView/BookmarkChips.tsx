@@ -7,7 +7,7 @@ import { useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, BookmarkedIntersection, flattenedOnlyRows, isBookmarkedIntersection,
+  Bookmark, BookmarkedIntersection, deepCopy, flattenedOnlyRows, isBookmarkedIntersection,
   isElementSelection,
 } from '@visdesignlab/upset2-core';
 import {

@@ -1,9 +1,10 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 
-import moviesData from './data/movies/data.json';
+import moviesData from './data/movies/data.json' assert { type: 'json' };
 
 import { Upset } from '../src';
+import { assert } from 'console';
 
 const meta = {
   title: 'Upset',

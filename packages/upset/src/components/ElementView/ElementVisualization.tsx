@@ -7,7 +7,7 @@ import { VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
 import {
-  numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, Plot,
+  numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, deepCopy, Plot,
   NumericalQuery,
 } from '@visdesignlab/upset2-core';
 import {
@@ -72,7 +72,7 @@ export const ElementVisualization = () => {
   const views = useRef<{view: View, plot: Plot}[]>([]);
   const currentClick = useRef<Plot |null>(null);
   const data = useMemo(() => ({
-    elements: Object.values(structuredClone(items)),
+    elements: Object.values(deepCopy(items)),
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (

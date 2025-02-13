@@ -4,7 +4,7 @@ import {
 } from './types';
 
 /**
- * DEPRECATED: Currently serves only as an alias for structuredClone; use that instead.
+ * Version safe deep copy using structured cloning.
  * Create a deep copy (with all fields recursively copied) of an object using structured cloning;
  * if structured cloning fails, falls back to JSON serialization.
  * @param obj the object to copy
