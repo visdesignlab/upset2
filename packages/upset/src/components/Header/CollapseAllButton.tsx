@@ -67,8 +67,8 @@ export const CollapseAllButton = () => {
   }, [allCollapsed, iconSize]);
 
   return (
-    <Group tx={iconSize + 5} ty={dimensions.header.totalHeight - iconSize} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
-      <Tooltip title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
+    <Group tx={iconSize + dimensions.header.buttonXOffset} ty={dimensions.header.totalHeight - (iconSize * 2)} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
+      <Tooltip placement="top" title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
         <g>
           <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0} />
           <g

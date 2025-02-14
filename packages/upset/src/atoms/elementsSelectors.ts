@@ -2,9 +2,9 @@ import {
   Aggregate,
   BaseIntersection,
   NumericalQuery, Item, Row, flattenedOnlyRows, getItems,
-  ElementSelection,
   filterItems,
-  ElementQuery,
+  ElementSelection,
+  AttQuery,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -118,18 +118,42 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
 });
 
 /**
- * Gets all elements in the bookmarked intersections and the currently selected intersection.
- * If no intersections are bookmarked, returns all elements
+ * Gets all elements in the bookmarked intersections, with coloring and selection properties.
  * @returns The elements in the bookmarked intersections
  */
-export const elementsInBookmarkSelector = selector<Item[]>({
-  key: 'bookmarked-elements',
+export const bookmarkedItemsSelector = selector<Item[]>({
+  key: 'bookmarked-items',
   get: ({ get }) => {
     const bookmarks = get(bookmarkSelector);
     const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
-
-    if (items.length === 0) return Object.values(get(itemsAtom)).map((item) => ({ ...item, color: '#444' }));
     return items;
+  },
+});
+
+/**
+ * Gets all items with a grey color added.
+ */
+export const greyItemsSelector = selector<Item[]>({
+  key: 'deselected-elements',
+  get: ({ get }) => {
+    const items = Object.values(get(itemsAtom));
+    return items.map((item) => ({ ...item, color: '#444' }));
+  },
+});
+
+/**
+ * Gets all items, colored by their subset if bookmarked or in the current intersection selection and grey otherwise.
+ */
+export const coloredElementsSelector = selector<Item[]>({
+  key: 'bookmarked-elements',
+  get: ({ get }) => {
+    const selected: Item[] = get(bookmarkedItemsSelector);
+    const items = get(greyItemsSelector);
+
+    // Concating selected after items ensures that the selected colors override the grey ones
+    // Even though this adds duplicate items to the array, I believe it's more performant than filtering
+    // as filtering is O(n^2) given a list of bookmarked items
+    return items.concat(selected);
   },
 });
 
@@ -151,7 +175,7 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
-    return elementSelection?.type === 'numerical' ? elementSelection.selection : undefined;
+    return elementSelection?.type === 'numerical' ? elementSelection.query : undefined;
   },
 });
 
@@ -160,23 +184,22 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
  * ie the 'selected' property of the selectedElementsSelector.
  * If the current selection is not an element query, returns undefined.
  */
-export const currentElementQuery = selector<ElementQuery | undefined>({
+export const currentElementQuery = selector<AttQuery | undefined>({
   key: 'config-current-element-query',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
-    return elementSelection?.type === 'element' ? elementSelection.selection : undefined;
+    return elementSelection?.type === 'element' ? elementSelection.query : undefined;
   },
 });
 
 /**
- * Returns all items that are in a bookmarked intersection OR the currently selected intersection
- * AND are within the bounds of the current element selection.
+ * Returns all items that are within the bounds of the current element selection.
  * If no selections are active and no rows are bookmarked, returns all items.
  */
 export const selectedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
-    const items: Item[] = get(elementsInBookmarkSelector);
+    const items: Item[] = get(coloredElementsSelector);
     const selection = get(selectedElementSelector);
     if (!selection) return items;
 

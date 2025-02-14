@@ -7,6 +7,8 @@ import {
   AltText,
   ElementSelection,
   plotToString,
+  SetQuery,
+  selectionIsNumerical,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -353,18 +355,6 @@ const setUserAltTextAction = register<AltText | null>(
 );
 
 /**
- * Toggles whether the user alt text should be used
- * @param {boolean} useUserAlt whether to use the user alttext
- */
-const setUseUserAltTextAction = register<boolean>(
-  'set-use-user-alt-text',
-  (state: UpsetConfig, useUserAlt) => {
-    state.useUserAlt = useUserAlt;
-    return state;
-  },
-);
-
-/**
  * Sets whether the intersection size labels should be shown
  */
 const setIntersectionSizeLabelsAction = register<boolean>(
@@ -393,6 +383,38 @@ const setShowHiddenSetsAction = register<boolean>(
   'set-show-hidden-sets',
   (state, show) => {
     state.showHiddenSets = show;
+    return state;
+  },
+);
+
+/**
+ * Registers an action to set the query for the state. There should only be one query at a time.
+ *
+ * @param state - The current state object.
+ * @param query - The query to set, which can be of type `SetQuery` or `null`.
+ * @returns The updated state with the new query set.
+ */
+const addSetQueryAction = register<SetQuery>(
+  'add-set-query',
+  (state, query) => {
+    state.setQuery = query;
+    return state;
+  },
+);
+
+/**
+ * Action to remove the set query from the Upset configuration.
+ *
+ * This action sets the `setQuery` property of the `UpsetConfig` state to `null`.
+ *
+ * @param state - The current state of the Upset configuration.
+ * @returns The updated state with the `setQuery` property set to `null`.
+ */
+const removeSetQueryAction = register<SetQuery>(
+  'remove-set-query',
+  (state: UpsetConfig, query: SetQuery) => {
+    // filter out the query to remove
+    state.setQuery = null;
     return state;
   },
 );
@@ -442,7 +464,7 @@ export function getActions(provenance: UpsetProvenance) {
      * Adds a bookmark to the state
      * @param b bookmark to add
      */
-    addBookmark: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
+    addBookmark: (b: Bookmark) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
     /**
      * Removes a bookmark from the state
      * @param b bookmark to remove
@@ -477,18 +499,14 @@ export function getActions(provenance: UpsetProvenance) {
      */
     setElementSelection: (selection: ElementSelection | null) => provenance.apply(
       // Object.keys check is for numerical queries, which can come out of vega as {}
-      selection && Object.keys(selection.selection).length > 0 ?
-        `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
-        : 'Deselected elements',
+      selection && selectionIsNumerical(selection) ? (Object.keys(selection.query).length > 0 ?
+        `Selected elements based on the following keys: ${Object.keys(selection.query).join(' ')}`
+        : 'Deselected elements') : (selection ? `Selected elements based on ${selection.query.att}` : 'Deselected elements'),
       setElementSelectionAction(selection),
     ),
     setUserAltText: (altText: AltText | null) => provenance.apply(
       altText ? 'Set user alt text' : 'Cleared user alt text',
       setUserAltTextAction(altText),
-    ),
-    setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
-      useUserAlt ? 'Enabled user alt text' : 'Disabled user alt text',
-      setUseUserAltTextAction(useUserAlt),
     ),
     /**
      * Sets whether set intersection size labels should be shown
@@ -513,6 +531,14 @@ export function getActions(provenance: UpsetProvenance) {
     setShowHiddenSets: (show: boolean) => provenance.apply(
       show ? 'Show hidden sets' : 'Hide hidden sets',
       setShowHiddenSetsAction(show),
+    ),
+    addSetQuery: (query: SetQuery, queryString: string) => provenance.apply(
+      `Query ${query.name}: ${queryString}`,
+      addSetQueryAction(query),
+    ),
+    removeSetQuery: (query: SetQuery) => provenance.apply(
+      `Remove Query: ${query.name}`,
+      removeSetQueryAction(query),
     ),
   };
 }

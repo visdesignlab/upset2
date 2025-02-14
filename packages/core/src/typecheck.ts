@@ -1,8 +1,10 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, NumericalBookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
-  ElementQuery,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  AttQuery,
   ElementQueryType,
-  ElementBookmark,
+  SetQueryMembership,
+  SetQuery,
+  SetMembershipStatus,
   ElementSelection,
 } from './types';
 import { deepCopy } from './utils';
@@ -129,15 +131,15 @@ export function isNumericalQuery(value: unknown): value is NumericalQuery {
  * @param val The value to check.
  * @returns whether the value is a ElementQuery
  */
-export function isElementQuery(val: unknown): val is ElementQuery {
+export function isAttQuery(val: unknown): val is AttQuery {
   return (
     isObject(val)
     && Object.hasOwn(val, 'att')
     && Object.hasOwn(val, 'type')
     && Object.hasOwn(val, 'query')
-    && typeof (val as ElementQuery).att === 'string'
-    && Object.values(ElementQueryType).includes((val as ElementQuery).type)
-    && typeof (val as ElementQuery).query === 'string'
+    && typeof (val as AttQuery).att === 'string'
+    && Object.values(ElementQueryType).includes((val as AttQuery).type)
+    && typeof (val as AttQuery).query === 'string'
   );
 }
 
@@ -187,11 +189,7 @@ export function isBookmark(b: unknown): b is Bookmark {
     && Object.hasOwn(b, 'type')
     && typeof (b as Bookmark).id === 'string'
     && typeof (b as Bookmark).label === 'string'
-    && (
-      (b as Bookmark).type === 'intersection'
-      || (b as Bookmark).type === 'numerical'
-      || (b as Bookmark).type === 'element'
-    );
+    && typeof (b as Bookmark).size === 'number';
 }
 
 /**
@@ -229,6 +227,23 @@ export function isSubsets(s: unknown): s is Subsets {
     && Array.isArray((s as Subsets).order)
     && Object.entries((s as Subsets).values).every(([k, v]) => typeof k === 'string' && isSubset(v))
     && (s as Subsets).order.every((o: unknown) => typeof o === 'string');
+}
+
+/**
+ * Type guard for Selection
+ * @param s variable to check
+ * @returns {boolean}
+ */
+export function isElementSelection(s: unknown): s is ElementSelection {
+  if (!isObject(s) || !Object.hasOwn(s, 'type') || !Object.hasOwn(s, 'query')) return false;
+  switch ((s as {type: unknown, query: unknown}).type) {
+    case 'element':
+      return isAttQuery((s as {type: unknown, query: unknown}).query);
+    case 'numerical':
+      return isNumericalQuery((s as {type: unknown, query: unknown}).query);
+    default:
+      return false;
+  }
 }
 
 /**
@@ -274,39 +289,6 @@ export function isRow(r: unknown): r is Row {
 }
 
 /**
- * Type guard for NumericalBookmark
- * @param b variable to check
- * @returns {boolean}
- */
-export function isNumericalBookmark(b: unknown): b is NumericalBookmark {
-  return isBookmark(b)
-  && b.type === 'numerical'
-  && Object.hasOwn(b, 'selection')
-  && isNumericalQuery((b as NumericalBookmark).selection);
-}
-
-/**
- * Type guard for ElementBookmark
- * @param b variable to check
- * @returns {boolean}
- */
-export function isElementBookmark(b: unknown): b is ElementBookmark {
-  return isBookmark(b)
-  && b.type === 'element'
-  && Object.hasOwn(b, 'selection')
-  && isElementQuery((b as ElementBookmark).selection);
-}
-
-/**
- * Determines if the given object is an ElementSelection.
- * @param e The object to check.
- * @returns {boolean} Whether the object is an ElementSelection.
- */
-export function isElementSelection(e: unknown): e is ElementSelection {
-  return isNumericalBookmark(e) || isElementBookmark(e);
-}
-
-/**
  * Type guard for PlotInformation
  * @param p variable to check
  * @returns {boolean}
@@ -319,6 +301,55 @@ export function isPlotInformation(p: unknown): p is PlotInformation {
     && (typeof (p as PlotInformation).description === 'string' || (p as PlotInformation).description === null)
     && (typeof (p as PlotInformation).sets === 'string' || (p as PlotInformation).sets === null)
     && (typeof (p as PlotInformation).items === 'string' || (p as PlotInformation).items === null);
+}
+
+/**
+ * Checks if the given value is a valid SetMembershipStatus.
+ *
+ * A valid SetMembershipStatus is one of the following strings:
+ * - 'Yes'
+ * - 'No'
+ * - 'May'
+ *
+ * @param s - The value to check.
+ * @returns True if the value is a valid SetMembershipStatus, false otherwise.
+ */
+export function isSetMembershipStatus(s: unknown): s is SetMembershipStatus {
+  return s === 'Yes' || s === 'No' || s === 'May';
+}
+
+/**
+ * Checks if the given value is a `SetQueryMembership` object.
+ *
+ * A `SetQueryMembership` object is considered valid if it is an object
+ * where all keys are strings and all values are valid `SetMembershipStatus`.
+ *
+ * @param s - The value to check.
+ * @returns `true` if the value is a `SetQueryMembership` object, otherwise `false`.
+ */
+export function isSetQueryMembership(s: unknown): s is SetQueryMembership {
+  return isObject(s)
+    && Object.entries(s).every(
+      ([k, v]) => typeof k === 'string' && isSetMembershipStatus(v),
+    );
+}
+
+/**
+ * Checks if the given value is a SetQuery object.
+ *
+ * A SetQuery object is expected to have the following properties:
+ * - `name`: a string representing the name of the query.
+ * - `query`: an object that satisfies the isSetQueryMembership check.
+ *
+ * @param s - The value to check.
+ * @returns `true` if the value is a SetQuery object, otherwise `false`.
+ */
+export function isSetQuery(s: unknown): s is SetQuery {
+  return isObject(s)
+    && Object.hasOwn(s, 'name')
+    && Object.hasOwn(s, 'query')
+    && typeof (s as SetQuery).name === 'string'
+    && isSetQueryMembership((s as SetQuery).query);
 }
 
 /**
@@ -353,11 +384,11 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'selected')
     && Object.hasOwn(config, 'elementSelection')
     && Object.hasOwn(config, 'version')
-    && Object.hasOwn(config, 'useUserAlt')
     && Object.hasOwn(config, 'userAltText')
     && Object.hasOwn(config, 'intersectionSizeLabels')
     && Object.hasOwn(config, 'setSizeLabels')
     && Object.hasOwn(config, 'showHiddenSets')
+    && Object.hasOwn(config, 'setQuery')
   )) {
     console.warn('Upset config is missing required fields');
     return false;
@@ -367,8 +398,8 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   const {
     plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, attributePlots, bookmarks, collapsed,
-    plots, allSets, selected, elementSelection, version, useUserAlt, userAltText, intersectionSizeLabels, setSizeLabels,
-    showHiddenSets,
+    plots, allSets, selected, elementSelection, version, userAltText, intersectionSizeLabels, setSizeLabels,
+    showHiddenSets, setQuery,
   } = config as UpsetConfig;
 
   // Check that the fields are of the correct type
@@ -548,19 +579,13 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 
   // elementSelection
   if (!(elementSelection === null || isElementSelection(elementSelection))) {
-    console.warn('Upset config error: Element selection is not a bookmarked selection');
+    console.warn('Upset config error: Element selection is not a selection', elementSelection);
     return false;
   }
 
   // version
-  if (version !== '0.1.1') {
+  if (version !== '0.1.3') {
     console.warn('Upset config error: Invalid version');
-    return false;
-  }
-
-  // useUserAlt
-  if (typeof useUserAlt !== 'boolean') {
-    console.warn('Upset config error: Use user alt is not a boolean');
     return false;
   }
 
@@ -591,6 +616,12 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // showHiddenSets
   if (typeof showHiddenSets !== 'boolean') {
     console.warn('Upset config error: Show hidden sets is not a boolean');
+    return false;
+  }
+
+  // setQuery
+  if (setQuery !== null && !isSetQuery(setQuery)) {
+    console.warn('Upset config error: Set query is not an object');
     return false;
   }
 

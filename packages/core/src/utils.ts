@@ -1,7 +1,8 @@
-import { isNumericalBookmark, isElementBookmark } from './typecheck';
 import {
-  ElementSelection, Item, ElementQueryType, Plot,
+  Item, ElementQueryType, Plot,
+  ElementSelection,
 } from './types';
+import { selectionIsAtt, selectionIsNumerical } from './typeutils';
 
 /**
  * Version safe deep copy using structured cloning.
@@ -41,22 +42,21 @@ export function hashString(str: string): number {
  */
 export function filterItems(items: Item[], filter: ElementSelection): Item[] {
   const result: Item[] = [];
-  if (isNumericalBookmark(filter)) {
+  if (selectionIsNumerical(filter)) {
     return items.filter(
-      (item) => Object.entries(filter.selection).every(
+      (item) => Object.entries(filter.query).every(
         ([key, value]) => typeof item[key] === 'number'
               && item[key] as number >= value[0]
               && item[key] as number <= value[1],
       ),
     );
-  } if (isElementBookmark(filter)) {
-    const { att } = filter.selection;
-    const { query } = filter.selection;
+  } if (selectionIsAtt(filter)) {
+    const { att, query } = filter.query;
 
     return items.filter((item) => {
       if (!Object.hasOwn(item, att)) return false;
 
-      switch (filter.selection.type) {
+      switch (filter.query.type) {
         case ElementQueryType.CONTAINS:
           return (`${item[att]}`).includes(query);
         case ElementQueryType.EQUALS:

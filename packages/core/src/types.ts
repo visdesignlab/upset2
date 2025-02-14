@@ -275,7 +275,6 @@ export type Histogram = BasePlot & {
 };
 
 export type Plot = Scatterplot | Histogram;
-
 /**
  * Represents the different types of attribute plots.
  * Enum value is used here so that the values can be used as keys in upset package.
@@ -324,7 +323,7 @@ export enum NumericalQueryType {
 /**
  * Represents a selection of elements based on a comparison between an attribute and a query string.
  */
-export type ElementQuery = {
+export type AttQuery = {
   /**
    * Name of the attribute being queried upon
    */
@@ -355,7 +354,43 @@ export type ElementQuery = {
 export type NumericalQuery = {[attName: string] : [number, number]};
 
 /**
- * Base representation of a bookmarkable type
+ * Wrapper type for an element query
+ */
+export type AttSelection = {
+  type: 'element';
+  query: AttQuery;
+}
+
+/**
+ * Wrapper type for a numerical query
+ */
+export type NumericalSelection = {
+  type: 'numerical';
+  query: NumericalQuery;
+}
+
+/**
+ * Represents a selection of elements.
+ * Can be either an element query or a numerical query.
+ */
+export type ElementSelection = AttSelection | NumericalSelection;
+
+/**
+ * Represents a query object where each key is a string and the value is a SetMembershipStatus.
+ * This type is used to define the membership status of elements in a set.
+ */
+export type SetQueryMembership = {[key: string]: SetMembershipStatus};
+
+/**
+ * Represents a query for a set.
+ */
+export type SetQuery = {
+  name: string;
+  query: SetQueryMembership;
+}
+
+/**
+ * A bookmarked intersection
  * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
 export type Bookmark = {
@@ -368,60 +403,10 @@ export type Bookmark = {
    */
   label: string;
   /**
-   * Subtype of the bookmark; used to determine what fields are available at runtime
-   */
-  type: 'intersection' | 'numerical' | 'element';
-};
-
-/**
- * A bookmarked intersection.
- */
-export type BookmarkedIntersection = Bookmark & {
-  /**
-   * The size of the bookmarked intersection.
+   * The size of the bookmarked selection
    */
   size: number;
-  /**
-   * Indicates type at runtime
-   */
-  type: 'intersection';
-}
-
-/**
- * Represents a bookmarked element selection based on numerical attributes, created in the Element View.
- * @privateRemarks typechecked by isNumericalBookmark in typecheck.ts; changes here must be reflected there
- */
-export type NumericalBookmark = Bookmark & {
-  /**
-   * The selection parameters
-   */
-  selection: NumericalQuery;
-  /**
-   * Indicates type at runtime
-   */
-  type: 'numerical';
-}
-
-/**
- * Represents a bookmarked element selection based on attribute comparisons, created in the element view
- * @privateRemarks typechecked by isElementBookmark in typecheck.ts; changes here must be reflected there
- */
-export type ElementBookmark = Bookmark & {
-  /**
-   * Selection parameters
-   */
-  selection: ElementQuery;
-  /**
-   * Indicates type at runtim
-   */
-  type: 'element';
-}
-
-/**
- * A bookmark which represents a selection of elements
- * @privateRemarks typechecked by isElementSelection in typecheck.ts; changes here must be reflected there
- */
-export type ElementSelection = NumericalBookmark | ElementBookmark;
+};
 
 /**
  * Represents the alternative text for an Upset plot.
@@ -492,8 +477,7 @@ export type UpsetConfig = {
    * Selected elements (data points) in the Element View.
    */
   elementSelection: ElementSelection | null;
-  version: '0.1.1';
-  useUserAlt: boolean;
+  version: '0.1.3';
   userAltText: AltText | null;
   /**
    * Whether to display numerical size labels on the intersection size bars.
@@ -507,6 +491,10 @@ export type UpsetConfig = {
    * Whether to display the hidden sets & their sizes above the plot
    */
   showHiddenSets: boolean;
+  /**
+   * Query by set query
+   */
+  setQuery: SetQuery | null;
 };
 
 export type AccessibleDataEntry = {
