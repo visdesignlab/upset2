@@ -7,7 +7,7 @@ import { VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
 
 import {
-  numericalQueryToBookmark, numericalQueriesEqual, isNumericalQuery, deepCopy, Plot,
+  numericalQueriesEqual, isNumericalQuery, deepCopy, Plot,
   NumericalQuery,
 } from '@visdesignlab/upset2-core';
 import {
@@ -106,7 +106,7 @@ export const ElementVisualization = () => {
       && Object.keys(draftSelection.current).length > 0
       && !numericalQueriesEqual(draftSelection.current, numericalQuery)
     ) {
-      actions.setElementSelection(numericalQueryToBookmark(draftSelection.current));
+      actions.setElementSelection({ type: 'numerical', query: draftSelection.current });
     } else if (elementSelection) actions.setElementSelection(null);
     draftSelection.current = undefined;
   }, [draftSelection.current, numericalQuery, elementSelection, actions]);

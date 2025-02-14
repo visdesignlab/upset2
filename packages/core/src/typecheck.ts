@@ -1,12 +1,11 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, NumericalBookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
-  ElementQuery,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  AttQuery,
   ElementQueryType,
-  ElementBookmark,
-  ElementSelection,
   SetQueryMembership,
   SetQuery,
   SetMembershipStatus,
+  ElementSelection,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -132,15 +131,15 @@ export function isNumericalQuery(value: unknown): value is NumericalQuery {
  * @param val The value to check.
  * @returns whether the value is a ElementQuery
  */
-export function isElementQuery(val: unknown): val is ElementQuery {
+export function isAttQuery(val: unknown): val is AttQuery {
   return (
     isObject(val)
     && Object.hasOwn(val, 'att')
     && Object.hasOwn(val, 'type')
     && Object.hasOwn(val, 'query')
-    && typeof (val as ElementQuery).att === 'string'
-    && Object.values(ElementQueryType).includes((val as ElementQuery).type)
-    && typeof (val as ElementQuery).query === 'string'
+    && typeof (val as AttQuery).att === 'string'
+    && Object.values(ElementQueryType).includes((val as AttQuery).type)
+    && typeof (val as AttQuery).query === 'string'
   );
 }
 
@@ -190,11 +189,7 @@ export function isBookmark(b: unknown): b is Bookmark {
     && Object.hasOwn(b, 'type')
     && typeof (b as Bookmark).id === 'string'
     && typeof (b as Bookmark).label === 'string'
-    && (
-      (b as Bookmark).type === 'intersection'
-      || (b as Bookmark).type === 'numerical'
-      || (b as Bookmark).type === 'element'
-    );
+    && typeof (b as Bookmark).size === 'number';
 }
 
 /**
@@ -232,6 +227,23 @@ export function isSubsets(s: unknown): s is Subsets {
     && Array.isArray((s as Subsets).order)
     && Object.entries((s as Subsets).values).every(([k, v]) => typeof k === 'string' && isSubset(v))
     && (s as Subsets).order.every((o: unknown) => typeof o === 'string');
+}
+
+/**
+ * Type guard for Selection
+ * @param s variable to check
+ * @returns {boolean}
+ */
+export function isElementSelection(s: unknown): s is ElementSelection {
+  if (!isObject(s) || !Object.hasOwn(s, 'type') || !Object.hasOwn(s, 'query')) return false;
+  switch ((s as {type: unknown, query: unknown}).type) {
+    case 'element':
+      return isAttQuery((s as {type: unknown, query: unknown}).query);
+    case 'numerical':
+      return isNumericalQuery((s as {type: unknown, query: unknown}).query);
+    default:
+      return false;
+  }
 }
 
 /**
@@ -277,39 +289,6 @@ export function isRow(r: unknown): r is Row {
 }
 
 /**
- * Type guard for NumericalBookmark
- * @param b variable to check
- * @returns {boolean}
- */
-export function isNumericalBookmark(b: unknown): b is NumericalBookmark {
-  return isBookmark(b)
-  && b.type === 'numerical'
-  && Object.hasOwn(b, 'selection')
-  && isNumericalQuery((b as NumericalBookmark).selection);
-}
-
-/**
- * Type guard for ElementBookmark
- * @param b variable to check
- * @returns {boolean}
- */
-export function isElementBookmark(b: unknown): b is ElementBookmark {
-  return isBookmark(b)
-  && b.type === 'element'
-  && Object.hasOwn(b, 'selection')
-  && isElementQuery((b as ElementBookmark).selection);
-}
-
-/**
- * Determines if the given object is an ElementSelection.
- * @param e The object to check.
- * @returns {boolean} Whether the object is an ElementSelection.
- */
-export function isElementSelection(e: unknown): e is ElementSelection {
-  return isNumericalBookmark(e) || isElementBookmark(e);
-}
-
-/**
  * Type guard for PlotInformation
  * @param p variable to check
  * @returns {boolean}
@@ -351,7 +330,8 @@ export function isSetMembershipStatus(s: unknown): s is SetMembershipStatus {
 export function isSetQueryMembership(s: unknown): s is SetQueryMembership {
   return isObject(s)
     && Object.entries(s).every(
-      ([k, v]) => typeof k === 'string' && isSetMembershipStatus(v)); 
+      ([k, v]) => typeof k === 'string' && isSetMembershipStatus(v),
+    );
 }
 
 /**
@@ -404,7 +384,6 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'selected')
     && Object.hasOwn(config, 'elementSelection')
     && Object.hasOwn(config, 'version')
-    && Object.hasOwn(config, 'useUserAlt')
     && Object.hasOwn(config, 'userAltText')
     && Object.hasOwn(config, 'intersectionSizeLabels')
     && Object.hasOwn(config, 'setSizeLabels')
@@ -419,7 +398,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   const {
     plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, attributePlots, bookmarks, collapsed,
-    plots, allSets, selected, elementSelection, version, useUserAlt, userAltText, intersectionSizeLabels, setSizeLabels,
+    plots, allSets, selected, elementSelection, version, userAltText, intersectionSizeLabels, setSizeLabels,
     showHiddenSets, setQuery,
   } = config as UpsetConfig;
 
@@ -600,19 +579,13 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 
   // elementSelection
   if (!(elementSelection === null || isElementSelection(elementSelection))) {
-    console.warn('Upset config error: Element selection is not a bookmarked selection');
+    console.warn('Upset config error: Element selection is not a selection', elementSelection);
     return false;
   }
 
   // version
-  if (version !== '0.1.2') {
+  if (version !== '0.1.3') {
     console.warn('Upset config error: Invalid version');
-    return false;
-  }
-
-  // useUserAlt
-  if (typeof useUserAlt !== 'boolean') {
-    console.warn('Upset config error: Use user alt is not a boolean');
     return false;
   }
 

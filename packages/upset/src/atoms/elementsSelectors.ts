@@ -2,9 +2,9 @@ import {
   Aggregate,
   BaseIntersection,
   NumericalQuery, Item, Row, flattenedOnlyRows, getItems,
-  ElementSelection,
   filterItems,
-  ElementQuery,
+  ElementSelection,
+  AttQuery,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -175,7 +175,7 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
-    return elementSelection?.type === 'numerical' ? elementSelection.selection : undefined;
+    return elementSelection?.type === 'numerical' ? elementSelection.query : undefined;
   },
 });
 
@@ -184,11 +184,11 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
  * ie the 'selected' property of the selectedElementsSelector.
  * If the current selection is not an element query, returns undefined.
  */
-export const currentElementQuery = selector<ElementQuery | undefined>({
+export const currentElementQuery = selector<AttQuery | undefined>({
   key: 'config-current-element-query',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
-    return elementSelection?.type === 'element' ? elementSelection.selection : undefined;
+    return elementSelection?.type === 'element' ? elementSelection.query : undefined;
   },
 });
 

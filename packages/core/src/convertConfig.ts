@@ -1,9 +1,10 @@
 import {
-  AggregateBy, Bookmark, NumericalBookmark, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot,
+  AggregateBy, Bookmark, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot,
   SortByOrder, SortVisibleBy, UpsetConfig,
   AttributePlots,
-  ElementSelection,
   AltText, SetQuery,
+  AttQuery,
+  NumericalQuery,
 } from './types';
 import { isUpsetConfig } from './typecheck';
 import { DefaultConfig } from './defaultConfig';
@@ -26,6 +27,32 @@ import { DefaultConfig } from './defaultConfig';
  * 6. Update isUpsetConfig (in typecheck.ts) to reflect your changes to UpsetConfig.
  * 7. Bump the version number in the UpsetConfig type, all package.json files, the README, and defaultConfig.ts.
  */
+
+// Old types, pre-0.1.2
+
+type ElementBookmark = Omit<Bookmark, 'size'> & {
+  /**
+   * Selection parameters
+   */
+  selection: AttQuery;
+  /**
+   * Indicates type at runtim
+   */
+  type: 'element';
+}
+
+type NumericalBookmark = Omit<Bookmark, 'size'> & {
+  /**
+   * The selection parameters
+   */
+  selection: NumericalQuery;
+  /**
+   * Indicates type at runtime
+   */
+  type: 'numerical';
+}
+
+type ElementSelection = NumericalBookmark | ElementBookmark;
 
 type Version0_1_0 = {
   plotInformation: PlotInformation;
@@ -185,12 +212,32 @@ function convert0_1_0(config: Version0_1_0): Version0_1_1 {
  * @param config - The configuration object of version 0.1.1 to be converted.
  * @returns The updated configuration object with version 0.1.2.
  */
-function convert0_1_1(config: Version0_1_1): UpsetConfig {
+// eslint-disable-next-line camelcase
+function convert0_1_1(config: Version0_1_1): Version0_1_2 {
   (config as unknown as Version0_1_2).version = '0.1.2';
   (config as unknown as Version0_1_2).setQuery = DefaultConfig.setQuery;
   return config as unknown as Version0_1_2;
 }
 
+/**
+ * Converts a configuration object from version 0.1.2 to version 0.1.3.
+ */
+// eslint-disable-next-line camelcase
+function convert0_1_2(config: Version0_1_2): UpsetConfig {
+  delete (config as any).useUserAlt;
+  const bookmarks = config.bookmarks.filter(
+    (bookmark) => (bookmark as any).type === 'intersection' || (bookmark as any).type === undefined,
+  );
+  config.bookmarks = bookmarks;
+  (config as unknown as UpsetConfig).version = '0.1.3';
+  if (config.elementSelection?.id) {
+    (config.elementSelection as any).query = config.elementSelection.selection;
+    delete (config.elementSelection as any).selection;
+    delete (config.elementSelection as any).id;
+    delete (config.elementSelection as any).label;
+  }
+  return config as unknown as UpsetConfig;
+}
 
 /**
  * Converts a pre-versioned config to the current version.
@@ -201,17 +248,12 @@ function preVersionConversion(config: PreVersionConfig): Version0_1_0 {
   // TS won't allow a conversion directly to UpsetConfig, so we have to cast it to unknown first.
   // This is necessary to add and remove properties from the object.
   (config as unknown as Version0_1_0).version = '0.1.0';
-  (config as unknown as Version0_1_0).elementSelection = DefaultConfig.elementSelection;
+  (config as unknown as Version0_1_0).elementSelection = null;
   (config as unknown as Version0_1_0).bookmarks = config.bookmarkedIntersections;
-  (config as unknown as Version0_1_0).useUserAlt = DefaultConfig.useUserAlt;
   (config as unknown as Version0_1_0).userAltText = DefaultConfig.userAltText;
   (config as unknown as Version0_1_0).attributePlots = DefaultConfig.attributePlots;
   // Any cast required because bookmarkedIntersections isn't optional in PreversionConfig
   delete (config as any).bookmarkedIntersections;
-
-  (config as unknown as Version0_1_0).bookmarks.forEach((bookmark) => {
-    bookmark.type = 'intersection';
-  });
 
   return config as unknown as Version0_1_0;
 }
@@ -238,6 +280,8 @@ export function convertConfig(config: unknown): UpsetConfig {
       convert0_1_0(config as Version0_1_0);
     case '0.1.1':
       convert0_1_1(config as Version0_1_1);
+    case '0.1.2':
+      convert0_1_2(config as Version0_1_2);
     default:
       void 0;
   }
