@@ -97,6 +97,7 @@ export function calculateDimensions(
       degreeColumn.gap : 0) + // Add margin
       (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
     totalHeight: set.size.height + set.label.height,
+    buttonXOffset: 5,
   };
 
   const body = {
@@ -113,6 +114,12 @@ export function calculateDimensions(
       ? matrixColumn.totalWidth
       : header.totalWidth;
 
+  const setQuery = {
+    width: body.rowWidth,
+    height: body.rowHeight * 5,
+    spacer: 5,
+  };
+
   return {
     height: header.totalHeight / 4 + body.height,
     width: totalWidth,
@@ -128,5 +135,6 @@ export function calculateDimensions(
     set,
     header,
     sidebar,
+    setQuery,
   };
 }
