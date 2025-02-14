@@ -2,6 +2,7 @@ import { Box } from '@mui/system';
 import {
   useCallback,
   useContext, useEffect, useMemo, useRef,
+  useState,
 } from 'react';
 import { VegaLite, View } from 'react-vega';
 import { useRecoilValue } from 'recoil';
@@ -69,7 +70,7 @@ export const ElementVisualization = () => {
 
   const draftSelection = useRef(numericalQuery);
   const preventSignal = useRef(false);
-  const views = useRef<{view: View, plot: Plot}[]>([]);
+  const [views, setViews] = useState<{view: View, plot: Plot}[]>([]);
   const currentClick = useRef<Plot |null>(null);
   const data = useMemo(() => ({
     elements: Object.values(deepCopy(items)),
@@ -92,10 +93,10 @@ export const ElementVisualization = () => {
   const brushHandler = useCallback((signaled: Plot, value: unknown) => {
     if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id || preventSignal.current) return;
     draftSelection.current = value;
-    views.current.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view }) => {
+    views.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view }) => {
       signalView(view, value);
     });
-  }, [draftSelection, currentClick.current, views.current]);
+  }, [draftSelection, currentClick.current, views]);
 
   /**
    * Saves the current selection to the state.
@@ -115,13 +116,13 @@ export const ElementVisualization = () => {
   useEffect(() => {
     preventSignal.current = true;
     const promises: Promise<void>[] = [];
-    views.current.forEach(({ view }) => {
+    views.forEach(({ view }) => {
       promises.push(signalView(view, numericalQuery ?? {}, true));
     });
     Promise.allSettled(promises).then(() => {
       preventSignal.current = false;
     });
-  }, [views.current, numericalQuery]);
+  }, [views, numericalQuery]);
 
   return (
     <Box
@@ -134,14 +135,14 @@ export const ElementVisualization = () => {
       >
         {(plots.length > 0) && specs.map(({ plot, spec }) => (
           // Relative position is necessary so this serves as a positioning container for the close button
-          <Box style={{ display: 'inline-block', position: 'relative' }}>
+          <Box style={{ display: 'inline-block', position: 'relative' }} key={plot.id}>
             <IconButton
               style={{
                 position: 'absolute', top: 0, right: -15, zIndex: 100, padding: 0,
               }}
               onClick={() => {
                 actions.removePlot(plot);
-                views.current = views.current.filter(({ plot: p }) => p.id !== plot.id);
+                setViews(views.filter(({ plot: p }) => p.id !== plot.id));
               }}
             >
               <CloseIcon fontSize="small" />
@@ -156,7 +157,8 @@ export const ElementVisualization = () => {
               // Making room for the close button
               style={{ marginLeft: '5px' }}
               onNewView={(view) => {
-                views.current.push({ view, plot });
+                views.push({ view, plot });
+                setViews([...views]);
                 view.addEventListener('mouseover', () => { currentClick.current = plot; });
                 view.addEventListener('mouseout', () => { currentClick.current = null; });
               }}
