@@ -5,21 +5,18 @@ import {
   useState,
 } from 'react';
 import { VegaLite, View } from 'react-vega';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
   numericalQueriesEqual, isNumericalQuery, deepCopy, Plot,
   NumericalQuery,
 } from '@visdesignlab/upset2-core';
-import {
-  IconButton,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { currentNumericalQuery, coloredElementsSelector, selectedElementSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
+import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 
 const BRUSH_NAME = 'brush';
 
@@ -63,6 +60,7 @@ export const ElementVisualization = () => {
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const elementSelection = useRecoilValue(selectedElementSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   /**
    * Internal State
@@ -135,18 +133,29 @@ export const ElementVisualization = () => {
       >
         {(plots.length > 0) && specs.map(({ plot, spec }) => (
           // Relative position is necessary so this serves as a positioning container for the close button
-          <Box style={{ display: 'inline-block', position: 'relative' }} key={plot.id}>
-            <IconButton
-              style={{
-                position: 'absolute', top: 0, right: -15, zIndex: 100, padding: 0,
-              }}
-              onClick={() => {
-                actions.removePlot(plot);
-                setViews(views.filter(({ plot: p }) => p.id !== plot.id));
-              }}
-            >
-              <CloseIcon fontSize="small" />
-            </IconButton>
+          <Box
+            style={{ display: 'inline-block', position: 'relative' }}
+            key={plot.id}
+            onContextMenu={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setContextMenu({
+                mouseX: e.clientX,
+                mouseY: e.clientY,
+                id: `${plot.id}-menu`,
+                items: [
+                  {
+                    label: 'Remove Plot',
+                    onClick: () => {
+                      actions.removePlot(plot);
+                      setViews(views.filter(({ plot: p }) => p.id !== plot.id));
+                      setContextMenu(null);
+                    },
+                  },
+                ],
+              });
+            }}
+          >
             <VegaLite
               spec={spec}
               data={data}
