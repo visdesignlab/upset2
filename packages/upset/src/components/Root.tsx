@@ -72,7 +72,7 @@ export const Root: FC<Props> = ({
   const setState = useSetRecoilState(upsetConfigAtom);
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
-  const setcanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
+  const setCanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
@@ -86,7 +86,7 @@ export const Root: FC<Props> = ({
 
   useEffect(() => {
     if (canEditPlotInformation !== undefined) {
-      setcanEditPlotInformation(canEditPlotInformation);
+      setCanEditPlotInformation(canEditPlotInformation);
     }
   }, [canEditPlotInformation]);
 
@@ -122,7 +122,7 @@ export const Root: FC<Props> = ({
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
     setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
-  }, [data]);
+  }, [data, allowAttributeRemoval]);
 
   // close all open context menus
   const removeContextMenu = () => {
