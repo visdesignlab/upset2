@@ -1,5 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import {
+  Alert,
   IconButton, Tooltip,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
@@ -110,8 +111,13 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </UpsetHeading>
       </div>
       <UpsetHeading level="h3">
-        {showQueries ? 'Selections' : 'Selections Will Appear Here'}
+        Selections
       </UpsetHeading>
+      {!showQueries && (
+        <Alert severity="info">
+          Selected intersections and elements will appear here.
+        </Alert>
+      )}
       <BookmarkChips />
       <ElementVisualization />
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
