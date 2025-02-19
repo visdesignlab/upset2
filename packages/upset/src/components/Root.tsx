@@ -1,6 +1,8 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
-import { convertConfig, CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
+  AttributePlotType, convertConfig, CoreUpsetData, UpsetConfig,
+} from '@visdesignlab/upset2-core';
 import {
   createContext, FC, useEffect, useMemo,
 } from 'react';
@@ -117,7 +119,7 @@ export const Root: FC<Props> = ({
     const state = convertConfig(provenance.getState());
     state.visibleAttributes.forEach((attr) => {
       if (attr !== 'Degree' && attr !== 'Deviation' && !state.attributePlots[attr]) {
-        state.attributePlots = { ...state.attributePlots, [attr]: 'Box Plot' };
+        state.attributePlots = { ...state.attributePlots, [attr]: AttributePlotType.DensityPlot };
       }
     });
     setState(state);
