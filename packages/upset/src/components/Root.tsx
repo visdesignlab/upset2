@@ -79,6 +79,7 @@ export const Root: FC<Props> = ({
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
+  // Set config. Note that the provenance passed in is ignored if a provenance is passed in
   useEffect(() => {
     if (!extProvenance) setState(convertConfig(config));
     setData(data);
@@ -111,7 +112,16 @@ export const Root: FC<Props> = ({
     return { provenance, actions };
   }, [config]);
 
-  useEffect(() => setState(convertConfig(provenance.getState())), []);
+  // Mandatory state defaults should go here
+  useEffect(() => {
+    const state = convertConfig(provenance.getState());
+    state.visibleAttributes.forEach((attr) => {
+      if (attr !== 'Degree' && attr !== 'Deviation' && !state.attributePlots[attr]) {
+        state.attributePlots = { ...state.attributePlots, [attr]: 'Box Plot' };
+      }
+    });
+    setState(state);
+  }, []);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
