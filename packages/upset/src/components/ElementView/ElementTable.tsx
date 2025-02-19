@@ -30,11 +30,17 @@ function useRows(items: Item[]): GridRowsProp {
  * @returns array of columns with item field to be displayed in the DataGrid and headerName
  */
 function useColumns(columns: string[]) {
-  return useMemo(() => columns.map((col) => ({
-    field: col,
+  const setColumns = useRecoilValue(setColumnsSelector);
+  return useMemo(() => columns.map((col) => {
     // Prefixed with _ since that's how the Item object is structured
-    headerName: col === '_id' ? 'ID' : col === '_label' ? 'Label' : col,
-  })), [columns]);
+    const displayName = col === '_id' ? 'ID' : col === '_label' ? 'Label' : col;
+    return {
+      field: col,
+      headerName: displayName,
+      type: setColumns.includes(col) ? 'boolean' : 'string',
+      description: displayName,
+    };
+  }), [columns]);
 }
 
 /**
@@ -45,12 +51,7 @@ export const ElementTable: FC = () => {
   const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
-  let columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
-  // Add a boolean type to set columns so they display properly
-  columns = columns.map((col) => ({
-    ...col,
-    type: setColumns.includes(col.field) ? 'boolean' : 'string',
-  }));
+  const columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
 
   return (
     <Box
