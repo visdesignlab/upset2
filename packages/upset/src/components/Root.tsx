@@ -1,7 +1,7 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
 import {
-  AttributePlotType, convertConfig, CoreUpsetData, UpsetConfig,
+  AttributePlotType, convertConfig, CoreUpsetData, deepCopy, UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import {
   createContext, FC, useEffect, useMemo,
@@ -116,10 +116,10 @@ export const Root: FC<Props> = ({
 
   // Mandatory state defaults should go here
   useEffect(() => {
-    const state = convertConfig(provenance.getState());
+    const state = deepCopy(convertConfig(provenance.getState()));
     state.visibleAttributes.forEach((attr) => {
       if (attr !== 'Degree' && attr !== 'Deviation' && !state.attributePlots[attr]) {
-        state.attributePlots = { ...state.attributePlots, [attr]: AttributePlotType.DensityPlot };
+        state.attributePlots[attr] = AttributePlotType.DensityPlot;
       }
     });
     setState(state);
