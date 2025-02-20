@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction } from 'react';
+import { Dispatch, FC, SetStateAction, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import { SetMembershipStatus, SetQueryMembership } from '@visdesignlab/upset2-core';
 import { css } from '@emotion/react';
@@ -17,7 +17,7 @@ type Props = {
    */
   setMembers: Dispatch<SetStateAction<SetQueryMembership>>;
   /**
-   * Membership type for the row, can only be 'not', 'maybe', or 'must'.
+   * Membership type for the row, can only be 'Not', 'Maybe', or 'Must'.
    */
   membershipType?: SetMembershipStatus
   /**
@@ -43,11 +43,11 @@ export const SetMembershipRow: FC<Props> = ({
   const visibleSets = useRecoilValue(visibleSetSelector);
 
   /**
-   * Retrieves the membership status for a given set.
+   * Retrieves the membership status for a given set within the current query interface selections. If the row is combined, it returns the membership status for the combined row.
    * @param set - The name of the set.
    * @returns The membership status for the set.
    */
-  function getMembershipStatus(set: string): SetMembershipStatus {
+  function getMembershipStatusInQuery(set: string): SetMembershipStatus {
     if (combined || !membershipType) {
       return members[set];
     }
@@ -59,13 +59,13 @@ export const SetMembershipRow: FC<Props> = ({
    *
    * @param set - The name of the set.
    */
-  function selectMembershipCircle(set: string) {
+  const selectMembershipCircle = useCallback((set: string) => {
     if (combined || !membershipType) return;
 
     const newMembers = { ...members };
     newMembers[set] = membershipType;
     setMembers(newMembers);
-  }
+  }, [combined, membershipType, members, setMembers]);
 
   return (
     <g>
@@ -81,9 +81,9 @@ export const SetMembershipRow: FC<Props> = ({
         <MemberShipCircle
           onClick={() => selectMembershipCircle(set)}
           transform={translate(((dimensions.set.width / 2) + dimensions.gap / 2) * index, 0)}
-          membershipStatus={getMembershipStatus(set)}
+          membershipStatus={getMembershipStatusInQuery(set)}
           showoutline
-          css={(!combined && getMembershipStatus(set) === members[set]) && highlightedSetMemberCircle}
+          css={(!combined && getMembershipStatusInQuery(set) === members[set]) && highlightedSetMemberCircle}
         />
       ))}
     </g>

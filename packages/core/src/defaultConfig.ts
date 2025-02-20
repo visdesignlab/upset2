@@ -10,7 +10,7 @@ export const DefaultConfig: UpsetConfig = {
     title: null,
   },
   horizontal: false,
-  firstAggregateBy: 'Degree',
+  firstAggregateBy: 'None',
   firstOverlapDegree: 2,
   secondAggregateBy: 'None',
   secondOverlapDegree: 2,

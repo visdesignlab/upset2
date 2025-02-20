@@ -1,11 +1,11 @@
 import { SvgIcon, Tooltip } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import Group from '../custom/Group';
 import { mousePointer } from '../../utils/styles';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { queryBySetsInterfaceAtom } from '../../atoms/queryBySetsAtoms';
+import { queryBySetsInterfaceAtom } from '../../atoms/config/queryBySetsAtoms';
 
 /**
  * The size of the icon in pixels.
@@ -22,13 +22,9 @@ export const QueryButton = () => {
   /**
    * Toggles the query by set interface.
    */
-  const toggleQueryBySetsInterface = () => {
-    if (queryBySetsInterface) {
-      setQueryBySetsInterface(false);
-    } else {
-      setQueryBySetsInterface(true);
-    }
-  };
+  const toggleQueryBySetsInterface = useCallback(() => {
+    setQueryBySetsInterface((prev) => !prev);
+  }, [setQueryBySetsInterface]);
 
   // for whatever reason this needed to be memoized for the icon to update...
   // some weird recoil thing I expect

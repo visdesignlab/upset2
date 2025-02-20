@@ -7,9 +7,9 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { currentIntersectionSelector  } from '../../atoms/config/currentIntersectionAtom';
+import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
-import { highlight, mousePointer } from '../../utils/styles';
+import { highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
 import { BookmarkStar } from '../Columns/BookmarkStar';
@@ -117,10 +117,10 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           width={width}
           rx={5}
           ry={10}
-          fill="#cccccc"
-          opacity="0.3"
-          stroke="#555555"
-          strokeWidth="1px"
+          fill={DEFAULT_ROW_BACKGROUND_COLOR}
+          opacity={DEFAULT_ROW_BACKGROUND_OPACITY}
+          stroke={ROW_BORDER_STROKE_COLOR}
+          strokeWidth={ROW_BORDER_STROKE_WIDTH}
         />
         <g>
           {collapsedIds.includes(aggregateRow.id) ? collapsed : expanded}

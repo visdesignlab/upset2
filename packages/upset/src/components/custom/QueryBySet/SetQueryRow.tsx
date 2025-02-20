@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext } from 'react';
+import { FC, useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { SetMembershipStatus } from '@visdesignlab/upset2-core';
@@ -9,13 +9,24 @@ import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
-import { setQueryAtom } from '../../../atoms/queryBySetsAtoms';
+import { setQueryAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { ProvenanceContext } from '../../Root';
 import { SizeBar } from '../../Columns/SizeBar';
 import { flattenedRowsSelector } from '../../../atoms/renderRowsAtom';
+import { DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH } from '../../../utils/styles';
 
 const REMOVE_ICON_SIZE = 16;
 
+/**
+ * Component representing a row in the set query.
+ *
+ * This component displays a row with information about a set query, including
+ * the set query name, membership status circles for visible sets, and a size bar
+ * indicating the total size of the query. It also includes a button to remove the set query.
+ *
+ * @component
+ * @returns {JSX.Element} The rendered SetQueryRow component.
+ */
 export const SetQueryRow: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -24,27 +35,29 @@ export const SetQueryRow: FC = () => {
   const rows = useRecoilValue(flattenedRowsSelector);
 
   /**
-   * Retrieves the membership status for a given set.
+   * Retrieves the membership status for a given set from the set query sets.
    * @param set - The name of the set.
    * @returns The membership status for the set.
    */
-  function getMembershipStatus(set: string): SetMembershipStatus {
+  function getMembershipStatusFromQuery(set: string): SetMembershipStatus {
     return setQuery?.query?.[set] ?? 'No';
   }
 
   /**
-   * Removes the current set query from the list of set queries.
-   *
-   * This function calls the `removeSetQuery` action from the `actions` object,
-   * passing the current `setQuery` as an argument to remove it from the list.
+   * Remove the current (and only) set query.
    *
    * @returns {void} This function does not return a value.
    */
   function removeSetQuery(): void {
-    actions.removeSetQuery(setQuery);
+    actions.removeSetQuery();
   }
 
-  const totalQuerySize = useCallback(() => {
+  /**
+   * Calculates the total size of all rows in the query.
+   *
+   * @returns {number} The total size of all rows.
+   */
+  const totalQuerySize = useMemo(() => {
     let total = 0;
     rows.forEach((rr) => {
       total += rr.row.size;
@@ -61,10 +74,10 @@ export const SetQueryRow: FC = () => {
           width={dimensions.body.rowWidth}
           rx={5}
           ry={10}
-          fill="#cccccc"
-          opacity="0.3"
-          stroke="#555555"
-          strokeWidth="1px"
+          fill={DEFAULT_ROW_BACKGROUND_COLOR}
+          opacity={DEFAULT_ROW_BACKGROUND_OPACITY}
+          stroke={ROW_BORDER_STROKE_COLOR}
+          strokeWidth={ROW_BORDER_STROKE_WIDTH}
         />
         <g transform={translate(0, 0)}>
           {/* Remove query button */}
@@ -74,7 +87,7 @@ export const SetQueryRow: FC = () => {
               css={css`
                 cursor: pointer;
               `}
-              onClick={() => removeSetQuery()}
+              onClick={removeSetQuery}
             >
               <rect
                 width={REMOVE_ICON_SIZE}
@@ -103,13 +116,13 @@ export const SetQueryRow: FC = () => {
             {visibleSets.map((set, index) => (
               <MemberShipCircle
                 transform={translate(((dimensions.set.width / 2) + dimensions.gap / 2) * index, 0)}
-                membershipStatus={getMembershipStatus(set)}
+                membershipStatus={getMembershipStatusFromQuery(set)}
                 showoutline
               />
             ))}
           </g>
           <g transform={translate(0, dimensions.body.rowHeight - 2)}>
-            <SizeBar size={totalQuerySize()} selected={0} />
+            <SizeBar size={totalQuerySize} selected={0} />
           </g>
         </g>
       </g>

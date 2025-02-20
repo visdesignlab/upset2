@@ -1,13 +1,13 @@
 import { atom, selector } from 'recoil';
 import { SetQuery } from '@visdesignlab/upset2-core';
-import { upsetConfigAtom } from './config/upsetConfigAtoms';
+import { upsetConfigAtom } from './upsetConfigAtoms';
 
 /**
  * Atom to manage the state of the query-by-sets interface.
- * 
+ *
  * This atom holds a boolean value indicating whether the query-by-sets
  * interface is enabled or not. The default value is `false`.
- * 
+ *
  * @constant
  * @type {boolean}
  * @default false

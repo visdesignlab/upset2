@@ -5,7 +5,7 @@ import { SizeHeader } from './SizeHeader';
 import { MatrixHeader } from './MatrixHeader';
 import { CollapseAllButton } from './CollapseAllButton';
 import { QueryButton } from './QueryButton';
-import { setQueryAtom } from '../../atoms/queryBySetsAtoms';
+import { setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
 
 export const Header = () => {
   const setQuery = useRecoilValue(setQueryAtom);
