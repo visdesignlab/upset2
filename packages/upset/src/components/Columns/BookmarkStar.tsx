@@ -80,7 +80,11 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
   const handleClick = (event: MouseEvent<SVGGElement, MouseEvent>) => {
     event.stopPropagation();
     if (bookmarked) {
-      actions.removeBookmark(bookmarked);
+      actions.removeBookmark({
+        id: row.id,
+        label: rowDisplayName,
+        type: 'intersection',
+      });
     } else {
       actions.addBookmark({
         id: row.id,
