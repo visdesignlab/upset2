@@ -2,13 +2,14 @@ import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import CloseIcon from '@mui/icons-material/Close';
 import {
-  Box, Drawer, IconButton, Tooltip,
+  Box, Divider, Drawer, IconButton, Tooltip,
 } from '@mui/material';
 import React, {
   FC, PropsWithChildren, useCallback, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { footerHeightAtom } from '../../atoms/dimensionsAtom';
+import { UpsetHeading } from './theme/Heading';
 
 type Props= {
   /** Whether the sidebar is open */
@@ -19,6 +20,8 @@ type Props= {
   closeButtonTabIndex?: number;
   /** Aria-label for the sidebar */
   label: string;
+  /** Title for the sidebar, to be displayed at the top */
+  title: string;
   /** Buttons to display at the top of the sidebar, left of the close & expand */
   buttons?: React.ReactNode;
 }
@@ -30,7 +33,7 @@ const BUTTON_DIMS = { height: '40px', width: '40px' };
  * A collapsible, right-sidebar for the plot
  */
 export const Sidebar: FC<PropsWithChildren<Props>> = ({
-  open, close, closeButtonTabIndex, children, label, buttons,
+  open, close, closeButtonTabIndex, children, label, title, buttons,
 }) => {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
@@ -115,51 +118,69 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
-      <div style={{
-        display: 'flex', justifyContent: 'end', position: 'absolute', top: '20px', right: 0,
-      }}
-      >
-        {buttons}
-        { !fullWidth ?
-          <Tooltip title="Expand to full screen">
-            <IconButton
-              style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
-              onClick={() => {
-                setFullWidth(true);
-              }}
-              aria-label="Expand the sidebar in full screen"
-            >
-              {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
+      <Box display="flex" flexWrap="nowrap" flexDirection="row" marginBottom="1em">
+        <div style={{
+          minWidth: 0, alignSelf: 'center', flexGrow: 1, flexShrink: 1, width: '100%', display: 'flex', alignItems: 'center',
+        }}
+        >
+          <UpsetHeading
+            level="h1"
+            hideDivider
+            divStyle={{ marginBottom: 0, width: '100%' }}
+            headingStyle={{
+              marginBottom: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%',
+            }}
+          >
+            {title}
+          </UpsetHeading>
+        </div>
+        <div style={{
+          display: 'flex', justifyContent: 'end', flexGrow: 0, flexShrink: 0, alignSelf: 'end',
+        }}
+        >
+          {buttons}
+          { !fullWidth ?
+            <Tooltip title="Expand to full screen">
+              <IconButton
+                style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
+                onClick={() => {
+                  setFullWidth(true);
+                }}
+                aria-label="Expand the sidebar in full screen"
+              >
+                {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
             EXACTLY the font size needed to get this icon SVG to be the same dimensions as the close button: 14x14 */}
-              <OpenInFullIcon style={{ fontSize: '18.67px' }} />
+                <OpenInFullIcon style={{ fontSize: '18.67px' }} />
+              </IconButton>
+            </Tooltip>
+            :
+            <Tooltip title="Reduce to normal size">
+              <IconButton
+                style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
+                onClick={() => {
+                  if (fullWidth) {
+                    setFullWidth(false);
+                  }
+                }}
+                aria-label="Reduce the sidebar to normal size"
+              >
+                <CloseFullscreen />
+              </IconButton>
+            </Tooltip>}
+          <Tooltip title="Close">
+            <IconButton
+              onClick={() => {
+                close();
+              }}
+              tabIndex={closeButtonTabIndex}
+              aria-label="Close the sidebar"
+            >
+              <CloseIcon />
             </IconButton>
           </Tooltip>
-          :
-          <Tooltip title="Reduce to normal size">
-            <IconButton
-              style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
-              onClick={() => {
-                if (fullWidth) {
-                  setFullWidth(false);
-                }
-              }}
-              aria-label="Reduce the sidebar to normal size"
-            >
-              <CloseFullscreen />
-            </IconButton>
-          </Tooltip>}
-        <Tooltip title="Close">
-          <IconButton
-            onClick={() => {
-              close();
-            }}
-            tabIndex={closeButtonTabIndex}
-            aria-label="Close the sidebar"
-          >
-            <CloseIcon />
-          </IconButton>
-        </Tooltip>
-      </div>
+        </div>
+      </Box>
+      <Divider style={{ width: '100%', margin: '0 auto' }} aria-hidden />
       {children}
       <Box minHeight={footerHeight} />
     </Drawer>

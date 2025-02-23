@@ -21,7 +21,7 @@ import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import { Sidebar } from './custom/Sidebar';
-import { UpsetHeading } from './custom/theme/heading';
+import { UpsetHeading } from './custom/theme/Heading';
 
 /**
  * Props for the AltTextSidebar component.
@@ -157,10 +157,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       close={close}
       closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
       label="Alt Text and Plot Information Sidebar"
+      title={displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
     >
-      <UpsetHeading level="h1">
-        {displayPlotInfo ? plotInfo.title ?? 'Editing Plot Information' : 'Text Description'}
-      </UpsetHeading>
       {displayPlotInfo &&
           // We only want to display plotInfo if the user is editing OR if they've entered some field other than title
           (plotInfoEditing || Object.entries(plotInfo).filter(([k, _]) => k !== 'title').some(([_, v]) => !!v)) ? (
@@ -181,7 +179,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           ) : null
         )}
       {displayPlotInfo && (
-      <UpsetHeading level="h2" style={{ marginTop: '10px' }}>Text Description</UpsetHeading>
+      <UpsetHeading level="h2" divStyle={{ marginTop: '10px' }}>Text Description</UpsetHeading>
       )}
       {/* 0.875em for default 16px = 1em makes 14px, which is the standard for much of the UI */}
       <Box style={{ overflowY: 'auto', fontSize: '0.875em' }}>

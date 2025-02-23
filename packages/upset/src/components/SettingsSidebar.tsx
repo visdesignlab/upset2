@@ -55,7 +55,7 @@ import { UpsetActions } from '../provenance';
 import { attributeAtom } from '../atoms/attributeAtom';
 import { visibleAttributesSelector } from '../atoms/config/visibleAttributes';
 import { showHiddenSetsSelector, showIntersectionSizesSelector, showSetSizesSelector } from '../atoms/config/displayAtoms';
-import { UpsetHeading } from './custom/theme/heading';
+import { UpsetHeading } from './custom/theme/Heading';
 
 const ITEM_DIV_CSS = css`
   display: flex;
