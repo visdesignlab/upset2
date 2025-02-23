@@ -9,7 +9,7 @@ import React, {
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { footerHeightAtom } from '../../atoms/dimensionsAtom';
-import { UpsetHeading } from './theme/Heading';
+import { UpsetHeading } from './theme/heading';
 
 type Props= {
   /** Whether the sidebar is open */

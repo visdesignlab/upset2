@@ -3,7 +3,7 @@ import {
 } from 'react';
 import { ProvVis } from '@trrack/vis-react';
 import { ProvenanceContext } from './Root';
-import { UpsetHeading } from './custom/theme/Heading';
+import { UpsetHeading } from './custom/theme/heading';
 import { Sidebar } from './custom/Sidebar';
 
 type Props = {

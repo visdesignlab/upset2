@@ -21,7 +21,7 @@ import { UpsetActions } from '../provenance';
 import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import { Sidebar } from './custom/Sidebar';
-import { UpsetHeading } from './custom/theme/Heading';
+import { UpsetHeading } from './custom/theme/heading';
 
 /**
  * Props for the AltTextSidebar component.

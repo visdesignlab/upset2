@@ -19,7 +19,7 @@ import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
 import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import { Sidebar } from '../custom/Sidebar';
-import { UpsetHeading } from '../custom/theme/Heading';
+import { UpsetHeading } from '../custom/theme/heading';
 import { AddPlotDialog } from './AddPlotDialog';
 
 /**
