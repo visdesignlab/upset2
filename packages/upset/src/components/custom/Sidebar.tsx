@@ -102,6 +102,11 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
       variant="persistent"
       anchor="right"
       aria-label={label}
+      // This disables the slide in-out animation
+      // If you want all sidebars to have the slide animation, remove this; but you also will
+      // need to change the rendering of ElementSidebar so that it's always rendered, not just
+      // when elementSidebar.open (in Root.tsx 190)
+      transitionDuration={0}
     >
       <Box
         sx={{
