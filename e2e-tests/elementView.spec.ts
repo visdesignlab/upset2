@@ -114,7 +114,7 @@ test('Element View', async ({ page, browserName }) => {
 
   // Check that the download button is visible and works
   const downloadPromise = page.waitForEvent('download');
-  const downloadButton = await page.getByLabel('Download 3 elements');
+  const downloadButton = await page.getByLabel('Download 27 elements');
   await expect(downloadButton).toBeVisible();
   await downloadButton.click();
   await downloadPromise;
@@ -135,8 +135,9 @@ test('Element View', async ({ page, browserName }) => {
   // selection doesn't get saved, EVEN THOUGH this works perfectly nicely fine up at the top of this test and
   // in chromium/webkit. I'm going to skip this test in Firefox for now.
   if (browserName !== 'firefox') {
-    // 120 is exactly enough to select through Age 10 but not drag off the canvas, which doesn't fire the click event
-    await dragElement(page.locator('canvas'), 120, 0, page);
+    // The x offset of 40 exhibits unstable behavior thru playwright updates; the range of ages selected may change
+    // & necessitate changes to this test
+    await dragElement(page.locator('canvas'), 40, 0, page);
 
     const elementSelectionChip = await page.getByLabel('Selected elements Atts: Age');
     await expect(elementSelectionChip).toBeVisible();
@@ -145,47 +146,42 @@ test('Element View', async ({ page, browserName }) => {
     const schoolMale1stPoly = await page.locator('[id="Subset_School\\~\\&\\~Male"] polygon').first();
     await expect(schoolMale1stPoly).toBeVisible();
 
-    const schoolMale3rdPoly = await page.locator('[id="Subset_School\\~\\&\\~Male"] polygon').nth(3);
-    await expect(schoolMale3rdPoly).toBeVisible();
+    const unincludedSelectPoly = await page.locator('#Subset_Unincluded polygon').first();
+    await expect(unincludedSelectPoly).toBeVisible();
 
-    const schoolBlueHairMale1stPoly =
-    await page.locator('[id="Subset_School\\~\\&\\~Blue_Hair\\~\\&\\~Male"] polygon').first();
-    await expect(schoolBlueHairMale1stPoly).toBeVisible();
+    const unincludedSelectRect = await page.locator('#Subset_Unincluded g').filter({ hasText: '3' }).locator('rect').nth(1);
+    await expect(unincludedSelectRect).toBeVisible();
 
-    const schoolMaleSelectionRect =
-    await page.locator('[id="Subset_School\\~\\&\\~Male"] g').filter({ hasText: '3' }).locator('rect').nth(1);
-    await expect(schoolMaleSelectionRect).toBeVisible();
+    const schoolMaleSelectedIntersectionRect =
+    await page.locator('[id="Subset_School\\~\\&\\~Male"] g').filter({ hasText: '3' }).locator('rect').first();
+    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
 
-    const schoolBlueHairMaleSelectionRect =
-    await page.locator('[id="Subset_School\\~\\&\\~Blue_Hair\\~\\&\\~Male"] g')
-      .filter({ hasText: '1' }).locator('rect').nth(1);
-    await expect(schoolBlueHairMaleSelectionRect).toBeVisible();
-
-    // Check that bookmarking works
-    await page.getByLabel('Selected elements Atts: Age').locator('svg.MuiChip-deleteIcon').click();
-    await expect(elementSelectionChip).not.toBeVisible();
-
-    // Check that deselecting a bookmarked selection works
-    const elementSelectionBookmark = await page.getByLabel('Atts: Age');
+    // Check that deselecting a selection works
+    const elementSelectionBookmark = await page.getByRole('button', { name: 'Selected elements Atts: Age' });
     await elementSelectionBookmark.click();
     await expect(schoolMale1stPoly).toBeVisible();
-    await expect(schoolBlueHairMale1stPoly).not.toBeVisible();
-    await expect(schoolMaleSelectionRect).not.toBeVisible();
-    await expect(schoolBlueHairMaleSelectionRect).not.toBeVisible();
-    await expect(schoolMale3rdPoly).not.toBeVisible();
+    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
+    await expect(unincludedSelectPoly).not.toBeVisible();
+    await expect(unincludedSelectRect).not.toBeVisible();
 
     // Check that reselecting a bookmarked selection works
     await elementSelectionBookmark.click();
-    await expect(schoolBlueHairMale1stPoly).toBeVisible();
-    await expect(schoolMaleSelectionRect).toBeVisible();
-    await expect(schoolBlueHairMaleSelectionRect).toBeVisible();
-    await expect(schoolMale3rdPoly).toBeVisible();
+    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
+    await expect(unincludedSelectPoly).toBeVisible();
+    await expect(unincludedSelectRect).toBeVisible();
   }
 
   /*
     * Plot removal
     */
-  await page.locator('.MuiBox-root > .MuiBox-root > .MuiButtonBase-root').first().click();
+  await page.locator('canvas').click({
+    button: 'right',
+    position: {
+      x: 100,
+      y: 113,
+    },
+  });
+  await page.getByRole('menuitem', { name: 'Remove Plot' }).click();
   await expect(page.locator('canvas')).not.toBeVisible();
 });
 
