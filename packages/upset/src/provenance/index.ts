@@ -537,7 +537,7 @@ export function getActions(provenance: UpsetProvenance) {
       addSetQueryAction(query),
     ),
     removeSetQuery: () => provenance.apply(
-      `Remove Query`,
+      'Remove Query',
       removeSetQueryAction(),
     ),
   };
