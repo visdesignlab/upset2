@@ -41,7 +41,6 @@ export function hashString(str: string): number {
  * @returns Filtered items
  */
 export function filterItems(items: Item[], filter: ElementSelection): Item[] {
-  const result: Item[] = [];
   if (selectionIsNumerical(filter)) {
     return items.filter(
       (item) => Object.entries(filter.query).every(
@@ -74,7 +73,7 @@ export function filterItems(items: Item[], filter: ElementSelection): Item[] {
       return false;
     });
   }
-  return result;
+  return [];
 }
 
 /**
