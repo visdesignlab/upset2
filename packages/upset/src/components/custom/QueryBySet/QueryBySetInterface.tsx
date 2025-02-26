@@ -13,13 +13,13 @@ import {
 } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
-import { mousePointer } from '../../../utils/styles';
+import { mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY } from '../../../utils/styles';
 import { SetMembershipRow } from './SetMembershipRow';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
 import { ProvenanceContext } from '../../Root';
-import { queryBySetsInterfaceAtom } from '../../../atoms/queryBySetsAtoms';
+import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -68,8 +68,9 @@ export const QueryBySetInterface = () => {
 
     const queryResults = Object.values(queryResult.values);
     queryResults.forEach((row) => {
-      if (!isRowAggregate(row))
+      if (!isRowAggregate(row)) {
         size += row.size;
+      }
     });
 
     return size;
@@ -96,7 +97,7 @@ export const QueryBySetInterface = () => {
     }
 
     // base string. All results must begin with this
-    let queryResultString = 'intersections of ';
+    let queryString = 'intersections of ';
 
     // 'May' sets have no string representation and so are ignored
     const yesSets = Object.entries(membership).filter(([_, status]) => status === 'Yes');
@@ -107,16 +108,16 @@ export const QueryBySetInterface = () => {
      */
     if (yesSets.length > 0) {
       if (yesSets.length === 1) {
-        queryResultString += 'set ';
+        queryString += 'set ';
       } else {
-        queryResultString += 'sets ';
+        queryString += 'sets ';
       }
     }
 
     yesSets.forEach(([set], index) => {
-      queryResultString += `[${set.replace('Set_', '')}]`;
+      queryString += `[${set.replace('Set_', '')}]`;
       if (index < yesSets.length - 1) {
-        queryResultString += ' and ';
+        queryString += ' and ';
       }
     });
 
@@ -125,23 +126,23 @@ export const QueryBySetInterface = () => {
      */
     if (noSets.length > 0) {
       if (yesSets.length > 0) {
-        queryResultString += ' but excluding set';
+        queryString += ' but excluding set';
       } else {
-        queryResultString += 'excluding set';
+        queryString += 'excluding set';
       }
       if (noSets.length > 1) {
-        queryResultString += 's';
+        queryString += 's';
       }
     }
 
     noSets.forEach(([set], index) => {
-      queryResultString += ` [${set.replace('Set_', '')}]`;
+      queryString += ` [${set.replace('Set_', '')}]`;
       if (index < noSets.length - 1) {
-        queryResultString += ' and ';
+        queryString += ' and ';
       }
     });
 
-    return queryResultString;
+    return queryString;
   }, [membership, queryResult]);
 
   /**
@@ -179,8 +180,8 @@ export const QueryBySetInterface = () => {
         width={dimensions.setQuery.width}
         opacity="0.2"
         fill="transparent"
-        stroke="#555555"
-        strokeWidth="1px"
+        stroke={ROW_BORDER_STROKE_COLOR}
+        strokeWidth={ROW_BORDER_STROKE_WIDTH}
       />
       {/* Query Header */}
       <g>
@@ -188,10 +189,10 @@ export const QueryBySetInterface = () => {
           transform={translate(0, 0)}
           height={dimensions.body.rowHeight}
           width={dimensions.setQuery.width}
-          fill="#cccccc"
-          opacity="0.3"
-          stroke="#555555"
-          strokeWidth="1px"
+          fill={DEFAULT_ROW_BACKGROUND_COLOR}
+          opacity={DEFAULT_ROW_BACKGROUND_OPACITY}
+          stroke={ROW_BORDER_STROKE_COLOR}
+          strokeWidth={ROW_BORDER_STROKE_WIDTH}
         />
         <g
           transform={translate(20, 0)}
@@ -239,9 +240,9 @@ export const QueryBySetInterface = () => {
               y1={dimensions.body.rowHeight / 2}
               x2={dimensions.matrixColumn.visibleSetsWidth - 10}
               y2={dimensions.body.rowHeight / 2}
-              stroke="#555555"
               opacity="0.4"
-              strokeWidth="1px"
+              stroke={ROW_BORDER_STROKE_COLOR}
+              strokeWidth={ROW_BORDER_STROKE_WIDTH}
             />
           </g>
           <g transform={translate(0, dimensions.body.rowHeight * 2)}>
@@ -266,7 +267,7 @@ export const QueryBySetInterface = () => {
               height={CHECK_ICON_SIZE}
               width={CHECK_ICON_SIZE}
               fill="transparent"
-              onClick={() => addQuery()}
+              onClick={addQuery}
             />
             <SvgIcon height={CHECK_ICON_SIZE} width={CHECK_ICON_SIZE}>
               <Check />

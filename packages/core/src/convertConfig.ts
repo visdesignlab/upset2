@@ -272,18 +272,22 @@ export function convertConfig(config: unknown): UpsetConfig {
   if (!Object.hasOwn(config, 'version')) preVersionConversion(config as PreVersionConfig);
 
   /* eslint-disable no-void */
-  /* eslint-disable no-fallthrough */
   // Switch case is designed to fallthrough to the next version's conversion function
   // so that all versions are converted cumulatively.
+  
   switch ((config as {version: string}).version) {
+    /* eslint-disable no-fallthrough */
+    // @ts-expect-error: Fallthrough is intended behavior. This is needed because Typescript build is not parsing eslint flags
     case '0.1.0':
       convert0_1_0(config as Version0_1_0);
+    // @ts-expect-error: Fallthrough is intended behavior.
     case '0.1.1':
       convert0_1_1(config as Version0_1_1);
     case '0.1.2':
       convert0_1_2(config as Version0_1_2);
     default:
       void 0;
+    /* eslint-enable no-fallthrough */
   }
 
   if (!isUpsetConfig(config)) {

@@ -7,7 +7,7 @@ import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { ProvenanceContext } from './Root';
 import { currentIntersectionSelector } from '../atoms/config/currentIntersectionAtom';
 import { calculateDimensions } from '../dimensions';
-import { queryBySetsInterfaceAtom } from '../atoms/queryBySetsAtoms';
+import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
 
 export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);

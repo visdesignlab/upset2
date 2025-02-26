@@ -410,9 +410,9 @@ const addSetQueryAction = register<SetQuery>(
  * @param state - The current state of the Upset configuration.
  * @returns The updated state with the `setQuery` property set to `null`.
  */
-const removeSetQueryAction = register<SetQuery>(
+const removeSetQueryAction = register<void>(
   'remove-set-query',
-  (state: UpsetConfig, query: SetQuery) => {
+  (state: UpsetConfig) => {
     // filter out the query to remove
     state.setQuery = null;
     return state;
@@ -536,9 +536,9 @@ export function getActions(provenance: UpsetProvenance) {
       `Query ${query.name}: ${queryString}`,
       addSetQueryAction(query),
     ),
-    removeSetQuery: (query: SetQuery) => provenance.apply(
-      `Remove Query: ${query.name}`,
-      removeSetQueryAction(query),
+    removeSetQuery: () => provenance.apply(
+      `Remove Query`,
+      removeSetQueryAction(),
     ),
   };
 }

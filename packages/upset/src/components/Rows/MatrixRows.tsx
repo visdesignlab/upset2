@@ -8,7 +8,7 @@ import translate from '../../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
-import { queryBySetsInterfaceAtom, setQueryAtom } from '../../atoms/queryBySetsAtoms';
+import { queryBySetsInterfaceAtom, setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
 
 type Props = {
   rows: RenderRow[];

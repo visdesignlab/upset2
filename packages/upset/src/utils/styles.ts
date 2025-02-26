@@ -48,4 +48,13 @@ export const arrowIconCSS = {
   height: '16px', width: '16px', marginLeft: '6px',
 };
 
+// Stroke color and width for queryBySets Interface and query rows
+export const ROW_BORDER_STROKE_COLOR = '#555555';
+export const ROW_BORDER_STROKE_WIDTH = '1px';
+
+// Default background color for attribute plots
 export const ATTRIBUTE_DEFAULT_COLOR = '#d3d3d3';
+
+// Default background color for aggregate and query rows
+export const DEFAULT_ROW_BACKGROUND_COLOR = '#cccccc';
+export const DEFAULT_ROW_BACKGROUND_OPACITY = '0.3';
