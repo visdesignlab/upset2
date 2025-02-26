@@ -175,7 +175,7 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
-    return elementSelection?.type === 'numerical' ? elementSelection.query : undefined;
+    return elementSelection?.type === 'numerical' && elementSelection.active ? elementSelection.query : undefined;
   },
 });
 
@@ -188,7 +188,7 @@ export const currentElementQuery = selector<AttQuery | undefined>({
   key: 'config-current-element-query',
   get: ({ get }) => {
     const elementSelection = get(selectedElementSelector);
-    return elementSelection?.type === 'element' ? elementSelection.query : undefined;
+    return elementSelection?.type === 'element' && elementSelection.active ? elementSelection.query : undefined;
   },
 });
 
@@ -201,7 +201,7 @@ export const selectedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const items: Item[] = get(coloredElementsSelector);
     const selection = get(selectedElementSelector);
-    if (!selection) return items;
+    if (!selection || !selection.active) return items;
 
     return filterItems(items, selection);
   },
@@ -224,7 +224,7 @@ export const subsetSelectedCount = selectorFamily<number, string>({
     const items = get(elementSelector(id));
     const selection = get(selectedElementSelector);
 
-    if (!selection) return 0;
+    if (!selection || !selection.active) return 0;
 
     return filterItems(items, selection).length;
   },

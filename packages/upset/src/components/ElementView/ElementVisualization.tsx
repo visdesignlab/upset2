@@ -105,7 +105,7 @@ export const ElementVisualization = () => {
       && Object.keys(draftSelection.current).length > 0
       && !numericalQueriesEqual(draftSelection.current, numericalQuery)
     ) {
-      actions.setElementSelection({ type: 'numerical', query: draftSelection.current });
+      actions.setElementSelection({ type: 'numerical', query: draftSelection.current, active: true });
     } else if (elementSelection) actions.setElementSelection(null);
     draftSelection.current = undefined;
   }, [draftSelection.current, numericalQuery, elementSelection, actions]);

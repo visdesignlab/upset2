@@ -230,11 +230,12 @@ function convert0_1_2(config: Version0_1_2): UpsetConfig {
   );
   config.bookmarks = bookmarks;
   (config as unknown as UpsetConfig).version = '0.1.3';
-  if (config.elementSelection?.id) {
+  if (config.elementSelection && config.elementSelection.id) {
     (config.elementSelection as any).query = config.elementSelection.selection;
     delete (config.elementSelection as any).selection;
     delete (config.elementSelection as any).id;
     delete (config.elementSelection as any).label;
+    (config.elementSelection as any).active = true;
   }
   return config as unknown as UpsetConfig;
 }
@@ -274,7 +275,7 @@ export function convertConfig(config: unknown): UpsetConfig {
   /* eslint-disable no-void */
   // Switch case is designed to fallthrough to the next version's conversion function
   // so that all versions are converted cumulatively.
-  
+
   switch ((config as {version: string}).version) {
     /* eslint-disable no-fallthrough */
     // @ts-expect-error: Fallthrough is intended behavior. This is needed because Typescript build is not parsing eslint flags

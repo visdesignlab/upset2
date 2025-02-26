@@ -63,10 +63,7 @@ export const BookmarkChips = () => {
             '.MuiChip-icon': {
               color: colorPallete[bookmark.id],
             },
-            backgroundColor:
-                bookmark.id === currentIntersection?.id
-                  ? 'rgba(0,0,0,0.2)'
-                  : 'default',
+            backgroundColor: bookmark.id === currentIntersection?.id ? 'rgba(0,0,0,0.2)' : 'default',
           })}
           key={bookmark.id}
           aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
@@ -130,11 +127,15 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: elementSelectionColor,
           },
-          backgroundColor: 'rgba(0,0,0,0.2)',
+          backgroundColor: currentSelection.active ? 'rgba(0,0,0,0.2)' : 'default',
         })}
         icon={<WorkspacesIcon fontSize={'1em' as any} />}
         aria-label={`Selected elements ${elementSelectionToString(currentSelection)}`}
-        onClick={() => actions.setElementSelection(null)}
+        onClick={() => {
+          const newSelection = { ...currentSelection };
+          newSelection.active = !newSelection.active;
+          actions.setElementSelection(newSelection);
+        }}
         label={elementSelectionToString(currentSelection)}
       />
       )}

@@ -78,6 +78,7 @@ export const QueryInterface = () => {
           type: typeField as ElementQueryType || ElementQueryType.EQUALS,
           query: queryField,
         },
+        active: true,
       });
     }
   }, [attField, typeField, queryField, atts, actions, currentSelection]);

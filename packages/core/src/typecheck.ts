@@ -235,7 +235,15 @@ export function isSubsets(s: unknown): s is Subsets {
  * @returns {boolean}
  */
 export function isElementSelection(s: unknown): s is ElementSelection {
-  if (!isObject(s) || !Object.hasOwn(s, 'type') || !Object.hasOwn(s, 'query')) return false;
+  if (
+    !isObject(s)
+    || !Object.hasOwn(s, 'type')
+    || !Object.hasOwn(s, 'query')
+    || !Object.hasOwn(s, 'active')
+  ) return false;
+
+  if (typeof (s as {active: unknown}).active !== 'boolean') return false;
+
   switch ((s as {type: unknown, query: unknown}).type) {
     case 'element':
       return isAttQuery((s as {type: unknown, query: unknown}).query);

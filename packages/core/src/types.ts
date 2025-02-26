@@ -372,8 +372,10 @@ export type NumericalSelection = {
 /**
  * Represents a selection of elements.
  * Can be either an element query or a numerical query.
+ * Active is true if the selection is currently being applied to the plot;
+ * an inactive selection shows as a deselected chip in the element view.
  */
-export type ElementSelection = AttSelection | NumericalSelection;
+export type ElementSelection = (AttSelection | NumericalSelection) & {active: boolean};
 
 /**
  * Represents a query object where each key is a string and the value is a SetMembershipStatus.
