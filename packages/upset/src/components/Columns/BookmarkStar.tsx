@@ -1,6 +1,8 @@
 import { Row } from '@visdesignlab/upset2-core';
 import StarIcon from '@mui/icons-material/Star';
-import { FC, MouseEvent, useContext, useMemo, useState } from 'react';
+import {
+  FC, MouseEvent, useContext, useMemo, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -9,6 +11,7 @@ import {
   bookmarkedColorSelector,
   isRowBookmarkedSelector,
 } from '../../atoms/config/currentIntersectionAtom';
+import { UpsetActions } from '../../provenance';
 
 type Props = {
   row: Row;
@@ -34,7 +37,7 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
   const color = useRecoilValue(bookmarkedColorSelector(row));
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
 
@@ -79,15 +82,17 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
    */
   const handleClick = (event: MouseEvent<SVGGElement, MouseEvent>) => {
     event.stopPropagation();
+    const bookmark = {
+      id: row.id,
+      label: rowDisplayName,
+      size: row.size,
+      // Without 'as const' it complains that 'type' is a string instead of 'intersection' lol
+      type: 'intersection' as const,
+    };
     if (bookmarked) {
-      actions.removeBookmark(bookmarked);
+      actions.removeBookmark(bookmark);
     } else {
-      actions.addBookmark({
-        id: row.id,
-        label: rowDisplayName,
-        size: row.size,
-        type: 'intersection',
-      });
+      actions.addBookmark(bookmark);
     }
   };
 
