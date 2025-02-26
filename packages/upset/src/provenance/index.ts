@@ -7,6 +7,7 @@ import {
   AltText,
   ElementSelection,
   plotToString,
+  SetQuery,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -397,6 +398,38 @@ const setShowHiddenSetsAction = register<boolean>(
   },
 );
 
+/**
+ * Registers an action to set the query for the state. There should only be one query at a time.
+ *
+ * @param state - The current state object.
+ * @param query - The query to set, which can be of type `SetQuery` or `null`.
+ * @returns The updated state with the new query set.
+ */
+const addSetQueryAction = register<SetQuery>(
+  'add-set-query',
+  (state, query) => {
+    state.setQuery = query;
+    return state;
+  },
+);
+
+/**
+ * Action to remove the set query from the Upset configuration.
+ *
+ * This action sets the `setQuery` property of the `UpsetConfig` state to `null`.
+ *
+ * @param state - The current state of the Upset configuration.
+ * @returns The updated state with the `setQuery` property set to `null`.
+ */
+const removeSetQueryAction = register<void>(
+  'remove-set-query',
+  (state: UpsetConfig) => {
+    // filter out the query to remove
+    state.setQuery = null;
+    return state;
+  },
+);
+
 export function initializeProvenanceTracking(
   // eslint-disable-next-line default-param-last
   config: Partial<UpsetConfig> = {},
@@ -513,6 +546,14 @@ export function getActions(provenance: UpsetProvenance) {
     setShowHiddenSets: (show: boolean) => provenance.apply(
       show ? 'Show hidden sets' : 'Hide hidden sets',
       setShowHiddenSetsAction(show),
+    ),
+    addSetQuery: (query: SetQuery, queryString: string) => provenance.apply(
+      `Query ${query.name}: ${queryString}`,
+      addSetQueryAction(query),
+    ),
+    removeSetQuery: () => provenance.apply(
+      `Remove Query`,
+      removeSetQueryAction(),
     ),
   };
 }
