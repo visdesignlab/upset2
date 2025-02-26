@@ -110,7 +110,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         Selections
       </UpsetHeading>
       {!showQueries && (
-        <Alert severity="info">
+        <Alert severity="info" style={{ paddingTop: '2px', paddingBottom: '2px' }}>
           Selected intersections and elements will appear here.
         </Alert>
       )}
