@@ -173,7 +173,11 @@ export const deselectedItemsSelector = selector<Item[]>({
  */
 export const selectedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
-  get: ({ get }) => get(filteredItems).included,
+  get: ({ get }) => {
+    if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
+    if (get(bookmarkSelector).length > 0) return get(bookmarkedItemsSelector);
+    return Object.values(get(itemsAtom));
+  },
 });
 
 /**
