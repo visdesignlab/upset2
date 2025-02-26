@@ -123,7 +123,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
-      <Box display="flex" flexWrap="nowrap" flexDirection="row" marginBottom="1em">
+      <Box display="flex" flexWrap="nowrap" flexDirection="row">
         <div style={{
           minWidth: 0, alignSelf: 'center', flexGrow: 1, flexShrink: 1, width: '100%', display: 'flex', alignItems: 'center',
         }}
@@ -185,7 +185,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
           </Tooltip>
         </div>
       </Box>
-      <Divider style={{ width: '100%', margin: '0 auto' }} aria-hidden />
+      <Divider style={{ width: '100%', margin: '0 auto', marginBottom: '1em' }} aria-hidden />
       {children}
       <Box minHeight={footerHeight} />
     </Drawer>
