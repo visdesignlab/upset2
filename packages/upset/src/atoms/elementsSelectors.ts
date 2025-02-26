@@ -5,6 +5,7 @@ import {
   filterItems,
   ElementSelection,
   AttQuery,
+  FilteredItems,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -131,39 +132,61 @@ export const bookmarkedItemsSelector = selector<Item[]>({
 });
 
 /**
- * Gets all items with a grey color added.
+ * Gets the current selection of elements
+ * @returns The current selection of elements
  */
-export const greyItemsSelector = selector<Item[]>({
-  key: 'deselected-elements',
+export const elementSelectionSelector = selector<ElementSelection | null>({
+  key: 'config-element-selection',
+  get: ({ get }) => get(upsetConfigAtom).elementSelection,
+});
+
+/**
+ * Gets all items, sorted into included and excluded lists based on the current selection.
+ * If no selection is active, all items are excluded.
+ * @returns The included and excluded items
+ */
+const filteredItems = selector<FilteredItems>({
+  key: 'filtered-items',
   get: ({ get }) => {
     const items = Object.values(get(itemsAtom));
+    const selection = get(elementSelectionSelector);
+    if (!selection || !selection.active) return { included: [], excluded: items };
+
+    return filterItems(items, selection);
+  },
+});
+
+/**
+ * Gets all items not in the current selection with a grey color
+ */
+export const deselectedItemsSelector = selector<Item[]>({
+  key: 'deselected-elements',
+  get: ({ get }) => {
+    const items = get(filteredItems).excluded;
     return items.map((item) => ({ ...item, color: '#444' }));
   },
 });
 
 /**
- * Gets all items, colored by their subset if bookmarked or in the current intersection selection and grey otherwise.
+ * Returns all items that are within the bounds of the current element selection.
+ * If no selections are active and no rows are bookmarked, returns all items.
  */
-export const coloredElementsSelector = selector<Item[]>({
-  key: 'bookmarked-elements',
-  get: ({ get }) => {
-    const selected: Item[] = get(bookmarkedItemsSelector);
-    const items = get(greyItemsSelector);
-
-    // Concating selected after items ensures that the selected colors override the grey ones
-    // Even though this adds duplicate items to the array, I believe it's more performant than filtering
-    // as filtering is O(n^2) given a list of bookmarked items
-    return items.concat(selected);
-  },
+export const selectedItemsSelector = selector<Item[]>({
+  key: 'selected-elements',
+  get: ({ get }) => get(filteredItems).included,
 });
 
 /**
- * Gets the current selection of elements
- * @returns The current selection of elements
+ * Gets all items, colored by their subset if bookmarked or in the current intersection selection and grey otherwise.
  */
-export const selectedElementSelector = selector<ElementSelection | null>({
-  key: 'config-element-selection',
-  get: ({ get }) => get(upsetConfigAtom).elementSelection,
+export const coloredItemsSelector = selector<Item[]>({
+  key: 'bookmarked-elements',
+  get: ({ get }) => {
+    const selected = get(bookmarkedItemsSelector);
+    const deselected = get(deselectedItemsSelector);
+
+    return selected.concat(deselected);
+  },
 });
 
 /**
@@ -174,7 +197,7 @@ export const selectedElementSelector = selector<ElementSelection | null>({
 export const currentNumericalQuery = selector<NumericalQuery | undefined>({
   key: 'config-current-element-selection',
   get: ({ get }) => {
-    const elementSelection = get(selectedElementSelector);
+    const elementSelection = get(elementSelectionSelector);
     return elementSelection?.type === 'numerical' && elementSelection.active ? elementSelection.query : undefined;
   },
 });
@@ -187,23 +210,8 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
 export const currentElementQuery = selector<AttQuery | undefined>({
   key: 'config-current-element-query',
   get: ({ get }) => {
-    const elementSelection = get(selectedElementSelector);
+    const elementSelection = get(elementSelectionSelector);
     return elementSelection?.type === 'element' && elementSelection.active ? elementSelection.query : undefined;
-  },
-});
-
-/**
- * Returns all items that are within the bounds of the current element selection.
- * If no selections are active and no rows are bookmarked, returns all items.
- */
-export const selectedItemsSelector = selector<Item[]>({
-  key: 'selected-elements',
-  get: ({ get }) => {
-    const items: Item[] = get(coloredElementsSelector);
-    const selection = get(selectedElementSelector);
-    if (!selection || !selection.active) return items;
-
-    return filterItems(items, selection);
   },
 });
 
@@ -222,11 +230,11 @@ export const subsetSelectedCount = selectorFamily<number, string>({
   key: 'subset-selected',
   get: (id: string) => ({ get }) => {
     const items = get(elementSelector(id));
-    const selection = get(selectedElementSelector);
+    const selection = get(elementSelectionSelector);
 
     if (!selection || !selection.active) return 0;
 
-    return filterItems(items, selection).length;
+    return filterItems(items, selection).included.length;
   },
 });
 

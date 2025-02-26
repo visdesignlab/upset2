@@ -55,6 +55,9 @@ export type Item = {
 
 export type Items = { [k: string]: Item };
 
+/** Items filtered by some query into included and excluded groups */
+export type FilteredItems = {included: Item[], excluded: Item[]};
+
 /**
  * Represents a six-number summary. Derived for the Boxplot
  */

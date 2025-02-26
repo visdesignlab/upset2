@@ -9,7 +9,7 @@ import { useCallback, useMemo, useState } from 'react';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
-  selectedElementSelector, selectedItemsCounter,
+  elementSelectionSelector, selectedItemsCounter,
   selectedItemsSelector,
 } from '../../atoms/elementsSelectors';
 import { BookmarkChips } from './BookmarkChips';
@@ -73,7 +73,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
-  const currentElementSelection = useRecoilValue(selectedElementSelector);
+  const currentElementSelection = useRecoilValue(elementSelectionSelector);
   const selectedItems = useRecoilValue(selectedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);

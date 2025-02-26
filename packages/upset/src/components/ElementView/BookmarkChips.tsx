@@ -18,7 +18,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { selectedElementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionSelector } from '../../atoms/elementsSelectors';
 import { elementSelectionColor } from '../../utils/styles';
 
 /**
@@ -34,7 +34,7 @@ export const BookmarkChips = () => {
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
-  const currentSelection = useRecoilValue(selectedElementSelector);
+  const currentSelection = useRecoilValue(elementSelectionSelector);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
