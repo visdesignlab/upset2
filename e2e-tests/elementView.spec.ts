@@ -86,7 +86,7 @@ test('Element View', async ({ page, browserName }) => {
   await expect(ageCell).toBeVisible();
 
   // Check that the add plot button is visible
-  const addPlot = await page.locator('.MuiPaper-root > div:nth-child(2) > button').first();
+  const addPlot = await page.getByRole('button', { name: 'Add Plot' });
   await expect(addPlot).toBeVisible();
   await addPlot.click();
 
@@ -104,8 +104,7 @@ test('Element View', async ({ page, browserName }) => {
   const option2 = page.locator('div').filter({ hasText: /^BinsBins$/ }).first();
   await expect(option2).toBeVisible();
 
-  const option3 = await page.locator('label').filter({ hasText: 'Frequency' });
-  await expect(option3).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'KDE' })).toBeVisible();
 
   // close the plot preview
   const closeButton = await page.getByRole('heading', { name: 'Add Plot' }).getByRole('button');

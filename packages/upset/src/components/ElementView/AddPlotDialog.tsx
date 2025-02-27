@@ -6,7 +6,7 @@ import { FC, ReactNode, useState } from 'react';
 
 import { AddHistogram, AddScatterplot } from './AddPlot';
 
-type PlotType = 'Scatterplot' | 'Histogram';
+type PlotType = 'Scatterplot' | 'Histogram' | 'KDE';
 
 type TabProps = {
   children?: ReactNode;
@@ -69,13 +69,17 @@ export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
       >
         <Tab label="Scatterplot" value="Scatterplot" />
         <Tab label="Histogram" value="Histogram" />
+        <Tab label="KDE" value="KDE" />
       </Tabs>
 
       <TabPanel index="Scatterplot" value={currentTab}>
         <AddScatterplot handleClose={onClose} />
       </TabPanel>
       <TabPanel index="Histogram" value={currentTab}>
-        <AddHistogram handleClose={onClose} />
+        <AddHistogram handleClose={onClose} density={false} />
+      </TabPanel>
+      <TabPanel index="KDE" value={currentTab}>
+        <AddHistogram handleClose={onClose} density />
       </TabPanel>
     </Dialog>
   );

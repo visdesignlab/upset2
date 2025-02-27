@@ -131,7 +131,7 @@ export const ElementVisualization = () => {
       >
         {(plots.length > 0) && specs.map(({ plot, spec }) => (
           // Relative position is necessary so this serves as a positioning container for the close button
-          <Box style={{ display: 'inline-block', position: 'relative' }}>
+          <Box style={{ display: 'inline-block', position: 'relative' }} key={plot.id}>
             <IconButton
               style={{
                 position: 'absolute', top: 0, right: -15, zIndex: 100, padding: 0,
