@@ -217,7 +217,7 @@ test('Query Selection', async ({ page }) => {
 
   // Selected elements for testing
   const ralphCell = page.getByRole('cell', { name: 'Ralph' });
-  const age8Cell = page.getByRole('cell', { name: '8' });
+  const age8Cell = page.getByRole('cell', { name: '8' }).first();
   const bartCell = page.getByRole('cell', { name: 'Bart' });
   const age10Cell1 = page.getByRole('cell', { name: '10' }).first();
   const age10Cell2 = page.getByRole('cell', { name: '10' }).nth(1);
