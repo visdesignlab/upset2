@@ -23,6 +23,7 @@ export const defaultBackground = css`
   fill-opacity: 0.0;
 `;
 
+/** Colors for selected & bookmarked intersections */
 export const queryColorPalette = [
   '#1f77b4',
   '#ff7f0e',
@@ -35,6 +36,9 @@ export const queryColorPalette = [
   '#bcbd22',
   '#17becf',
 ];
+
+/** Color for the active element selections: 'Rich Amber' */
+export const elementSelectionColor = '#e49b0f';
 
 export const mousePointer = css`
   cursor: pointer;

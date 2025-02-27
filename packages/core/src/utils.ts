@@ -1,7 +1,9 @@
-import { isNumericalBookmark, isElementBookmark } from './typecheck';
 import {
-  ElementSelection, Item, ElementQueryType, Plot,
+  Item, ElementQueryType, Plot,
+  ElementSelection,
+  FilteredItems,
 } from './types';
+import { selectionIsAtt, selectionIsNumerical } from './typeutils';
 
 /**
  * Version safe deep copy using structured cloning.
@@ -39,42 +41,53 @@ export function hashString(str: string): number {
  * @param filter Selection to filter by
  * @returns Filtered items
  */
-export function filterItems(items: Item[], filter: ElementSelection): Item[] {
-  const result: Item[] = [];
-  if (isNumericalBookmark(filter)) {
-    return items.filter(
-      (item) => Object.entries(filter.selection).every(
-        ([key, value]) => typeof item[key] === 'number'
+export function filterItems(items: Item[], filter: ElementSelection): FilteredItems {
+  const included: Item[] = [];
+  const excluded: Item[] = [];
+  if (selectionIsNumerical(filter)) {
+    items.forEach(
+      (item) => {
+        if (Object.entries(filter.query).every(
+          ([key, value]) => typeof item[key] === 'number'
               && item[key] as number >= value[0]
               && item[key] as number <= value[1],
-      ),
+        )) included.push(item);
+        else excluded.push(item);
+      },
     );
-  } if (isElementBookmark(filter)) {
-    const { att } = filter.selection;
-    const { query } = filter.selection;
+  } if (selectionIsAtt(filter)) {
+    const { att, query } = filter.query;
 
-    return items.filter((item) => {
-      if (!Object.hasOwn(item, att)) return false;
-
-      switch (filter.selection.type) {
-        case ElementQueryType.CONTAINS:
-          return (`${item[att]}`).includes(query);
-        case ElementQueryType.EQUALS:
-          return (`${item[att]}` === query);
-        case ElementQueryType.LENGTH:
-          return ((`${item[att]}`).length === Number(query));
-        case ElementQueryType.REGEX:
-          return (new RegExp(query).test(`${item[att]}`));
-        case ElementQueryType.GREATER_THAN:
-          return `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
-        case ElementQueryType.LESS_THAN:
-          return `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
-        default:
+    items.forEach((item) => {
+      let add = false;
+      if (Object.hasOwn(item, att)) {
+        switch (filter.query.type) {
+          case ElementQueryType.CONTAINS:
+            add = (`${item[att]}`).includes(query);
+            break;
+          case ElementQueryType.EQUALS:
+            add = (`${item[att]}` === query);
+            break;
+          case ElementQueryType.LENGTH:
+            add = ((`${item[att]}`).length === Number(query));
+            break;
+          case ElementQueryType.REGEX:
+            add = (new RegExp(query).test(`${item[att]}`));
+            break;
+          case ElementQueryType.GREATER_THAN:
+            add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
+            break;
+          case ElementQueryType.LESS_THAN:
+            add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
+            break;
+          default:
+        }
       }
-      return false;
+      if (add) included.push(item);
+      else excluded.push(item);
     });
   }
-  return result;
+  return { included, excluded };
 }
 
 /**
