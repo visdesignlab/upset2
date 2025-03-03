@@ -86,16 +86,15 @@ export function calculateDimensions(
 
   const header = {
     totalWidth:
-      set.label.height + // Label Height === Label Width
-      set.width * nVisibleSets + // Offset for total sets
-      gap + // Add margin
-      size.width + // Size
+      matrixColumn.width + // Matrix Column
       bookmarkStar.gap +
       bookmarkStar.width + // Bookmark Star
       bookmarkStar.gap +
+      size.width + // Size
+      gap + // Gap for size labels
       (degree ? degreeColumn.width + // Degree Column
       degreeColumn.gap : 0) + // Add margin
-      (attribute.vGap + attribute.width) * nAttributes, // Show all attributes
+      (attribute.width + attribute.vGap) * nAttributes, // Attributes
     totalHeight: set.size.height + set.label.height,
     buttonXOffset: 5,
   };

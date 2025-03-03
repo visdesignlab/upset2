@@ -16,7 +16,11 @@ type Props = {
   /** Left padding for the typography */
   paddingLeft?: string;
   /** CSS for the wrapper div */
-  style?: CSSProperties;
+  divStyle?: CSSProperties;
+  /** CSS for the h element */
+  headingStyle?: CSSProperties;
+  /** Whether to hide the divider at the bottom */
+  hideDivider?: boolean;
 }
 
 /**
@@ -33,26 +37,24 @@ const LEVELS: {[level in HeadingLevel]: { fontSize: string; }} = {
  * A heading for use in the UI; keeps styles consistent
  */
 export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
-  level, paddingLeft, style, children,
+  level, paddingLeft, divStyle, headingStyle, children, hideDivider = false,
 }) => {
   const IS_MAJOR = level === 'h1' || level === 'h2' || level === 'h3';
 
   return (
-    <div style={{ marginBottom: '.5em', ...style }}>
+    <div style={{ marginBottom: '.5em', ...divStyle }}>
       <Typography
         variant={level}
         fontSize={LEVELS[level].fontSize}
         fontWeight="inherit"
         gutterBottom={level === 'h1'}
         paddingLeft={paddingLeft}
+        style={{ ...headingStyle }}
       >
         {children}
       </Typography>
-      {IS_MAJOR && <Divider
-        style={{
-          width: '100%',
-          margin: '0 auto',
-        }}
+      {IS_MAJOR && !hideDivider && <Divider
+        style={{ width: '100%', margin: '0 auto' }}
         aria-hidden
       />}
     </div>
