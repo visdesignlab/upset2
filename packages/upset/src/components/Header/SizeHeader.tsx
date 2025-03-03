@@ -154,8 +154,8 @@ export const SizeHeader: FC = () => {
 
         const size = globalScale.invert(newPosition);
 
-        // Gets the minimum size scale to 0.5% of the total number of items or 5, whichever is smaller
-        const minSize = Math.min(...[0.005 * itemCount, 5]);
+        // Gets the minimum size scale to 0.5% of the total number of items (min of 1) or 5, whichever is smaller
+        const minSize = Math.ceil(Math.min(...[0.005 * itemCount, 5]));
 
         // If the new position is at the very left of the slider (0), set the max size to the minimum size
         if (newPosition === 0) {
