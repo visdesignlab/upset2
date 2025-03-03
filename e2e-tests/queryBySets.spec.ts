@@ -15,8 +15,8 @@ test('Query by Sets', async ({ page }) => {
   await page.locator('g:nth-child(2) > g > circle:nth-child(3)').click();
   await page.locator('g:nth-child(4) > g > circle:nth-child(4)').click();
 
-// TODO: Add a test for changing the name. As is, playwright struggles to handle web dialog inputs
-  
+  // TODO: Add a test for changing the name. As is, playwright struggles to handle web dialog inputs
+
   // Ensure that the text is correct
   await page.getByText('intersections of set [Evil]').click();
 
@@ -28,5 +28,4 @@ test('Query by Sets', async ({ page }) => {
 
   // Remove the query
   await page.getByLabel('Remove query').locator('rect').click();
-
 });
