@@ -15,6 +15,31 @@ import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
+import { visibleSetSelector } from './config/visibleSetsAtoms';
+import { hideNoSetSelector } from './config/filterAtoms';
+
+/**
+ * Gets all of the items in the visible sets
+ */
+export const visibleItemsSelector = selector<Item[]>({
+  key: 'visible-items',
+  get: ({ get }) => {
+    const items = Object.values(get(itemsAtom));
+    const unincludedRowHidden = get(hideNoSetSelector);
+    const visibleSets = get(visibleSetSelector);
+
+    if (!unincludedRowHidden) return items;
+
+    return items.filter((item) => {
+      let match = false;
+      visibleSets.forEach((set) => {
+        if (set.startsWith('Set_')) set = set.slice(4);
+        if (item[set]) match = true;
+      });
+      return match;
+    });
+  },
+});
 
 /**
  * Gets all elements in the intersection represented by the provided ID
@@ -141,14 +166,16 @@ export const elementSelectionSelector = selector<ElementSelection | null>({
 });
 
 /**
- * Gets all items, sorted into included and excluded lists based on the current selection.
+ * Gets all items that are currently displayed in intersections in the plot
+ * (if the unincluded intersection is visible, this is all items)
+ * sorted into included and excluded lists based on the current selection.
  * If no selection is active, all items are excluded.
  * @returns The included and excluded items
  */
 const filteredItems = selector<FilteredItems>({
   key: 'filtered-items',
   get: ({ get }) => {
-    const items = Object.values(get(itemsAtom));
+    const items = get(visibleItemsSelector);
     const selection = get(elementSelectionSelector);
     if (!selection || !selection.active) return { included: [], excluded: items };
 
@@ -169,14 +196,15 @@ export const deselectedItemsSelector = selector<Item[]>({
 
 /**
  * Returns all items that are within the bounds of the current element selection.
- * If no selections are active and no rows are bookmarked, returns all items.
+ * If no selections are active, no rows are bookmarked, and the unincluded intersection is visible,
+ * returns all items
  */
 export const selectedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
     if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
     if (get(bookmarkSelector).length > 0) return get(bookmarkedItemsSelector);
-    return Object.values(get(itemsAtom));
+    return get(visibleItemsSelector);
   },
 });
 
