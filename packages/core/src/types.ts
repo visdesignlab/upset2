@@ -362,6 +362,7 @@ export type NumericalQuery = {[attName: string] : [number, number]};
 export type AttSelection = {
   type: 'element';
   query: AttQuery;
+  active: boolean;
 }
 
 /**
@@ -370,6 +371,7 @@ export type AttSelection = {
 export type NumericalSelection = {
   type: 'numerical';
   query: NumericalQuery;
+  active: boolean;
 }
 
 /**
@@ -378,7 +380,7 @@ export type NumericalSelection = {
  * Active is true if the selection is currently being applied to the plot;
  * an inactive selection shows as a deselected chip in the element view.
  */
-export type ElementSelection = (AttSelection | NumericalSelection) & {active: boolean};
+export type ElementSelection = AttSelection | NumericalSelection;
 
 /**
  * Represents a query object where each key is a string and the value is a SetMembershipStatus.
