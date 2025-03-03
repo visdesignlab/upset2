@@ -18,6 +18,9 @@ import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
+import { setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
+import { setQuerySizeSelector } from '../../atoms/setQuerySizeSelector';
+import { isPopulatedSetQuery } from '@visdesignlab/upset2-core';
 
 const hide = css`
   opacity: 0;
@@ -39,6 +42,8 @@ export const SizeHeader: FC = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
   const subsets = useRecoilValue(flattenedRowsSelector).map((r) => r.row);
+  const setQuery = useRecoilValue(setQueryAtom);
+  const setQuerySize = useRecoilValue(setQuerySizeSelector);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
 
@@ -113,10 +118,18 @@ export const SizeHeader: FC = () => {
   useEffect(() => {
     if (advancedScale || subsets.length === 0) return;
 
+    // If a set query is present, use the set query size
+    // This is necessary because the setQuery is not a ROW so is not caught in subsets
+    if (isPopulatedSetQuery(setQuery)) {
+      setMaxSize(setQuerySize);
+      return;
+    }
+
     const sizes = subsets.map((s) => s.size);
+
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
-  }, [subsets, maxSize, advancedScale]);
+  }, [subsets, maxSize, advancedScale, setQuery]);
 
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
   const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
