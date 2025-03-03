@@ -51,6 +51,7 @@ export const ElementTable: FC = () => {
   const elements = useRecoilValue(selectedItemsSelector);
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
+  // Filtering out columns w/ _ removes metadata columns
   const columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
 
   return (
