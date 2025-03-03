@@ -7,6 +7,7 @@ import React, {
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { Tooltip } from '@mui/material';
+import { isPopulatedSetQuery } from '@visdesignlab/upset2-core';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
@@ -20,7 +21,6 @@ import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
 import { setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
 import { setQuerySizeSelector } from '../../atoms/setQuerySizeSelector';
-import { isPopulatedSetQuery } from '@visdesignlab/upset2-core';
 
 const hide = css`
   opacity: 0;
@@ -53,6 +53,9 @@ export const SizeHeader: FC = () => {
   const [maxC, setMaxSize] = useRecoilState(maxSize);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
+
+  const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
+  const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
   const sortBySize = (order: string) => {
     actions.sortBy('Size', order);
@@ -131,9 +134,6 @@ export const SizeHeader: FC = () => {
     setMaxSize(maxS);
   }, [subsets, maxSize, advancedScale, setQuery]);
 
-  const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
-  const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
-
   useEffect(() => {
     const { current: parent } = sliderParentRef;
     const { current } = sliderRef;
@@ -154,7 +154,15 @@ export const SizeHeader: FC = () => {
 
         const size = globalScale.invert(newPosition);
 
-        if (size > 0.1 * itemCount) setMaxSize(size);
+        // Gets the minimum size scale to 0.5% of the total number of items or 5, whichever is smaller
+        const minSize = Math.min(...[0.005 * itemCount, 5]);
+
+        // If the new position is at the very left of the slider (0), set the max size to the minimum size
+        if (newPosition === 0) {
+          setMaxSize(minSize);
+        } else if (size > minSize) {
+          setMaxSize(size);
+        }
       })
       .on('end', () => {
         setSliding(false);
