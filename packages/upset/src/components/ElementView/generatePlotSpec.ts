@@ -209,7 +209,7 @@ export function generateHistogramSpec(
     scale: { range: { field: 'color' } },
   };
 
-  if (hist.density) {
+  if (hist.frequency) {
     return {
       width: 200,
       height: 200,
