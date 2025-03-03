@@ -1,5 +1,6 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import {
+  Alert,
   IconButton, Tooltip,
 } from '@mui/material';
 import { Item } from '@visdesignlab/upset2-core';
@@ -96,6 +97,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
       open={open}
       close={close}
       label="Element View Sidebar"
+      title="Element View"
       buttons={
         <Tooltip title="Add Plot">
           <IconButton onClick={() => setOpenAddPlot(true)}>
@@ -104,22 +106,22 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Tooltip>
       }
     >
-      <div style={{ marginBottom: '1em' }}>
-        <UpsetHeading level="h1">
-          Element View
-        </UpsetHeading>
-      </div>
       <UpsetHeading level="h3">
-        {showQueries ? 'Selections' : 'Selections Will Appear Here'}
+        Selections
       </UpsetHeading>
+      {!showQueries && (
+        <Alert severity="info" style={{ paddingTop: '2px', paddingBottom: '2px' }}>
+          Selected intersections and elements will appear here.
+        </Alert>
+      )}
       <BookmarkChips />
       <ElementVisualization />
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
-      <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
+      <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
         Element Queries
       </UpsetHeading>
       <QueryInterface />
-      <UpsetHeading level="h2" style={{ marginTop: '1em' }}>
+      <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
         Query Result
         <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton

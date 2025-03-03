@@ -133,15 +133,15 @@ export function generateScatterplotSpec(
  * Creates the spec for a single histogram, used in the "Add Plot" dialog.
  * @param attribute The attribute to plot.
  * @param bins      The number of bins to use.
- * @param frequency Whether to plot frequency or density; true for frequency.
+ * @param density Whether to plot frequency or density; true for frequency.
  * @returns The Vega-Lite spec for the histogram.
  */
 export function createAddHistogramSpec(
   attribute: string,
   bins: number,
-  frequency: boolean,
+  density: boolean,
 ): VisualizationSpec {
-  if (frequency) {
+  if (density) {
     const base: VisualizationSpec = {
       width: 400,
       height: 400,

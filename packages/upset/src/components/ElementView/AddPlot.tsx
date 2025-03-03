@@ -47,7 +47,7 @@ type ButtonProps = {
   /**
    * If type is histogram, whether to plot frequency (when true; binned) or density (when false; continuous)
    */
-  frequency?: boolean;
+  density?: boolean;
   /**
    * If type is scatterplot, the x attribute
    */
@@ -72,7 +72,7 @@ type ButtonProps = {
  * @returns Button
  */
 const AddButton: FC<ButtonProps> = ({
-  handleClose, type, bins, attribute, frequency, x, y, xScaleLog, yScaleLog, disabled,
+  handleClose, type, bins, attribute, density, x, y, xScaleLog, yScaleLog, disabled,
 }) => {
   const { actions } = useContext(ProvenanceContext);
 
@@ -95,7 +95,7 @@ const AddButton: FC<ButtonProps> = ({
           ...(type === 'Histogram' && {
             attribute,
             bins,
-            frequency,
+            frequency: density,
           }),
         });
         handleClose();
@@ -215,12 +215,11 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
  * UI for adding a histogram to the element view
  * @param param0 @see Props
  */
-export const AddHistogram: FC<Props> = ({ handleClose }) => {
+export const AddHistogram: FC<Props & {density: boolean}> = ({ handleClose, density }) => {
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
   const [bins, setBins] = useState(20);
-  const [frequency, setFrequency] = useState(true);
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -243,9 +242,10 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
         </FormControl>
       </Grid>
 
+      {!density &&
       <Grid container item xs={4}>
         <TextField
-          disabled={frequency}
+          disabled={density}
           label="Bins"
           value={bins}
           type="number"
@@ -255,19 +255,7 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
             if (newBins > 0) setBins(newBins);
           }}
         />
-      </Grid>
-
-      <Grid container item xs={4}>
-        <FormControlLabel
-          label="Frequency"
-          control={
-            <Switch
-              value={frequency}
-              onChange={() => setFrequency(!frequency)}
-            />
-          }
-        />
-      </Grid>
+      </Grid>}
 
       <Grid container item xs={12}>
         {attribute && bins > 0 && Object.values(items).length && (
@@ -278,24 +266,24 @@ export const AddHistogram: FC<Props> = ({ handleClose }) => {
                 type: 'Histogram',
                 attribute,
                 bins,
-                frequency,
+                frequency: density,
               }}
               data={{
                 elements: Object.values(JSON.parse(JSON.stringify(items))),
               }}
             />
 
-      </Box>
-      )}
-      <AddButton
-        disabled={!(attribute && bins > 0 && Object.values(items).length)}
-        handleClose={handleClose}
-        type="Histogram"
-        attribute={attribute}
-        bins={bins}
-        frequency={frequency}
-      />
+          </Box>
+        )}
+        <AddButton
+          disabled={!(attribute && bins > 0 && Object.values(items).length)}
+          handleClose={handleClose}
+          type="Histogram"
+          attribute={attribute}
+          bins={bins}
+          density={density}
+        />
+      </Grid>
     </Grid>
-  </Grid>
   );
 };
