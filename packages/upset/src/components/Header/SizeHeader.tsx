@@ -7,6 +7,7 @@ import React, {
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { Tooltip } from '@mui/material';
+import { isPopulatedSetQuery } from '@visdesignlab/upset2-core';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
@@ -18,6 +19,8 @@ import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
+import { setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
+import { setQuerySizeSelector } from '../../atoms/setQuerySizeSelector';
 
 const hide = css`
   opacity: 0;
@@ -39,6 +42,8 @@ export const SizeHeader: FC = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
   const subsets = useRecoilValue(flattenedRowsSelector).map((r) => r.row);
+  const setQuery = useRecoilValue(setQueryAtom);
+  const setQuerySize = useRecoilValue(setQuerySizeSelector);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
 
@@ -48,6 +53,9 @@ export const SizeHeader: FC = () => {
   const [maxC, setMaxSize] = useRecoilState(maxSize);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
+
+  const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
+  const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
   const sortBySize = (order: string) => {
     actions.sortBy('Size', order);
@@ -113,13 +121,18 @@ export const SizeHeader: FC = () => {
   useEffect(() => {
     if (advancedScale || subsets.length === 0) return;
 
+    // If a set query is present, use the set query size
+    // This is necessary because the setQuery is not a ROW so is not caught in subsets
+    if (isPopulatedSetQuery(setQuery)) {
+      setMaxSize(setQuerySize);
+      return;
+    }
+
     const sizes = subsets.map((s) => s.size);
+
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
-  }, [subsets, maxSize, advancedScale]);
-
-  const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
-  const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
+  }, [subsets, maxSize, advancedScale, setQuery]);
 
   useEffect(() => {
     const { current: parent } = sliderParentRef;
@@ -141,7 +154,15 @@ export const SizeHeader: FC = () => {
 
         const size = globalScale.invert(newPosition);
 
-        if (size > 0.1 * itemCount) setMaxSize(size);
+        // Gets the minimum size scale to 0.5% of the total number of items (min of 1) or 5, whichever is smaller
+        const minSize = Math.ceil(Math.min(...[0.005 * itemCount, 5]));
+
+        // If the new position is at the very left of the slider (0), set the max size to the minimum size
+        if (newPosition === 0) {
+          setMaxSize(minSize);
+        } else if (size > minSize) {
+          setMaxSize(size);
+        }
       })
       .on('end', () => {
         setSliding(false);
