@@ -1,6 +1,8 @@
 /* eslint-disable no-shadow */
 import { css } from '@emotion/react';
-import { convertConfig, CoreUpsetData, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
+  AttributePlotType, convertConfig, CoreUpsetData, deepCopy, UpsetConfig,
+} from '@visdesignlab/upset2-core';
 import {
   createContext, FC, useEffect, useMemo,
 } from 'react';
@@ -72,13 +74,14 @@ export const Root: FC<Props> = ({
   const setState = useSetRecoilState(upsetConfigAtom);
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
-  const setcanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
+  const setCanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
   const setAttributeColumns = useSetRecoilState(attributeAtom);
   const setAllColumns = useSetRecoilState(columnsAtom);
   const setData = useSetRecoilState(dataAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
 
+  // Set config. Note that the provenance passed in is ignored if a provenance is passed in
   useEffect(() => {
     if (!extProvenance) setState(convertConfig(config));
     setData(data);
@@ -86,7 +89,7 @@ export const Root: FC<Props> = ({
 
   useEffect(() => {
     if (canEditPlotInformation !== undefined) {
-      setcanEditPlotInformation(canEditPlotInformation);
+      setCanEditPlotInformation(canEditPlotInformation);
     }
   }, [canEditPlotInformation]);
 
@@ -111,7 +114,16 @@ export const Root: FC<Props> = ({
     return { provenance, actions };
   }, [config]);
 
-  useEffect(() => setState(convertConfig(provenance.getState())), []);
+  // Mandatory state defaults should go here
+  useEffect(() => {
+    const state = deepCopy(convertConfig(provenance.getState()));
+    state.visibleAttributes.forEach((attr) => {
+      if (attr !== 'Degree' && attr !== 'Deviation' && !state.attributePlots[attr]) {
+        state.attributePlots[attr] = AttributePlotType.DensityPlot;
+      }
+    });
+    setState(state);
+  }, []);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
@@ -122,7 +134,7 @@ export const Root: FC<Props> = ({
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
     setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
-  }, [data]);
+  }, [data, allowAttributeRemoval]);
 
   // close all open context menus
   const removeContextMenu = () => {
