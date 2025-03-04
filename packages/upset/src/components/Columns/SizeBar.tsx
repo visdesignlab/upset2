@@ -109,6 +109,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     return colors[index];
   }, [row, selected, bookmarks, bookmarkedColorPallete, currentIntersection, nextColor]);
 
+
   /**
    * Calculates the number of size bars to display based on the size of the row.
    * @param rowSize Size of the row.
@@ -123,7 +124,9 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     if (fullBars >= 3) {
       fullBars = 3;
     }
-    if (rem === 0 && fullBars > 0) fullBars--;
+
+    // If the remainder is 0 and there are 1 or 2 full bars, remove a bar
+    if (rem === 0 && (fullBars > 0 && fullBars < 3)) fullBars--;
 
     return { fullBars, rem };
   }, [sizeDomain]);
