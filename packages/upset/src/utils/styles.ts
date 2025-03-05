@@ -58,3 +58,6 @@ export const ATTRIBUTE_DEFAULT_COLOR = '#d3d3d3';
 // Default background color for aggregate and query rows
 export const DEFAULT_ROW_BACKGROUND_COLOR = '#cccccc';
 export const DEFAULT_ROW_BACKGROUND_OPACITY = '0.3';
+
+/** Color for unselected elements in the element view */
+export const DEFAULT_ELEMENT_COLOR = '#444';

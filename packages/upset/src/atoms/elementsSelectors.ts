@@ -17,6 +17,7 @@ import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { visibleSetSelector } from './config/visibleSetsAtoms';
 import { hideNoSetSelector } from './config/filterAtoms';
+import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
 
 /**
  * Gets all of the items in the visible sets
@@ -190,7 +191,7 @@ export const deselectedItemsSelector = selector<Item[]>({
   key: 'deselected-elements',
   get: ({ get }) => {
     const items = get(filteredItems).excluded;
-    return items.map((item) => ({ ...item, color: '#444' }));
+    return items.map((item) => ({ ...item, color: DEFAULT_ELEMENT_COLOR }));
   },
 });
 
