@@ -466,7 +466,7 @@ export const SettingsSidebar = () => {
           <AccordionDetails>
             <FormGroup sx={{ mb: 2.5, width: '100%' }}>
               <ToggleSwitch
-                shortLabel="Hide Empty Sets"
+                shortLabel="Hide Empty Intersections"
                 longLabel={helpText.filter.HideEmptySets}
                 checked={hideEmpty}
                 onChange={() => actions.setHideEmpty(!hideEmpty)}
