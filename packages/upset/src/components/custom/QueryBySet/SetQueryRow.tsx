@@ -1,4 +1,4 @@
-import { FC, useContext, useMemo } from 'react';
+import { FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { SetMembershipStatus } from '@visdesignlab/upset2-core';
@@ -12,8 +12,8 @@ import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
 import { setQueryAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { ProvenanceContext } from '../../Root';
 import { SizeBar } from '../../Columns/SizeBar';
-import { flattenedRowsSelector } from '../../../atoms/renderRowsAtom';
 import { DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH } from '../../../utils/styles';
+import { setQuerySizeSelector } from '../../../atoms/setQuerySizeSelector';
 
 const REMOVE_ICON_SIZE = 16;
 
@@ -32,7 +32,7 @@ export const SetQueryRow: FC = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQuery = useRecoilValue(setQueryAtom);
-  const rows = useRecoilValue(flattenedRowsSelector);
+  const setQuerySize = useRecoilValue(setQuerySizeSelector);
 
   /**
    * Retrieves the membership status for a given set from the set query sets.
@@ -51,19 +51,6 @@ export const SetQueryRow: FC = () => {
   function removeSetQuery(): void {
     actions.removeSetQuery();
   }
-
-  /**
-   * Calculates the total size of all rows in the query.
-   *
-   * @returns {number} The total size of all rows.
-   */
-  const totalQuerySize = useMemo(() => {
-    let total = 0;
-    rows.forEach((rr) => {
-      total += rr.row.size;
-    });
-    return total;
-  }, [rows]);
 
   return (
     <g transform={translate(0, 0)}>
@@ -122,7 +109,7 @@ export const SetQueryRow: FC = () => {
             ))}
           </g>
           <g transform={translate(0, dimensions.body.rowHeight - 2)}>
-            <SizeBar size={totalQuerySize} selected={0} />
+            <SizeBar size={setQuerySize} selected={0} />
           </g>
         </g>
       </g>
