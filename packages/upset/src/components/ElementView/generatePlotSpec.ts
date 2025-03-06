@@ -107,22 +107,28 @@ export function generateScatterplotSpec(
             value: 0.8,
           },
           {
-            test: {
-              or: [
-                { not: { param: 'brush' } },
-                'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
-              ],
-            },
+            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
             value: 0.3,
           },
         ],
         value: 0.8,
       },
       order: {
-        condition: {
-          test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
-          value: 1,
-        },
+        condition: [
+          {
+            param: 'brush',
+            empty: false,
+            value: 3,
+          },
+          {
+            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
+            value: 2,
+          },
+          {
+            test: 'datum["bookmarked"] === true',
+            value: 1,
+          },
+        ],
         value: 0,
       },
     },

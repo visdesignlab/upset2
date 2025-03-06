@@ -145,7 +145,8 @@ export const elementItemMapSelector = selectorFamily<Item[], string[]>({
 });
 
 /**
- * Gets all elements in the bookmarked intersections, with coloring and selection properties.
+ * Gets all elements in the bookmarked intersections, with coloring and selection properties,
+ * as well as a 'true' bookmarked property.
  * @returns The elements in the bookmarked intersections
  */
 export const bookmarkedItemsSelector = selector<Item[]>({
@@ -153,7 +154,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const bookmarks = get(bookmarkSelector);
     const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
-    return items;
+    return items.map((item) => ({ ...item, bookmarked: true }));
   },
 });
 
