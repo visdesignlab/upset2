@@ -12,7 +12,7 @@ import {
   NumericalQuery,
 } from '@visdesignlab/upset2-core';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { currentNumericalQuery, coloredItemsSelector, elementSelectionSelector } from '../../atoms/elementsSelectors';
+import { currentNumericalQuery, elementSelectionSelector, processedItemsSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -56,7 +56,7 @@ export const ElementVisualization = () => {
    */
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
-  const items = useRecoilValue(coloredItemsSelector);
+  const items = useRecoilValue(processedItemsSelector);
   const numericalQuery = useRecoilValue(currentNumericalQuery);
   const elementSelection = useRecoilValue(elementSelectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);

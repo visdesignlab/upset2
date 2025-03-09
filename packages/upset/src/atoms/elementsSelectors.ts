@@ -15,65 +15,139 @@ import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
-import { visibleSetSelector } from './config/visibleSetsAtoms';
-import { hideNoSetSelector } from './config/filterAtoms';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
 
 /**
- * Gets all of the items in the visible sets
+ * Gets all items in the row/intersection represented by the provided ID.
+ * @param id - The ID of the row to get items for.
+ * @returns The items in the row
  */
-export const visibleItemsSelector = selector<Item[]>({
-  key: 'visible-items',
-  get: ({ get }) => {
-    const items = Object.values(get(itemsAtom));
-    const unincludedRowHidden = get(hideNoSetSelector);
-    const visibleSets = get(visibleSetSelector);
-
-    if (!unincludedRowHidden) return items;
-
-    return items.filter((item) => {
-      let match = false;
-      visibleSets.forEach((set) => {
-        if (set.startsWith('Set_')) set = set.slice(4);
-        if (item[set]) match = true;
-      });
-      return match;
-    });
-  },
-});
-
-/**
- * Gets all elements in the intersection represented by the provided ID
- * @param id - The ID of the intersection to get elements for.
- * @returns The elements in the intersection, with properties for coloring and selection.
- */
-export const elementSelector = selectorFamily<
-  Item[],
-  string | null | undefined
->({
-  key: 'element-item',
+const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
+  key: 'row-items',
   get: (id: string | null | undefined) => ({ get }) => {
     if (!id) return [];
 
     const items = get(itemsAtom);
     const intersections = get(rowsSelector);
     const row = intersections[id];
-    const palette = get(bookmarkedColorPalette);
-    const currentIntersection = get(currentIntersectionSelector);
 
     if (!row) return [];
 
-    const memberElements = getItems(row);
+    return getItems(row).map((el) => items[el]);
+  },
+});
 
-    return memberElements.map((el) => ({
-      ...items[el],
-      subset: id,
-      subsetName: row.elementName,
-      color: palette[id] || get(nextColorSelector),
-      isCurrentSelected: !!currentIntersection,
-      isCurrent:
-        !!(currentIntersection?.id === id),
-    }));
+/**
+ * Gets all elements in the bookmarked intersections and the currently selected intersection,
+ * with coloring and selection properties as well as a 'true' bookmarked property.
+ * @returns The elements in the bookmarked/selected intersections with the following props added:
+ * - subset: The ID of the row the item is in
+ * - subsetName: The name of the row the item is in
+ * - color: The color of the row the item is in
+ * - isCurrentSelected: Whether the current intersection is selected
+ * - isCurrent: Whether the item is in the current intersection
+ * - bookmarked: Whether the item is in a bookmarked row (true)
+ * @private These properties are deliberately only added to bookmarked items, as the current vega spec requires
+ */
+export const bookmarkedItemsSelector = selector<Item[]>({
+  key: 'bookmarked-items',
+  get: ({ get }) => {
+    const bookmarkIDs = ([] as string[]).concat(get(bookmarkSelector).map((b) => b.id));
+    const currentIntersection = get(currentIntersectionSelector);
+    if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id)) bookmarkIDs.push(currentIntersection?.id);
+
+    const intersections = get(rowsSelector);
+    const palette = get(bookmarkedColorPalette);
+    const result: Item[] = [];
+
+    bookmarkIDs.forEach((id) => {
+      const row = intersections[id];
+      if (!row) return;
+
+      const memberElements = get(rowItemsSelector(id));
+      result.push(...memberElements.map((el) => ({
+        ...el,
+        subset: id,
+        subsetName: row.elementName,
+        color: palette[id] || get(nextColorSelector),
+        isCurrentSelected: !!currentIntersection,
+        isCurrent: !!(currentIntersection?.id === id),
+        bookmarked: true,
+      })));
+    });
+
+    return result;
+  },
+});
+
+/**
+ * Gets all of the items in visible rows.
+ * Items from bookmarked rows are given properties for coloring and selection, as well as a 'true' bookmarked property.
+ * Other items are given only a color prop.
+ * @private It seems odd for some items to have props that others don't; however,
+ *   this is necessary for correct element vis with the current vega spec. It may be refactorable.
+ */
+export const processedItemsSelector = selector<Item[]>({
+  key: 'processed-items',
+  get: ({ get }) => {
+    const rows = get(rowsSelector);
+    const items = get(itemsAtom);
+    const bookmarkedIDs = get(bookmarkSelector).map((b) => b.id);
+    const currentIntersection = get(currentIntersectionSelector);
+    // A wild assignment, but the array returned by Recoil is readonly and we need to add to it
+    const result: Item[] = ([] as Item[]).concat(get(bookmarkedItemsSelector));
+
+    Object.values(rows).forEach((row) => {
+      if (!bookmarkedIDs.includes(row.id) && row.id !== currentIntersection?.id) {
+        const memberElements = getItems(row);
+        result.push(...memberElements.map((el) => ({
+          ...items[el],
+          color: DEFAULT_ELEMENT_COLOR,
+        })));
+      }
+    });
+    return result;
+  },
+});
+
+/**
+ * Gets the current selection of elements
+ * @returns The current selection of elements
+ */
+export const elementSelectionSelector = selector<ElementSelection | null>({
+  key: 'config-element-selection',
+  get: ({ get }) => get(upsetConfigAtom).elementSelection,
+});
+
+/**
+ * Gets all items that are currently displayed in intersections in the plot
+ * (if the unincluded intersection is visible, this is all items)
+ * sorted into included and excluded lists based on the current selection.
+ * If no selection is active, all items are excluded.
+ * @returns The included and excluded items
+ */
+const filteredItems = selector<FilteredItems>({
+  key: 'filtered-items',
+  get: ({ get }) => {
+    const items = get(processedItemsSelector);
+    const selection = get(elementSelectionSelector);
+    if (!selection || !selection.active) return { included: [], excluded: items };
+
+    return filterItems(items, selection);
+  },
+});
+
+/**
+ * Returns all items from any visible intersection that are within the bounds of the current element selection if active.
+ * If inactive, returns all items within a bookmarked/selected intersection.
+ * If no selections are active, and no rows are selected or bookmarked, returns all items in visible intersections.
+ */
+export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
+  key: 'selected-elements',
+  get: ({ get }) => {
+    if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
+    if (get(bookmarkSelector).length > 0 || get(currentIntersectionSelector)) return get(bookmarkedItemsSelector);
+    return get(processedItemsSelector);
   },
 });
 
@@ -85,7 +159,7 @@ export const elementSelector = selectorFamily<
 export const attValuesSelector = selectorFamily<number[], {row: Row, att: string}>({
   key: 'att-values',
   get: ({ row, att }) => ({ get }) => {
-    const items = get(elementSelector(row.id));
+    const items = get(rowItemsSelector(row.id));
 
     // We could filter the whole array before we map, but attributes should all be the same type,
     // so its sufficient and more performant to only check the first attribute
@@ -117,109 +191,6 @@ export const intersectionCountSelector = selectorFamily<
 
     const row = intersections[id];
     return row.size;
-  },
-});
-
-/**
- * Gets all elements in intersections represented by the provided IDs
- * and the currently selected intersection
- * @param ids - The IDs of the intersections to get elements for.
- * @returns The elements in the intersections
- */
-export const elementItemMapSelector = selectorFamily<Item[], string[]>({
-  key: 'element-item-map',
-  get: (ids: string[]) => ({ get }) => {
-    const currentIntersection = get(currentIntersectionSelector);
-    const items: Item[] = [];
-
-    if (currentIntersection && !ids.includes(currentIntersection.id)) {
-      items.push(...get(elementSelector(currentIntersection.id)));
-    }
-
-    ids.forEach((id) => {
-      items.push(...get(elementSelector(id)));
-    });
-
-    return items;
-  },
-});
-
-/**
- * Gets all elements in the bookmarked intersections, with coloring and selection properties,
- * as well as a 'true' bookmarked property.
- * @returns The elements in the bookmarked intersections
- */
-export const bookmarkedItemsSelector = selector<Item[]>({
-  key: 'bookmarked-items',
-  get: ({ get }) => {
-    const bookmarks = get(bookmarkSelector);
-    const items: Item[] = get(elementItemMapSelector(bookmarks.map((b) => b.id)));
-    return items.map((item) => ({ ...item, bookmarked: true }));
-  },
-});
-
-/**
- * Gets the current selection of elements
- * @returns The current selection of elements
- */
-export const elementSelectionSelector = selector<ElementSelection | null>({
-  key: 'config-element-selection',
-  get: ({ get }) => get(upsetConfigAtom).elementSelection,
-});
-
-/**
- * Gets all items that are currently displayed in intersections in the plot
- * (if the unincluded intersection is visible, this is all items)
- * sorted into included and excluded lists based on the current selection.
- * If no selection is active, all items are excluded.
- * @returns The included and excluded items
- */
-const filteredItems = selector<FilteredItems>({
-  key: 'filtered-items',
-  get: ({ get }) => {
-    const items = get(visibleItemsSelector);
-    const selection = get(elementSelectionSelector);
-    if (!selection || !selection.active) return { included: [], excluded: items };
-
-    return filterItems(items, selection);
-  },
-});
-
-/**
- * Gets all items not in the current selection with a grey color
- */
-export const deselectedItemsSelector = selector<Item[]>({
-  key: 'deselected-elements',
-  get: ({ get }) => {
-    const items = get(filteredItems).excluded;
-    return items.map((item) => ({ ...item, color: DEFAULT_ELEMENT_COLOR }));
-  },
-});
-
-/**
- * Returns all items from any visible intersection that are within the bounds of the current element selection if active.
- * If inactive, returns all items within a bookmarked/selected intersection.
- * If no selections are active, and no rows are selected or bookmarked, returns all items in visible intersections.
- */
-export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
-  key: 'selected-elements',
-  get: ({ get }) => {
-    if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
-    if (get(bookmarkSelector).length > 0) return get(bookmarkedItemsSelector);
-    return get(visibleItemsSelector);
-  },
-});
-
-/**
- * Gets all items, colored by their subset if bookmarked or in the current intersection selection and grey otherwise.
- */
-export const coloredItemsSelector = selector<Item[]>({
-  key: 'bookmarked-elements',
-  get: ({ get }) => {
-    const selected = get(bookmarkedItemsSelector);
-    const deselected = get(deselectedItemsSelector);
-
-    return selected.concat(deselected);
   },
 });
 
@@ -263,7 +234,7 @@ export const selectedItemsCounter = selector<number>({
 export const subsetSelectedCount = selectorFamily<number, string>({
   key: 'subset-selected',
   get: (id: string) => ({ get }) => {
-    const items = get(elementSelector(id));
+    const items = get(rowItemsSelector(id));
     const selection = get(elementSelectionSelector);
 
     if (!selection || !selection.active) return 0;
