@@ -24,6 +24,7 @@ import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { UpsetActions, UpsetProvenance } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
+import { currentIntersectionSelector } from '../../../atoms/config/currentIntersectionAtom';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -45,6 +46,7 @@ export const QueryBySetInterface = () => {
   const [membership, setMembership] = useState<SetQueryMembership>({});
   const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
+  const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
@@ -170,7 +172,9 @@ export const QueryBySetInterface = () => {
     };
 
     actions.addSetQuery(query, queryResultString);
-    setColumnSelect([]);
+    // We need to clear the current selection in case the selected row disappears after query
+    if (currentIntersection !== null) actions.setSelected(null);
+    setColumnSelect([]); // Column select doesn't clear itself for some reason
     setQueryInterface(false);
   }, [queryName, membership, queryResultString]);
 
@@ -179,6 +183,8 @@ export const QueryBySetInterface = () => {
       transform={translate(0, 0)}
       height={dimensions.setQuery.height}
       width={dimensions.setQuery.width}
+      // Prevent the SvgBase onClick from clearing the current intersection
+      onClick={(e) => e.stopPropagation()}
     >
       <rect
         transform={translate(0, 0)}
