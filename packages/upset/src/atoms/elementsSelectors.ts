@@ -197,11 +197,11 @@ export const deselectedItemsSelector = selector<Item[]>({
 });
 
 /**
- * Returns all items that are within the bounds of the current element selection.
- * If no selections are active, no rows are bookmarked, and the unincluded intersection is visible,
- * returns all items
+ * Returns all items from any visible intersection that are within the bounds of the current element selection if active.
+ * If inactive, returns all items within a bookmarked/selected intersection.
+ * If no selections are active, and no rows are selected or bookmarked, returns all items in visible intersections.
  */
-export const selectedItemsSelector = selector<Item[]>({
+export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
     if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
@@ -254,7 +254,7 @@ export const currentElementQuery = selector<AttQuery | undefined>({
  */
 export const selectedItemsCounter = selector<number>({
   key: 'selected-item-count',
-  get: ({ get }) => get(selectedItemsSelector).length,
+  get: ({ get }) => get(selectedOrBookmarkedItemsSelector).length,
 });
 
 /**

@@ -11,7 +11,7 @@ import AddchartIcon from '@mui/icons-material/Addchart';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
   elementSelectionSelector, selectedItemsCounter,
-  selectedItemsSelector,
+  selectedOrBookmarkedItemsSelector,
 } from '../../atoms/elementsSelectors';
 import { BookmarkChips } from './BookmarkChips';
 import { ElementTable } from './ElementTable';
@@ -75,7 +75,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 export const ElementSidebar = ({ open, close }: Props) => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const currentElementSelection = useRecoilValue(elementSelectionSelector);
-  const selectedItems = useRecoilValue(selectedItemsSelector);
+  const selectedItems = useRecoilValue(selectedOrBookmarkedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
   const bookmarked = useRecoilValue(bookmarkSelector);
