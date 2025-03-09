@@ -129,7 +129,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
               downloadElementsAsCSV(
                 selectedItems,
                 columns,
-                currentElementSelection?.label ?? 'upset_elements',
+                'upset_elements',
               );
             }}
             // This needs to stay shorter than the h2 text or the divider spacing gets off
