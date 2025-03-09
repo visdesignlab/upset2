@@ -13,13 +13,17 @@ import {
 } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
-import { mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY } from '../../../utils/styles';
+import {
+  mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
+} from '../../../utils/styles';
 import { SetMembershipRow } from './SetMembershipRow';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
 import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
+import { UpsetActions, UpsetProvenance } from '../../../provenance';
+import { columnSelectAtom } from '../../../atoms/highlightAtom';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -32,7 +36,7 @@ const CHECK_ICON_SIZE = 16;
  * @returns {JSX.Element} The rendered QueryBySets component.
  */
 export const QueryBySetInterface = () => {
-  const { provenance, actions } = useContext(ProvenanceContext);
+  const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
@@ -40,6 +44,7 @@ export const QueryBySetInterface = () => {
   const [queryName, setQueryName] = useState('Query');
   const [membership, setMembership] = useState<SetQueryMembership>({});
   const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
+  const setColumnSelect = useSetRecoilState(columnSelectAtom);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
@@ -147,24 +152,25 @@ export const QueryBySetInterface = () => {
 
   /**
    * Adds a new query to the set of queries.
-   * 
+   *
    * This function creates a query object with the current query name and membership,
    * then calls the `addSetQuery` action with the query object and the query result string.
    * Finally, it sets the query interface to false.
-   * 
+   *
    * @callback addQuery
    * @param {string} queryName - The name of the query.
    * @param {string} membership - The membership information for the query.
    * @param {string} queryResultString - The result string of the query.
    * @returns {void}
    */
-  const addQuery = useCallback(() =>{
+  const addQuery = useCallback(() => {
     const query = {
       name: queryName,
       query: membership,
     };
 
     actions.addSetQuery(query, queryResultString);
+    setColumnSelect([]);
     setQueryInterface(false);
   }, [queryName, membership, queryResultString]);
 
