@@ -3,6 +3,7 @@ import {
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
+import { elementSelectionColor } from '../../utils/styles';
 
 /**
  * Creates the spec for a single scatterplot.
@@ -58,7 +59,6 @@ export function createAddScatterplotSpec(
  */
 export function generateScatterplotSpec(
   spec: Scatterplot,
-  selectColor: string,
 ): VisualizationSpec {
   return {
     width: 200,
@@ -93,7 +93,7 @@ export function generateScatterplotSpec(
         condition: {
           param: 'brush',
           empty: false,
-          value: selectColor,
+          value: elementSelectionColor,
         },
         field: 'subset',
         legend: null,
@@ -107,22 +107,28 @@ export function generateScatterplotSpec(
             value: 0.8,
           },
           {
-            test: {
-              or: [
-                { not: { param: 'brush' } },
-                'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
-              ],
-            },
+            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
             value: 0.3,
           },
         ],
         value: 0.8,
       },
       order: {
-        condition: {
-          test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
-          value: 1,
-        },
+        condition: [
+          {
+            param: 'brush',
+            empty: false,
+            value: 3,
+          },
+          {
+            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
+            value: 2,
+          },
+          {
+            test: 'datum["bookmarked"] === true',
+            value: 1,
+          },
+        ],
         value: 0,
       },
     },
@@ -203,10 +209,20 @@ export function generateHistogramSpec(
     },
   ] as SelectionParameter[];
 
+  /** Color for layers showing all elements (not selection layers) */
   const COLOR = {
     field: 'subset',
     legend: null,
     scale: { range: { field: 'color' } },
+  };
+
+  /** Opacity for layers showing all elements (not selection layers) */
+  const OPACITY = {
+    condition: {
+      param: 'brush',
+      value: 1,
+    },
+    value: 0.4,
   };
 
   if (hist.frequency) {
@@ -236,17 +252,16 @@ export function generateHistogramSpec(
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: { value: 0.4 },
+            opacity: OPACITY,
           },
         },
         { // This layer displays probability density for selected elements, grouped
           transform: [
             {
-              filter: { param: 'brush' },
+              filter: { param: 'brush', empty: false },
             },
             {
               density: hist.attribute,
-              groupby: ['subset', 'color'],
             },
             {
               calculate: 'datum["value"]',
@@ -257,7 +272,7 @@ export function generateHistogramSpec(
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
-            color: COLOR,
+            color: { value: elementSelectionColor },
             opacity: { value: 1 },
           },
         },
@@ -285,11 +300,11 @@ export function generateHistogramSpec(
             title: 'Frequency',
           },
           color: COLOR,
-          opacity: { value: 0.4 },
+          opacity: OPACITY,
         },
       }, {
         transform: [{
-          filter: { param: 'brush' },
+          filter: { param: 'brush', empty: false },
         }],
         mark: 'bar',
         encoding: {
@@ -301,7 +316,7 @@ export function generateHistogramSpec(
             aggregate: 'count',
             title: 'Frequency',
           },
-          color: COLOR,
+          color: { value: elementSelectionColor },
           opacity: { value: 1 },
         },
       },
@@ -312,16 +327,15 @@ export function generateHistogramSpec(
 /**
  * Generates a vega spec for a plot.
  * @param plot The plot to generate a spec for
- * @param selectColor The color to use for selected points
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot, selectColor: string): VisualizationSpec {
+export function generateVegaSpec(plot: Plot): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
 
   if (isScatterplot(plot)) {
-    return { ...BASE, ...generateScatterplotSpec(plot, selectColor) } as VisualizationSpec;
+    return { ...BASE, ...generateScatterplotSpec(plot) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
     return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;

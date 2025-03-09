@@ -1,25 +1,25 @@
 import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
+import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import { Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, BookmarkedIntersection, deepCopy, flattenedOnlyRows, isBookmarkedIntersection,
-  isElementSelection,
+  Bookmark, elementSelectionToString, flattenedOnlyRows,
 } from '@visdesignlab/upset2-core';
 import {
   bookmarkedColorPalette,
   bookmarkSelector,
   currentIntersectionSelector,
-  elementColorSelector,
   nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { selectedElementSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionSelector } from '../../atoms/elementsSelectors';
+import { elementSelectionColor } from '../../utils/styles';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -34,22 +34,15 @@ export const BookmarkChips = () => {
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
-  const currentSelection = useRecoilValue(selectedElementSelector);
-  const elementSelectionColor = useRecoilValue(elementColorSelector);
+  const currentSelection = useRecoilValue(elementSelectionSelector);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
    * @param bookmark Clicked bookmark
    */
   function chipClicked(bookmark: Bookmark) {
-    if (isBookmarkedIntersection(bookmark)) {
-      if (currentIntersection?.id === bookmark.id) actions.setSelected(null);
-      else actions.setSelected(rows[bookmark.id]);
-    } else if (isElementSelection(bookmark)) {
-      // Need to update both the saved trrack state & the selection atom when a chip is clicked
-      if (currentSelection?.id === bookmark.id) actions.setElementSelection(null);
-      else actions.setElementSelection(bookmark);
-    }
+    if (currentIntersection?.id === bookmark.id) actions.setSelected(null);
+    else actions.setSelected(rows[bookmark.id]);
   }
 
   return (
@@ -57,27 +50,22 @@ export const BookmarkChips = () => {
       {/* All chips from bookmarks */}
       {bookmarked.map((bookmark) => (
         <Chip
-          disabled={bookmark.type === 'intersection' && rows[bookmark.id] === undefined}
+          disabled={rows[bookmark.id] === undefined}
           sx={(theme) => ({
             margin: theme.spacing(0.5),
             '.MuiChip-icon': {
               color: colorPallete[bookmark.id],
             },
-            backgroundColor:
-                bookmark.id === currentIntersection?.id || bookmark.id === currentSelection?.id
-                  ? 'rgba(0,0,0,0.2)'
-                  : 'default',
+            backgroundColor: bookmark.id === currentIntersection?.id ? 'rgba(0,0,0,0.2)' : 'default',
           })}
           key={bookmark.id}
-          aria-label={`Bookmarked intersection ${bookmark.label}${
-            isBookmarkedIntersection(bookmark) ? `, size ${bookmark.size}` : ''}`}
+          aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               chipClicked(bookmark);
             }
           }}
-          label={isBookmarkedIntersection(bookmark)
-            ? `${bookmark.label} - ${bookmark.size}` : `${bookmark.label}`}
+          label={`${bookmark.label} - ${bookmark.size}`}
           icon={<SquareIcon fontSize={'1em' as any} />}
           deleteIcon={<StarIcon />}
           onClick={() => {
@@ -86,8 +74,6 @@ export const BookmarkChips = () => {
           onDelete={() => {
             if (currentIntersection?.id === bookmark.id) {
               actions.setSelected(null);
-            } else if (currentSelection?.id === bookmark.id) {
-              actions.setElementSelection(null);
             }
             actions.removeBookmark(bookmark);
           }}
@@ -107,50 +93,43 @@ export const BookmarkChips = () => {
         aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
-            actions.addBookmark<BookmarkedIntersection>({
+            actions.addBookmark({
               id: currentIntersection.id,
               label: currentIntersectionDisplayName,
               size: currentIntersection.size,
-              type: 'intersection',
             });
           }
         }}
         onClick={() => actions.setSelected(null)}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
         onDelete={() => {
-          actions.addBookmark<BookmarkedIntersection>({
+          actions.addBookmark({
             id: currentIntersection.id,
             label: currentIntersectionDisplayName,
             size: currentIntersection.size,
-            type: 'intersection',
           });
         }}
         deleteIcon={<StarBorderIcon />}
       />
       )}
       {/* Chip for the current element selection */}
-      {currentSelection && !bookmarked.find((b) => b.id === currentSelection.id) && (
+      {currentSelection && (
       <Chip
         sx={(theme) => ({
           margin: theme.spacing(0.5),
           '.MuiChip-icon': {
             color: elementSelectionColor,
           },
-          backgroundColor: 'rgba(0,0,0,0.2)',
+          backgroundColor: currentSelection.active ? 'rgba(0,0,0,0.2)' : 'default',
         })}
-        icon={<SquareIcon fontSize={'1em' as any} />}
-        aria-label={`Selected elements ${currentSelection.label}`}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') {
-            actions.addBookmark(deepCopy(currentSelection));
-          }
+        icon={<WorkspacesIcon fontSize={'1em' as any} />}
+        aria-label={`Selected elements ${elementSelectionToString(currentSelection)}`}
+        onClick={() => {
+          const newSelection = { ...currentSelection };
+          newSelection.active = !newSelection.active;
+          actions.setElementSelection(newSelection);
         }}
-        onClick={() => actions.setElementSelection(null)}
-        label={`${currentSelection.label}`}
-        onDelete={() => {
-          actions.addBookmark(deepCopy(currentSelection));
-        }}
-        deleteIcon={<StarBorderIcon />}
+        label={elementSelectionToString(currentSelection)}
       />
       )}
     </Stack>
