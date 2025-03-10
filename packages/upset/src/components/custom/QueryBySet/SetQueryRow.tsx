@@ -9,7 +9,7 @@ import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
-import { setQueryAtom } from '../../../atoms/config/queryBySetsAtoms';
+import { setQuerySelector } from '../../../atoms/config/queryBySetsAtoms';
 import { ProvenanceContext } from '../../Root';
 import { SizeBar } from '../../Columns/SizeBar';
 import { DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH } from '../../../utils/styles';
@@ -31,7 +31,7 @@ export const SetQueryRow: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
-  const setQuery = useRecoilValue(setQueryAtom);
+  const setQuery = useRecoilValue(setQuerySelector);
   const setQuerySize = useRecoilValue(setQuerySizeSelector);
 
   /**

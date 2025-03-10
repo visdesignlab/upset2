@@ -8,7 +8,7 @@ import translate from '../../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
-import { queryBySetsInterfaceAtom, setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
+import { queryBySetsInterfaceAtom, setQuerySelector } from '../../atoms/config/queryBySetsAtoms';
 
 type Props = {
   rows: RenderRow[];
@@ -81,7 +81,7 @@ const shouldRender = (row: Row, collapsedIds: string[]) => {
 export const MatrixRows: FC<Props> = ({ rows }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  const setQuery = useRecoilValue(setQueryAtom);
+  const setQuery = useRecoilValue(setQuerySelector);
   const queryBySetsInterface = useRecoilValue(queryBySetsInterfaceAtom);
 
   let yTransform = 0;

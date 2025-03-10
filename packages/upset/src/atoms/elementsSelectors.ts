@@ -16,6 +16,7 @@ import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
+import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
@@ -146,7 +147,7 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
     if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
-    if (get(bookmarkSelector).length > 0 || get(currentIntersectionSelector)) return get(bookmarkedItemsSelector);
+    if (get(bookmarkIsVisibleSelector)) return get(bookmarkedItemsSelector);
     return get(processedItemsSelector);
   },
 });
