@@ -4,7 +4,7 @@ import { Item } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { selectedItemsSelector } from '../../atoms/elementsSelectors';
+import { selectedOrBookmarkedItemsSelector } from '../../atoms/elementsSelectors';
 import { setColumnsSelector } from '../../atoms/dataAtom';
 import { dataAttributeSelector } from '../../atoms/attributeAtom';
 
@@ -48,7 +48,7 @@ function useColumns(columns: string[]) {
  */
 export const ElementTable: FC = () => {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
-  const elements = useRecoilValue(selectedItemsSelector);
+  const elements = useRecoilValue(selectedOrBookmarkedItemsSelector);
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
   // Filtering out columns w/ _ removes metadata columns

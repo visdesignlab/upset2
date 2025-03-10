@@ -10,8 +10,8 @@ import { useCallback, useMemo, useState } from 'react';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
-  selectedElementSelector, selectedItemsCounter,
-  selectedItemsSelector,
+  elementSelectionSelector, selectedItemsCounter,
+  selectedOrBookmarkedItemsSelector,
 } from '../../atoms/elementsSelectors';
 import { BookmarkChips } from './BookmarkChips';
 import { ElementTable } from './ElementTable';
@@ -74,8 +74,8 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
-  const currentElementSelection = useRecoilValue(selectedElementSelector);
-  const selectedItems = useRecoilValue(selectedItemsSelector);
+  const currentElementSelection = useRecoilValue(elementSelectionSelector);
+  const selectedItems = useRecoilValue(selectedOrBookmarkedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
   const bookmarked = useRecoilValue(bookmarkSelector);
@@ -129,7 +129,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
               downloadElementsAsCSV(
                 selectedItems,
                 columns,
-                currentElementSelection?.label ?? 'upset_elements',
+                'upset_elements',
               );
             }}
             // This needs to stay shorter than the h2 text or the divider spacing gets off
