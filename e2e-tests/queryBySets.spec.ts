@@ -24,7 +24,7 @@ test('Query by Sets', async ({ page }) => {
   await page.getByLabel('Add query').locator('rect').click();
 
   // This specific query size is 5
-  await expect(page.locator('text').filter({ hasText: /^5$/ })).toBeVisible();
+  await expect(page.getByText('5', { exact: true }).nth(3)).toBeVisible();
 
   // Remove the query
   await page.getByLabel('Remove query').locator('rect').click();
