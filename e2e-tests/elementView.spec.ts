@@ -168,7 +168,42 @@ test('Element View', async ({ page, browserName }) => {
     await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
     await expect(unincludedSelectPoly).toBeVisible();
     await expect(unincludedSelectRect).toBeVisible();
+    await expect(page.getByText('1–9 of')).toBeVisible(); // Checking count
+    await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
   }
+
+  /** Element table tests; checking correct number of rows */
+  // Re-used element table counts
+  const count3 = page.getByText('1–3 of');
+  const count6 = page.getByText('1–6 of');
+
+  // No selection
+  await expect(count3).toBeVisible();
+
+  // Bookmark 2 rowsawait expect(page.getByText('1–3 of')).toBeVisible();
+  await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
+  await page.locator('#Subset_Unincluded path').click();
+  await expect(count6).toBeVisible();
+
+  // Start adding a query, recheck
+  await page.getByTestId('AddIcon').locator('path').click();
+  await expect(count6).toBeVisible();
+
+  // Add a query
+  await page.locator('g:nth-child(2) > g > circle:nth-child(7)').click();
+  await page.locator('g:nth-child(4) > g > circle:nth-child(6)').click();
+  await page.getByLabel('Add Query').locator('rect').click();
+  await expect(page.getByText('1–5 of')).toBeVisible();
+
+  // Remove query
+  await page.getByLabel('Remove query').locator('rect').click();
+  await expect(count6).toBeVisible();
+
+  // Deselect bookmarked rows
+  await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
+  await expect(count3).toBeVisible();
+  await page.locator('#Subset_Unincluded path').click();
+  await expect(page.getByText('–24 of 24')).toBeVisible();
 
   /*
     * Plot removal
