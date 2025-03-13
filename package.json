@@ -7,12 +7,12 @@
   ],
   "nohoist": [],
   "scripts": {
-    "dev": "turbo run dev --parallel --no-cache --filter=app --filter=core --filter=upset",
+    "dev": "turbo run dev --parallel --no-cache --filter=@visdesignlab/*",
     "builddocs": "turbo run build --force --filter=userdocs",
     "storybook": "turbo run storybook",
     "test": "playwright test",
-    "build": "turbo run build --force --filter=app --filter=core --filter=upset",
-    "lint": "turbo run lint --parallel --no-cache --filter=app --filter=core --filter=upset",
+    "build": "turbo run build --force --filter=@visdesignlab/*",
+    "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*",
     "doc": "typedoc --options typedoc.json"
   },
   "devDependencies": {
