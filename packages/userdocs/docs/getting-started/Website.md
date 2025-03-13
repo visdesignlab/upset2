@@ -2,7 +2,7 @@
 sidebar-location: 1
 ---
 
-# UpSet 2 live website
+# UpSet 2 on the Web
 
 To use UpSet 2.0 in your web browser, simply navigate to [upset.multinet.app](https://upset.multinet.app).
 
