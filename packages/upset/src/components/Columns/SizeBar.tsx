@@ -5,7 +5,7 @@ import {
 import { useRecoilValue } from 'recoil';
 
 import {
-  bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, elementColorSelector, nextColorSelector,
+  bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
 } from '../../atoms/config/currentIntersectionAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
@@ -13,6 +13,7 @@ import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { newShade } from '../../utils/colors';
 import { showIntersectionSizesSelector } from '../../atoms/config/displayAtoms';
+import { elementSelectionColor } from '../../utils/styles';
 
 /**
  * A bar that represents the size of a row in the upset plot.
@@ -72,7 +73,6 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
   const bookmarks = useRecoilValue(bookmarkSelector);
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
-  const elementSelectionColor = useRecoilValue(elementColorSelector);
   const showText = useRecoilValue(showIntersectionSizesSelector);
 
   /*
