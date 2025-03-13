@@ -32,8 +32,6 @@ IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983
 
 ## UpSet 2.0 as a React Component
 
-*Please note*: upset2-react is not currently released in the NPM registry. A large, config breaking feature ([back selection](https://github.com/visdesignlab/upset2/pull/370)) is in development and upset2-react will be released with the finalization of this feature.
-
 UpSet 2.0 can be imported as a React component using:
 
 ```console
