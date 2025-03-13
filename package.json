@@ -8,6 +8,7 @@
   "nohoist": [],
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache --filter=@visdesignlab/*",
+    "dev:docs": "turbo run dev --parallel --no-cache --filter=userdocs",
     "builddocs": "turbo run build --force --filter=userdocs",
     "storybook": "turbo run storybook",
     "test": "playwright test",
