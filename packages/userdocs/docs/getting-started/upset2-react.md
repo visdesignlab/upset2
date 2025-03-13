@@ -172,7 +172,7 @@ const main = () => {
 ### All options
 
 - `data`: The data for the Upset component. See [UpSet 2.0 Data](#upset-20-data) for more information.
-- `config` (optional): The configuration options for the Upset component. This can be partial. See [Configuration Options](#configuration-options) for more details.
+- `config` (optional): The configuration options for the Upset component. This can be partial. See [Configuration Options](#configuration-grammar-options) for more details.
 - `visualizeAttributes` (optional)(`string[]`): List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
 - `visualizeUpsetAttributes` (optional)(`boolean`): Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
 - `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
