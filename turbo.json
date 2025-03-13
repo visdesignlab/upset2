@@ -5,7 +5,15 @@
         "^build"
       ],
       "outputs": [
-        "dist/**"
+        "**/dist/**"
+      ]
+    },
+    "userdocs#build": {
+      "dependsOn": [
+        "^builddocs"
+      ],
+      "outputs": [
+        "**/build/**"
       ]
     },
     "dev": {
