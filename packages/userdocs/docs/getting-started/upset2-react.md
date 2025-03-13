@@ -1,38 +1,12 @@
-# UpSet 2.0 – Visualizing Intersecting Sets
-
-UpSet 2 is deployed at [https://upset.multinet.app/](https://upset.multinet.app/).  
-
-Deployment Status: [![Netlify Status](https://api.netlify.com/api/v1/badges/edb8054f-7bfd-4b6a-8325-b26c279e2991/deploy-status)](https://app.netlify.com/sites/upset2/deploys)
-
-## About
-
-UpSet is an interactive, web based visualization technique designed to analyze set-based data. UpSet visualizes both, set intersections and their properties, and the items (elements) in the dataset.
-
-Please see the <https://upset.app> for more info about UpSet.
-
-This version is a re-implementation using modern web technologies of [the original UpSet](https://vdl.sci.utah.edu/publications/2014_infovis_upset/).
-
-UpSet 2 is described in this short poster:
-
-```text
-Kiran Gadhave, Hendrik Strobelt, Nils Gehlenborg, Alexander Lex
-UpSet 2: From Prototype to Tool
-Proceedings of the IEEE Information Visualization Conference – Posters (InfoVis ’19), 2019.
-```
-
-UpSet 2 is based on the original UpSet, which was first described in this paper:
-
-```text
-Alexander Lex, Nils Gehlenborg, Hendrik Strobelt, Romain Vuillemot, Hanspeter Pfister
-UpSet: Visualization of Intersecting Sets
-IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983--1992, doi:10.1109/TVCG.2014.2346248, 2014.
-```
-
+---
+sidebar-location: 2
 ---
 
-## UpSet 2.0 as a React Component
+# Upset 2 as a React Component
 
-UpSet 2.0 can be imported as a React component using:
+UpSet 2.0 is available as a modular React component. Using component configuration and plot configuration objects, many features of UpSet 2.0 can be enabled/disabled as needed.
+
+## Installation
 
 ```console
 npm install @visdesignlab/upset2-react
@@ -42,13 +16,13 @@ Note that UpSet 2.0 requires a react version of 18.0 or higher.
 
 Import the component using `import { Upset } from @visdesignlab/upset2-react` in your react component.
 
-### UpSet 2.0 Data
+## UpSet 2.0 Data
 
-#### Data structure
+### Data structure
 
 The raw data structure for UpSet should be a list of set membership objects.
 
-##### Raw Data
+#### Raw Data
 
 The `data` object should be an array of objects. Each object should contain all the set membership boolean values as well as any attributes.
 
@@ -81,9 +55,9 @@ const rawData = [
 
 The data and/or attributes objects can be JSON strings or traditional JS objects.
 
-#### Loading Data into the UpSet 2.0 component
+### Loading Data into the UpSet 2.0 component
 
-##### Loading Raw Data
+#### Loading Raw Data
 
 Data uploaded to UpSet must follow the [UpSet 2.0 Data Structure](#data-structure). Simply pass the data object to the Upset component in the `data` field.
 
@@ -118,7 +92,7 @@ const main = () => {
 }
 ```
 
-##### Pre-Processing Data
+#### Pre-Processing Data
 
 If you want to pre-process your data to gain access to the data objects generated and use by UpSet, or are having issues with the raw data loading, you must use the [process function](https://vdl.sci.utah.edu/upset2/functions/_visdesignlab_upset2_core.process.html) from UpSet 2.0 Core. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments.
 
@@ -193,12 +167,12 @@ const main = () => {
 }
 ```
 
-### UpSet 2.0 component options
+## UpSet 2.0 component options
 
-#### All options
+### All options
 
 - `data`: The data for the Upset component. See [UpSet 2.0 Data](#upset-20-data) for more information.
-- `config` (optional): The configuration options for the Upset component. This can be partial. See [Configuration Options](#configuration-options) for more details.
+- `config` (optional): The configuration options for the Upset component. This can be partial. See [Configuration Options](#configuration-grammar-options) for more details.
 - `visualizeAttributes` (optional)(`string[]`): List of attribute names (strings) which should be visualized. Defaults to the first 3 if no value is provided. If an empty list is provided, displays no attributes.
 - `visualizeUpsetAttributes` (optional)(`boolean`): Whether or not to visualize UpSet generated attributes (`degree` and `deviation`). Defaults to `false`.
 - `allowAttributeRemoval` (optional)(`boolean`): Whether or not to allow the user to remove attribute columns. This should be enabled only if there is an option within the parent application which allows for attributes to be added after removal. Default attribute removal behavior in UpSet 2.0 is done via context menu on attribute headers. Defaults to `false`.
@@ -362,7 +336,7 @@ Example of full configuration (grammar) JSON produced for default Simpsons datas
 }
 ```
 
-##### Sidebar options
+#### Sidebar options
 
 SidebarProps type:
 
@@ -380,11 +354,11 @@ interface SidebarProps {
 }
 ```
 
-##### Alt Text Generation
+#### Alt Text Generation
 
 Alt Text generation requires the use of a custom or imported Alt-Text generation function. In [upset.multinet.app](https://upset.multinet.app), we are using the Multinet API, which exposes an api call to the [upset-alttxt](https://pypi.org/project/upset-alttxt/) python package.
 
-#### Default Configuration
+### Default Configuration
 
 The default configuration for UpSet 2.0 shows the Aggregation/Filtering settings sidebar, sort the plot by Size (Descending), and shows up to the first 3 attributes in the data.
 
@@ -394,63 +368,4 @@ Example using Simpsons dataset:
 <Upset data={simpsonsCharacterData} />
 ```
 
-![Default UpSet 2.0 plot configuration](/assets/default-plot-example.png)
-
-## Developer Docs
-
-Developer documentation can be found at [https://vdl.sci.utah.edu/upset2/](https://vdl.sci.utah.edu/upset2/).
-
-For more information on documentation see the [Developer Documentation Guidelines](#developer-documentation-guidelines).
-
-## Local Installation
-
-To deploy UpSet 2.0 locally it is necessary to install the Multinet infrastructure.
-
-### Multinet Installation
-
-1. Clone [Multinet API](https://github.com/multinet-app/multinet-api), [Multinet Client](https://github.com/multinet-app/multinet-client), and [Multinet JS](https://github.com/multinet-app/multinetjs) into individual folders.
-2. Follow the installation instructions for Multinet API and Multinet Client.
-
-### Upset Installation
-
-1. Clone the repository using `git clone` or download and extract the zip file.
-2. Open terminal in the cloned folder and run `yarn install`
-3. Run `yarn build` in the terminal to compile.
-4. Navigate to the upset2 folder.
-5. In `packages/app` copy `.env.default` and rename the copied file to `.env`
-6. In the OAUTH application created during the [OAUTH API setup](https://github.com/multinet-app/multinet-api#api) of Multinet API, add `http://localhost:3000/` to the redirect uris field.
-7. Copy the `Client id` field in the application but do not modify the value
-8. Navigate to the `.env` file created in step 5.
-9. Paste the `Client id` to the field `VITE_OAUTH_CLIENT_ID`
-
-## Running the application
-
-To run UpSet 2.0 locally, first, complete the [Local Installation](#local-installation) steps. Then, use `yarn dev` to run UpSet 2.0 on port 3000.
-A browser window for `localhost:3000` will open during the launch process.
-
-## End To End (e2e) Testing
-
-To run the playwright end to end tests, use the command:
-`yarn test`
-
-To open the test in a UI view to track steps, append `--ui`.
-
-This will launch a local server if there is not one already running on port 3000.
-
-To add a test, add a `.spec.ts` file to `e2e-tests`. For information on how to use playwright, please see the [playwright documentation](https://playwright.dev/docs/writing-tests).
-
-## Storybook development
-
-Storybook can be used to test development of UpSet 2.0 as a react component. To run storybook, run `cd packages/upset` from the project root directory. Then, run `yarn storybook`. This will run `Upset.stories.tsx`, which opens a browser tab for the storybook. This will render the react component of UpSet with the simpsons dataset and stripped of any attribute or settings rendering.
-
-A new story can be added by adding a `{name}.stories.tsx` file to `packages/upset/stories/`. New data can be added to the `data` subfolder in the same directory.
-
-## Developer Guidelines
-
-Changes to the `UpsetConfig` type require writing config conversion functions to ensure backwards compatibility. See the note at the top of `packages/core/src/convertConfig.ts` for details. Additionally, the typechecker for the `UpsetConfig` must be updated when the type is. See `packages/core/src/typecheck.ts`. Additionally, all the types used within `UpsetConfig` have their own typecheck functions; changes to these types must be reflected in the typechecker.
-
-### Developer Documentation Guidelines
-
-When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html). Also, please add testing via Playwright, outlined in [#end-to-end-e2e-testing](#end-to-end-e2e-testing).
-
-To build the documentation locally, use the command: `yarn doc`. The default file output is at `/docs`.
+![Default UpSet 2.0 plot configuration](./img/default-plot-example.png)

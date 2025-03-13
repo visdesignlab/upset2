@@ -160,6 +160,9 @@ sketch
 # typedoc
 /docs/
 
+# docusaurus
+/userdocs/
+
 # End of https://www.toptal.com/developers/gitignore/api/react,node,joed
 .turbo/cookies/0.cookie
 .turbo/
