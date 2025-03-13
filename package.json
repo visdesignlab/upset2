@@ -3,11 +3,14 @@
   "private": true,
   "type": "module",
   "workspaces": [
-    "packages/*"
+    "packages/app",
+    "packages/core",
+    "packages/upset"
   ],
   "nohoist": [],
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache",
+    "builddocs": "turbo run builddocs --parallel --no-cache",
     "storybook": "turbo run storybook",
     "test": "playwright test",
     "build": "turbo run build --force",
