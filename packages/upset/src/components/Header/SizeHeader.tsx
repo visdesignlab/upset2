@@ -19,7 +19,7 @@ import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
-import { setQueryAtom } from '../../atoms/config/queryBySetsAtoms';
+import { setQuerySelector } from '../../atoms/config/queryBySetsAtoms';
 import { setQuerySizeSelector } from '../../atoms/setQuerySizeSelector';
 
 const hide = css`
@@ -42,7 +42,7 @@ export const SizeHeader: FC = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const items = useRecoilValue(itemsAtom);
   const subsets = useRecoilValue(flattenedRowsSelector).map((r) => r.row);
-  const setQuery = useRecoilValue(setQueryAtom);
+  const setQuery = useRecoilValue(setQuerySelector);
   const setQuerySize = useRecoilValue(setQuerySizeSelector);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);

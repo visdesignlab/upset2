@@ -1,8 +1,75 @@
 import {
   Aggregate,
-  Aggregates, Bookmark, BookmarkedIntersection, ElementBookmark, ElementQuery, NumericalBookmark, NumericalQuery, Row, Rows, SetMembershipStatus, SetQuery, Subset, Subsets,
+  Aggregates, AttQuery, AttSelection, ElementSelection, NumericalQuery, NumericalSelection, Row, Rows, SetMembershipStatus, SetQuery, Subset, Subsets,
 } from './types';
-import { hashString } from './utils';
+
+/**
+ * Checks if a given selection is numerical.
+ * @param s - The selection to check.
+ * @returns True if the selection is numerical, false otherwise.
+ */
+export function selectionIsNumerical(s: ElementSelection): s is NumericalSelection {
+  return s.type === 'numerical';
+}
+
+/**
+ * Checks if a given selection is an element selection.
+ * @param s - The selection to check.
+ * @returns True if the selection is an element selection, false otherwise.
+ */
+export function selectionIsAtt(s: ElementSelection): s is AttSelection {
+  return s.type === 'element';
+}
+
+/**
+ * Converts an element selection to a bookmark.
+ * Generates the ID by hashing the selection and labels the bookmark with the selection parameters.
+ * Truncates keys to 16 characters and values to 2 sig figs.
+ * @param selection The numerical attribute query.
+ * @returns The element selection.
+ */
+export function numericalQueryToString(selection: NumericalQuery): string {
+  let label = 'Atts: ';
+  Object.entries(selection).forEach(([k, v]) => {
+    // Ternary/toPrecision sets 2 sig fig bound on small numbers
+    let min: string | number = v[0] < 100 ? parseFloat(v[0].toPrecision(2)) : Math.round(v[0]);
+    let max: string | number = v[1] < 100 ? parseFloat(v[1].toPrecision(2)) : Math.round(v[1]);
+    // Convert numbers with lots of 0s to exponential notation with 2 sig figs
+    if (min >= 10000 || min <= 0.0009) min = min.toPrecision(2);
+    if (max >= 10000 || max <= 0.0009) max = max.toPrecision(2);
+    // Truncate names
+    if (k.length > 16) { k = k.slice(0, 13); k += '...'; }
+    if (label !== 'Atts: ') label += ', ';
+    label += `${k}: [${min} to ${max}]`;
+  });
+
+  return label;
+}
+
+/**
+ * Converts an element selection to a bookmark.
+ * Generates the ID by hashing the selection and labels the bookmark with the selection parameters.
+ * @param selection The element query.
+ * @returns The element selection.
+ */
+export function attQueryToString(selection: AttQuery): string {
+  return `${selection.att} ${selection.type} ${selection.query}`;
+}
+
+/**
+ * Converts an element selection to a string.
+ * @param selection The element selection.
+ * @returns The string representation of the element selection.
+ */
+export function elementSelectionToString(selection: ElementSelection): string {
+  if (selectionIsNumerical(selection)) {
+    return numericalQueryToString(selection.query);
+  }
+  if (selectionIsAtt(selection)) {
+    return attQueryToString(selection.query);
+  }
+  throw new Error('Unknown selection type');
+}
 
 /**
  * Checks if the given rows are aggregates.
@@ -53,15 +120,6 @@ export function isRowSubset(row: Row): row is Subset {
 }
 
 /**
- * Checks if a bookmark is a BookmarkedIntersection.
- * @param b - The bookmark to check.
- * @returns True if the bookmark is a BookmarkedIntersection, false otherwise.
- */
-export function isBookmarkedIntersection(b: Bookmark): b is BookmarkedIntersection {
-  return b.type === 'intersection';
-}
-
-/**
  * Checks if two element selections are equal
  * {} is considered == to undefined
  * @param a The first element selection
@@ -89,62 +147,6 @@ export function numericalQueriesEqual(a: NumericalQuery | undefined, b: Numerica
       && prep(a[key][0]) === prep(b[key][0])
       && prep(a[key][1]) === prep(b[key][1]),
   );
-}
-
-/**
- * Converts an element selection to a bookmark.
- * Generates the ID by hashing the selection and labels the bookmark with the selection parameters.
- * Truncates keys to 16 characters and values to 2 sig figs.
- * @param selection The numerical attribute query.
- * @returns The element selection.
- */
-export function numericalQueryToBookmark(selection: NumericalQuery): NumericalBookmark {
-  // Normalizing prevents floating point error from causing different hashes
-  const norm = (i : number) => Math.abs(Math.round(i * 10000));
-
-  let i = 1;
-  Object.entries(selection).forEach(([key, value]) => {
-    i *= norm(hashString(key)) * norm(value[0]) * norm(value[1]);
-  });
-  i = norm(i);
-
-  let label = 'Atts: ';
-  Object.entries(selection).forEach(([k, v]) => {
-    // Ternary/toPrecision sets 2 sig fig bound on small numbers
-    let min: string | number = v[0] < 100 ? parseFloat(v[0].toPrecision(2)) : Math.round(v[0]);
-    let max: string | number = v[1] < 100 ? parseFloat(v[1].toPrecision(2)) : Math.round(v[1]);
-    // Convert numbers with lots of 0s to exponential notation with 2 sig figs
-    if (min >= 10000 || min <= 0.0009) min = min.toPrecision(2);
-    if (max >= 10000 || max <= 0.0009) max = max.toPrecision(2);
-    // Truncate names
-    if (k.length > 16) { k = k.slice(0, 13); k += '...'; }
-    if (label !== 'Atts: ') label += ', ';
-    label += `${k}: [${min} to ${max}]`;
-  });
-
-  return {
-    id: i.toString(),
-    label,
-    type: 'numerical',
-    selection,
-  };
-}
-
-/**
- * Converts an element selection to a bookmark.
- * Generates the ID by hashing the selection and labels the bookmark with the selection parameters.
- * @param selection The element query.
- * @returns The element selection.
- */
-export function ElementQueryToBookmark(selection: ElementQuery): ElementBookmark {
-  const i = hashString(JSON.stringify(selection));
-  const label = `${selection.att} ${selection.type} ${selection.query}`;
-  return {
-    id: i.toString(),
-    label,
-    type: 'element',
-    selection,
-  };
 }
 
 /**

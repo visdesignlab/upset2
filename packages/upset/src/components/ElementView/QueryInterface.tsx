@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { Box } from '@mui/system';
 import { useRecoilValue } from 'recoil';
-import { ElementQueryToBookmark, ElementQueryType, NumericalQueryType } from '@visdesignlab/upset2-core';
+import { ElementQueryType, NumericalQueryType } from '@visdesignlab/upset2-core';
 import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
@@ -71,11 +71,15 @@ export const QueryInterface = () => {
       && Object.values(ElementQueryType).includes(typeField as ElementQueryType)
       && atts.includes(attField)
     ) {
-      actions.setElementSelection(ElementQueryToBookmark({
-        att: attField,
-        type: typeField as ElementQueryType || ElementQueryType.EQUALS,
-        query: queryField,
-      }));
+      actions.setElementSelection({
+        type: 'element',
+        query: {
+          att: attField,
+          type: typeField as ElementQueryType || ElementQueryType.EQUALS,
+          query: queryField,
+        },
+        active: true,
+      });
     }
   }, [attField, typeField, queryField, atts, actions, currentSelection]);
 
