@@ -8,9 +8,12 @@
         "dist/**"
       ]
     },
-    "builddocs": {
+    "userdocs#build": {
+      "dependsOn": [
+        "^builddocs"
+      ],
       "outputs": [
-        "userdocs/**"
+        "**/build/**"
       ]
     },
     "dev": {

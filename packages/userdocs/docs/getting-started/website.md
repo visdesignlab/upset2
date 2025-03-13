@@ -4,7 +4,7 @@ sidebar_position: 1
 
 # Website
 
-To use UpSet 2.0 in your web browser, simply navigate to [upset.multinet.app](upset.multinet.app).
+To use UpSet 2.0 in your web browser, simply navigate to [upset.multinet.app](https://upset.multinet.app).
 
 :::note
 

@@ -24,11 +24,11 @@ jobs:
         run: yarn install --immutable
 
       - name: Run yarn build
-        run: yarn build
+        run: yarn builddocs
 
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: github.ref == 'refs/heads/main'
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./userdocs
+          publish_dir: /packages/userdocs/build
