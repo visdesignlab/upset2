@@ -1,12 +1,11 @@
 import { SvgIcon, Tooltip } from '@mui/material';
 import { Add, Remove } from '@mui/icons-material';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import Group from '../custom/Group';
 import { mousePointer } from '../../utils/styles';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { queryBySetsInterfaceAtom } from '../../atoms/config/queryBySetsAtoms';
-
 /**
  * The size of the icon in pixels.
  */
@@ -22,7 +21,9 @@ export const QueryButton = () => {
   /**
    * Toggles the query by set interface.
    */
-  const toggleQueryBySetsInterface = useCallback(() => {
+  const toggleQueryBySetsInterface = useCallback((e: React.MouseEvent<SVGElement, MouseEvent>) => {
+    // Stop SvgBase handler from clearing current intersection
+    e.stopPropagation();
     setQueryBySetsInterface((prev) => !prev);
   }, [setQueryBySetsInterface]);
 
