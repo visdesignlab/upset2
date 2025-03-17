@@ -9,12 +9,11 @@
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache --filter=@visdesignlab/*",
     "dev:docs": "turbo run dev --parallel --no-cache --filter=userdocs",
-    "builddocs": "turbo run build --force --filter=userdocs",
+    "build:docs": "turbo run build --force --filter=userdocs",
     "storybook": "turbo run storybook",
     "test": "playwright test",
     "build": "turbo run build --force --filter=@visdesignlab/*",
     "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*",
-    "build:docs": "typedoc --options ./packages/userdocs/typedoc.json"
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
