@@ -26,7 +26,7 @@ To deploy UpSet 2.0 locally it is necessary to install the Multinet infrastructu
 ## Running the application
 
 To run UpSet 2.0 locally, first, complete the [Local Installation](#local-installation) steps. Then, use `yarn dev` to run UpSet 2.0 on port 3000.
-A browser window for `localhost:3000` will open during the launch process.
+A browser window for `localhost:3000` will open during the launch process. *Note* that for this to work with the data upload portal, multinet server and client should be running in parallel.
 
 ## End To End (e2e) Testing
 
