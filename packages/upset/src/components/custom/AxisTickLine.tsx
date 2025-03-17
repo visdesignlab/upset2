@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import translate from '../../utils/transform';
 
 const shadow = css`
@@ -17,139 +17,77 @@ type Props = {
     hideLine: boolean;
 }
 
+/**
+ * The tick line on an attribute scale axis, with a label on top of the line.
+ */
 export const TickLine: FC<Props> = ({
   type, value, fontSize, tickLength, tickFontHeight, hideLine,
 }) => {
-  switch (type) {
-    case 'bottom':
-      return (
-        <>
-          <text
-            dominantBaseline="middle"
-            fill="none"
-            fontSize={`${fontSize}rem`}
-            stroke="white"
-            strokeLinejoin="round"
-            strokeWidth="4"
-            textAnchor="end"
-            transform={translate(0, tickLength + tickFontHeight / 1.5)}
-          >
-            {value}
-          </text>
-          { !hideLine &&
-            <line stroke="currentColor" y2={tickLength} />}
-          <text
-            css={css`
+  const textTransform = useMemo(() => {
+    switch (type) {
+      case 'bottom':
+        return translate(0, tickLength + tickFontHeight / 1.5);
+      case 'left':
+        return translate(-10, 0);
+      case 'top':
+        return translate(0, -(tickLength + tickFontHeight / 1.5));
+      case 'right':
+        return translate(10, 0);
+      default:
+        return undefined;
+    }
+  }, [type, tickLength, tickFontHeight]);
+
+  const lineTransform = useMemo(() => {
+    switch (type) {
+      case 'bottom':
+        return undefined;
+      case 'left':
+        return translate(-tickLength, 0);
+      case 'top':
+        return translate(0, -tickLength);
+      case 'right':
+        return undefined;
+      default:
+        return undefined;
+    }
+  }, [type, tickLength]);
+
+  const textAnchor = useMemo(() => {
+    switch (type) {
+      case 'bottom':
+        return 'middle';
+      case 'left':
+        return 'end';
+      case 'top':
+        return 'middle';
+      case 'right':
+        return 'start';
+      default:
+        return undefined;
+    }
+  }, [type]);
+
+  return (
+    <>
+      { !hideLine &&
+      <line
+        stroke="currentColor"
+        y2={type === 'bottom' || type === 'top' ? tickLength : undefined}
+        x1={type === 'left' || type === 'right' ? tickLength : undefined}
+        transform={lineTransform}
+      />}
+      <text
+        css={css`
                 ${shadow}
               `}
-            dominantBaseline="middle"
-            fontSize={`${fontSize}rem`}
-            textAnchor="middle"
-            transform={translate(0, tickLength + tickFontHeight / 1.5)}
-          >
-            {value}
-          </text>
-        </>
-      );
-    case 'left':
-      return (
-        <>
-          <text
-            dominantBaseline="middle"
-            fill="none"
-            fontSize={`${fontSize}rem`}
-            stroke="white"
-            strokeLinejoin="round"
-            strokeWidth="4"
-            textAnchor="end"
-            transform={translate(-10, 0)}
-          >
-            {value}
-          </text>
-          { !hideLine &&
-            <line
-              stroke="currentColor"
-              transform={translate(-tickLength, 0)}
-              x1={tickLength}
-            />}
-          <text
-            css={css`
-                ${shadow}
-              `}
-            dominantBaseline="middle"
-            fontSize={`${fontSize}rem`}
-            textAnchor="end"
-            transform={translate(-10, 0)}
-          >
-            {value}
-          </text>
-        </>
-      );
-    case 'top':
-      return (
-        <>
-          <text
-            dominantBaseline="middle"
-            fill="none"
-            fontSize={`${fontSize}rem`}
-            stroke="white"
-            strokeLinejoin="round"
-            strokeWidth="4"
-            textAnchor="end"
-            transform={translate(0, -(tickLength + tickFontHeight / 1.5))}
-          >
-            {value}
-          </text>
-          { !hideLine &&
-            <line
-              stroke="currentColor"
-              transform={translate(0, -tickLength)}
-              y2={tickLength}
-            />}
-          <text
-            css={css`
-                ${shadow}
-              `}
-            dominantBaseline="middle"
-            fontSize={`${fontSize}rem`}
-            textAnchor="middle"
-            transform={translate(0, -(tickLength + tickFontHeight / 1.5))}
-          >
-            {value}
-          </text>
-        </>
-      );
-    case 'right':
-      return (
-        <>
-          <text
-            dominantBaseline="middle"
-            fill="none"
-            fontSize={`${fontSize}rem`}
-            stroke="white"
-            strokeLinejoin="round"
-            strokeWidth="4"
-            textAnchor="end"
-            transform={translate(10, 0)}
-          >
-            {value}
-          </text>
-          { !hideLine &&
-            <line stroke="currentColor" x1={tickLength} />}
-          <text
-            css={css`
-                ${shadow}
-              `}
-            dominantBaseline="middle"
-            fontSize={`${fontSize}rem`}
-            textAnchor="start"
-            transform={translate(10, 0)}
-          >
-            {value}
-          </text>
-        </>
-      );
-    default:
-      return null;
-  }
+        dominantBaseline="middle"
+        fontSize={`${fontSize}rem`}
+        textAnchor={textAnchor}
+        transform={textTransform}
+      >
+        {value}
+      </text>
+    </>
+  );
 };

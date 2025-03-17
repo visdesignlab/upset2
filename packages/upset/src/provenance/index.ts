@@ -8,6 +8,7 @@ import {
   ElementSelection,
   plotToString,
   SetQuery,
+  selectionIsNumerical,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -354,18 +355,6 @@ const setUserAltTextAction = register<AltText | null>(
 );
 
 /**
- * Toggles whether the user alt text should be used
- * @param {boolean} useUserAlt whether to use the user alttext
- */
-const setUseUserAltTextAction = register<boolean>(
-  'set-use-user-alt-text',
-  (state: UpsetConfig, useUserAlt) => {
-    state.useUserAlt = useUserAlt;
-    return state;
-  },
-);
-
-/**
  * Sets whether the intersection size labels should be shown
  */
 const setIntersectionSizeLabelsAction = register<boolean>(
@@ -475,7 +464,7 @@ export function getActions(provenance: UpsetProvenance) {
      * Adds a bookmark to the state
      * @param b bookmark to add
      */
-    addBookmark: <T extends Bookmark>(b: T) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
+    addBookmark: (b: Bookmark) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
     /**
      * Removes a bookmark from the state
      * @param b bookmark to remove
@@ -510,18 +499,14 @@ export function getActions(provenance: UpsetProvenance) {
      */
     setElementSelection: (selection: ElementSelection | null) => provenance.apply(
       // Object.keys check is for numerical queries, which can come out of vega as {}
-      selection && Object.keys(selection.selection).length > 0 ?
-        `Selected elements based on the following keys: ${Object.keys(selection.selection).join(' ')}`
-        : 'Deselected elements',
+      selection && selectionIsNumerical(selection) ? (Object.keys(selection.query).length > 0 ?
+        `Selected elements based on the following keys: ${Object.keys(selection.query).join(' ')}`
+        : 'Deselected elements') : (selection ? `Selected elements based on ${selection.query.att}` : 'Deselected elements'),
       setElementSelectionAction(selection),
     ),
     setUserAltText: (altText: AltText | null) => provenance.apply(
       altText ? 'Set user alt text' : 'Cleared user alt text',
       setUserAltTextAction(altText),
-    ),
-    setUseUserAltText: (useUserAlt: boolean) => provenance.apply(
-      useUserAlt ? 'Enabled user alt text' : 'Disabled user alt text',
-      setUseUserAltTextAction(useUserAlt),
     ),
     /**
      * Sets whether set intersection size labels should be shown
@@ -552,7 +537,7 @@ export function getActions(provenance: UpsetProvenance) {
       addSetQueryAction(query),
     ),
     removeSetQuery: () => provenance.apply(
-      `Remove Query`,
+      'Remove Query',
       removeSetQueryAction(),
     ),
   };

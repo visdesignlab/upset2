@@ -23,6 +23,7 @@ export const defaultBackground = css`
   fill-opacity: 0.0;
 `;
 
+/** Colors for selected & bookmarked intersections */
 export const queryColorPalette = [
   '#1f77b4',
   '#ff7f0e',
@@ -35,6 +36,9 @@ export const queryColorPalette = [
   '#bcbd22',
   '#17becf',
 ];
+
+/** Color for the active element selections: 'Rich Amber' */
+export const elementSelectionColor = '#e49b0f';
 
 export const mousePointer = css`
   cursor: pointer;
@@ -54,3 +58,6 @@ export const ATTRIBUTE_DEFAULT_COLOR = '#d3d3d3';
 // Default background color for aggregate and query rows
 export const DEFAULT_ROW_BACKGROUND_COLOR = '#cccccc';
 export const DEFAULT_ROW_BACKGROUND_OPACITY = '0.3';
+
+/** Color for unselected elements in the element view */
+export const DEFAULT_ELEMENT_COLOR = '#444';

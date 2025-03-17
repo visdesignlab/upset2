@@ -43,7 +43,7 @@ async function addSetByName(page, setName: string) {
  * @param max max value to assert
  */
 async function assertSizeScaleMax(page, max: number) {
-  await expect(page.locator('g.details-scale > g > g:last-child > text').nth(1))
+  await expect(page.locator('g.details-scale > g > g:last-child > text').first())
     .toHaveText(new RegExp(`^${max}$`));
 }
 
@@ -68,8 +68,9 @@ test('Size header', async ({ page }) => {
 
   // Ensure that dragging the advanced slider works
   await toggleAdvancedScale(page);
-  await page.locator('g').filter({ hasText: /^0055101015152020Size001122334455$/ }).locator('rect').nth(1)
-    .dragTo(page.getByText('15', { exact: true }).nth(1), { force: true });
+  await page.locator('g.sliding-scale > g.slider-knob').locator('rect')
+    .dragTo(page.getByText('15'), { force: true });
+
   await assertSizeScaleMax(page, 15);
 
   // Ensure that adding sets doesn't affect the advanced scale

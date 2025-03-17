@@ -1,4 +1,4 @@
-import { FC, useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { SetMembershipStatus } from '@visdesignlab/upset2-core';
@@ -9,10 +9,12 @@ import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
-import { setQueryAtom } from '../../../atoms/config/queryBySetsAtoms';
+import { setQuerySelector } from '../../../atoms/config/queryBySetsAtoms';
 import { ProvenanceContext } from '../../Root';
 import { SizeBar } from '../../Columns/SizeBar';
-import { DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH } from '../../../utils/styles';
+import {
+  DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH,
+} from '../../../utils/styles';
 import { setQuerySizeSelector } from '../../../atoms/setQuerySizeSelector';
 
 const REMOVE_ICON_SIZE = 16;
@@ -31,7 +33,7 @@ export const SetQueryRow: FC = () => {
   const { actions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
-  const setQuery = useRecoilValue(setQueryAtom);
+  const setQuery = useRecoilValue(setQuerySelector);
   const setQuerySize = useRecoilValue(setQuerySizeSelector);
 
   /**
@@ -48,7 +50,9 @@ export const SetQueryRow: FC = () => {
    *
    * @returns {void} This function does not return a value.
    */
-  function removeSetQuery(): void {
+  function removeSetQuery(e: React.MouseEvent): void {
+    // Prevent the SvgBase onclick handler from clearing the current intersection
+    e.stopPropagation();
     actions.removeSetQuery();
   }
 
