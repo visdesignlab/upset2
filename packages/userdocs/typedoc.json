@@ -1,0 +1,22 @@
+{
+    "$schema": "https://typedoc.org/schema.json",
+    "name": "Developer Reference",
+    "entryPoints": ["../app", "../core", "../upset"],
+    "entryPointStrategy": "packages",
+    "out": "./docs/typedoc",
+    "exclude": ["**.d.ts**","**.test.tsx**","**.test.ts**","**.spec.tsx**","**.spec","**/node_modules/**","**/env.ts","**/assets/**"],
+    "plugin": [
+        "typedoc-plugin-markdown",
+        "typedoc-plugin-frontmatter",
+        "./custom-frontmatter.mjs",
+    ],
+    "githubPages": false,
+    "tsconfig": "./tsconfig.json",
+    "textContentMappings": {
+        "index.md": "index.md"
+    },
+    "hidePageHeader": true,
+    "propertiesFormat": "table",
+    "readme": "none",
+    "alwaysCreateEntryPointModule": true,
+}
