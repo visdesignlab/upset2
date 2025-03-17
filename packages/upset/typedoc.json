@@ -1,5 +1,4 @@
 {
-    "name": "@visdesignlab/upset",
     "extends": ["../../typedoc.base.json"],
     "entryPoints": ["src/index.tsx"]
   }

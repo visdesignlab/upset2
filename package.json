@@ -13,7 +13,7 @@
     "storybook": "turbo run storybook",
     "test": "playwright test",
     "build": "turbo run build --force --filter=@visdesignlab/*",
-    "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*",
+    "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*"
   },
   "devDependencies": {
     "@types/node": "^22.7.4",
