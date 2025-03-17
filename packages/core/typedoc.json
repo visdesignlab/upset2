@@ -1,4 +1,5 @@
 {
+    "name": "@visdesignlab/core",
     "extends": ["../../typedoc.base.json"],
     "entryPoints": ["src/index.ts"]
   }

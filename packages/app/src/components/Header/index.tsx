@@ -26,6 +26,7 @@ import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
 import { DataTableLink } from '../../utils/DataTableLink';
+//@ts-ignore Tsconfig not recognizing svg files
 import vdlFlask from '../../assets/vdl_flask.svg';
 
 /**

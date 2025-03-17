@@ -3,6 +3,7 @@ import { Box, Button, Link } from '@mui/material';
 import { useRecoilState } from 'recoil';
 import { CoreUpsetData } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
+// @ts-ignore Tsconfig not recognizing svg files
 import vdlLogo from '../../assets/vdl_logo.svg';
 import { accessibilityStatementAtom } from '../../atoms/accessibilityStatementAtom';
 import { AccessibilityStatement } from '../AccessiblityStatement';
