@@ -59,7 +59,7 @@ type ElementSelection = NumericalBookmark | ElementBookmark;
 /**
  * Wrapper type for an element query
  */
-export type AttSelection_013 = {
+type AttSelection_013 = {
   type: 'element';
   query: QuerySelection;
   active: boolean;
@@ -68,7 +68,7 @@ export type AttSelection_013 = {
 /**
  * Wrapper type for a numerical query
  */
-export type NumericalSelection_013 = {
+type NumericalSelection_013 = {
   type: 'numerical';
   query: VegaSelection;
   active: boolean;
@@ -80,7 +80,7 @@ export type NumericalSelection_013 = {
  * Active is true if the selection is currently being applied to the plot;
  * an inactive selection shows as a deselected chip in the element view.
  */
-export type ElementSelection_013 = AttSelection_013 | NumericalSelection_013;
+type ElementSelection_013 = AttSelection_013 | NumericalSelection_013;
 
 type Version0_1_0 = {
   plotInformation: PlotInformation;
