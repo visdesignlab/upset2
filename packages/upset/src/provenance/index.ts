@@ -5,10 +5,10 @@ import {
   convertConfig,
   ColumnName,
   AltText,
-  ElementSelection,
   plotToString,
   SetQuery,
-  selectionIsNumerical,
+  VegaSelection,
+  QuerySelection,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -330,18 +330,27 @@ const setPlotInformationAction = register<PlotInformation>(
 const setSelectedAction = register<Row | null>(
   'select-intersection',
   (state: UpsetConfig, intersection) => {
-    state.selected = intersection;
+    state.rowSelection = intersection;
     return state;
   },
 );
 
-const setElementSelectionAction = register<ElementSelection | null>(
+const setVegaSelectionAction = register<VegaSelection | null>(
   'select-elements',
-  (state: UpsetConfig, elementSelection) => {
-    state.elementSelection = elementSelection;
+  (state: UpsetConfig, vegaSelection) => {
+    state.vegaSelection = vegaSelection;
     return state;
   },
 );
+
+const setQuerySelectionAction = register<QuerySelection | null>(
+  'set-query-selection',
+  (state: UpsetConfig, querySelection) => {
+    state.querySelection = querySelection;
+    return state;
+  },
+);
+
 /**
  * Sets the alt text for the user
  * @param {AltText} altText The alt text to set
@@ -493,16 +502,23 @@ export function getActions(provenance: UpsetProvenance) {
       setSelectedAction(intersection),
     ),
     /**
-     * Sets a global element selection for the plot,
-     * which is a filter on items based on their attributes.
+     * Sets the global vega brush in use for the plot
      * @param selection The selection to set
      */
-    setElementSelection: (selection: ElementSelection | null) => provenance.apply(
+    setVegaSelection: (selection: VegaSelection | null) => provenance.apply(
       // Object.keys check is for numerical queries, which can come out of vega as {}
-      selection && selectionIsNumerical(selection) ? (Object.keys(selection.query).length > 0 ?
+      selection && Object.keys(selection.query).length > 0 ?
         `Selected elements based on the following keys: ${Object.keys(selection.query).join(' ')}`
-        : 'Deselected elements') : (selection ? `Selected elements based on ${selection.query.att}` : 'Deselected elements'),
-      setElementSelectionAction(selection),
+        : 'Cleared element selection',
+      setVegaSelectionAction(selection),
+    ),
+    /**
+     * Sets the element query selection for the plot
+     * @param selection The query selection to set
+     */
+    setQuerySelection: (selection: QuerySelection | null) => provenance.apply(
+      selection ? `Selected elements based on ${selection.att}` : 'Cleared query selection',
+      setQuerySelectionAction(selection),
     ),
     setUserAltText: (altText: AltText | null) => provenance.apply(
       altText ? 'Set user alt text' : 'Cleared user alt text',
