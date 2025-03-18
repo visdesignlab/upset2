@@ -2,7 +2,7 @@ export type ColumnName = string;
 
 /**
  * Base type for a column in the plot
- * @privateRemarks typechecked by isColumn in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isColumn in typecheck.ts; changes here must be reflected there
  */
 export type Column = {
   name: string;
@@ -19,7 +19,7 @@ export type Meta = {
 
 /**
  * Textual information about the plot; included in the UpsetConfig
- * @privateRemarks This is typechecked by isPlotinformation in typecheck.ts; changes here must be reflected there
+ * @private This is typechecked by isPlotinformation in typecheck.ts; changes here must be reflected there
  */
 export type PlotInformation = {
   /** User-generated plot description */
@@ -36,7 +36,7 @@ export type PlotInformation = {
 
 /**
  * Represents a row in the UpSet plot.
- * @privateRemarks typechecked by isRowType in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isRowType in typecheck.ts; changes here must be reflected there
  */
 export type RowType =
   | 'Set'
@@ -112,7 +112,7 @@ export type Attributes = AttributeList & {
 
 /**
  * Represents a base element.
- * @privateRemarks typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
  */
 export type BaseElement = {
   /**
@@ -151,7 +151,7 @@ export const UNINCLUDED = 'unincluded';
 
 /**
  * Base Intersection type for subsets and aggregates.
- * @privateRemarks typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
  */
 export type BaseIntersection = BaseElement & {
   setMembership: { [key: string]: SetMembershipStatus };
@@ -161,13 +161,13 @@ export type Sets = { [set_id: string]: BaseIntersection };
 
 /**
  * A single subset
- * @privateRemarks typechecked by isSubset in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isSubset in typecheck.ts; changes here must be reflected there
  */
 export type Subset = BaseIntersection;
 
 /**
  * A list of subsets & their order
- * @privateRemarks typechecked by isSubsets in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isSubsets in typecheck.ts; changes here must be reflected there
  */
 export type Subsets = {
   values: { [subset_id: string]: Subset };
@@ -189,7 +189,7 @@ export const aggregateByList = [
 
 /**
  * Ways the upset plot can be aggregated
- * @privateRemarks typechecked by isAggregateBy in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isAggregateBy in typecheck.ts; changes here must be reflected there
  */
 export type AggregateBy = typeof aggregateByList[number];
 
@@ -200,7 +200,7 @@ export type SortVisibleBy = typeof sortVisibleByList[number];
 
 /**
  * An aggregate row in the plot
- * @privateRemarks typechecked by isAggregate in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isAggregate in typecheck.ts; changes here must be reflected there
  */
 export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
@@ -223,7 +223,7 @@ export type Rows = Subsets | Aggregates;
 
 /**
  * A row in the plot
- * @privateRemarks typechecked by isRow in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isRow in typecheck.ts; changes here must be reflected there
  */
 export type Row = Subset | Aggregate;
 
@@ -256,7 +256,7 @@ export type BasePlot = {
 
 /**
  * Information defining an element view scatterplot
- * @privateRemarks Typechecked by isScatterplot in typecheck.ts; changes here must be reflected there.
+ * @private Typechecked by isScatterplot in typecheck.ts; changes here must be reflected there.
  */
 export type Scatterplot = BasePlot & {
   type: 'Scatterplot';
@@ -268,7 +268,7 @@ export type Scatterplot = BasePlot & {
 
 /**
  * Information defining an element view histogram.
- * @privateRemarks Typechecked by isHistogram in typecheck.ts; changes here must be reflected there
+ * @private Typechecked by isHistogram in typecheck.ts; changes here must be reflected there
  */
 export type Histogram = BasePlot & {
   type: 'Histogram';
@@ -294,7 +294,7 @@ export enum AttributePlotType {
 /**
  * Represents the different types of attribute plots.
  * Enum values (AttributePlotType) behave better in a Record object than in traditional dict types.
- * @privateRemarks typechecked by isAttributePlots in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isAttributePlots in typecheck.ts; changes here must be reflected there
  */
 export type AttributePlots = Record<string, `${AttributePlotType}`>;
 
@@ -325,8 +325,9 @@ export enum NumericalQueryType {
 
 /**
  * Represents a selection of elements based on a comparison between an attribute and a query string.
+ * @private Typechecked by isQuerySelection in typecheck.ts; changes here must be reflected there
  */
-export type AttQuery = {
+export type QuerySelection = {
   /**
    * Name of the attribute being queried upon
    */
@@ -349,38 +350,18 @@ export type AttQuery = {
  * Maps attribute names to an array with the minimum and maximum
  * values of the selection over each attribute.
  *
- * @privateRemarks
+ * @private
  * This *needs* to match the data format outputted by Vega-Lite to the 'brush' signal in
  * upset/src/components/ElementView/ElementVisualization.tsx.
- * This is typechecked by isNumericalQuery in typecheck.ts; changes here must be reflected there.
+ * This is typechecked by isVegaSelection in typecheck.ts; changes here must be reflected there.
  */
-export type NumericalQuery = {[attName: string] : [number, number]};
+export type VegaSelection = {[attName: string] : [number, number]};
 
 /**
- * Wrapper type for an element query
+ * Represents the type of selection currently active in the element view.
+ * This can be a row selection, a Vega selection (from plots), or a query selection.
  */
-export type AttSelection = {
-  type: 'element';
-  query: AttQuery;
-  active: boolean;
-}
-
-/**
- * Wrapper type for a numerical query
- */
-export type NumericalSelection = {
-  type: 'numerical';
-  query: NumericalQuery;
-  active: boolean;
-}
-
-/**
- * Represents a selection of elements.
- * Can be either an element query or a numerical query.
- * Active is true if the selection is currently being applied to the plot;
- * an inactive selection shows as a deselected chip in the element view.
- */
-export type ElementSelection = AttSelection | NumericalSelection;
+export type SelectionType = 'row' | 'vega' | 'query' | null;
 
 /**
  * Represents a query object where each key is a string and the value is a SetMembershipStatus.
@@ -398,7 +379,7 @@ export type SetQuery = {
 
 /**
  * A bookmarked intersection
- * @privateRemarks typechecked by isBookmark in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isBookmark in typecheck.ts; changes here must be reflected there
  */
 export type Bookmark = {
   /**
@@ -417,7 +398,7 @@ export type Bookmark = {
 
 /**
  * Represents the alternative text for an Upset plot.
- * @privateRemarks typechecked by isAltText in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isAltText in typecheck.ts; changes here must be reflected there
 */
 export type AltText = {
   /**
@@ -445,7 +426,7 @@ export type AltText = {
 /**
  * A configuration object for an UpSet plot.
  * @version 0.1.0
- * @privateRemarks
+ * @private
  * Each breaking update to this config MUST be accompanied by an update to the config converter
  * in `convertConfig.ts`. Full instructions are provided in the converter file.
  * ANY update to this config must be accompanied by a change to the isUpsetConfig function in typecheck.ts
@@ -479,12 +460,24 @@ export type UpsetConfig = {
     histograms: Histogram[];
   };
   allSets: Column[];
-  selected: Row | null;
   /**
-   * Selected elements (data points) in the Element View.
+   * The selected row in the plot
    */
-  elementSelection: ElementSelection | null;
-  version: '0.1.3';
+  rowSelection: Row | null;
+  /**
+   * Selected elements (data points) from Vega plots in the element view
+   */
+  vegaSelection: VegaSelection | null;
+  /**
+   * Selected elements from the query interface in the element view
+   */
+  querySelection: QuerySelection | null;
+  /**
+   * Which of the 3 selection methods is currently active in the element view
+   * (values are stored in rowSelection, vegaSelection, and querySelection above)
+   */
+  activeSelection: 'row' | 'vega' | 'query' | null;
+  version: '0.1.4';
   userAltText: AltText | null;
   /**
    * Whether to display numerical size labels on the intersection size bars.

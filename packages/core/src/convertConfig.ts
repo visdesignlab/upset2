@@ -3,8 +3,8 @@ import {
   SortByOrder, SortVisibleBy, UpsetConfig,
   AttributePlots,
   AltText, SetQuery,
-  AttQuery,
-  NumericalQuery,
+  QuerySelection,
+  VegaSelection,
 } from './types';
 import { isUpsetConfig } from './typecheck';
 import { DefaultConfig } from './defaultConfig';
@@ -34,7 +34,7 @@ type ElementBookmark = Omit<Bookmark, 'size'> & {
   /**
    * Selection parameters
    */
-  selection: AttQuery;
+  selection: QuerySelection;
   /**
    * Indicates type at runtim
    */
@@ -45,7 +45,7 @@ type NumericalBookmark = Omit<Bookmark, 'size'> & {
   /**
    * The selection parameters
    */
-  selection: NumericalQuery;
+  selection: VegaSelection;
   /**
    * Indicates type at runtime
    */
@@ -53,6 +53,34 @@ type NumericalBookmark = Omit<Bookmark, 'size'> & {
 }
 
 type ElementSelection = NumericalBookmark | ElementBookmark;
+
+// Old types, pre-0.1.4
+
+/**
+ * Wrapper type for an element query
+ */
+export type AttSelection_013 = {
+  type: 'element';
+  query: QuerySelection;
+  active: boolean;
+}
+
+/**
+ * Wrapper type for a numerical query
+ */
+export type NumericalSelection_013 = {
+  type: 'numerical';
+  query: VegaSelection;
+  active: boolean;
+}
+
+/**
+ * Represents a selection of elements.
+ * Can be either an element query or a numerical query.
+ * Active is true if the selection is currently being applied to the plot;
+ * an inactive selection shows as a deselected chip in the element view.
+ */
+export type ElementSelection_013 = AttSelection_013 | NumericalSelection_013;
 
 type Version0_1_0 = {
   plotInformation: PlotInformation;
@@ -160,6 +188,42 @@ type Version0_1_2 = {
   setQuery: SetQuery | null;
 }
 
+type Version0_1_3 = {
+  plotInformation: PlotInformation;
+  horizontal: boolean;
+  firstAggregateBy: AggregateBy;
+  firstOverlapDegree: number;
+  secondAggregateBy: AggregateBy;
+  secondOverlapDegree: number;
+  sortVisibleBy: SortVisibleBy;
+  sortBy: string;
+  sortByOrder: SortByOrder;
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  };
+  visibleSets: ColumnName[];
+  visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
+  bookmarks: Bookmark[];
+  collapsed: string[];
+  plots: {
+    scatterplots: Scatterplot[];
+    histograms: Histogram[];
+  };
+  allSets: Column[];
+  selected: Row | null;
+  elementSelection: ElementSelection_013 | null;
+  version: '0.1.3';
+  userAltText: AltText | null;
+  intersectionSizeLabels: boolean;
+  setSizeLabels: boolean;
+  showHiddenSets: boolean;
+  setQuery: SetQuery | null;
+};
+
 /**
  * Config type before versioning was implemented.
  */
@@ -223,13 +287,13 @@ function convert0_1_1(config: Version0_1_1): Version0_1_2 {
  * Converts a configuration object from version 0.1.2 to version 0.1.3.
  */
 // eslint-disable-next-line camelcase
-function convert0_1_2(config: Version0_1_2): UpsetConfig {
+function convert0_1_2(config: Version0_1_2): Version0_1_3 {
   delete (config as any).useUserAlt;
   const bookmarks = config.bookmarks.filter(
     (bookmark) => (bookmark as any).type === 'intersection' || (bookmark as any).type === undefined,
   );
   config.bookmarks = bookmarks;
-  (config as unknown as UpsetConfig).version = '0.1.3';
+  (config as unknown as Version0_1_3).version = '0.1.3';
   if (config.elementSelection && config.elementSelection.id) {
     (config.elementSelection as any).query = config.elementSelection.selection;
     delete (config.elementSelection as any).selection;
@@ -237,6 +301,34 @@ function convert0_1_2(config: Version0_1_2): UpsetConfig {
     delete (config.elementSelection as any).label;
     (config.elementSelection as any).active = true;
   }
+  return config as unknown as Version0_1_3;
+}
+
+/**
+ * Converts a configuration object from version 0.1.3 to version 0.1.4.
+ */
+// eslint-disable-next-line camelcase
+function convert0_1_3(config: Version0_1_3): UpsetConfig {
+  (config as unknown as UpsetConfig).version = '0.1.4';
+  (config as unknown as UpsetConfig).rowSelection = config.selected;
+
+  if (config.elementSelection?.type === 'numerical') {
+    (config as unknown as UpsetConfig).querySelection = null;
+    (config as unknown as UpsetConfig).vegaSelection = config.elementSelection.query;
+    if (config.elementSelection.active) (config as unknown as UpsetConfig).activeSelection = 'vega';
+    else (config as unknown as UpsetConfig).activeSelection = config.selected ? 'row' : null;
+  } else if (config.elementSelection?.type === 'element') {
+    (config as unknown as UpsetConfig).vegaSelection = null;
+    (config as unknown as UpsetConfig).querySelection = config.elementSelection.query;
+    if (config.elementSelection.active) (config as unknown as UpsetConfig).activeSelection = 'query';
+    else (config as unknown as UpsetConfig).activeSelection = config.selected ? 'row' : null;
+  } else {
+    (config as unknown as UpsetConfig).vegaSelection = null;
+    (config as unknown as UpsetConfig).querySelection = null;
+    (config as unknown as UpsetConfig).activeSelection = config.selected ? 'row' : null;
+  }
+  delete (config as any).elementSelection;
+  delete (config as any).selected;
   return config as unknown as UpsetConfig;
 }
 
@@ -284,8 +376,12 @@ export function convertConfig(config: unknown): UpsetConfig {
     // @ts-expect-error: Fallthrough is intended behavior.
     case '0.1.1':
       convert0_1_1(config as Version0_1_1);
+    // @ts-expect-error: Fallthrough is intended behavior.
     case '0.1.2':
       convert0_1_2(config as Version0_1_2);
+    // @ts-expect-error: Fallthrough is intended behavior.
+    case '0.1.3':
+      convert0_1_3(config as Version0_1_3);
     default:
       void 0;
     /* eslint-enable no-fallthrough */
