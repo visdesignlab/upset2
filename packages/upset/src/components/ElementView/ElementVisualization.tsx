@@ -8,11 +8,11 @@ import { VegaLite, View } from 'react-vega';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 
 import {
-  numericalQueriesEqual, isNumericalQuery, deepCopy, Plot,
-  NumericalQuery,
+  vegaSelectionsEqual, isVegaSelection, deepCopy, Plot,
+  VegaSelection,
 } from '@visdesignlab/upset2-core';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { currentNumericalQuery, elementSelectionSelector, processedItemsSelector } from '../../atoms/elementsSelectors';
+import { currentVegaSelection, elementSelectionSelector, processedItemsSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -30,7 +30,7 @@ const BRUSH_NAME = 'brush';
  *               setting to true means that the returned promise can be awaited to indicate the end of plot updates
  * @returns A promise that is meaningless if sync = false, and completes upon full view reevaluation if sync = true
  */
-async function signalView(view: View, val: NumericalQuery, sync = false): Promise<void> {
+async function signalView(view: View, val: VegaSelection, sync = false): Promise<void> {
   const state = view.getState();
   if (Object.entries(val).length === 0) {
     state.data[`${BRUSH_NAME}_store`] = [];
@@ -57,8 +57,8 @@ export const ElementVisualization = () => {
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
   const items = useRecoilValue(processedItemsSelector);
-  const numericalQuery = useRecoilValue(currentNumericalQuery);
-  const elementSelection = useRecoilValue(elementSelectionSelector);
+  const numericalQuery = useRecoilValue(currentVegaSelection);
+  const vegaSelection = useRecoilValue(elementSelectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -89,7 +89,7 @@ export const ElementVisualization = () => {
    *  to an array of the bounds of the brush, but Vega's output format can change if the spec changes.
    */
   const brushHandler = useCallback((signaled: Plot, value: unknown) => {
-    if (!isNumericalQuery(value) || signaled.id !== currentClick.current?.id || preventSignal.current) return;
+    if (!isVegaSelection(value) || signaled.id !== currentClick.current?.id || preventSignal.current) return;
     draftSelection.current = value;
     views.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view }) => {
       signalView(view, value);
@@ -103,12 +103,12 @@ export const ElementVisualization = () => {
     if (
       draftSelection.current
       && Object.keys(draftSelection.current).length > 0
-      && !numericalQueriesEqual(draftSelection.current, numericalQuery)
+      && !vegaSelectionsEqual(draftSelection.current, numericalQuery)
     ) {
-      actions.setElementSelection({ type: 'numerical', query: draftSelection.current, active: true });
-    } else if (elementSelection) actions.setElementSelection(null);
+      actions.setVegaSelection(draftSelection.current);
+    } else if (vegaSelection) actions.setVegaSelection(null);
     draftSelection.current = undefined;
-  }, [draftSelection.current, numericalQuery, elementSelection, actions]);
+  }, [draftSelection.current, numericalQuery, vegaSelection, actions]);
 
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {

@@ -1,11 +1,12 @@
 import {
   Aggregate,
   BaseIntersection,
-  NumericalQuery, Item, Row, flattenedOnlyRows, getItems,
-  filterItems,
-  ElementSelection,
-  AttQuery,
+  Item, Row, flattenedOnlyRows, getItems,
   FilteredItems,
+  VegaSelection,
+  QuerySelection,
+  filterItems,
+  UpsetSelection,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -17,6 +18,24 @@ import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
 import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
+
+/**
+ * Gets the current selection of elements
+ * @returns The current selection of elements
+ */
+export const elementSelectionSelector = selector<UpsetSelection | null>({
+  key: 'config-element-selection',
+  get: ({ get }) => {
+    const {
+      activeSelection, vegaSelection, querySelection, rowSelection,
+    } = get(upsetConfigAtom);
+
+    if (activeSelection === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
+    if (activeSelection === 'query' && querySelection) return { type: 'query', selection: querySelection };
+    if (activeSelection === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
+    return null;
+  },
+});
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
@@ -112,15 +131,6 @@ export const processedItemsSelector = selector<Item[]>({
 });
 
 /**
- * Gets the current selection of elements
- * @returns The current selection of elements
- */
-export const elementSelectionSelector = selector<ElementSelection | null>({
-  key: 'config-element-selection',
-  get: ({ get }) => get(upsetConfigAtom).elementSelection,
-});
-
-/**
  * Gets all items that are currently displayed in intersections in the plot
  * (if the unincluded intersection is visible, this is all items)
  * sorted into included and excluded lists based on the current selection.
@@ -129,13 +139,7 @@ export const elementSelectionSelector = selector<ElementSelection | null>({
  */
 const filteredItems = selector<FilteredItems>({
   key: 'filtered-items',
-  get: ({ get }) => {
-    const items = get(processedItemsSelector);
-    const selection = get(elementSelectionSelector);
-    if (!selection || !selection.active) return { included: [], excluded: items };
-
-    return filterItems(items, selection);
-  },
+  get: ({ get }) => filterItems(get(processedItemsSelector), get(elementSelectionSelector)),
 });
 
 /**
@@ -146,7 +150,8 @@ const filteredItems = selector<FilteredItems>({
 export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
-    if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
+    const elementSelection = get(elementSelectionSelector);
+    if (elementSelection?.type === 'vega' || elementSelection?.type === 'query') return get(filteredItems).included;
     if (get(bookmarkIsVisibleSelector)) return get(bookmarkedItemsSelector);
     return get(processedItemsSelector);
   },
@@ -200,12 +205,9 @@ export const intersectionCountSelector = selectorFamily<
  * ie the 'selected' property of the selectedElementsSelector.
  * If the current selection is not numerical, returns undefined.
  */
-export const currentNumericalQuery = selector<NumericalQuery | undefined>({
-  key: 'config-current-element-selection',
-  get: ({ get }) => {
-    const elementSelection = get(elementSelectionSelector);
-    return elementSelection?.type === 'numerical' && elementSelection.active ? elementSelection.query : undefined;
-  },
+export const currentVegaSelection = selector<VegaSelection | undefined>({
+  key: 'config-current-vega-selection',
+  get: ({ get }) => get(upsetConfigAtom).vegaSelection ?? undefined,
 });
 
 /**
@@ -213,12 +215,9 @@ export const currentNumericalQuery = selector<NumericalQuery | undefined>({
  * ie the 'selected' property of the selectedElementsSelector.
  * If the current selection is not an element query, returns undefined.
  */
-export const currentElementQuery = selector<AttQuery | undefined>({
-  key: 'config-current-element-query',
-  get: ({ get }) => {
-    const elementSelection = get(elementSelectionSelector);
-    return elementSelection?.type === 'element' && elementSelection.active ? elementSelection.query : undefined;
-  },
+export const currentQuerySelection = selector<QuerySelection | undefined>({
+  key: 'config-current-query-selection',
+  get: ({ get }) => get(upsetConfigAtom).querySelection ?? undefined,
 });
 
 /**
@@ -234,14 +233,7 @@ export const selectedItemsCounter = selector<number>({
  */
 export const subsetSelectedCount = selectorFamily<number, string>({
   key: 'subset-selected',
-  get: (id: string) => ({ get }) => {
-    const items = get(rowItemsSelector(id));
-    const selection = get(elementSelectionSelector);
-
-    if (!selection || !selection.active) return 0;
-
-    return filterItems(items, selection).included.length;
-  },
+  get: (id: string) => ({ get }) => filterItems(get(rowItemsSelector(id)), get(elementSelectionSelector)).included.length,
 });
 
 /**

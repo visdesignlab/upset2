@@ -10,7 +10,7 @@ import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
-import { currentElementQuery } from '../../atoms/elementsSelectors';
+import { currentQuerySelection } from '../../atoms/elementsSelectors';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
@@ -30,7 +30,7 @@ export const QueryInterface = () => {
    */
 
   const atts = useRecoilValue(queryColumnsSelector);
-  const currentSelection = useRecoilValue(currentElementQuery);
+  const currentSelection = useRecoilValue(currentQuerySelection);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const attTypes = useRecoilValue(attTypesSelector);
 
@@ -63,7 +63,7 @@ export const QueryInterface = () => {
    */
   const saveOrClear = useCallback(() => {
     if (currentSelection) {
-      actions.setElementSelection(null);
+      actions.setVegaSelection(null);
       setAttField(undefined);
       setTypeField(undefined);
       setQueryField(undefined);
@@ -71,14 +71,10 @@ export const QueryInterface = () => {
       && Object.values(ElementQueryType).includes(typeField as ElementQueryType)
       && atts.includes(attField)
     ) {
-      actions.setElementSelection({
-        type: 'element',
-        query: {
-          att: attField,
-          type: typeField as ElementQueryType || ElementQueryType.EQUALS,
-          query: queryField,
-        },
-        active: true,
+      actions.setQuerySelection({
+        att: attField,
+        type: typeField as ElementQueryType || ElementQueryType.EQUALS,
+        query: queryField,
       });
     }
   }, [attField, typeField, queryField, atts, actions, currentSelection]);

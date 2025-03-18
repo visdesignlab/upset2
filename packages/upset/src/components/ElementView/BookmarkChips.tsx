@@ -127,7 +127,7 @@ export const BookmarkChips = () => {
         onClick={() => {
           const newSelection = { ...currentSelection };
           newSelection.active = !newSelection.active;
-          actions.setElementSelection(newSelection);
+          actions.setVegaSelection(newSelection);
         }}
         label={elementSelectionToString(currentSelection)}
       />
