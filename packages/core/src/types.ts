@@ -97,7 +97,7 @@ export type AttributeList = {
 }
 
 /**
- * List of attributes for a subset ({attr1, attr2, deviation, degree, etc})
+ * List of attributes for a subset ([attr1, attr2, deviation, degree, etc])
  */
 export type Attributes = AttributeList & {
   /**
@@ -444,7 +444,6 @@ export type AltText = {
 
 /**
  * A configuration object for an UpSet plot.
- * @version 0.1.0
  * @privateRemarks
  * Each breaking update to this config MUST be accompanied by an update to the config converter
  * in `convertConfig.ts`. Full instructions are provided in the converter file.

@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "turbo run dev --parallel --no-cache --filter=@visdesignlab/*",
     "dev:docs": "turbo run dev --parallel --no-cache --filter=userdocs",
-    "build:docs": "turbo run build --force --filter=userdocs",
+    "build:docs": "yarn --cwd ./packages/userdocs run typedoc --options ./typedoc.json && yarn --cwd ./packages/userdocs run build",
+    "build:typedoc": "typedoc --options ./packages/userdocs/typedoc.json",
     "storybook": "turbo run storybook",
     "test": "playwright test",
     "build": "turbo run build --force --filter=@visdesignlab/*",

@@ -132,17 +132,6 @@ const config: Config = {
       // ],
       // copyright: `Copyright © ${new Date().getFullYear()} UpSet 2.0, VisDesignLab. Built with Docusaurus.`,
     },
-
-    plugins: [
-      [
-        'docusaurus-plugin-typedoc',
-      ],
-       // Options
-       {
-        options: './typedoc.json',
-        tsconfig: './tsconfig.json',
-      },
-    ],
     prism: {
       theme: prismThemes.github,
       darkTheme: prismThemes.dracula,
