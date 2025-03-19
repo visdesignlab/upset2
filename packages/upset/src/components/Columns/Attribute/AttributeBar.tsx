@@ -69,7 +69,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
     if (Object.keys(attributePlots).includes(attribute)) {
       const plot = attributePlots[attribute];
 
-      // render a dotplot for all rows <= 5
+      // render a dotplot for all rows <= 5, except for Strip Plots which encode the same information
       if (row.size <= DOT_PLOT_THRESHOLD && plot !== 'Strip Plot') {
         return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
       }
