@@ -1,5 +1,5 @@
 ---
-sidebar-location: 1
+sidebar_position: 1
 ---
 
 # Visible Sets

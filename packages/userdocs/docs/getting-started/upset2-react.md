@@ -1,5 +1,5 @@
 ---
-sidebar-location: 2
+sidebar_position: 2
 ---
 
 # Upset 2 as a React Component
