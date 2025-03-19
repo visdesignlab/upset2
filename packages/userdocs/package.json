@@ -6,7 +6,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 8082",
     "dev": "docusaurus start --port 8082",
-    "build": "typedoc --options ./typedoc.json & docusaurus build --out-dir ../../userdocs",
+    "build": "docusaurus build",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
