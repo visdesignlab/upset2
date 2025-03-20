@@ -22,7 +22,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { activeSelectionSelector, querySelectionSelector, vegaSelectionSelector } from '../../atoms/elementsSelectors';
+import { activeSelectionSelector, currentQuerySelection, currentVegaSelection } from '../../atoms/elementsSelectors';
 import { elementSelectionColor } from '../../utils/styles';
 
 /**
@@ -38,8 +38,8 @@ export const BookmarkChips = () => {
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
-  const vegaSelection = useRecoilValue(vegaSelectionSelector);
-  const querySelection = useRecoilValue(querySelectionSelector);
+  const vegaSelection = useRecoilValue(currentVegaSelection);
+  const querySelection = useRecoilValue(currentQuerySelection);
   const activeSelection = useRecoilValue(activeSelectionSelector);
 
   /**

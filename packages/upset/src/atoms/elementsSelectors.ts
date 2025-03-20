@@ -23,7 +23,7 @@ import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
 /**
  * The current vega selection from the config
  */
-export const vegaSelectionSelector = selector<VegaSelection | null>({
+export const currentVegaSelection = selector<VegaSelection | null>({
   key: 'vega-selection-selector',
   get: ({ get }) => get(upsetConfigAtom).vegaSelection,
 });
@@ -31,7 +31,7 @@ export const vegaSelectionSelector = selector<VegaSelection | null>({
 /**
  * The current query selection from the config
  */
-export const querySelectionSelector = selector<QuerySelection | null>({
+export const currentQuerySelection = selector<QuerySelection | null>({
   key: 'query-selection-selector',
   get: ({ get }) => get(upsetConfigAtom).querySelection,
 });
@@ -223,26 +223,6 @@ export const intersectionCountSelector = selectorFamily<
     const row = intersections[id];
     return row.size;
   },
-});
-
-/**
- * Gets the parameters for the current numerical selection of elements,
- * ie the 'selected' property of the selectedElementsSelector.
- * If the current selection is not numerical, returns undefined.
- */
-export const currentVegaSelection = selector<VegaSelection | undefined>({
-  key: 'config-current-vega-selection',
-  get: ({ get }) => get(upsetConfigAtom).vegaSelection ?? undefined,
-});
-
-/**
- * Gets the parameters for the current selection of elements,
- * ie the 'selected' property of the selectedElementsSelector.
- * If the current selection is not an element query, returns undefined.
- */
-export const currentQuerySelection = selector<QuerySelection | undefined>({
-  key: 'config-current-query-selection',
-  get: ({ get }) => get(upsetConfigAtom).querySelection ?? undefined,
 });
 
 /**
