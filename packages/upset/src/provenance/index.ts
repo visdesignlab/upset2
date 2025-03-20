@@ -9,6 +9,7 @@ import {
   SetQuery,
   VegaSelection,
   QuerySelection,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -343,6 +344,14 @@ const setVegaSelectionAction = register<VegaSelection | null>(
   },
 );
 
+const setSelectionTypeAction = register<SelectionType | null>(
+  'set-selection-type',
+  (state: UpsetConfig, selectionType) => {
+    state.activeSelection = selectionType;
+    return state;
+  },
+);
+
 const setQuerySelectionAction = register<QuerySelection | null>(
   'set-query-selection',
   (state: UpsetConfig, querySelection) => {
@@ -511,6 +520,13 @@ export function getActions(provenance: UpsetProvenance) {
         `Selected elements based on the following keys: ${Object.keys(selection.query).join(' ')}`
         : 'Cleared element selection',
       setVegaSelectionAction(selection),
+    ),
+    /**
+     * Sets the type of the current active selection
+     */
+    setActiveSelection: (selectionType: SelectionType | null) => provenance.apply(
+      selectionType ? `Set selection type to ${selectionType}` : 'Deselected current selection',
+      setSelectionTypeAction(selectionType),
     ),
     /**
      * Sets the element query selection for the plot

@@ -10,7 +10,7 @@ import {
  * @param selection The numerical attribute query.
  * @returns The element selection.
  */
-export function numericalQueryToString(selection: VegaSelection): string {
+export function vegaSelectionToString(selection: VegaSelection): string {
   let label = 'Atts: ';
   Object.entries(selection).forEach(([k, v]) => {
     // Ternary/toPrecision sets 2 sig fig bound on small numbers
@@ -34,7 +34,7 @@ export function numericalQueryToString(selection: VegaSelection): string {
  * @param selection The element query.
  * @returns The element selection.
  */
-export function attQueryToString(selection: QuerySelection): string {
+export function querySelectionToString(selection: QuerySelection): string {
   return `${selection.att} ${selection.type} ${selection.query}`;
 }
 

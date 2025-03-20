@@ -7,6 +7,7 @@ import {
   QuerySelection,
   filterItems,
   UpsetSelection,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -18,6 +19,30 @@ import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
 import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
+
+/**
+ * The current vega selection from the config
+ */
+export const vegaSelectionSelector = selector<VegaSelection | null>({
+  key: 'vega-selection-selector',
+  get: ({ get }) => get(upsetConfigAtom).vegaSelection,
+});
+
+/**
+ * The current query selection from the config
+ */
+export const querySelectionSelector = selector<QuerySelection | null>({
+  key: 'query-selection-selector',
+  get: ({ get }) => get(upsetConfigAtom).querySelection,
+});
+
+/**
+ * The currently active selection type from the config
+ */
+export const activeSelectionSelector = selector<SelectionType | null>({
+  key: 'config-active-selection',
+  get: ({ get }) => get(upsetConfigAtom).activeSelection,
+});
 
 /**
  * Gets the current selection of elements

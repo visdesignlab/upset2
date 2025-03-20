@@ -1,4 +1,3 @@
-import SquareIcon from '@mui/icons-material/Square';
 import StarIcon from '@mui/icons-material/Star';
 import StarBorderIcon from '@mui/icons-material/StarBorder';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
@@ -7,8 +6,13 @@ import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, elementSelectionToString, flattenedOnlyRows,
+  Bookmark, flattenedOnlyRows,
+  querySelectionToString,
+  vegaSelectionToString,
 } from '@visdesignlab/upset2-core';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
+import CodeIcon from '@mui/icons-material/Code';
 import {
   bookmarkedColorPalette,
   bookmarkSelector,
@@ -18,7 +22,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { elementSelectionSelector } from '../../atoms/elementsSelectors';
+import { activeSelectionSelector, querySelectionSelector, vegaSelectionSelector } from '../../atoms/elementsSelectors';
 import { elementSelectionColor } from '../../utils/styles';
 
 /**
@@ -34,7 +38,9 @@ export const BookmarkChips = () => {
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
-  const currentSelection = useRecoilValue(elementSelectionSelector);
+  const vegaSelection = useRecoilValue(vegaSelectionSelector);
+  const querySelection = useRecoilValue(querySelectionSelector);
+  const activeSelection = useRecoilValue(activeSelectionSelector);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
@@ -66,7 +72,7 @@ export const BookmarkChips = () => {
             }
           }}
           label={`${bookmark.label} - ${bookmark.size}`}
-          icon={<SquareIcon fontSize={'1em' as any} />}
+          icon={<BookmarkIcon fontSize={'1em' as any} />}
           deleteIcon={<StarIcon />}
           onClick={() => {
             chipClicked(bookmark);
@@ -89,7 +95,7 @@ export const BookmarkChips = () => {
           },
           backgroundColor: 'rgba(0,0,0,0.2)',
         })}
-        icon={<SquareIcon fontSize={'1em' as any} />}
+        icon={<BookmarkBorderIcon fontSize={'1em' as any} />}
         aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -112,24 +118,42 @@ export const BookmarkChips = () => {
         deleteIcon={<StarBorderIcon />}
       />
       )}
-      {/* Chip for the current element selection */}
-      {currentSelection && (
+      {/* Chip for the current vega selection */}
+      {vegaSelection && (
       <Chip
         sx={(theme) => ({
           margin: theme.spacing(0.5),
           '.MuiChip-icon': {
             color: elementSelectionColor,
           },
-          backgroundColor: currentSelection.active ? 'rgba(0,0,0,0.2)' : 'default',
+          backgroundColor: activeSelection === 'vega' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
         icon={<WorkspacesIcon fontSize={'1em' as any} />}
-        aria-label={`Selected elements ${elementSelectionToString(currentSelection)}`}
+        aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
         onClick={() => {
-          const newSelection = { ...currentSelection };
-          newSelection.active = !newSelection.active;
-          actions.setVegaSelection(newSelection);
+          if (activeSelection === 'vega') actions.setActiveSelection(null);
+          else actions.setActiveSelection('vega');
         }}
-        label={elementSelectionToString(currentSelection)}
+        label={vegaSelectionToString(vegaSelection)}
+      />
+      )}
+      {/* Chip for the current query selection */}
+      {querySelection && (
+      <Chip
+        sx={(theme) => ({
+          margin: theme.spacing(0.5),
+          '.MuiChip-icon': {
+            color: elementSelectionColor,
+          },
+          backgroundColor: activeSelection === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
+        })}
+        icon={<CodeIcon fontSize={'1em' as any} />}
+        aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
+        onClick={() => {
+          if (activeSelection === 'query') actions.setActiveSelection(null);
+          else actions.setActiveSelection('query');
+        }}
+        label={querySelectionToString(querySelection)}
       />
       )}
     </Stack>
