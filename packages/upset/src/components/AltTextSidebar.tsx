@@ -85,7 +85,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     if (!canEditPlotInformation) return;
 
     setTextEditing(false);
-    if (!currState.useUserAlt) actions.setUseUserAltText(true);
     if (currState.userAltText?.shortDescription !== userShortText
         || currState.userAltText?.longDescription !== userLongText) { actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' }); }
   }, [currState, userShortText, userLongText, actions]);
