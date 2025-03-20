@@ -10,7 +10,7 @@ import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
-import { currentQuerySelection } from '../../atoms/elementsSelectors';
+import { activeSelectionSelector, currentQuerySelection } from '../../atoms/elementsSelectors';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
@@ -31,6 +31,7 @@ export const QueryInterface = () => {
 
   const atts = useRecoilValue(queryColumnsSelector);
   const currentSelection = useRecoilValue(currentQuerySelection);
+  const activeSelection = useRecoilValue(activeSelectionSelector);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const attTypes = useRecoilValue(attTypesSelector);
 
@@ -63,7 +64,8 @@ export const QueryInterface = () => {
    */
   const saveOrClear = useCallback(() => {
     if (currentSelection) {
-      actions.setVegaSelection(null);
+      actions.setQuerySelection(null);
+      if (activeSelection === 'query') actions.setActiveSelection(null);
       setAttField(undefined);
       setTypeField(undefined);
       setQueryField(undefined);
@@ -76,8 +78,9 @@ export const QueryInterface = () => {
         type: typeField as ElementQueryType || ElementQueryType.EQUALS,
         query: queryField,
       });
+      actions.setActiveSelection('query');
     }
-  }, [attField, typeField, queryField, atts, actions, currentSelection]);
+  }, [attField, typeField, queryField, atts, actions, currentSelection, activeSelection]);
 
   return atts.length > 0 ? (
     <Box css={{ marginTop: '10px' }}>

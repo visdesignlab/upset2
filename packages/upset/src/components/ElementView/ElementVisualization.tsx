@@ -12,7 +12,9 @@ import {
   VegaSelection,
 } from '@visdesignlab/upset2-core';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { currentVegaSelection, elementSelectionSelector, processedItemsSelector } from '../../atoms/elementsSelectors';
+import {
+  activeSelectionSelector, currentVegaSelection, elementSelectionSelector, processedItemsSelector,
+} from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -59,6 +61,7 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(processedItemsSelector);
   const numericalQuery = useRecoilValue(currentVegaSelection);
   const vegaSelection = useRecoilValue(elementSelectionSelector);
+  const activeSelection = useRecoilValue(activeSelectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -103,11 +106,14 @@ export const ElementVisualization = () => {
     if (
       draftSelection.current
       && Object.keys(draftSelection.current).length > 0
-      && !vegaSelectionsEqual(draftSelection.current, numericalQuery)
+      && !vegaSelectionsEqual(draftSelection.current, numericalQuery ?? undefined)
     ) {
       actions.setVegaSelection(draftSelection.current);
-    } else if (vegaSelection) actions.setVegaSelection(null);
-    draftSelection.current = undefined;
+    } else if (vegaSelection) {
+      actions.setVegaSelection(null);
+      if (activeSelection === 'vega') actions.setActiveSelection(null);
+    }
+    draftSelection.current = null;
   }, [draftSelection.current, numericalQuery, vegaSelection, actions]);
 
   // Syncs the default value of the plots on load to the current numerical query
