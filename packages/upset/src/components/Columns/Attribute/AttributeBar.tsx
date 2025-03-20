@@ -1,7 +1,7 @@
 import {
   Aggregate, SixNumberSummary, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC } from 'react';
+import React, { FC, useCallback } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
@@ -64,13 +64,13 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
    * Get the attribute plot to render based on the selected attribute plot type
    * @returns {JSX.Element} The JSX element of the attribute
    */
-  function getAttributePlotToRender(): React.JSX.Element {
+  const getAttributePlotToRender = useCallback((): React.JSX.Element => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
     if (Object.keys(attributePlots).includes(attribute)) {
       const plot = attributePlots[attribute];
 
-      // render a dotplot for all rows <= 5
-      if (row.size <= DOT_PLOT_THRESHOLD) {
+      // render a dotplot for all rows <= 5, except for Strip Plots which encode the same information
+      if (row.size <= DOT_PLOT_THRESHOLD && plot !== 'Strip Plot') {
         return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
       }
 
@@ -86,7 +86,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
       }
     }
     return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
-  }
+  }, [attribute, attributePlots, row, scale, summary, values]);
 
   /**
    * Round a number to 3 decimal places
