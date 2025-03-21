@@ -38,12 +38,12 @@ export const elementSelectionSelector = selector<UpsetSelection | null>({
   key: 'config-element-selection',
   get: ({ get }) => {
     const {
-      SelectionType, vegaSelection, querySelection, rowSelection,
+      selectionType, vegaSelection, querySelection, rowSelection,
     } = get(upsetConfigAtom);
 
-    if (SelectionType === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
-    if (SelectionType === 'query' && querySelection) return { type: 'query', selection: querySelection };
-    if (SelectionType === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
+    if (selectionType === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
+    if (selectionType === 'query' && querySelection) return { type: 'query', selection: querySelection };
+    if (selectionType === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
     return null;
   },
 });

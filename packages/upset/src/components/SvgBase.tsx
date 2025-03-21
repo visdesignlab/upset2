@@ -13,7 +13,7 @@ export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
-  const SelectionType = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(activeSelectionSelector);
   const queryBySetsInterfaceOpen = useRecoilValue(queryBySetsInterfaceAtom);
 
   let { height } = dimensions;
@@ -34,7 +34,7 @@ export const SvgBase: FC = ({ children }) => {
       `}
       onClick={() => {
         if (selectedIntersection != null) actions.setSelected(null);
-        if (SelectionType === 'row') actions.setActiveSelection(null);
+        if (selectionType === 'row') actions.setActiveSelection(null);
       }}
     >
       <svg id="upset-svg" height={height + 50 * dimensions.margin} width={dimensions.width + 2 * dimensions.margin} xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" fontFamily="Roboto, Arial">

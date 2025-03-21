@@ -13,7 +13,7 @@ import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { newShade } from '../../utils/colors';
 import { showIntersectionSizesSelector } from '../../atoms/config/displayAtoms';
-import { elementSelectionColor } from '../../utils/styles';
+import { vegaSelectionColor } from '../../utils/styles';
 
 /**
  * A bar that represents the size of a row in the upset plot.
@@ -210,7 +210,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
           transform: translate(0, (i * OFFSET) / 2),
           height: dimensions.size.plotHeight - i * OFFSET,
           width: dimensions.attribute.width,
-          fillColor: i < fullSelectBars ? darkenColor(i, elementSelectionColor) : getFillColor(i),
+          fillColor: i < fullSelectBars ? darkenColor(i, vegaSelectionColor) : getFillColor(i),
           opacity: i < fullSelectBars ? SELECTION_OPACITY : 1,
           key: `$fullbar-${i}`,
         });
@@ -230,7 +230,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
           transform: translate(0, (fullSelectBars * OFFSET) / 2),
           height: dimensions.size.plotHeight - fullSelectBars * OFFSET,
           width: selectedWidth,
-          fillColor: darkenColor(fullSelectBars, elementSelectionColor),
+          fillColor: darkenColor(fullSelectBars, vegaSelectionColor),
           opacity: SELECTION_OPACITY,
           key: 'partial-select',
         });
@@ -239,7 +239,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
     return result;
   }, [
     fullBars, OFFSET, dimensions.size.plotHeight, dimensions.attribute.width, fullSelectBars,
-    elementSelectionColor, getFillColor, SELECTION_OPACITY, translate, sizeWidth, selectedWidth,
+    vegaSelectionColor, getFillColor, SELECTION_OPACITY, translate, sizeWidth, selectedWidth,
   ]);
 
   /*
@@ -270,7 +270,7 @@ export const SizeBar: FC<Props> = ({ row, size, selected }) => {
       ))}
       {/* Tick & line at end of element selection bar */}
       {fullSelectBars < 3 && selected > 0 &&
-        lineAndTick(selectedWidth, elementSelectionColor, fullSelectBars)}
+        lineAndTick(selectedWidth, vegaSelectionColor, fullSelectBars)}
       {/* Tick & line at end of size bar */}
       {fullBars < 3
         && (

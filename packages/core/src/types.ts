@@ -366,7 +366,7 @@ export type SelectionType = 'row' | 'vega' | 'query' | null;
 /**
  * The currently active selection. This can be a row, a query, or a vega selection.
  *
- * Simpler version is {type: SelectionType, selection: Row | QuerySelection | VegaSelection} but
+ * Simpler version is {type: selectionType, selection: Row | QuerySelection | VegaSelection} but
  * this is segmented with OR statements so that the typechecker can match type strings with actual types
  * @private not called 'Selection' because this is a built-in type in TypeScript
  */

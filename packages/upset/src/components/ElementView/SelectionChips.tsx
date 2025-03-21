@@ -25,7 +25,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { elementSelectionColor } from '../../utils/styles';
+import { vegaSelectionColor } from '../../utils/styles';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -135,7 +135,7 @@ export const BookmarkChips = () => {
         sx={(theme) => ({
           margin: theme.spacing(0.5),
           '.MuiChip-icon': {
-            color: elementSelectionColor,
+            color: vegaSelectionColor,
           },
           backgroundColor: selectionType === 'vega' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
@@ -154,7 +154,7 @@ export const BookmarkChips = () => {
         sx={(theme) => ({
           margin: theme.spacing(0.5),
           '.MuiChip-icon': {
-            color: elementSelectionColor,
+            color: vegaSelectionColor,
           },
           backgroundColor: selectionType === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
         })}

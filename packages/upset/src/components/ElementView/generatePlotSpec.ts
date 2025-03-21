@@ -3,7 +3,7 @@ import {
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
-import { elementSelectionColor } from '../../utils/styles';
+import { vegaSelectionColor } from '../../utils/styles';
 
 /**
  * Creates the spec for a single scatterplot.
@@ -93,7 +93,7 @@ export function generateScatterplotSpec(
         condition: {
           param: 'brush',
           empty: false,
-          value: elementSelectionColor,
+          value: vegaSelectionColor,
         },
         field: 'subset',
         legend: null,
@@ -272,7 +272,7 @@ export function generateHistogramSpec(
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
-            color: { value: elementSelectionColor },
+            color: { value: vegaSelectionColor },
             opacity: { value: 1 },
           },
         },
@@ -316,7 +316,7 @@ export function generateHistogramSpec(
             aggregate: 'count',
             title: 'Frequency',
           },
-          color: { value: elementSelectionColor },
+          color: { value: vegaSelectionColor },
           opacity: { value: 1 },
         },
       },

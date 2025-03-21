@@ -366,7 +366,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'rowSelection')
     && Object.hasOwn(config, 'vegaSelection')
     && Object.hasOwn(config, 'querySelection')
-    && Object.hasOwn(config, 'SelectionType')
+    && Object.hasOwn(config, 'selectionType')
     && Object.hasOwn(config, 'version')
     && Object.hasOwn(config, 'userAltText')
     && Object.hasOwn(config, 'intersectionSizeLabels')
@@ -382,7 +382,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   const {
     plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, attributePlots, bookmarks, collapsed,
-    plots, allSets, rowSelection, vegaSelection, querySelection, SelectionType, version, userAltText, intersectionSizeLabels, setSizeLabels,
+    plots, allSets, rowSelection, vegaSelection, querySelection, selectionType, version, userAltText, intersectionSizeLabels, setSizeLabels,
     showHiddenSets, setQuery,
   } = config as UpsetConfig;
 
@@ -615,8 +615,8 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     return false;
   }
 
-  // SelectionType
-  if (SelectionType !== null && !['row', 'vega', 'query'].includes(SelectionType)) {
+  // selectionType
+  if (selectionType !== null && !['row', 'vega', 'query'].includes(selectionType)) {
     console.warn('Upset config error: Active selection is not valid');
     return false;
   }
