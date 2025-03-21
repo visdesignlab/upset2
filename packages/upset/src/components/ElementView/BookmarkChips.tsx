@@ -49,12 +49,12 @@ export const BookmarkChips = () => {
    * @param bookmark Clicked bookmark
    */
   function chipClicked(bookmark: Bookmark) {
-    if (currentIntersection?.id === bookmark.id) {
+    if (currentIntersection?.id === bookmark.id && activeSelection === 'row') {
       actions.setSelected(null);
-      if (activeSelection === 'row') actions.setActiveSelection(null);
+      actions.setActiveSelection(null);
     } else {
-      actions.setActiveSelection('row');
       actions.setSelected(rows[bookmark.id]);
+      actions.setActiveSelection('row');
     }
   }
 
