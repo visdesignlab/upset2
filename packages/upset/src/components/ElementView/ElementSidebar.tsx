@@ -13,7 +13,7 @@ import {
   selectedItemsCounter,
   selectedOrBookmarkedItemsSelector,
 } from '../../atoms/elementsSelectors';
-import { BookmarkChips } from './BookmarkChips';
+import { BookmarkChips } from './SelectionChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';

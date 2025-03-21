@@ -42,14 +42,14 @@ export const BookmarkChips = () => {
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
-  const activeSelection = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(activeSelectionSelector);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
    * @param bookmark Clicked bookmark
    */
   function chipClicked(bookmark: Bookmark) {
-    if (currentIntersection?.id === bookmark.id && activeSelection === 'row') {
+    if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
       actions.setSelected(null);
       actions.setActiveSelection(null);
     } else {
@@ -69,7 +69,7 @@ export const BookmarkChips = () => {
             '.MuiChip-icon': {
               color: colorPallete[bookmark.id],
             },
-            backgroundColor: bookmark.id === currentIntersection?.id && activeSelection === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
+            backgroundColor: bookmark.id === currentIntersection?.id && selectionType === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
           })}
           key={bookmark.id}
           aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
@@ -87,7 +87,7 @@ export const BookmarkChips = () => {
           onDelete={() => {
             if (currentIntersection?.id === bookmark.id) {
               actions.setSelected(null);
-              if (activeSelection === 'row') actions.setActiveSelection(null);
+              if (selectionType === 'row') actions.setActiveSelection(null);
             }
             actions.removeBookmark(bookmark);
           }}
@@ -116,7 +116,7 @@ export const BookmarkChips = () => {
         }}
         onClick={() => {
           actions.setSelected(null);
-          if (activeSelection === 'row') actions.setActiveSelection(null);
+          if (selectionType === 'row') actions.setActiveSelection(null);
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
         onDelete={() => {
@@ -137,12 +137,12 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: elementSelectionColor,
           },
-          backgroundColor: activeSelection === 'vega' ? 'rgba(0,0,0,0.2)' : 'default',
+          backgroundColor: selectionType === 'vega' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
         icon={<WorkspacesIcon fontSize={'1em' as any} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
         onClick={() => {
-          if (activeSelection === 'vega') actions.setActiveSelection(null);
+          if (selectionType === 'vega') actions.setActiveSelection(null);
           else actions.setActiveSelection('vega');
         }}
         label={vegaSelectionToString(vegaSelection)}
@@ -156,12 +156,12 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: elementSelectionColor,
           },
-          backgroundColor: activeSelection === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
+          backgroundColor: selectionType === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
         icon={<CodeIcon fontSize={'1em' as any} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
         onClick={() => {
-          if (activeSelection === 'query') actions.setActiveSelection(null);
+          if (selectionType === 'query') actions.setActiveSelection(null);
           else actions.setActiveSelection('query');
         }}
         label={querySelectionToString(querySelection)}

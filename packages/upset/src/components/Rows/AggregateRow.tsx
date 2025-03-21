@@ -72,7 +72,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const activeSelection = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(activeSelectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
   const selected = useRecoilValue(aggregateSelectedCount(aggregateRow));
@@ -96,7 +96,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     <g
       id={aggregateRow.id}
       onClick={() => {
-        if (aggregateRow && currentIntersection?.id === aggregateRow.id && activeSelection === 'row') {
+        if (aggregateRow && currentIntersection?.id === aggregateRow.id && selectionType === 'row') {
           actions.setSelected(null);
           actions.setActiveSelection(null);
         } else {

@@ -31,7 +31,7 @@ export const QueryInterface = () => {
 
   const atts = useRecoilValue(queryColumnsSelector);
   const currentSelection = useRecoilValue(currentQuerySelection);
-  const activeSelection = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(activeSelectionSelector);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const attTypes = useRecoilValue(attTypesSelector);
 
@@ -65,7 +65,7 @@ export const QueryInterface = () => {
   const saveOrClear = useCallback(() => {
     if (currentSelection) {
       actions.setQuerySelection(null);
-      if (activeSelection === 'query') actions.setActiveSelection(null);
+      if (selectionType === 'query') actions.setActiveSelection(null);
       setAttField(undefined);
       setTypeField(undefined);
       setQueryField(undefined);
@@ -80,7 +80,7 @@ export const QueryInterface = () => {
       });
       actions.setActiveSelection('query');
     }
-  }, [attField, typeField, queryField, atts, actions, currentSelection, activeSelection]);
+  }, [attField, typeField, queryField, atts, actions, currentSelection, selectionType]);
 
   return atts.length > 0 ? (
     <Box css={{ marginTop: '10px' }}>

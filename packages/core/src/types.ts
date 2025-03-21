@@ -485,7 +485,7 @@ export type UpsetConfig = {
    * Which of the 3 selection methods is currently active in the element view
    * (values are stored in rowSelection, vegaSelection, and querySelection above)
    */
-  activeSelection: 'row' | 'vega' | 'query' | null;
+  selectionType: 'row' | 'vega' | 'query' | null;
   version: '0.1.4';
   userAltText: AltText | null;
   /**

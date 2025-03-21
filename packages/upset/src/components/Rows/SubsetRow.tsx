@@ -30,7 +30,7 @@ type Props = {
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const activeSelection = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(activeSelectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const selected = useRecoilValue(subsetSelectedCount(subset.id));
 
@@ -58,7 +58,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       id={subset.id}
       onClick={
         () => {
-          if (currentIntersection?.id === subset.id && activeSelection === 'row') { // if the row is already selected, deselect it
+          if (currentIntersection?.id === subset.id && selectionType === 'row') { // if the row is already selected, deselect it
             setCurrentIntersection(null);
             setColumnSelect([]);
             setHover(subset.id);

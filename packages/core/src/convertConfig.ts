@@ -315,17 +315,17 @@ function convert0_1_3(config: Version0_1_3): UpsetConfig {
   if (config.elementSelection?.type === 'numerical') {
     (config as unknown as UpsetConfig).querySelection = null;
     (config as unknown as UpsetConfig).vegaSelection = config.elementSelection.query;
-    if (config.elementSelection.active) (config as unknown as UpsetConfig).activeSelection = 'vega';
-    else (config as unknown as UpsetConfig).activeSelection = config.selected ? 'row' : null;
+    if (config.elementSelection.active) (config as unknown as UpsetConfig).selectionType = 'vega';
+    else (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
   } else if (config.elementSelection?.type === 'element') {
     (config as unknown as UpsetConfig).vegaSelection = null;
     (config as unknown as UpsetConfig).querySelection = config.elementSelection.query;
-    if (config.elementSelection.active) (config as unknown as UpsetConfig).activeSelection = 'query';
-    else (config as unknown as UpsetConfig).activeSelection = config.selected ? 'row' : null;
+    if (config.elementSelection.active) (config as unknown as UpsetConfig).selectionType = 'query';
+    else (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
   } else {
     (config as unknown as UpsetConfig).vegaSelection = null;
     (config as unknown as UpsetConfig).querySelection = null;
-    (config as unknown as UpsetConfig).activeSelection = config.selected ? 'row' : null;
+    (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
   }
   delete (config as any).elementSelection;
   delete (config as any).selected;

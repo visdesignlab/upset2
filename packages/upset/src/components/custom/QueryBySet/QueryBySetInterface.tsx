@@ -47,7 +47,7 @@ export const QueryBySetInterface = () => {
   const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const activeSelection = useRecoilValue(activeSelectionSelector);
+  const SelectionType = useRecoilValue(activeSelectionSelector);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
@@ -174,7 +174,7 @@ export const QueryBySetInterface = () => {
 
     // We need to clear the current selection in case the selected row disappears after query
     if (currentIntersection !== null) actions.setSelected(null);
-    if (activeSelection === 'row') actions.setActiveSelection(null);
+    if (SelectionType === 'row') actions.setActiveSelection(null);
     actions.addSetQuery(query, queryResultString);
     setColumnSelect([]); // Column select doesn't clear itself for some reason
     setQueryInterface(false);

@@ -347,7 +347,7 @@ const setVegaSelectionAction = register<VegaSelection | null>(
 const setSelectionTypeAction = register<SelectionType | null>(
   'set-selection-type',
   (state: UpsetConfig, selectionType) => {
-    state.activeSelection = selectionType;
+    state.selectionType = selectionType;
     return state;
   },
 );

@@ -27,7 +27,7 @@ export const currentQuerySelection = selector<QuerySelection | null>({
  */
 export const activeSelectionSelector = selector<SelectionType | null>({
   key: 'config-active-selection',
-  get: ({ get }) => get(upsetConfigAtom).activeSelection,
+  get: ({ get }) => get(upsetConfigAtom).selectionType,
 });
 
 /**
@@ -38,12 +38,12 @@ export const elementSelectionSelector = selector<UpsetSelection | null>({
   key: 'config-element-selection',
   get: ({ get }) => {
     const {
-      activeSelection, vegaSelection, querySelection, rowSelection,
+      SelectionType, vegaSelection, querySelection, rowSelection,
     } = get(upsetConfigAtom);
 
-    if (activeSelection === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
-    if (activeSelection === 'query' && querySelection) return { type: 'query', selection: querySelection };
-    if (activeSelection === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
+    if (SelectionType === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
+    if (SelectionType === 'query' && querySelection) return { type: 'query', selection: querySelection };
+    if (SelectionType === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
     return null;
   },
 });
