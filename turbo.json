@@ -8,14 +8,6 @@
         "**/dist/**"
       ]
     },
-    "userdocs#build": {
-      "dependsOn": [
-        "^builddocs"
-      ],
-      "outputs": [
-        "**/build/**"
-      ]
-    },
     "dev": {
       "cache": false,
       "persistent": true

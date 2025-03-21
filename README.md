@@ -453,4 +453,4 @@ Changes to the `UpsetConfig` type require writing config conversion functions to
 
 When adding a new feature, ensure that your additions are well documented following [JSDoc style annotations](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html). Also, please add testing via Playwright, outlined in [#end-to-end-e2e-testing](#end-to-end-e2e-testing).
 
-To build the documentation locally, use the command: `yarn doc`. The default file output is at `/docs`.
+To build the documentation locally, use the command: `yarn build:docs`. Then, use `yarn dev:docs` to visualize the results.

@@ -97,7 +97,7 @@ export type AttributeList = {
 }
 
 /**
- * List of attributes for a subset ({attr1, attr2, deviation, degree, etc})
+ * List of attributes for a subset ([attr1, attr2, deviation, degree, etc])
  */
 export type Attributes = AttributeList & {
   /**
