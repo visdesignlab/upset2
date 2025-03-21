@@ -13,7 +13,7 @@ import { upsetConfigAtom } from './upsetConfigAtoms';
  */
 export const currentIntersectionSelector = selector<Row | null | undefined>({
   key: 'current-intersection',
-  get: ({ get }) => get(upsetConfigAtom).selected,
+  get: ({ get }) => get(upsetConfigAtom).rowSelection,
   // No setter; this should be set by calling actions.setSelected(intersection)
 });
 
