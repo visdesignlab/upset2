@@ -17,6 +17,7 @@ import { BookmarkStar } from '../Columns/BookmarkStar';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
 import { subsetSelectedCount } from '../../atoms/elementsSelectors';
+import { UpsetActions } from '../../provenance';
 
 type Props = {
   subset: Subset;
@@ -33,7 +34,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const selected = useRecoilValue(subsetSelectedCount(subset.id));
 
   // Use trrack action for current intersection
-  const { actions } = useContext(
+  const { actions }: {actions: UpsetActions} = useContext(
     ProvenanceContext,
   );
   /**
@@ -43,6 +44,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
    */
   function setCurrentIntersection(inter: Row | null) {
     actions.setSelected(inter);
+    actions.setActiveSelection('row');
   }
 
   const setColumnHighlight = useSetRecoilState(columnHoverAtom);

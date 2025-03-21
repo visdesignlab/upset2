@@ -8,11 +8,13 @@ import { ProvenanceContext } from './Root';
 import { currentIntersectionSelector } from '../atoms/config/currentIntersectionAtom';
 import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
+import { activeSelectionSelector } from '../atoms/elementsSelectors';
 
 export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions } = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
+  const activeSelection = useRecoilValue(activeSelectionSelector);
   const queryBySetsInterfaceOpen = useRecoilValue(queryBySetsInterfaceAtom);
 
   let { height } = dimensions;
@@ -31,7 +33,10 @@ export const SvgBase: FC = ({ children }) => {
         height: 100%;
         width: 100%;
       `}
-      onClick={() => { if (selectedIntersection != null) actions.setSelected(null); }}
+      onClick={() => {
+        if (selectedIntersection != null) actions.setSelected(null);
+        if (activeSelection === 'row') actions.setActiveSelection(null);
+      }}
     >
       <svg id="upset-svg" height={height + 50 * dimensions.margin} width={dimensions.width + 2 * dimensions.margin} xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" fontFamily="Roboto, Arial">
         <g transform={translate(dimensions.margin)}>

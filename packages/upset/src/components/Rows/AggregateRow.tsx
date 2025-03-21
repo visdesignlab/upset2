@@ -9,7 +9,9 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
 import translate from '../../utils/transform';
-import { highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY } from '../../utils/styles';
+import {
+  highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
+} from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
 import { BookmarkStar } from '../Columns/BookmarkStar';
@@ -92,12 +94,15 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   return (
     <g
       id={aggregateRow.id}
-      onClick={() =>
-        aggregateRow &&
-        (currentIntersection?.id === aggregateRow.id
-          ? actions.setSelected(null)
-          : actions.setSelected(aggregateRow))
-      }
+      onClick={() => {
+        if (aggregateRow && currentIntersection?.id === aggregateRow.id) {
+          actions.setSelected(null);
+          actions.setActiveSelection(null);
+        } else {
+          actions.setSelected(aggregateRow);
+          actions.setActiveSelection('row');
+        }
+      }}
       css={mousePointer}
     >
       <g
