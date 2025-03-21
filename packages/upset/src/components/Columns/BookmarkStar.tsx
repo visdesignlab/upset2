@@ -10,7 +10,7 @@ import translate from '../../utils/transform';
 import {
   bookmarkedColorSelector,
   isRowBookmarkedSelector,
-} from '../../atoms/config/currentIntersectionAtom';
+} from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
 
 type Props = {

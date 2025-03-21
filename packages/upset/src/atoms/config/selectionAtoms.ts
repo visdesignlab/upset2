@@ -1,8 +1,52 @@
-import { Bookmark, Row } from '@visdesignlab/upset2-core';
+import {
+  Bookmark, QuerySelection, Row, SelectionType, UpsetSelection, VegaSelection,
+} from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
+
+/**
+ * The current vega selection from the config
+ */
+export const currentVegaSelection = selector<VegaSelection | null>({
+  key: 'vega-selection-selector',
+  get: ({ get }) => get(upsetConfigAtom).vegaSelection,
+});
+
+/**
+ * The current query selection from the config
+ */
+export const currentQuerySelection = selector<QuerySelection | null>({
+  key: 'query-selection-selector',
+  get: ({ get }) => get(upsetConfigAtom).querySelection,
+});
+
+/**
+ * The currently active selection type from the config
+ */
+export const activeSelectionSelector = selector<SelectionType | null>({
+  key: 'config-active-selection',
+  get: ({ get }) => get(upsetConfigAtom).activeSelection,
+});
+
+/**
+ * Gets the current selection of elements
+ * @returns The current selection of elements
+ */
+export const elementSelectionSelector = selector<UpsetSelection | null>({
+  key: 'config-element-selection',
+  get: ({ get }) => {
+    const {
+      activeSelection, vegaSelection, querySelection, rowSelection,
+    } = get(upsetConfigAtom);
+
+    if (activeSelection === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
+    if (activeSelection === 'query' && querySelection) return { type: 'query', selection: querySelection };
+    if (activeSelection === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
+    return null;
+  },
+});
 
 /**
  * Represents the currently selected intersection,

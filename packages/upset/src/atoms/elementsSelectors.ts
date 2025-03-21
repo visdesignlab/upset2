@@ -3,64 +3,18 @@ import {
   BaseIntersection,
   Item, Row, flattenedOnlyRows, getItems,
   FilteredItems,
-  VegaSelection,
-  QuerySelection,
   filterItems,
-  UpsetSelection,
-  SelectionType,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
-  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector,
-} from './config/currentIntersectionAtom';
+  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, elementSelectionSelector, nextColorSelector,
+} from './config/selectionAtoms';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
 import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
-
-/**
- * The current vega selection from the config
- */
-export const currentVegaSelection = selector<VegaSelection | null>({
-  key: 'vega-selection-selector',
-  get: ({ get }) => get(upsetConfigAtom).vegaSelection,
-});
-
-/**
- * The current query selection from the config
- */
-export const currentQuerySelection = selector<QuerySelection | null>({
-  key: 'query-selection-selector',
-  get: ({ get }) => get(upsetConfigAtom).querySelection,
-});
-
-/**
- * The currently active selection type from the config
- */
-export const activeSelectionSelector = selector<SelectionType | null>({
-  key: 'config-active-selection',
-  get: ({ get }) => get(upsetConfigAtom).activeSelection,
-});
-
-/**
- * Gets the current selection of elements
- * @returns The current selection of elements
- */
-export const elementSelectionSelector = selector<UpsetSelection | null>({
-  key: 'config-element-selection',
-  get: ({ get }) => {
-    const {
-      activeSelection, vegaSelection, querySelection, rowSelection,
-    } = get(upsetConfigAtom);
-
-    if (activeSelection === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
-    if (activeSelection === 'query' && querySelection) return { type: 'query', selection: querySelection };
-    if (activeSelection === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
-    return null;
-  },
-});
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.

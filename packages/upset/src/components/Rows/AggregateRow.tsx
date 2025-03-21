@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import translate from '../../utils/transform';
 import {
   highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,

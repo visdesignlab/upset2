@@ -24,8 +24,7 @@ import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { UpsetActions, UpsetProvenance } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
-import { currentIntersectionSelector } from '../../../atoms/config/currentIntersectionAtom';
-import { activeSelectionSelector } from '../../../atoms/elementsSelectors';
+import { activeSelectionSelector, currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;

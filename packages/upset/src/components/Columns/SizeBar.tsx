@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 
 import {
   bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
-} from '../../atoms/config/currentIntersectionAtom';
+} from '../../atoms/config/selectionAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';

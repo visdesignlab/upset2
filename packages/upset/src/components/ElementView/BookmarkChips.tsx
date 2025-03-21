@@ -14,15 +14,17 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import CodeIcon from '@mui/icons-material/Code';
 import {
+  activeSelectionSelector,
   bookmarkedColorPalette,
   bookmarkSelector,
   currentIntersectionSelector,
+  currentQuerySelection,
+  currentVegaSelection,
   nextColorSelector,
-} from '../../atoms/config/currentIntersectionAtom';
+} from '../../atoms/config/selectionAtoms';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { activeSelectionSelector, currentQuerySelection, currentVegaSelection } from '../../atoms/elementsSelectors';
 import { elementSelectionColor } from '../../utils/styles';
 
 /**

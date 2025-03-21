@@ -10,10 +10,10 @@ import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
-import { activeSelectionSelector, currentQuerySelection } from '../../atoms/elementsSelectors';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
+import { activeSelectionSelector, currentQuerySelection } from '../../atoms/config/selectionAtoms';
 
 /**
  * Default type for the element query

@@ -1,7 +1,7 @@
 import { atom, selector } from 'recoil';
 import { SetQuery } from '@visdesignlab/upset2-core';
 import { upsetConfigAtom } from './upsetConfigAtoms';
-import { bookmarkSelector, currentIntersectionSelector } from './currentIntersectionAtom';
+import { bookmarkSelector, currentIntersectionSelector } from './selectionAtoms';
 import { rowsSelector } from '../renderRowsAtom';
 
 /**

@@ -10,14 +10,14 @@ import { useCallback, useMemo, useState } from 'react';
 import AddchartIcon from '@mui/icons-material/Addchart';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
-  elementSelectionSelector, selectedItemsCounter,
+  selectedItemsCounter,
   selectedOrBookmarkedItemsSelector,
 } from '../../atoms/elementsSelectors';
 import { BookmarkChips } from './BookmarkChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { bookmarkSelector, currentIntersectionSelector, elementSelectionSelector } from '../../atoms/config/selectionAtoms';
 import { Sidebar } from '../custom/Sidebar';
 import { UpsetHeading } from '../custom/theme/heading';
 import { AddPlotDialog } from './AddPlotDialog';

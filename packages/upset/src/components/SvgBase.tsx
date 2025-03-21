@@ -5,10 +5,9 @@ import { useRecoilValue } from 'recoil';
 import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { ProvenanceContext } from './Root';
-import { currentIntersectionSelector } from '../atoms/config/currentIntersectionAtom';
+import { activeSelectionSelector, currentIntersectionSelector } from '../atoms/config/selectionAtoms';
 import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
-import { activeSelectionSelector } from '../atoms/elementsSelectors';
 
 export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);

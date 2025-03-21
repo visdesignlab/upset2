@@ -12,13 +12,12 @@ import {
   VegaSelection,
 } from '@visdesignlab/upset2-core';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import {
-  activeSelectionSelector, currentVegaSelection, elementSelectionSelector, processedItemsSelector,
-} from '../../atoms/elementsSelectors';
+import { processedItemsSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
+import { activeSelectionSelector, currentVegaSelection } from '../../atoms/config/selectionAtoms';
 
 const BRUSH_NAME = 'brush';
 
@@ -59,9 +58,8 @@ export const ElementVisualization = () => {
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
   const items = useRecoilValue(processedItemsSelector);
-  const numericalQuery = useRecoilValue(currentVegaSelection);
-  const vegaSelection = useRecoilValue(elementSelectionSelector);
-  const activeSelection = useRecoilValue(activeSelectionSelector);
+  const selection = useRecoilValue(currentVegaSelection);
+  const selectionType = useRecoilValue(activeSelectionSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -69,7 +67,7 @@ export const ElementVisualization = () => {
    * Internal State
    */
 
-  const draftSelection = useRef(numericalQuery);
+  const draftSelection = useRef(selection);
   const preventSignal = useRef(false);
   const [views, setViews] = useState<{view: View, plot: Plot}[]>([]);
   const currentClick = useRef<Plot |null>(null);
@@ -106,27 +104,27 @@ export const ElementVisualization = () => {
     if (
       draftSelection.current
       && Object.keys(draftSelection.current).length > 0
-      && !vegaSelectionsEqual(draftSelection.current, numericalQuery ?? undefined)
+      && !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
     ) {
       actions.setVegaSelection(draftSelection.current);
-    } else if (vegaSelection) {
+    } else if (selection) {
       actions.setVegaSelection(null);
-      if (activeSelection === 'vega') actions.setActiveSelection(null);
+      if (selectionType === 'vega') actions.setActiveSelection(null);
     }
     draftSelection.current = null;
-  }, [draftSelection.current, numericalQuery, vegaSelection, actions]);
+  }, [draftSelection.current, selection, actions]);
 
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
     preventSignal.current = true;
     const promises: Promise<void>[] = [];
     views.forEach(({ view }) => {
-      promises.push(signalView(view, numericalQuery ?? {}, true));
+      promises.push(signalView(view, selection ?? {}, true));
     });
     Promise.allSettled(promises).then(() => {
       preventSignal.current = false;
     });
-  }, [views, numericalQuery]);
+  }, [views, selection]);
 
   return (
     <Box
