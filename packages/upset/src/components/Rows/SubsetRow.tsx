@@ -8,7 +8,7 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import { activeSelectionSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -30,6 +30,7 @@ type Props = {
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const activeSelection = useRecoilValue(activeSelectionSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const selected = useRecoilValue(subsetSelectedCount(subset.id));
 
@@ -57,7 +58,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       id={subset.id}
       onClick={
         () => {
-          if (currentIntersection?.id === subset.id) { // if the row is already selected, deselect it
+          if (currentIntersection?.id === subset.id && activeSelection === 'row') { // if the row is already selected, deselect it
             setCurrentIntersection(null);
             setColumnSelect([]);
             setHover(subset.id);

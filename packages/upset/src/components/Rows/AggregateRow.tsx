@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import { activeSelectionSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import translate from '../../utils/transform';
 import {
   highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
@@ -72,6 +72,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const activeSelection = useRecoilValue(activeSelectionSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
   const selected = useRecoilValue(aggregateSelectedCount(aggregateRow));
@@ -95,7 +96,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     <g
       id={aggregateRow.id}
       onClick={() => {
-        if (aggregateRow && currentIntersection?.id === aggregateRow.id) {
+        if (aggregateRow && currentIntersection?.id === aggregateRow.id && activeSelection === 'row') {
           actions.setSelected(null);
           actions.setActiveSelection(null);
         } else {

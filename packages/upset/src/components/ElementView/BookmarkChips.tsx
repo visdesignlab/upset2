@@ -69,7 +69,7 @@ export const BookmarkChips = () => {
             '.MuiChip-icon': {
               color: colorPallete[bookmark.id],
             },
-            backgroundColor: bookmark.id === currentIntersection?.id ? 'rgba(0,0,0,0.2)' : 'default',
+            backgroundColor: bookmark.id === currentIntersection?.id && activeSelection === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
           })}
           key={bookmark.id}
           aria-label={`Bookmarked intersection ${bookmark.label}, size ${bookmark.size}`}
