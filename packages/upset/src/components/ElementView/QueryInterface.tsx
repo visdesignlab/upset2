@@ -65,7 +65,7 @@ export const QueryInterface = () => {
   const saveOrClear = useCallback(() => {
     if (currentSelection) {
       actions.setQuerySelection(null);
-      if (selectionType === 'query') actions.setActiveSelection(null);
+      if (selectionType === 'query') actions.setSelectionType(null);
       setAttField(undefined);
       setTypeField(undefined);
       setQueryField(undefined);
@@ -78,7 +78,7 @@ export const QueryInterface = () => {
         type: typeField as ElementQueryType || ElementQueryType.EQUALS,
         query: queryField,
       });
-      actions.setActiveSelection('query');
+      actions.setSelectionType('query');
     }
   }, [attField, typeField, queryField, atts, actions, currentSelection, selectionType]);
 

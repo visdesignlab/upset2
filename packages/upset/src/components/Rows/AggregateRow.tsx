@@ -99,10 +99,10 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       onClick={() => {
         if (aggregateRow && currentIntersection?.id === aggregateRow.id && selectionType === 'row') {
           actions.setSelected(null);
-          actions.setActiveSelection(null);
+          actions.setSelectionType(null);
         } else {
           actions.setSelected(aggregateRow);
-          actions.setActiveSelection('row');
+          actions.setSelectionType('row');
         }
       }}
       css={mousePointer}

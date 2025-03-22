@@ -51,10 +51,10 @@ export const BookmarkChips = () => {
   function chipClicked(bookmark: Bookmark) {
     if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
       actions.setSelected(null);
-      actions.setActiveSelection(null);
+      actions.setSelectionType(null);
     } else {
       actions.setSelected(rows[bookmark.id]);
-      actions.setActiveSelection('row');
+      actions.setSelectionType('row');
     }
   }
 
@@ -87,7 +87,7 @@ export const BookmarkChips = () => {
           onDelete={() => {
             if (currentIntersection?.id === bookmark.id) {
               actions.setSelected(null);
-              if (selectionType === 'row') actions.setActiveSelection(null);
+              if (selectionType === 'row') actions.setSelectionType(null);
             }
             actions.removeBookmark(bookmark);
           }}
@@ -116,7 +116,7 @@ export const BookmarkChips = () => {
         }}
         onClick={() => {
           actions.setSelected(null);
-          if (selectionType === 'row') actions.setActiveSelection(null);
+          if (selectionType === 'row') actions.setSelectionType(null);
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
         onDelete={() => {
@@ -142,8 +142,8 @@ export const BookmarkChips = () => {
         icon={<WorkspacesIcon fontSize={'1em' as any} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
         onClick={() => {
-          if (selectionType === 'vega') actions.setActiveSelection(null);
-          else actions.setActiveSelection('vega');
+          if (selectionType === 'vega') actions.setSelectionType(null);
+          else actions.setSelectionType('vega');
         }}
         label={vegaSelectionToString(vegaSelection)}
       />
@@ -161,8 +161,8 @@ export const BookmarkChips = () => {
         icon={<CodeIcon fontSize={'1em' as any} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
         onClick={() => {
-          if (selectionType === 'query') actions.setActiveSelection(null);
-          else actions.setActiveSelection('query');
+          if (selectionType === 'query') actions.setSelectionType(null);
+          else actions.setSelectionType('query');
         }}
         label={querySelectionToString(querySelection)}
       />

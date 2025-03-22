@@ -46,7 +46,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
    */
   function setCurrentIntersection(inter: Row | null) {
     actions.setSelected(inter);
-    actions.setActiveSelection('row');
+    actions.setSelectionType('row');
   }
 
   const setColumnHighlight = useSetRecoilState(columnHoverAtom);

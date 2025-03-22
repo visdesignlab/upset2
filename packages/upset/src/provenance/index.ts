@@ -516,15 +516,15 @@ export function getActions(provenance: UpsetProvenance) {
      */
     setVegaSelection: (selection: VegaSelection | null) => provenance.apply(
       // Object.keys check is for numerical queries, which can come out of vega as {}
-      selection && Object.keys(selection.query).length > 0 ?
-        `Selected elements based on the following keys: ${Object.keys(selection.query).join(' ')}`
+      selection && Object.keys(selection).length > 0 ?
+        `Selected elements based on the following keys: ${Object.keys(selection).join(' ')}`
         : 'Cleared element selection',
       setVegaSelectionAction(selection),
     ),
     /**
      * Sets the type of the current active selection
      */
-    setActiveSelection: (selectionType: SelectionType | null) => provenance.apply(
+    setSelectionType: (selectionType: SelectionType | null) => provenance.apply(
       selectionType ? `Set selection type to ${selectionType}` : 'Deselected current selection',
       setSelectionTypeAction(selectionType),
     ),

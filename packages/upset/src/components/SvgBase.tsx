@@ -34,7 +34,7 @@ export const SvgBase: FC = ({ children }) => {
       `}
       onClick={() => {
         if (selectedIntersection != null) actions.setSelected(null);
-        if (selectionType === 'row') actions.setActiveSelection(null);
+        if (selectionType === 'row') actions.setSelectionType(null);
       }}
     >
       <svg id="upset-svg" height={height + 50 * dimensions.margin} width={dimensions.width + 2 * dimensions.margin} xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" fontFamily="Roboto, Arial">

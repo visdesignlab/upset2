@@ -107,9 +107,10 @@ export const ElementVisualization = () => {
       && !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
     ) {
       actions.setVegaSelection(draftSelection.current);
+      if (selectionType !== 'vega') actions.setSelectionType('vega');
     } else if (selection) {
       actions.setVegaSelection(null);
-      if (selectionType === 'vega') actions.setActiveSelection(null);
+      if (selectionType === 'vega') actions.setSelectionType(null);
     }
     draftSelection.current = null;
   }, [draftSelection.current, selection, actions]);

@@ -174,7 +174,7 @@ export const QueryBySetInterface = () => {
 
     // We need to clear the current selection in case the selected row disappears after query
     if (currentIntersection !== null) actions.setSelected(null);
-    if (selectionType === 'row') actions.setActiveSelection(null);
+    if (selectionType === 'row') actions.setSelectionType(null);
     actions.addSetQuery(query, queryResultString);
     setColumnSelect([]); // Column select doesn't clear itself for some reason
     setQueryInterface(false);
