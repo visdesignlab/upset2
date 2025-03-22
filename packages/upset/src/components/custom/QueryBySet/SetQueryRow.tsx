@@ -113,7 +113,7 @@ export const SetQueryRow: FC = () => {
             ))}
           </g>
           <g transform={translate(0, dimensions.body.rowHeight - 2)}>
-            <SizeBar size={setQuerySize} selected={0} />
+            <SizeBar size={setQuerySize} vegaSelected={0} querySelected={0} />
           </g>
         </g>
       </g>

@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { activeSelectionSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import { selectionTypeSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import translate from '../../utils/transform';
 import {
   highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
@@ -72,10 +72,11 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(selectionTypeSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions } = useContext(ProvenanceContext);
-  const selected = useRecoilValue(aggregateSelectedCount(aggregateRow));
+  const vegaSelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }));
+  const querySelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'query' }));
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -175,15 +176,8 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         )}
       >
         <BookmarkStar row={aggregateRow} />
-        <SizeBar
-          row={aggregateRow}
-          size={aggregateRow.size}
-          selected={selected}
-        />
-        <AttributeBars
-          attributes={aggregateRow.attributes}
-          row={aggregateRow}
-        />
+        <SizeBar row={aggregateRow} size={aggregateRow.size} vegaSelected={vegaSelected} querySelected={querySelected} />
+        <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>
   );

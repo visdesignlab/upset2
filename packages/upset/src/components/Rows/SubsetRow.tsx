@@ -8,7 +8,7 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { activeSelectionSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import { selectionTypeSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -30,9 +30,10 @@ type Props = {
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(selectionTypeSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
-  const selected = useRecoilValue(subsetSelectedCount(subset.id));
+  const vegaSelected = useRecoilValue(subsetSelectedCount({ id: subset.id, type: 'vega' }));
+  const querySelected = useRecoilValue(subsetSelectedCount({ id: subset.id, type: 'query' }));
 
   // Use trrack action for current intersection
   const { actions }: {actions: UpsetActions} = useContext(
@@ -97,7 +98,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       />
       <Matrix sets={visibleSets} subset={subset} />
       <BookmarkStar row={subset} />
-      <SizeBar size={subset.size} row={subset} selected={selected} />
+      <SizeBar size={subset.size} row={subset} vegaSelected={vegaSelected} querySelected={querySelected} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
   );

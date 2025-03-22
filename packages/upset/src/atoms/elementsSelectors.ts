@@ -4,10 +4,13 @@ import {
   Item, Row, flattenedOnlyRows, getItems,
   FilteredItems,
   filterItems,
+  filterByVega,
+  filterByQuery,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
-  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, elementSelectionSelector, nextColorSelector,
+  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, currentQuerySelection, currentVegaSelection, elementSelectionSelector, nextColorSelector,
 } from './config/selectionAtoms';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
@@ -188,25 +191,50 @@ export const selectedItemsCounter = selector<number>({
 });
 
 /**
- * Counts the number of selected items in a subset.
+ * Counts the number of selected items in a subset using either the current vega or query selection.
+ * @param id - The ID of the subset to count selected items for.
+ * @param type - The type of selection ('vega' or 'query') to use for filtering.
+ * @returns The number of selected items in the subset
  */
-export const subsetSelectedCount = selectorFamily<number, string>({
+export const subsetSelectedCount = selectorFamily<number, {id: string, type: SelectionType | null}>({
   key: 'subset-selected',
-  get: (id: string) => ({ get }) => filterItems(get(rowItemsSelector(id)), get(elementSelectionSelector)).included.length,
+  get: ({ id, type }) => ({ get }) => {
+    if (!id) return 0;
+    const rowItems = get(rowItemsSelector(id));
+
+    if (type === 'vega') {
+      const selection = get(currentVegaSelection);
+      if (!selection) return 0;
+      return filterByVega(rowItems, selection).included.length;
+    }
+
+    if (type === 'query') {
+      const selection = get(currentQuerySelection);
+      if (!selection) return 0;
+      return filterByQuery(rowItems, selection).included.length;
+    }
+
+    // If the selection type is 'row' or null, no items are selected
+    return 0;
+  },
 });
 
 /**
- * Counts the number of selected items in an aggregate.
- * Selection is taken from the current element selection in the config.
+ * Counts the number of selected items in an aggregate using either the current vega or query selection.
+ * This selector recursively counts the selected items in all sub-aggregates and subsets.
+ * It returns the total count of selected items across all levels of the aggregate.
+ * * @param agg - The aggregate to count selected items for.
+ * @param type - The type of selection ('vega' or 'query') to use for filtering.
+ * @returns The total number of selected items in the aggregate
  */
-export const aggregateSelectedCount = selectorFamily<number, Aggregate>({
+export const aggregateSelectedCount = selectorFamily<number, {agg: Aggregate, type: SelectionType | null}>({
   key: 'aggregate-selected',
-  get: (agg: Aggregate) => ({ get }) => {
+  get: ({ agg, type }) => ({ get }) => {
     let total = 0;
     Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate }).forEach(([id, value]) => {
       total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
-        ? get(aggregateSelectedCount(value as Aggregate))
-        : get(subsetSelectedCount(id));
+        ? get(aggregateSelectedCount({ agg: value as Aggregate, type }))
+        : get(subsetSelectedCount({ id, type }));
     });
     return total;
   },
