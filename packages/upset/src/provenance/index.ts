@@ -328,7 +328,7 @@ const setPlotInformationAction = register<PlotInformation>(
   },
 );
 
-const setSelectedAction = register<Row | null>(
+const setRowSelectionAction = register<Row | null>(
   'select-intersection',
   (state: UpsetConfig, intersection) => {
     state.rowSelection = intersection;
@@ -504,11 +504,11 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
-    setSelected: (intersection: Row | null) => provenance.apply(
+    setRowSelection: (intersection: Row | null) => provenance.apply(
       intersection ?
         `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
         'Deselect intersection',
-      setSelectedAction(intersection),
+      setRowSelectionAction(intersection),
     ),
     /**
      * Sets the global vega brush in use for the plot

@@ -50,11 +50,11 @@ export const BookmarkChips = () => {
    */
   function chipClicked(bookmark: Bookmark) {
     if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
-      actions.setSelected(null);
+      actions.setRowSelection(null);
       actions.setSelectionType(null);
     } else {
-      actions.setSelected(rows[bookmark.id]);
-      actions.setSelectionType('row');
+      if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
+      if (selectionType !== 'row') actions.setSelectionType('row');
     }
   }
 
@@ -86,7 +86,7 @@ export const BookmarkChips = () => {
           }}
           onDelete={() => {
             if (currentIntersection?.id === bookmark.id) {
-              actions.setSelected(null);
+              actions.setRowSelection(null);
               if (selectionType === 'row') actions.setSelectionType(null);
             }
             actions.removeBookmark(bookmark);
@@ -115,7 +115,7 @@ export const BookmarkChips = () => {
           }
         }}
         onClick={() => {
-          actions.setSelected(null);
+          actions.setRowSelection(null);
           if (selectionType === 'row') actions.setSelectionType(null);
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}

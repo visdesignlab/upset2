@@ -8,10 +8,11 @@ import { ProvenanceContext } from './Root';
 import { selectionTypeSelector, currentIntersectionSelector } from '../atoms/config/selectionAtoms';
 import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
+import { UpsetActions } from '../provenance';
 
 export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
   const selectionType = useRecoilValue(selectionTypeSelector);
   const queryBySetsInterfaceOpen = useRecoilValue(queryBySetsInterfaceAtom);
@@ -33,7 +34,7 @@ export const SvgBase: FC = ({ children }) => {
         width: 100%;
       `}
       onClick={() => {
-        if (selectedIntersection != null) actions.setSelected(null);
+        if (selectedIntersection != null) actions.setRowSelection(null);
         if (selectionType === 'row') actions.setSelectionType(null);
       }}
     >

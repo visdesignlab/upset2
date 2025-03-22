@@ -19,6 +19,7 @@ import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
+import { UpsetActions } from '../../provenance';
 
 /**
  * Props for the AggregateRow component.
@@ -74,7 +75,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const selectionType = useRecoilValue(selectionTypeSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const vegaSelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }));
   const querySelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'query' }));
 
@@ -98,10 +99,10 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       id={aggregateRow.id}
       onClick={() => {
         if (aggregateRow && currentIntersection?.id === aggregateRow.id && selectionType === 'row') {
-          actions.setSelected(null);
+          actions.setRowSelection(null);
           actions.setSelectionType(null);
         } else {
-          actions.setSelected(aggregateRow);
+          actions.setRowSelection(aggregateRow);
           actions.setSelectionType('row');
         }
       }}

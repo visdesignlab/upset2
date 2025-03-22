@@ -45,7 +45,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
    * @param inter intersection to select
    */
   function setCurrentIntersection(inter: Row | null) {
-    actions.setSelected(inter);
+    actions.setRowSelection(inter);
     actions.setSelectionType('row');
   }
 
