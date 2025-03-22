@@ -17,7 +17,7 @@ import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
-import { activeSelectionSelector, currentVegaSelection } from '../../atoms/config/selectionAtoms';
+import { selectionTypeSelector, currentVegaSelection } from '../../atoms/config/selectionAtoms';
 
 const BRUSH_NAME = 'brush';
 
@@ -59,7 +59,7 @@ export const ElementVisualization = () => {
   const histograms = useRecoilValue(histogramSelector);
   const items = useRecoilValue(processedItemsSelector);
   const selection = useRecoilValue(currentVegaSelection);
-  const selectionType = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(selectionTypeSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 

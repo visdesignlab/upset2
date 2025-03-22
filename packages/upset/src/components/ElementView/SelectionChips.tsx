@@ -14,7 +14,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import CodeIcon from '@mui/icons-material/Code';
 import {
-  activeSelectionSelector,
+  selectionTypeSelector,
   bookmarkedColorPalette,
   bookmarkSelector,
   currentIntersectionSelector,
@@ -25,7 +25,7 @@ import {
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
-import { vegaSelectionColor } from '../../utils/styles';
+import { querySelectionColor, vegaSelectionColor } from '../../utils/styles';
 
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
@@ -42,7 +42,7 @@ export const BookmarkChips = () => {
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
-  const selectionType = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(selectionTypeSelector);
 
   /**
    * Handles when a chip in the bookmark stack is clicked
@@ -154,7 +154,7 @@ export const BookmarkChips = () => {
         sx={(theme) => ({
           margin: theme.spacing(0.5),
           '.MuiChip-icon': {
-            color: vegaSelectionColor,
+            color: querySelectionColor,
           },
           backgroundColor: selectionType === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
         })}

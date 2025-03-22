@@ -24,7 +24,7 @@ import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { UpsetActions, UpsetProvenance } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
-import { activeSelectionSelector, currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
+import { selectionTypeSelector, currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -47,7 +47,7 @@ export const QueryBySetInterface = () => {
   const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(activeSelectionSelector);
+  const selectionType = useRecoilValue(selectionTypeSelector);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
@@ -291,7 +291,7 @@ export const QueryBySetInterface = () => {
       </g>
       {/* Query size bar */}
       <g transform={translate(0, dimensions.body.rowHeight)}>
-        <SizeBar size={querySize} selected={0} />
+        <SizeBar size={querySize} vegaSelected={0} />
       </g>
       {/* Query result text */}
       <g

@@ -25,7 +25,7 @@ export const currentQuerySelection = selector<QuerySelection | null>({
 /**
  * The currently active selection type from the config
  */
-export const activeSelectionSelector = selector<SelectionType | null>({
+export const selectionTypeSelector = selector<SelectionType | null>({
   key: 'config-active-selection',
   get: ({ get }) => get(upsetConfigAtom).selectionType,
 });
