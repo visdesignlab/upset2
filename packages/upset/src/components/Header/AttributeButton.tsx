@@ -12,6 +12,7 @@ import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { ContextMenuItem } from '../../types';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 import { attributePlotsSelector } from '../../atoms/config/plotAtoms';
+import { UpsetActions } from '../../provenance';
 
 type Props = {
   /**
@@ -37,7 +38,7 @@ type Props = {
  */
 export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const { actions } = useContext(
+  const { actions }: {actions: UpsetActions} = useContext(
     ProvenanceContext,
   );
   const sortBy = useRecoilValue(sortBySelector);

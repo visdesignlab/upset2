@@ -16,6 +16,7 @@ import {
   DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH,
 } from '../../../utils/styles';
 import { setQuerySizeSelector } from '../../../atoms/setQuerySizeSelector';
+import { UpsetActions } from '../../../provenance';
 
 const REMOVE_ICON_SIZE = 16;
 
@@ -30,7 +31,7 @@ const REMOVE_ICON_SIZE = 16;
  * @returns {JSX.Element} The rendered SetQueryRow component.
  */
 export const SetQueryRow: FC = () => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQuery = useRecoilValue(setQuerySelector);
