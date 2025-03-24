@@ -27,8 +27,8 @@ export const defaultBackground = css`
 export const queryColorPalette = [
   '#2ca02c',
   '#9467bd',
-  '#8c564b',
   '#d62728',
+  '#8c564b',
   '#e377c2',
   '#7f7f7f',
   '#bcbd22',
