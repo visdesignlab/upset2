@@ -291,7 +291,7 @@ export const QueryBySetInterface = () => {
       </g>
       {/* Query size bar */}
       <g transform={translate(0, dimensions.body.rowHeight)}>
-        <SizeBar size={querySize} vegaSelected={0} />
+        <SizeBar size={querySize} vegaSelected={0} querySelected={0} />
       </g>
       {/* Query result text */}
       <g
