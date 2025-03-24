@@ -103,7 +103,7 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: nextColor,
           },
-          backgroundColor: 'rgba(0,0,0,0.2)',
+          backgroundColor: selectionType === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
         icon={<BookmarkBorderIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
@@ -117,8 +117,8 @@ export const BookmarkChips = () => {
           }
         }}
         onClick={() => {
-          actions.setRowSelection(null);
           if (selectionType === 'row') actions.setSelectionType(null);
+          else actions.setSelectionType('row');
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
         onDelete={() => {
