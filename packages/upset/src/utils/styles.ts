@@ -26,9 +26,9 @@ export const defaultBackground = css`
 /** Colors for selected & bookmarked intersections */
 export const queryColorPalette = [
   '#2ca02c',
-  '#d62728',
   '#9467bd',
   '#8c564b',
+  '#d62728',
   '#e377c2',
   '#7f7f7f',
   '#bcbd22',

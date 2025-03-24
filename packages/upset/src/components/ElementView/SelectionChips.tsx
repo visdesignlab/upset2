@@ -27,6 +27,8 @@ import { dataAtom } from '../../atoms/dataAtom';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
 import { querySelectionColor, vegaSelectionColor } from '../../utils/styles';
 
+const CHIP_ICON_FONT_SIZE = 'small';
+
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
  * with options to add and remove bookmarks
@@ -79,7 +81,7 @@ export const BookmarkChips = () => {
             }
           }}
           label={`${bookmark.label} - ${bookmark.size}`}
-          icon={<BookmarkIcon fontSize={'1em' as any} />}
+          icon={<BookmarkIcon fontSize={CHIP_ICON_FONT_SIZE} />}
           deleteIcon={<StarIcon />}
           onClick={() => {
             chipClicked(bookmark);
@@ -103,7 +105,7 @@ export const BookmarkChips = () => {
           },
           backgroundColor: 'rgba(0,0,0,0.2)',
         })}
-        icon={<BookmarkBorderIcon fontSize={'1em' as any} />}
+        icon={<BookmarkBorderIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -139,7 +141,7 @@ export const BookmarkChips = () => {
           },
           backgroundColor: selectionType === 'vega' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
-        icon={<WorkspacesIcon fontSize={'1em' as any} />}
+        icon={<WorkspacesIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
         onClick={() => {
           if (selectionType === 'vega') actions.setSelectionType(null);
@@ -158,7 +160,7 @@ export const BookmarkChips = () => {
           },
           backgroundColor: selectionType === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
-        icon={<CodeIcon fontSize={'1em' as any} />}
+        icon={<CodeIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
         onClick={() => {
           if (selectionType === 'query') actions.setSelectionType(null);
