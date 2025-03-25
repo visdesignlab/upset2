@@ -13,7 +13,7 @@ import { queryColumnsSelector } from '../../atoms/dataAtom';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
-import { selectionTypeSelector, currentQuerySelection } from '../../atoms/config/selectionAtoms';
+import { currentSelectionType, currentQuerySelection } from '../../atoms/config/selectionAtoms';
 
 /**
  * Default type for the element query
@@ -31,7 +31,7 @@ export const QueryInterface = () => {
 
   const atts = useRecoilValue(queryColumnsSelector);
   const currentSelection = useRecoilValue(currentQuerySelection);
-  const selectionType = useRecoilValue(selectionTypeSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const attTypes = useRecoilValue(attTypesSelector);
 

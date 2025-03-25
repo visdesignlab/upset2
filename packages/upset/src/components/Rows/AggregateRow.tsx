@@ -7,7 +7,7 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { selectionTypeSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import { currentSelectionType, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import translate from '../../utils/transform';
 import {
   highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
@@ -73,7 +73,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(selectionTypeSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const vegaSelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }));

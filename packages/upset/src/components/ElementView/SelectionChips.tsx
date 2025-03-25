@@ -14,7 +14,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import CodeIcon from '@mui/icons-material/Code';
 import {
-  selectionTypeSelector,
+  currentSelectionType,
   bookmarkedColorPalette,
   bookmarkSelector,
   currentIntersectionSelector,
@@ -44,7 +44,7 @@ export const BookmarkChips = () => {
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
-  const selectionType = useRecoilValue(selectionTypeSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
 
   /**
    * Handles when a chip in the bookmark stack is clicked

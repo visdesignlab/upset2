@@ -3,14 +3,13 @@ import {
   BaseIntersection,
   Item, Row, flattenedOnlyRows, getItems,
   FilteredItems,
-  filterItems,
   filterByVega,
   filterByQuery,
   SelectionType,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
-  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, currentQuerySelection, currentVegaSelection, elementSelectionSelector, nextColorSelector,
+  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection, nextColorSelector,
 } from './config/selectionAtoms';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
@@ -121,7 +120,18 @@ export const processedItemsSelector = selector<Item[]>({
  */
 const filteredItems = selector<FilteredItems>({
   key: 'filtered-items',
-  get: ({ get }) => filterItems(get(processedItemsSelector), get(elementSelectionSelector)),
+  get: ({ get }) => {
+    const type = get(currentSelectionType);
+    if (type === 'vega') {
+      const selection = get(currentVegaSelection);
+      if (selection) return filterByVega(get(processedItemsSelector), selection);
+    }
+    if (type === 'query') {
+      const selection = get(currentQuerySelection);
+      if (selection) return filterByQuery(get(processedItemsSelector), selection);
+    }
+    return { included: [], excluded: get(processedItemsSelector) };
+  },
 });
 
 /**
@@ -132,8 +142,8 @@ const filteredItems = selector<FilteredItems>({
 export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
-    const elementSelection = get(elementSelectionSelector);
-    if (elementSelection?.type === 'vega' || elementSelection?.type === 'query') return get(filteredItems).included;
+    const type = get(currentSelectionType);
+    if (type === 'vega' || type === 'query') return get(filteredItems).included;
     if (get(bookmarkIsVisibleSelector)) return get(bookmarkedItemsSelector);
     return get(processedItemsSelector);
   },

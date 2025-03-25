@@ -1,5 +1,5 @@
 import {
-  Bookmark, QuerySelection, Row, SelectionType, UpsetSelection, VegaSelection,
+  Bookmark, QuerySelection, Row, SelectionType, VegaSelection,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 
@@ -25,27 +25,9 @@ export const currentQuerySelection = selector<QuerySelection | null>({
 /**
  * The currently active selection type from the config
  */
-export const selectionTypeSelector = selector<SelectionType | null>({
+export const currentSelectionType = selector<SelectionType | null>({
   key: 'config-active-selection',
   get: ({ get }) => get(upsetConfigAtom).selectionType,
-});
-
-/**
- * Gets the current selection of elements
- * @returns The current selection of elements
- */
-export const elementSelectionSelector = selector<UpsetSelection | null>({
-  key: 'config-element-selection',
-  get: ({ get }) => {
-    const {
-      selectionType, vegaSelection, querySelection, rowSelection,
-    } = get(upsetConfigAtom);
-
-    if (selectionType === 'vega' && vegaSelection) return { type: 'vega', selection: vegaSelection };
-    if (selectionType === 'query' && querySelection) return { type: 'query', selection: querySelection };
-    if (selectionType === 'row' && rowSelection) return { type: 'row', selection: rowSelection };
-    return null;
-  },
 });
 
 /**

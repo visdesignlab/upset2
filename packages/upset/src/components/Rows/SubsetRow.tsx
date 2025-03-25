@@ -8,7 +8,7 @@ import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { selectionTypeSelector, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import { currentSelectionType, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
@@ -30,7 +30,7 @@ type Props = {
 export const SubsetRow: FC<Props> = ({ subset }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(selectionTypeSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
   const dimensions = useRecoilValue(dimensionsSelector);
   const vegaSelected = useRecoilValue(subsetSelectedCount({ id: subset.id, type: 'vega' }));
   const querySelected = useRecoilValue(subsetSelectedCount({ id: subset.id, type: 'query' }));

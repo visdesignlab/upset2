@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { ProvenanceContext } from './Root';
-import { selectionTypeSelector, currentIntersectionSelector } from '../atoms/config/selectionAtoms';
+import { currentSelectionType, currentIntersectionSelector } from '../atoms/config/selectionAtoms';
 import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
 import { UpsetActions } from '../provenance';
@@ -14,7 +14,7 @@ export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(selectionTypeSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
   const queryBySetsInterfaceOpen = useRecoilValue(queryBySetsInterfaceAtom);
 
   let { height } = dimensions;

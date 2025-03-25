@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil';
 
 import {
   bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
-  selectionTypeSelector,
+  currentSelectionType,
 } from '../../atoms/config/selectionAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
@@ -80,7 +80,7 @@ export const SizeBar: FC<Props> = ({
   const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const showText = useRecoilValue(showIntersectionSizesSelector);
-  const selectionType = useRecoilValue(selectionTypeSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
 
   /*
    * Constants

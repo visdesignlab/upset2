@@ -3,7 +3,6 @@ import {
   FilteredItems,
   VegaSelection,
   QuerySelection,
-  UpsetSelection,
 } from './types';
 
 /**
@@ -103,20 +102,6 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
     else excluded.push(item);
   });
   return { included, excluded };
-}
-
-/**
- * Filters items based on the current selection.
- * This function checks if the selection is of type 'vega' or 'query' and applies the corresponding filter function.
- * If no selection is active or the selection is 'row', all items are excluded.
- * @param items Items to filter
- * @param selection Current selection to filter by
- * @returns Filtered items, with 'included' and 'excluded' arrays
- */
-export function filterItems(items: Item[], selection: UpsetSelection): FilteredItems {
-  if (selection?.type === 'vega') return filterByVega(items, selection.selection);
-  if (selection?.type === 'query') return filterByQuery(items, selection.selection);
-  return { included: [], excluded: items };
 }
 
 /**

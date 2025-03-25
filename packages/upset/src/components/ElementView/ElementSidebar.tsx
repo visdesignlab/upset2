@@ -17,7 +17,9 @@ import { BookmarkChips } from './SelectionChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
-import { bookmarkSelector, currentIntersectionSelector, elementSelectionSelector } from '../../atoms/config/selectionAtoms';
+import {
+  bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentVegaSelection,
+} from '../../atoms/config/selectionAtoms';
 import { Sidebar } from '../custom/Sidebar';
 import { UpsetHeading } from '../custom/theme/heading';
 import { AddPlotDialog } from './AddPlotDialog';
@@ -74,17 +76,18 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
-  const currentElementSelection = useRecoilValue(elementSelectionSelector);
+  const vegaSelection = useRecoilValue(currentVegaSelection);
+  const querySelection = useRecoilValue(currentQuerySelection);
   const selectedItems = useRecoilValue(selectedOrBookmarkedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
   const columns = useRecoilValue(columnsAtom);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
-  /** Whether to show the 'Element Queries' section */
-  const showQueries = useMemo(
-    () => bookmarked.length > 0 || currentIntersection || currentElementSelection,
-    [bookmarked.length, currentIntersection, currentElementSelection],
+  /** Whether to show the alert message when no bookmark/selection chips are present */
+  const showEmptyAlert = useMemo(
+    () => bookmarked.length > 0 || currentIntersection || vegaSelection || querySelection,
+    [bookmarked.length, currentIntersection, vegaSelection, querySelection],
   );
 
   /**
@@ -109,7 +112,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
       <UpsetHeading level="h3">
         Selections
       </UpsetHeading>
-      {!showQueries && (
+      {!showEmptyAlert && (
         <Alert severity="info" style={{ paddingTop: '2px', paddingBottom: '2px' }}>
           Selected intersections and elements will appear here.
         </Alert>

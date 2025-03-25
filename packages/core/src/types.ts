@@ -364,15 +364,6 @@ export type VegaSelection = {[attName: string] : [number, number]};
 export type SelectionType = 'row' | 'vega' | 'query' | null;
 
 /**
- * The currently active selection. This can be a row, a query, or a vega selection.
- *
- * Simpler version is {type: selectionType, selection: Row | QuerySelection | VegaSelection} but
- * this is segmented with OR statements so that the typechecker can match type strings with actual types
- * @private not called 'Selection' because this is a built-in type in TypeScript
- */
-export type UpsetSelection = ({type: 'row', selection: Row} | {type: 'query', selection: QuerySelection}) | {type: 'vega', selection: VegaSelection} | null;
-
-/**
  * Represents a query object where each key is a string and the value is a SetMembershipStatus.
  * This type is used to define the membership status of elements in a set.
  */
