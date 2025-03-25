@@ -20,6 +20,8 @@ import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
+ * Items from this selector should NOT be used in vega specs;
+ * they do not have the necessary properties for coloring and selection.
  * @param id - The ID of the row to get items for.
  * @returns The items in the row
  */
@@ -104,6 +106,9 @@ export const processedItemsSelector = selector<Item[]>({
         result.push(...memberElements.map((el) => ({
           ...items[el],
           color: DEFAULT_ELEMENT_COLOR,
+          isCurrentSelected: !!currentIntersection,
+          isCurrent: false,
+          bookmarked: false,
         })));
       }
     });

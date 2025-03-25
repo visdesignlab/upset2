@@ -3,6 +3,8 @@ import {
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
+import { Predicate } from 'vega-lite/build/src/predicate';
+import { LogicalComposition } from 'vega-lite/build/src/logical';
 import { vegaSelectionColor } from '../../utils/styles';
 
 /**
@@ -60,6 +62,11 @@ export function createAddScatterplotSpec(
 export function generateScatterplotSpec(
   spec: Scatterplot,
 ): VisualizationSpec {
+  /** Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty */
+  const BRUSH_EMPTY: LogicalComposition<Predicate> = {
+    and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
+  };
+
   return {
     width: 200,
     height: 200,
@@ -107,11 +114,20 @@ export function generateScatterplotSpec(
             value: 0.8,
           },
           {
-            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
-            value: 0.3,
+            test: {
+              and: [
+                BRUSH_EMPTY,
+                {
+                  or: [
+                    { field: 'isCurrentSelected', equal: false },
+                    { field: 'isCurrent', equal: true }],
+                },
+              ],
+            },
+            value: 0.8,
           },
         ],
-        value: 0.8,
+        value: 0.3,
       },
       order: {
         condition: [
