@@ -14,7 +14,7 @@ import {
 } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { BookmarkStar } from '../Columns/BookmarkStar';
+import { BookmarkColumnIcon } from '../Columns/BookmarkColumnIcon';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
@@ -176,7 +176,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
             : 0,
         )}
       >
-        <BookmarkStar row={aggregateRow} />
+        <BookmarkColumnIcon row={aggregateRow} />
         <SizeBar row={aggregateRow} size={aggregateRow.size} vegaSelected={vegaSelected} querySelected={querySelected} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>

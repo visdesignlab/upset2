@@ -1,5 +1,6 @@
 import { Row } from '@visdesignlab/upset2-core';
-import StarIcon from '@mui/icons-material/Star';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import {
   FC, MouseEvent, useContext, useMemo, useState,
 } from 'react';
@@ -9,6 +10,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import {
   bookmarkedColorSelector,
+  currentIntersectionSelector,
   isRowBookmarkedSelector,
 } from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
@@ -33,10 +35,11 @@ const BOOKMARKED_OPACITY = 1.0;
  * @example
  * <BookmarkStar row={row} />
  */
-export const BookmarkStar: FC<Props> = ({ row }) => {
+export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
   const color = useRecoilValue(bookmarkedColorSelector(row));
+  const selected = useRecoilValue(currentIntersectionSelector)?.id === row.id;
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
@@ -55,7 +58,7 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
    * @param {boolean} hovered - Indicates if the item is hovered.
    */
   const opacity = useMemo(() => {
-    if (bookmarked) {
+    if (bookmarked || selected) {
       return BOOKMARKED_OPACITY;
     }
 
@@ -64,7 +67,7 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
     }
 
     return BASE_OPACITY;
-  }, [bookmarked, hovered]);
+  }, [bookmarked, selected, hovered]);
 
   const handleMouseEnter = () => {
     setHovered(true);
@@ -113,15 +116,26 @@ export const BookmarkStar: FC<Props> = ({ row }) => {
         width={dimensions.set.width}
         fill="transparent"
       />
-      <StarIcon
-        height={dimensions.body.rowHeight}
-        width={dimensions.set.width}
-        fontSize={'1em' as any}
-        sx={{
-          color,
-          fillOpacity: opacity,
-        }}
-      />
+      {bookmarked ?
+        <BookmarkIcon
+          height={dimensions.body.rowHeight}
+          width={dimensions.set.width}
+          fontSize={'1em' as any}
+          sx={{
+            color,
+            fillOpacity: opacity,
+          }}
+        />
+        :
+        <BookmarkBorderIcon
+          height={dimensions.body.rowHeight}
+          width={dimensions.set.width}
+          fontSize={'1em' as any}
+          sx={{
+            color,
+            fillOpacity: opacity,
+          }}
+        />}
     </g>
   );
 };

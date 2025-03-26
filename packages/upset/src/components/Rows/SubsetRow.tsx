@@ -13,7 +13,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
 } from '../../utils/styles';
-import { BookmarkStar } from '../Columns/BookmarkStar';
+import { BookmarkColumnIcon } from '../Columns/BookmarkColumnIcon';
 import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
 import { subsetSelectedCount } from '../../atoms/elementsSelectors';
@@ -97,7 +97,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         fillOpacity="0.0"
       />
       <Matrix sets={visibleSets} subset={subset} />
-      <BookmarkStar row={subset} />
+      <BookmarkColumnIcon row={subset} />
       <SizeBar size={subset.size} row={subset} vegaSelected={vegaSelected} querySelected={querySelected} />
       <AttributeBars attributes={subset.attributes} row={subset} />
     </g>
