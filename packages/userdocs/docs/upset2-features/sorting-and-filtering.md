@@ -1,5 +1,5 @@
 ---
-sidebar_position: 2
+sidebar_position: 5
 ---
 
 # Sorting and Filtering
@@ -25,6 +25,10 @@ Sorting by degree compares values of the degree of the intersections. When the v
 Example plot of Movies sorted by degree in ascending ordeer:
 
 ![Movies, sorted by degree ascending](./img/sorting-and-filtering/degree-ascending.png)
+
+#### Sort by Deviation
+
+Sorting by deviation simply compares values of deviation of the intersections. This can be useful for visualizing which intersections are most of least surprising.
 
 ### Sort By Dataset Attribute
 
