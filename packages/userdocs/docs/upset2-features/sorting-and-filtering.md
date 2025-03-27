@@ -4,7 +4,7 @@ sidebar_position: 5
 
 # Sorting and Filtering
 
-UpSet 2 supports multiple different types of intersection sorting, as well as visible and hidden set sorting. Additionally, there are three methods for filtering intersections, not including set queries (see [Query By Set](./query-by-set.md)).
+UpSet 2 supports multiple different types of intersection sorting, as well as visible and hidden set sorting. Additionally, there are three methods for filtering intersections, not including set queries (see [Query By Set](./queries/query-by-set.md)).
 
 ## Intersection Sorting
 
