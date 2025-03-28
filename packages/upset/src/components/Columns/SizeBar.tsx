@@ -5,8 +5,7 @@ import {
 import { useRecoilValue } from 'recoil';
 
 import {
-  bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
-  currentSelectionType,
+  bookmarkSelector, currentIntersectionSelector, currentSelectionType, bookmarkColorSelector,
 } from '../../atoms/config/selectionAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSize } from '../../atoms/maxSizeAtom';
@@ -77,10 +76,9 @@ export const SizeBar: FC<Props> = ({
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const bookmarks = useRecoilValue(bookmarkSelector);
-  const bookmarkedColorPallete = useRecoilValue(bookmarkedColorPalette);
-  const nextColor = useRecoilValue(nextColorSelector);
   const showText = useRecoilValue(showIntersectionSizesSelector);
   const selectionType = useRecoilValue(currentSelectionType);
+  const color = useRecoilValue(bookmarkColorSelector(row?.id));
 
   /*
    * Constants
@@ -106,16 +104,16 @@ export const SizeBar: FC<Props> = ({
     const selectedSize = (selectionType === 'vega' ? vegaSelected : (selectionType === 'query' ? querySelected : 0));
     if (row && selectedSize === 0 && bookmarks.some((bookmark) => bookmark.id === row.id)) {
       // darken the color for advanced scale sub-bars
-      return darkenColor(index, bookmarkedColorPallete[row.id]);
+      return darkenColor(index, color);
     }
 
     // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
     if (currentIntersection && selectedSize === 0 && currentIntersection?.id === row?.id) {
       // if currently selected, use the highlight colors
-      return nextColor;
+      return color;
     }
     return colors[index];
-  }, [row, vegaSelected, bookmarks, bookmarkedColorPallete, currentIntersection, nextColor, querySelected, selectionType]);
+  }, [row, vegaSelected, bookmarks, color, currentIntersection, querySelected, selectionType]);
 
   /**
    * Calculates the number of size bars to display based on the size of the row.
@@ -146,7 +144,7 @@ export const SizeBar: FC<Props> = ({
    * @param uniqueId Unique identifier for the elements
    * @returns SVG elements for the line and tick
    */
-  const lineAndTick: (x: number, color: string, index: number) => JSX.Element = useCallback((x, color, index) => (
+  const lineAndTick: (x: number, lineColor: string, index: number) => JSX.Element = useCallback((x, lineColor, index) => (
     <>
       {/* White border for selection tick */}
       <polygon
@@ -165,7 +163,7 @@ export const SizeBar: FC<Props> = ({
               `${x - 5},${-5} ` +
               `${x + 5},${-5}`
             }
-        fill={color}
+        fill={lineColor}
         transform={translate(0, (index * OFFSET) / 2)}
       />
       {/* Vertical white line */}
@@ -209,13 +207,13 @@ export const SizeBar: FC<Props> = ({
   const { fullBars: fullQueryBars, remainder: queryRemainder } = useMemo(() => calculateBars(querySelected), [querySelected, calculateBars]);
 
   /** X-coord for the end of the selected bar */
-  const vegaWidth = useMemo(() => calculateWidth(vegaSelected, vegaRemainder), [vegaRemainder, calculateWidth]);
+  const vegaWidth = useMemo(() => calculateWidth(vegaSelected, vegaRemainder), [vegaRemainder, calculateWidth, vegaSelected]);
 
   /** X-coord for the end of the query bar */
-  const queryWidth = useMemo(() => calculateWidth(querySelected, queryRemainder), [queryRemainder, calculateWidth]);
+  const queryWidth = useMemo(() => calculateWidth(querySelected, queryRemainder), [queryRemainder, calculateWidth, querySelected]);
 
   /** X-coord for the end of the size bar */
-  const sizeWidth = useMemo(() => calculateWidth(size, sizeRemainder), [sizeRemainder, calculateWidth]);
+  const sizeWidth = useMemo(() => calculateWidth(size, sizeRemainder), [sizeRemainder, calculateWidth, size]);
 
   /** The number of full selection color bars to display */
   const fullSelectBars = useMemo(
@@ -230,8 +228,8 @@ export const SizeBar: FC<Props> = ({
   );
 
   const selectionColor = useMemo(
-    () => (selectionType === 'vega' ? vegaSelectionColor : (selectionType === 'query' ? querySelectionColor : colors[0])),
-    [selectionType, vegaSelectionColor, nextColor],
+    () => (selectionType === 'vega' ? vegaSelectionColor : (selectionType === 'query' ? querySelectionColor : color)),
+    [selectionType, color],
   );
 
   // Calculate all rectangles for the size bar
@@ -273,7 +271,7 @@ export const SizeBar: FC<Props> = ({
     return result;
   }, [
     fullSizeBars, OFFSET, dimensions.size.plotHeight, dimensions.attribute.width,
-    getFillColor, SELECTION_OPACITY, translate, sizeWidth, fullSelectBars, selectionWidth, selectionColor,
+    getFillColor, SELECTION_OPACITY, sizeWidth, fullSelectBars, selectionWidth, selectionColor,
   ]);
 
   /*
@@ -316,7 +314,7 @@ export const SizeBar: FC<Props> = ({
         )
         && lineAndTick(
           sizeWidth,
-          (row && bookmarks.some((bookmark) => bookmark.id === row.id)) ? bookmarkedColorPallete[row.id] : nextColor,
+          color,
           fullSizeBars,
         )}
       {fullSizeBars === 3 && (

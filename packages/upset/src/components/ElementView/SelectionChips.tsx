@@ -14,13 +14,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import CodeIcon from '@mui/icons-material/Code';
 import {
-  currentSelectionType,
-  bookmarkedColorPalette,
-  bookmarkSelector,
-  currentIntersectionSelector,
-  currentQuerySelection,
-  currentVegaSelection,
-  nextColorSelector,
+  currentSelectionType, bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentVegaSelection, nextColorSelector, colorPaletteSelector,
 } from '../../atoms/config/selectionAtoms';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
@@ -36,11 +30,11 @@ const CHIP_ICON_FONT_SIZE = 'small';
 export const BookmarkChips = () => {
   const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const colorPallete = useRecoilValue(bookmarkedColorPalette);
   const nextColor = useRecoilValue(nextColorSelector);
   const data = useRecoilValue(dataAtom);
   const rows = flattenedOnlyRows(data, provenance.getState());
   const bookmarked = useRecoilValue(bookmarkSelector);
+  const bookmarkColors = useRecoilValue(colorPaletteSelector);
   const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
@@ -69,7 +63,7 @@ export const BookmarkChips = () => {
           sx={(theme) => ({
             margin: theme.spacing(0.5),
             '.MuiChip-icon': {
-              color: colorPallete[bookmark.id],
+              color: bookmarkColors[bookmark.id],
             },
             backgroundColor: bookmark.id === currentIntersection?.id && selectionType === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
           })}

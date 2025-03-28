@@ -30,6 +30,7 @@ import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
 import { footerHeightAtom } from '../atoms/dimensionsAtom';
+import { useSyncBookmarkPalette } from '../atoms/config/selectionAtoms';
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
@@ -80,6 +81,9 @@ export const Root: FC<Props> = ({
   const setData = useSetRecoilState(dataAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
+
+  // Sync the bookmark color palette; this needs to run inside the RecoilRoot
+  useSyncBookmarkPalette();
 
   // Set config. Note that the provenance passed in is ignored if a provenance is passed in
   useEffect(() => {

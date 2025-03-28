@@ -9,7 +9,8 @@ import {
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
-  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection, nextColorSelector,
+  bookmarkColorSelector,
+  bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection,
 } from './config/selectionAtoms';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
@@ -51,6 +52,7 @@ const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
  * - isCurrent: Whether the item is in the current intersection
  * - bookmarked: Whether the item is in a bookmarked row (true)
  * @private These properties are deliberately only added to bookmarked items, as the current vega spec requires
+ *   For example, this defaults all items in unbookmarked rows to the next color instead of DEFAULT_ELEMENT_COLOR.
  */
 export const bookmarkedItemsSelector = selector<Item[]>({
   key: 'bookmarked-items',
@@ -60,7 +62,6 @@ export const bookmarkedItemsSelector = selector<Item[]>({
     if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id)) bookmarkIDs.push(currentIntersection?.id);
 
     const intersections = get(rowsSelector);
-    const palette = get(bookmarkedColorPalette);
     const result: Item[] = [];
 
     bookmarkIDs.forEach((id) => {
@@ -72,7 +73,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
         ...el,
         subset: id,
         subsetName: row.elementName,
-        color: palette[id] || get(nextColorSelector),
+        color: get(bookmarkColorSelector(id)),
         isCurrentSelected: !!currentIntersection,
         isCurrent: !!(currentIntersection?.id === id),
         bookmarked: true,

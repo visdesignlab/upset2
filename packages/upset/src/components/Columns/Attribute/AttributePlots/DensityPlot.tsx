@@ -5,9 +5,7 @@ import {
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
-import {
-  bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
-} from '../../../../atoms/config/selectionAtoms';
+import { isRowBookmarkedOrSelected, bookmarkColorSelector } from '../../../../atoms/config/selectionAtoms';
 import { ATTRIBUTE_DEFAULT_COLOR } from '../../../../utils/styles';
 import { MemoizedDensityVega } from './MemoizedDensityVega';
 
@@ -41,10 +39,8 @@ export const DensityPlot: FC<Props> = ({
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
-  const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const bookmarks = useRecoilValue(bookmarkSelector);
-  const colorPalette = useRecoilValue(bookmarkedColorPalette);
-  const nextColor = useRecoilValue(nextColorSelector);
+  const bookmarkedOrSelected = useRecoilValue(isRowBookmarkedOrSelected(row));
+  const color = useRecoilValue(bookmarkColorSelector(row.id));
 
   /**
    * Logic for determining the selection/bookmark status of the row.
@@ -52,19 +48,10 @@ export const DensityPlot: FC<Props> = ({
    */
   const fillColor = useMemo(
     () => {
-    // if the row is bookmarked, highlight the bar with the bookmark color
-      if (row !== undefined && bookmarks.some((b) => b.id === row.id)) {
-      // darken the color for advanced scale sub-bars
-        return colorPalette[row.id];
-      }
-
-      // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
-      if (currentIntersection && currentIntersection?.id === row?.id) { // if currently selected, use the highlight colors
-        return nextColor;
-      }
+      if (bookmarkedOrSelected) return color;
       return ATTRIBUTE_DEFAULT_COLOR;
     },
-    [row, currentIntersection, bookmarks, colorPalette, nextColor],
+    [bookmarkedOrSelected, color],
   );
 
   return (

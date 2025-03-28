@@ -8,11 +8,7 @@ import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
-import {
-  bookmarkedColorSelector,
-  currentIntersectionSelector,
-  isRowBookmarkedSelector,
-} from '../../atoms/config/selectionAtoms';
+import { bookmarkColorSelector, currentIntersectionSelector, isRowBookmarkedSelector } from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
 import { rowHoverAtom } from '../../atoms/highlightAtom';
 
@@ -39,7 +35,7 @@ const BOOKMARKED_OPACITY = 1.0;
 export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
-  const color = useRecoilValue(bookmarkedColorSelector(row));
+  const color = useRecoilValue(bookmarkColorSelector(row.id));
   const hovered = useRecoilValue(rowHoverAtom) === row.id;
   const selected = useRecoilValue(currentIntersectionSelector)?.id === row.id;
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
@@ -81,8 +77,6 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
       id: row.id,
       label: rowDisplayName,
       size: row.size,
-      // Without 'as const' it complains that 'type' is a string instead of 'intersection' lol
-      type: 'intersection' as const,
     };
     if (bookmarked) {
       actions.removeBookmark(bookmark);
