@@ -2,7 +2,7 @@ import { Row } from '@visdesignlab/upset2-core';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import {
-  FC, MouseEvent, useContext, useMemo, useState,
+  FC, MouseEvent, useContext, useMemo,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
@@ -14,6 +14,7 @@ import {
   isRowBookmarkedSelector,
 } from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
+import { rowHoverAtom } from '../../atoms/highlightAtom';
 
 type Props = {
   row: Row;
@@ -39,12 +40,11 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
   const color = useRecoilValue(bookmarkedColorSelector(row));
+  const hovered = useRecoilValue(rowHoverAtom) === row.id;
   const selected = useRecoilValue(currentIntersectionSelector)?.id === row.id;
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
-
-  const [hovered, setHovered] = useState(false);
 
   /**
    * Calculates the opacity value based on the bookmark and hover states.
@@ -68,14 +68,6 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
 
     return BASE_OPACITY;
   }, [bookmarked, selected, hovered]);
-
-  const handleMouseEnter = () => {
-    setHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(false);
-  };
 
   /**
    * Handles the click event on the bookmark star icon.
@@ -107,8 +99,6 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
       )}
       height={dimensions.body.rowHeight}
       width={dimensions.set.width}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
       onClick={(e: any) => handleClick(e)}
     >
       <rect

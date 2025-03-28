@@ -1,8 +1,8 @@
 import { Subset, getBelongingSetsFromSetMembership, Row } from '@visdesignlab/upset2-core';
 import {
-  FC, useState, useContext,
+  FC, useContext,
 } from 'react';
-import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
@@ -14,7 +14,7 @@ import {
   highlight, defaultBackground, mousePointer, hoverHighlight,
 } from '../../utils/styles';
 import { BookmarkColumnIcon } from '../Columns/BookmarkColumnIcon';
-import { columnHoverAtom, columnSelectAtom } from '../../atoms/highlightAtom';
+import { columnHoverAtom, columnSelectAtom, rowHoverAtom } from '../../atoms/highlightAtom';
 import { ProvenanceContext } from '../Root';
 import { subsetSelectedCount } from '../../atoms/elementsSelectors';
 import { UpsetActions } from '../../provenance';
@@ -34,6 +34,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const vegaSelected = useRecoilValue(subsetSelectedCount({ id: subset.id, type: 'vega' }));
   const querySelected = useRecoilValue(subsetSelectedCount({ id: subset.id, type: 'query' }));
+  const [hoveredRow, setHoveredRow] = useRecoilState(rowHoverAtom);
 
   // Use trrack action for current intersection
   const { actions }: {actions: UpsetActions} = useContext(
@@ -52,8 +53,6 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
   const setColumnHighlight = useSetRecoilState(columnHoverAtom);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
 
-  const [hover, setHover] = useState<string | null>(null);
-
   return (
     <g
       id={subset.id}
@@ -62,7 +61,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
           if (currentIntersection?.id === subset.id && selectionType === 'row') { // if the row is already selected, deselect it
             setCurrentIntersection(null);
             setColumnSelect([]);
-            setHover(subset.id);
+            setHoveredRow(subset.id);
             setColumnHighlight(getBelongingSetsFromSetMembership(subset.setMembership));
           } else {
             setCurrentIntersection(subset);
@@ -72,12 +71,12 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       }
       onMouseEnter={
         () => {
-          setHover(subset.id);
+          setHoveredRow(subset.id);
           setColumnHighlight(getBelongingSetsFromSetMembership(subset.setMembership));
         }
       }
       onMouseLeave={() => {
-        setHover(null);
+        setHoveredRow(null);
         setColumnHighlight([]);
       }}
       css={mousePointer}
@@ -88,7 +87,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         css={
           currentIntersection?.id === subset.id
             ? highlight
-            : (hover === subset.id)
+            : (hoveredRow === subset.id)
               ? hoverHighlight
               : defaultBackground
         }

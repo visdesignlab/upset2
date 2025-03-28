@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC, useContext } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
 
@@ -20,6 +20,7 @@ import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 import { UpsetActions } from '../../provenance';
+import { rowHoverAtom } from '../../atoms/highlightAtom';
 
 /**
  * Props for the AggregateRow component.
@@ -78,6 +79,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const vegaSelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }));
   const querySelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'query' }));
+  const setHoveredRow = useSetRecoilState(rowHoverAtom);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -107,6 +109,8 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         }
       }}
       css={mousePointer}
+      onMouseEnter={() => setHoveredRow(aggregateRow.id)}
+      onMouseLeave={() => setHoveredRow(null)}
     >
       <g
         transform={translate(
