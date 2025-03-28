@@ -7,7 +7,7 @@ import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
 import {
   bookmarkedColorPalette, bookmarkSelector, currentIntersectionSelector, nextColorSelector,
-} from '../../../../atoms/config/currentIntersectionAtom';
+} from '../../../../atoms/config/selectionAtoms';
 import { ATTRIBUTE_DEFAULT_COLOR } from '../../../../utils/styles';
 import { MemoizedDensityVega } from './MemoizedDensityVega';
 

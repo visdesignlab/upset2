@@ -9,6 +9,7 @@ import { ProvenanceContext } from '../Root';
 import { firstAggregateSelector } from '../../atoms/config/aggregateAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { rowsSelector } from '../../atoms/renderRowsAtom';
+import { UpsetActions } from '../../provenance';
 
 const iconSize = 16;
 
@@ -25,7 +26,7 @@ export const CollapseAllButton = () => {
    */
 
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(rowsSelector);
   const [allCollapsed, setAllCollapsed] = useState(false);

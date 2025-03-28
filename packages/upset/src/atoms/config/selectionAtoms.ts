@@ -1,8 +1,34 @@
-import { Bookmark, Row } from '@visdesignlab/upset2-core';
+import {
+  Bookmark, QuerySelection, Row, SelectionType, VegaSelection,
+} from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 
 import { queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
+
+/**
+ * The current vega selection from the config
+ */
+export const currentVegaSelection = selector<VegaSelection | null>({
+  key: 'vega-selection-selector',
+  get: ({ get }) => get(upsetConfigAtom).vegaSelection,
+});
+
+/**
+ * The current query selection from the config
+ */
+export const currentQuerySelection = selector<QuerySelection | null>({
+  key: 'query-selection-selector',
+  get: ({ get }) => get(upsetConfigAtom).querySelection,
+});
+
+/**
+ * The currently active selection type from the config
+ */
+export const currentSelectionType = selector<SelectionType | null>({
+  key: 'config-active-selection',
+  get: ({ get }) => get(upsetConfigAtom).selectionType,
+});
 
 /**
  * Represents the currently selected intersection,
@@ -13,8 +39,7 @@ import { upsetConfigAtom } from './upsetConfigAtoms';
  */
 export const currentIntersectionSelector = selector<Row | null | undefined>({
   key: 'current-intersection',
-  get: ({ get }) => get(upsetConfigAtom).selected,
-  // No setter; this should be set by calling actions.setSelected(intersection)
+  get: ({ get }) => get(upsetConfigAtom).rowSelection,
 });
 
 /**
