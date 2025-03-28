@@ -185,7 +185,7 @@ export function isBookmark(b: unknown): b is Bookmark {
   return isObject(b)
     && Object.hasOwn(b, 'id')
     && Object.hasOwn(b, 'label')
-    && Object.hasOwn(b, 'type')
+    && Object.hasOwn(b, 'size')
     && typeof (b as Bookmark).id === 'string'
     && typeof (b as Bookmark).label === 'string'
     && typeof (b as Bookmark).size === 'number';
