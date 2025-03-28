@@ -68,5 +68,6 @@ module.exports = {
     'no-nested-ternary': 'off',
     'jsx-a11y/tabindex-no-positive': 'off',
     'no-bitwise': 'warn',
+    'no-restricted-syntax': 'warn',
   },
 };
