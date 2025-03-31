@@ -8,5 +8,6 @@ UpSet 2.0 is an interactive, web based visualization technique designed to analy
 
 For more information about UpSet and/or set visualization, visit [upset.app](https://upset.app).
 
-#### Example of UpSet 2.0 with a dataset about movies:
+## Example of UpSet 2.0 with a dataset about movies
+
 ![UpSet 2.0 Movies example](./img/upset_movies_example.png)
