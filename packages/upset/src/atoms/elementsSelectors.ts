@@ -86,10 +86,8 @@ export const bookmarkedItemsSelector = selector<Item[]>({
 
 /**
  * Gets all of the items in visible rows.
- * Items from bookmarked rows are given properties for coloring and selection, as well as a 'true' bookmarked property.
- * Other items are given only a color prop.
- * @private It seems odd for some items to have props that others don't; however,
- *   this is necessary for correct element vis with the current vega spec. It may be refactorable.
+ * All items are given color, isCurrentSelected, isCurrent, and bookmarked properties.
+ * Only bookmarked items are given the subset and subsetName properties.
  */
 export const processedItemsSelector = selector<Item[]>({
   key: 'processed-items',
