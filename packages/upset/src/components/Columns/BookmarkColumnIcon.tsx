@@ -75,6 +75,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
    * @param event - The mouse event triggered by clicking the bookmark star icon.
    */
   const handleClick = (event: MouseEvent<SVGGElement, MouseEvent>) => {
+    // Manually handle selection behavior (instead of propagating to the default) so it matches bookmark behavior
     event.stopPropagation();
     const bookmark = {
       id: row.id,
@@ -83,8 +84,12 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
     };
     if (bookmarked) {
       actions.removeBookmark(bookmark);
+      if (selected) actions.setRowSelection(null);
+      if (selectionType === 'row') actions.setSelectionType(null);
     } else {
       actions.addBookmark(bookmark);
+      if (!selected) actions.setRowSelection(row);
+      if (selectionType !== 'row') actions.setSelectionType('row');
     }
   };
 
