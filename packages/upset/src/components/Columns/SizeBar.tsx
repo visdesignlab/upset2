@@ -102,13 +102,13 @@ export const SizeBar: FC<Props> = ({
   const getFillColor: (index: number) => string = useCallback((index) => {
     // if the row is bookmarked, highlight the bar with the bookmark color
     const selectedSize = (selectionType === 'vega' ? vegaSelected : (selectionType === 'query' ? querySelected : 0));
-    if (row && selectedSize === 0 && bookmarks.some((bookmark) => bookmark.id === row.id)) {
+    if (row && selectedSize === 0 && bookmarks.some((bookmark) => bookmark.id === row.id) && selectionType === 'row') {
       // darken the color for advanced scale sub-bars
       return darkenColor(index, color);
     }
 
     // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
-    if (currentIntersection && selectedSize === 0 && currentIntersection?.id === row?.id) {
+    if (currentIntersection && selectedSize === 0 && currentIntersection?.id === row?.id && selectionType === 'row') {
       // if currently selected, use the highlight colors
       return color;
     }
