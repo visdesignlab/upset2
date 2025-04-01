@@ -120,7 +120,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       >
         <rect
           transform={translate(0, 2)}
-          css={currentIntersection?.id === aggregateRow.id && highlight}
+          css={currentIntersection?.id === aggregateRow.id && selectionType === 'row' && highlight}
           height={
             ['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)
               ? (dimensions.body.rowHeight - 4) * 2

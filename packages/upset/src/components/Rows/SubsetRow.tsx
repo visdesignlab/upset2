@@ -85,7 +85,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         height={dimensions.body.rowHeight}
         width={dimensions.body.rowWidth}
         css={
-          currentIntersection?.id === subset.id
+          currentIntersection?.id === subset.id && selectionType === 'row'
             ? highlight
             : (hoveredRow === subset.id)
               ? hoverHighlight

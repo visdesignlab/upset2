@@ -8,7 +8,9 @@ import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
-import { bookmarkColorSelector, currentIntersectionSelector, isRowBookmarkedSelector } from '../../atoms/config/selectionAtoms';
+import {
+  bookmarkColorSelector, currentIntersectionSelector, currentSelectionType, isRowBookmarkedSelector,
+} from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
 import { rowHoverAtom } from '../../atoms/highlightAtom';
 
@@ -38,6 +40,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
   const color = useRecoilValue(bookmarkColorSelector(row.id));
   const hovered = useRecoilValue(rowHoverAtom) === row.id;
   const selected = useRecoilValue(currentIntersectionSelector)?.id === row.id;
+  const selectionType = useRecoilValue(currentSelectionType);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
@@ -54,7 +57,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
    * @param {boolean} hovered - Indicates if the item is hovered.
    */
   const opacity = useMemo(() => {
-    if (bookmarked || selected) {
+    if (bookmarked || (selected && selectionType === 'row')) {
       return BOOKMARKED_OPACITY;
     }
 
@@ -63,7 +66,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
     }
 
     return BASE_OPACITY;
-  }, [bookmarked, selected, hovered]);
+  }, [bookmarked, selected, hovered, selectionType]);
 
   /**
    * Handles the click event on the bookmark star icon.
