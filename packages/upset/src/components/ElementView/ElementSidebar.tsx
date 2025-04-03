@@ -130,9 +130,6 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Tooltip>
       }
     >
-      <UpsetHeading level="h3">
-        Selections
-      </UpsetHeading>
       {!showEmptyAlert && (
         <Alert severity="info" style={{ paddingTop: '2px', paddingBottom: '2px' }}>
           Selected intersections and elements will appear here.
