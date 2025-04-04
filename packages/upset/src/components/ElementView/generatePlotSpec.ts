@@ -3,7 +3,9 @@ import {
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
-import { elementSelectionColor } from '../../utils/styles';
+import { Predicate } from 'vega-lite/build/src/predicate';
+import { LogicalComposition } from 'vega-lite/build/src/logical';
+import { vegaSelectionColor } from '../../utils/styles';
 
 /**
  * Creates the spec for a single scatterplot.
@@ -57,9 +59,17 @@ export function createAddScatterplotSpec(
  * @param selectColor The color to use for brushed points
  * @returns The Vega-Lite spec for the scatterplots.
  */
-export function generateScatterplotSpec(
-  spec: Scatterplot,
-): VisualizationSpec {
+export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
+  /**
+   * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
+   * @private The left-side predicate evaluates to true if the brush is empty OR the item is in the brush;
+   *          the right-side predicate evaluates to true if the item is selected OR the brush is empty.
+   *          This creates a logical gadget that evaluates to true if the brush is empty regardless of the item state.
+   */
+  const BRUSH_EMPTY: LogicalComposition<Predicate> = {
+    and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
+  };
+
   return {
     width: 200,
     height: 200,
@@ -93,7 +103,7 @@ export function generateScatterplotSpec(
         condition: {
           param: 'brush',
           empty: false,
-          value: elementSelectionColor,
+          value: vegaSelectionColor,
         },
         field: 'subset',
         legend: null,
@@ -107,11 +117,20 @@ export function generateScatterplotSpec(
             value: 0.8,
           },
           {
-            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === false',
-            value: 0.3,
+            test: {
+              and: [
+                BRUSH_EMPTY,
+                {
+                  or: [
+                    { field: 'isCurrentSelected', equal: false },
+                    { field: 'isCurrent', equal: true }],
+                },
+              ],
+            },
+            value: 0.8,
           },
         ],
-        value: 0.8,
+        value: 0.3,
       },
       order: {
         condition: [
@@ -121,11 +140,16 @@ export function generateScatterplotSpec(
             value: 3,
           },
           {
-            test: 'datum["isCurrentSelected"] === true && datum["isCurrent"] === true',
+            test: {
+              and: [
+                { field: 'isCurrentSelected', equal: true },
+                { field: 'isCurrent', equal: true },
+              ],
+            },
             value: 2,
           },
           {
-            test: 'datum["bookmarked"] === true',
+            test: { field: 'bookmarked', equal: true },
             value: 1,
           },
         ],
@@ -142,11 +166,7 @@ export function generateScatterplotSpec(
  * @param density Whether to plot frequency or density; true for frequency.
  * @returns The Vega-Lite spec for the histogram.
  */
-export function createAddHistogramSpec(
-  attribute: string,
-  bins: number,
-  density: boolean,
-): VisualizationSpec {
+export function createAddHistogramSpec(attribute: string, bins: number, density: boolean): VisualizationSpec {
   if (density) {
     const base: VisualizationSpec = {
       width: 400,
@@ -194,10 +214,7 @@ export function createAddHistogramSpec(
  * @param selectColor The color to use for the line showing density of selected values.
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function generateHistogramSpec(
-  hist: Histogram,
-)
-: VisualizationSpec {
+export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
   const params = [
     {
       name: 'brush',
@@ -272,7 +289,7 @@ export function generateHistogramSpec(
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
-            color: { value: elementSelectionColor },
+            color: { value: vegaSelectionColor },
             opacity: { value: 1 },
           },
         },
@@ -316,7 +333,7 @@ export function generateHistogramSpec(
             aggregate: 'count',
             title: 'Frequency',
           },
-          color: { value: elementSelectionColor },
+          color: { value: vegaSelectionColor },
           opacity: { value: 1 },
         },
       },

@@ -1,16 +1,17 @@
 import {
   Aggregate,
   BaseIntersection,
-  NumericalQuery, Item, Row, flattenedOnlyRows, getItems,
-  filterItems,
-  ElementSelection,
-  AttQuery,
+  Item, Row, flattenedOnlyRows, getItems,
   FilteredItems,
+  filterByVega,
+  filterByQuery,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
-  bookmarkSelector, bookmarkedColorPalette, currentIntersectionSelector, nextColorSelector,
-} from './config/currentIntersectionAtom';
+  bookmarkColorSelector,
+  bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection,
+} from './config/selectionAtoms';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
@@ -20,6 +21,8 @@ import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
+ * Items from this selector should NOT be used in vega specs;
+ * they do not have the necessary properties for coloring and selection.
  * @param id - The ID of the row to get items for.
  * @returns The items in the row
  */
@@ -49,6 +52,7 @@ const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
  * - isCurrent: Whether the item is in the current intersection
  * - bookmarked: Whether the item is in a bookmarked row (true)
  * @private These properties are deliberately only added to bookmarked items, as the current vega spec requires
+ *   For example, this defaults all items in unbookmarked rows to the next color instead of DEFAULT_ELEMENT_COLOR.
  */
 export const bookmarkedItemsSelector = selector<Item[]>({
   key: 'bookmarked-items',
@@ -58,7 +62,6 @@ export const bookmarkedItemsSelector = selector<Item[]>({
     if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id)) bookmarkIDs.push(currentIntersection?.id);
 
     const intersections = get(rowsSelector);
-    const palette = get(bookmarkedColorPalette);
     const result: Item[] = [];
 
     bookmarkIDs.forEach((id) => {
@@ -70,7 +73,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
         ...el,
         subset: id,
         subsetName: row.elementName,
-        color: palette[id] || get(nextColorSelector),
+        color: get(bookmarkColorSelector(id)),
         isCurrentSelected: !!currentIntersection,
         isCurrent: !!(currentIntersection?.id === id),
         bookmarked: true,
@@ -83,10 +86,8 @@ export const bookmarkedItemsSelector = selector<Item[]>({
 
 /**
  * Gets all of the items in visible rows.
- * Items from bookmarked rows are given properties for coloring and selection, as well as a 'true' bookmarked property.
- * Other items are given only a color prop.
- * @private It seems odd for some items to have props that others don't; however,
- *   this is necessary for correct element vis with the current vega spec. It may be refactorable.
+ * All items are given color, isCurrentSelected, isCurrent, and bookmarked properties.
+ * Only bookmarked items are given the subset and subsetName properties.
  */
 export const processedItemsSelector = selector<Item[]>({
   key: 'processed-items',
@@ -104,20 +105,14 @@ export const processedItemsSelector = selector<Item[]>({
         result.push(...memberElements.map((el) => ({
           ...items[el],
           color: DEFAULT_ELEMENT_COLOR,
+          isCurrentSelected: !!currentIntersection,
+          isCurrent: false,
+          bookmarked: false,
         })));
       }
     });
     return result;
   },
-});
-
-/**
- * Gets the current selection of elements
- * @returns The current selection of elements
- */
-export const elementSelectionSelector = selector<ElementSelection | null>({
-  key: 'config-element-selection',
-  get: ({ get }) => get(upsetConfigAtom).elementSelection,
 });
 
 /**
@@ -130,11 +125,16 @@ export const elementSelectionSelector = selector<ElementSelection | null>({
 const filteredItems = selector<FilteredItems>({
   key: 'filtered-items',
   get: ({ get }) => {
-    const items = get(processedItemsSelector);
-    const selection = get(elementSelectionSelector);
-    if (!selection || !selection.active) return { included: [], excluded: items };
-
-    return filterItems(items, selection);
+    const type = get(currentSelectionType);
+    if (type === 'vega') {
+      const selection = get(currentVegaSelection);
+      if (selection) return filterByVega(get(processedItemsSelector), selection);
+    }
+    if (type === 'query') {
+      const selection = get(currentQuerySelection);
+      if (selection) return filterByQuery(get(processedItemsSelector), selection);
+    }
+    return { included: [], excluded: get(processedItemsSelector) };
   },
 });
 
@@ -146,7 +146,8 @@ const filteredItems = selector<FilteredItems>({
 export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
-    if (get(elementSelectionSelector)?.active) return get(filteredItems).included;
+    const type = get(currentSelectionType);
+    if (type === 'vega' || type === 'query') return get(filteredItems).included;
     if (get(bookmarkIsVisibleSelector)) return get(bookmarkedItemsSelector);
     return get(processedItemsSelector);
   },
@@ -196,32 +197,6 @@ export const intersectionCountSelector = selectorFamily<
 });
 
 /**
- * Gets the parameters for the current numerical selection of elements,
- * ie the 'selected' property of the selectedElementsSelector.
- * If the current selection is not numerical, returns undefined.
- */
-export const currentNumericalQuery = selector<NumericalQuery | undefined>({
-  key: 'config-current-element-selection',
-  get: ({ get }) => {
-    const elementSelection = get(elementSelectionSelector);
-    return elementSelection?.type === 'numerical' && elementSelection.active ? elementSelection.query : undefined;
-  },
-});
-
-/**
- * Gets the parameters for the current selection of elements,
- * ie the 'selected' property of the selectedElementsSelector.
- * If the current selection is not an element query, returns undefined.
- */
-export const currentElementQuery = selector<AttQuery | undefined>({
-  key: 'config-current-element-query',
-  get: ({ get }) => {
-    const elementSelection = get(elementSelectionSelector);
-    return elementSelection?.type === 'element' && elementSelection.active ? elementSelection.query : undefined;
-  },
-});
-
-/**
  * Counts the number of selected items.
  */
 export const selectedItemsCounter = selector<number>({
@@ -230,32 +205,50 @@ export const selectedItemsCounter = selector<number>({
 });
 
 /**
- * Counts the number of selected items in a subset.
+ * Counts the number of selected items in a subset using either the current vega or query selection.
+ * @param id - The ID of the subset to count selected items for.
+ * @param type - The type of selection ('vega' or 'query') to use for filtering.
+ * @returns The number of selected items in the subset
  */
-export const subsetSelectedCount = selectorFamily<number, string>({
+export const subsetSelectedCount = selectorFamily<number, {id: string, type: SelectionType | null}>({
   key: 'subset-selected',
-  get: (id: string) => ({ get }) => {
-    const items = get(rowItemsSelector(id));
-    const selection = get(elementSelectionSelector);
+  get: ({ id, type }) => ({ get }) => {
+    if (!id) return 0;
+    const rowItems = get(rowItemsSelector(id));
 
-    if (!selection || !selection.active) return 0;
+    if (type === 'vega') {
+      const selection = get(currentVegaSelection);
+      if (!selection) return 0;
+      return filterByVega(rowItems, selection).included.length;
+    }
 
-    return filterItems(items, selection).included.length;
+    if (type === 'query') {
+      const selection = get(currentQuerySelection);
+      if (!selection) return 0;
+      return filterByQuery(rowItems, selection).included.length;
+    }
+
+    // If the selection type is 'row' or null, no items are selected
+    return 0;
   },
 });
 
 /**
- * Counts the number of selected items in an aggregate.
- * Selection is taken from the current element selection in the config.
+ * Counts the number of selected items in an aggregate using either the current vega or query selection.
+ * This selector recursively counts the selected items in all sub-aggregates and subsets.
+ * It returns the total count of selected items across all levels of the aggregate.
+ * * @param agg - The aggregate to count selected items for.
+ * @param type - The type of selection ('vega' or 'query') to use for filtering.
+ * @returns The total number of selected items in the aggregate
  */
-export const aggregateSelectedCount = selectorFamily<number, Aggregate>({
+export const aggregateSelectedCount = selectorFamily<number, {agg: Aggregate, type: SelectionType | null}>({
   key: 'aggregate-selected',
-  get: (agg: Aggregate) => ({ get }) => {
+  get: ({ agg, type }) => ({ get }) => {
     let total = 0;
     Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate }).forEach(([id, value]) => {
       total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
-        ? get(aggregateSelectedCount(value as Aggregate))
-        : get(subsetSelectedCount(id));
+        ? get(aggregateSelectedCount({ agg: value as Aggregate, type }))
+        : get(subsetSelectedCount({ id, type }));
     });
     return total;
   },

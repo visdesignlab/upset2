@@ -18,6 +18,7 @@ import { itemsAtom } from '../../atoms/itemsAtoms';
 import { ProvenanceContext } from '../Root';
 import { HistogramPlot } from './HistogramPlot';
 import { ScatterplotPlot } from './Scatterplot';
+import { UpsetActions } from '../../provenance';
 
 type Props = {
   handleClose: () => void;
@@ -74,7 +75,7 @@ type ButtonProps = {
 const AddButton: FC<ButtonProps> = ({
   handleClose, type, bins, attribute, density, x, y, xScaleLog, yScaleLog, disabled,
 }) => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   return (
     <Button
@@ -83,21 +84,25 @@ const AddButton: FC<ButtonProps> = ({
       variant="outlined"
       color="success"
       onClick={() => {
-        actions.addPlot({
-          id: Date.now().toString(),
-          type,
-          ...(type === 'Scatterplot' && {
+        if (type === 'Scatterplot' && x && y) {
+          actions.addPlot({
+            id: Date.now().toString(),
+            type: 'Scatterplot',
             x,
             y,
             xScaleLog,
             yScaleLog,
-          }),
-          ...(type === 'Histogram' && {
+          });
+        } else if (type === 'Histogram' && attribute && bins) {
+          actions.addPlot({
+            id: Date.now().toString(),
+            type: 'Histogram',
             attribute,
             bins,
-            frequency: density,
-          }),
-        });
+            // Just type coerce/default true to avoid undefined
+            frequency: density ?? true,
+          });
+        }
         handleClose();
       }}
     >

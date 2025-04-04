@@ -14,6 +14,7 @@ import {
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
 import { canEditPlotInformationAtom } from '../../atoms/config/canEditPlotInformationAtom';
 import { ProvenanceContext } from '../Root';
+import { UpsetActions } from '../../provenance';
 
 /**
  * Props for the PlotInformation component.
@@ -88,7 +89,7 @@ export const PlotInformation = ({
   const plotInformationState = useRecoilValue(plotInformationSelector);
   const canEditPlotInformation = useRecoilValue(canEditPlotInformationAtom);
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   /**
    * Functions

@@ -59,7 +59,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
     if (newWidth > MIN_DRAWER_WIDTH) {
       setDrawerWidth(newWidth);
     }
-  }, [document.body.clientWidth]);
+  }, [setDrawerWidth]);
 
   /**
    * Unattaches itself and handleMouseMove from document when the user stops dragging the sidebar
@@ -67,7 +67,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
   const handleMouseUp = useCallback(() => {
     document.removeEventListener('mouseup', handleMouseUp, true);
     document.removeEventListener('mousemove', handleMouseMove, true);
-  }, [handleMouseMove, document]);
+  }, [handleMouseMove]);
 
   /**
    * Enables dragging when the user clicks the side of the drawer
@@ -79,7 +79,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
       document.addEventListener('mouseup', handleMouseUp, true);
       document.addEventListener('mousemove', handleMouseMove, true);
     },
-    [handleMouseUp, handleMouseMove, document],
+    [handleMouseUp, handleMouseMove],
   );
 
   return (
@@ -94,7 +94,9 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
           width: open ? fullWidth ? '100%' : drawerWidth : 0,
           boxSizing: 'border-box',
           zIndex: 1,
-          paddingTop: '25px',
+          // Allow the inner div to handle scroll and right padding (so scrollbar isn't padded out from the edge)
+          overflow: 'hidden',
+          paddingRight: 0,
         },
       }}
       open={open}
@@ -123,71 +125,77 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
-      <Box display="flex" flexWrap="nowrap" flexDirection="row">
-        <div style={{
-          minWidth: 0, alignSelf: 'center', flexGrow: 1, flexShrink: 1, width: '100%', display: 'flex', alignItems: 'center',
-        }}
-        >
-          <UpsetHeading
-            level="h1"
-            hideDivider
-            divStyle={{ marginBottom: 0, width: '100%' }}
-            headingStyle={{
-              marginBottom: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%',
-            }}
+      <div style={{
+        // Padding necessary to match the rest of the drawer
+        height: '100%', overflowY: 'auto', overflowX: 'hidden', paddingRight: '1em',
+      }}
+      >
+        <Box display="flex" flexWrap="nowrap" flexDirection="row">
+          <div style={{
+            minWidth: 0, alignSelf: 'center', flexGrow: 1, flexShrink: 1, width: '100%', display: 'flex', alignItems: 'center',
+          }}
           >
-            {title}
-          </UpsetHeading>
-        </div>
-        <div style={{
-          display: 'flex', justifyContent: 'end', flexGrow: 0, flexShrink: 0, alignSelf: 'end',
-        }}
-        >
-          {buttons}
-          { !fullWidth ?
-            <Tooltip title="Expand to full screen">
-              <IconButton
-                style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
-                onClick={() => {
-                  setFullWidth(true);
-                }}
-                aria-label="Expand the sidebar in full screen"
-              >
-                {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
+            <UpsetHeading
+              level="h1"
+              hideDivider
+              divStyle={{ marginBottom: 0, width: '100%' }}
+              headingStyle={{
+                marginBottom: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%',
+              }}
+            >
+              {title}
+            </UpsetHeading>
+          </div>
+          <div style={{
+            display: 'flex', justifyContent: 'end', flexGrow: 0, flexShrink: 0, alignSelf: 'end',
+          }}
+          >
+            {buttons}
+            { !fullWidth ?
+              <Tooltip title="Expand to full screen">
+                <IconButton
+                  style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
+                  onClick={() => {
+                    setFullWidth(true);
+                  }}
+                  aria-label="Expand the sidebar in full screen"
+                >
+                  {/* CRAZY, I know. 1 font size px changes the icon SVG dimensions (square) by .75px. So this is
             EXACTLY the font size needed to get this icon SVG to be the same dimensions as the close button: 14x14 */}
-                <OpenInFullIcon style={{ fontSize: '18.67px' }} />
+                  <OpenInFullIcon style={{ fontSize: '18.67px' }} />
+                </IconButton>
+              </Tooltip>
+              :
+              <Tooltip title="Reduce to normal size">
+                <IconButton
+                  style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
+                  onClick={() => {
+                    if (fullWidth) {
+                      setFullWidth(false);
+                    }
+                  }}
+                  aria-label="Reduce the sidebar to normal size"
+                >
+                  <CloseFullscreen />
+                </IconButton>
+              </Tooltip>}
+            <Tooltip title="Close">
+              <IconButton
+                onClick={() => {
+                  close();
+                }}
+                tabIndex={closeButtonTabIndex}
+                aria-label="Close the sidebar"
+              >
+                <CloseIcon />
               </IconButton>
             </Tooltip>
-            :
-            <Tooltip title="Reduce to normal size">
-              <IconButton
-                style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
-                onClick={() => {
-                  if (fullWidth) {
-                    setFullWidth(false);
-                  }
-                }}
-                aria-label="Reduce the sidebar to normal size"
-              >
-                <CloseFullscreen />
-              </IconButton>
-            </Tooltip>}
-          <Tooltip title="Close">
-            <IconButton
-              onClick={() => {
-                close();
-              }}
-              tabIndex={closeButtonTabIndex}
-              aria-label="Close the sidebar"
-            >
-              <CloseIcon />
-            </IconButton>
-          </Tooltip>
-        </div>
-      </Box>
-      <Divider style={{ width: '100%', margin: '0 auto', marginBottom: '1em' }} aria-hidden />
-      {children}
-      <Box minHeight={footerHeight} />
+          </div>
+        </Box>
+        <Divider style={{ width: '100%', margin: '0 auto', marginBottom: '1em' }} aria-hidden />
+        {children}
+        <Box minHeight={footerHeight} />
+      </div>
     </Drawer>
   );
 };

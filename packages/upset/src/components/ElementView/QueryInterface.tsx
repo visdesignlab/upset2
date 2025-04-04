@@ -10,10 +10,10 @@ import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
-import { currentElementQuery } from '../../atoms/elementsSelectors';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
+import { currentSelectionType, currentQuerySelection } from '../../atoms/config/selectionAtoms';
 
 /**
  * Default type for the element query
@@ -30,7 +30,8 @@ export const QueryInterface = () => {
    */
 
   const atts = useRecoilValue(queryColumnsSelector);
-  const currentSelection = useRecoilValue(currentElementQuery);
+  const currentSelection = useRecoilValue(currentQuerySelection);
+  const selectionType = useRecoilValue(currentSelectionType);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const attTypes = useRecoilValue(attTypesSelector);
 
@@ -63,7 +64,8 @@ export const QueryInterface = () => {
    */
   const saveOrClear = useCallback(() => {
     if (currentSelection) {
-      actions.setElementSelection(null);
+      actions.setQuerySelection(null);
+      if (selectionType === 'query') actions.setSelectionType(null);
       setAttField(undefined);
       setTypeField(undefined);
       setQueryField(undefined);
@@ -71,17 +73,14 @@ export const QueryInterface = () => {
       && Object.values(ElementQueryType).includes(typeField as ElementQueryType)
       && atts.includes(attField)
     ) {
-      actions.setElementSelection({
-        type: 'element',
-        query: {
-          att: attField,
-          type: typeField as ElementQueryType || ElementQueryType.EQUALS,
-          query: queryField,
-        },
-        active: true,
+      actions.setQuerySelection({
+        att: attField,
+        type: typeField as ElementQueryType || ElementQueryType.EQUALS,
+        query: queryField,
       });
+      actions.setSelectionType('query');
     }
-  }, [attField, typeField, queryField, atts, actions, currentSelection]);
+  }, [attField, typeField, queryField, atts, actions, currentSelection, selectionType]);
 
   return atts.length > 0 ? (
     <Box css={{ marginTop: '10px' }}>

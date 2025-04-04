@@ -25,11 +25,9 @@ export const defaultBackground = css`
 
 /** Colors for selected & bookmarked intersections */
 export const queryColorPalette = [
-  '#1f77b4',
-  '#ff7f0e',
   '#2ca02c',
-  '#d62728',
   '#9467bd',
+  '#d62728',
   '#8c564b',
   '#e377c2',
   '#7f7f7f',
@@ -37,8 +35,14 @@ export const queryColorPalette = [
   '#17becf',
 ];
 
-/** Color for the active element selections: 'Rich Amber' */
-export const elementSelectionColor = '#e49b0f';
+/** Color to use for selected & bookmarked intersections when the query color palette runs out */
+export const extraQueryColor = '#000';
+
+/** Color for the active vega selections (orange) */
+export const vegaSelectionColor = '#ff7f0e';
+
+/** Color for the active query selections (blue) */
+export const querySelectionColor = '#1f77b4';
 
 export const mousePointer = css`
   cursor: pointer;
