@@ -1,21 +1,16 @@
-import StarIcon from '@mui/icons-material/Star';
-import StarBorderIcon from '@mui/icons-material/StarBorder';
 import WorkspacesIcon from '@mui/icons-material/Workspaces';
 import { Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
-  Bookmark, flattenedOnlyRows,
-  querySelectionToString,
-  vegaSelectionToString,
+  Bookmark, flattenedOnlyRows, querySelectionToString, vegaSelectionToString,
 } from '@visdesignlab/upset2-core';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import CodeIcon from '@mui/icons-material/Code';
 import {
-  currentSelectionType, bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentVegaSelection, nextColorSelector,
-  nextColorIndexSelector,
+  currentSelectionType, bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentVegaSelection, nextColorSelector, nextColorIndexSelector,
 } from '../../atoms/config/selectionAtoms';
 import { ProvenanceContext } from '../Root';
 import { dataAtom } from '../../atoms/dataAtom';
@@ -78,17 +73,18 @@ export const BookmarkChips = () => {
             }
           }}
           label={`${bookmark.label} - ${bookmark.size}`}
-          icon={<BookmarkIcon fontSize={CHIP_ICON_FONT_SIZE} />}
-          deleteIcon={<StarIcon />}
+          icon={<BookmarkIcon
+            fontSize={CHIP_ICON_FONT_SIZE}
+            onClick={(e) => {
+              if (currentIntersection?.id === bookmark.id) {
+                if (selectionType !== 'row') actions.setRowSelection(null);
+              }
+              actions.removeBookmark(bookmark);
+              e.stopPropagation(); // Prevents the onclick on the chip from firing
+            }}
+          />}
           onClick={() => {
             chipClicked(bookmark);
-          }}
-          onDelete={() => {
-            if (currentIntersection?.id === bookmark.id) {
-              actions.setRowSelection(null);
-              if (selectionType === 'row') actions.setSelectionType(null);
-            }
-            actions.removeBookmark(bookmark);
           }}
         />
       ))}
@@ -102,7 +98,18 @@ export const BookmarkChips = () => {
           },
           backgroundColor: selectionType === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
         })}
-        icon={<BookmarkBorderIcon fontSize={CHIP_ICON_FONT_SIZE} />}
+        icon={<BookmarkBorderIcon
+          fontSize={CHIP_ICON_FONT_SIZE}
+          onClick={(e) => {
+            actions.addBookmark({
+              id: currentIntersection.id,
+              label: currentIntersectionDisplayName,
+              size: currentIntersection.size,
+              colorIndex: nextColorIndex,
+            });
+            e.stopPropagation(); // Prevents the onclick on the chip from firing
+          }}
+        />}
         aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
@@ -115,19 +122,12 @@ export const BookmarkChips = () => {
           }
         }}
         onClick={() => {
-          if (selectionType === 'row') actions.setSelectionType(null);
-          else actions.setSelectionType('row');
+          if (selectionType === 'row') {
+            actions.setSelectionType(null);
+            actions.setRowSelection(null);
+          } else actions.setSelectionType('row');
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
-        onDelete={() => {
-          actions.addBookmark({
-            id: currentIntersection.id,
-            label: currentIntersectionDisplayName,
-            size: currentIntersection.size,
-            colorIndex: nextColorIndex,
-          });
-        }}
-        deleteIcon={<StarBorderIcon />}
       />
       )}
       {/* Chip for the current vega selection */}
