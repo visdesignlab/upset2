@@ -10,6 +10,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import {
   bookmarkColorSelector, currentIntersectionSelector, currentSelectionType, isRowBookmarkedSelector,
+  nextColorIndexSelector,
 } from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
 import { rowHoverAtom } from '../../atoms/highlightAtom';
@@ -41,6 +42,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
   const hovered = useRecoilValue(rowHoverAtom) === row.id;
   const selected = useRecoilValue(currentIntersectionSelector)?.id === row.id;
   const selectionType = useRecoilValue(currentSelectionType);
+  const nextColorIndex = useRecoilValue(nextColorIndexSelector);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
@@ -81,6 +83,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
       id: row.id,
       label: rowDisplayName,
       size: row.size,
+      colorIndex: nextColorIndex,
     };
     if (bookmarked) {
       actions.removeBookmark(bookmark);

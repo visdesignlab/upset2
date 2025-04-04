@@ -2,11 +2,10 @@ import {
   Bookmark, QuerySelection, Row, SelectionType, VegaSelection,
 } from '@visdesignlab/upset2-core';
 import {
-  atom, selector, selectorFamily, useRecoilState, useRecoilValue,
+  selector, selectorFamily,
 } from 'recoil';
 
-import { useEffect } from 'react';
-import { queryColorPalette } from '../../utils/styles';
+import { extraQueryColor, queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
 /**
@@ -54,31 +53,21 @@ export const bookmarkSelector = selector<Bookmark[]>({
 });
 
 /**
- * Stores the color palette for bookmarks
- * This atom holds a mapping of bookmark IDs to their respective colors.
- * Not exported as it should not be accessed directly; use the `bookmarkColor` selector instead.
+ * Gets the color palette index to be used for the (color of the) next bookmark.
+ * This is the next available color index in the color palette.
+ * If all colors are used, the next color index will be the length of the color palette.
+ * @returns {number} The next color index to be used for a new bookmark.
  */
-const colorPaletteAtom = atom<{[id: string]: string}>({
-  key: 'color-palette-atom',
-  default: {},
+export const nextColorIndexSelector = selector<number>({
+  key: 'next-color-index-selector',
+  get: ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    const used = new Set(bookmarks.map((b) => b.colorIndex));
+
+    for (let i = 0; i < queryColorPalette.length; i += 1) if (!used.has(i)) return i;
+    return queryColorPalette.length;
+  },
 });
-
-/**
- * Finds the next free color in the `queryColorPalette`
- * @private Abstracted to a function to ensure logical consistency between nextColorSelector and useSyncBookmarkPalette
- * @param currentPalette The current color palette for bookmarks from the `colorPaletteAtom`
- * @returns Hex of the next free color or #000 (black) if all colors are used
- */
-function findNextColor(currentPalette: Readonly<Record<string, string>>): string {
-  const usedColors = new Set(Object.values(currentPalette));
-
-  for (const color of queryColorPalette) { // Need to use for loop so we can return from inside
-    if (!usedColors.has(color)) {
-      return color;
-    }
-  }
-  return '#000'; // Fallback to black
-}
 
 /**
  * The next color to be used for a newly bookmarked intersection; comes from the queryColorPalette.
@@ -86,46 +75,11 @@ function findNextColor(currentPalette: Readonly<Record<string, string>>): string
  */
 export const nextColorSelector = selector<string>({
   key: 'next-color-selector',
-  get: ({ get }) => findNextColor(get(colorPaletteAtom)),
+  get: ({ get }) => {
+    const nextIndex = get(nextColorIndexSelector);
+    return nextIndex < queryColorPalette.length ? queryColorPalette[nextIndex] : extraQueryColor;
+  },
 });
-
-/**
- * A hook (or component) responsible for synchronizing the colorPaletteAtom
- * with the current list of bookmarks. Assigns colors to new bookmarks
- * and implicitly prunes colors for removed bookmarks.
- *
- * This should be run near the root of the component tree to ensure that the color palette remains in sync
- */
-export function useSyncBookmarkPalette() {
-  const bookmarks = useRecoilValue(bookmarkSelector);
-  const [palette, setPalette] = useRecoilState(colorPaletteAtom);
-
-  useEffect(() => {
-    const bookmarkIDs = new Set(bookmarks.map((b) => b.id));
-    const newPalette = { ...palette }; // Create a shallow copy of the current palette as it's readonly
-    const paletteIDs = Object.keys(newPalette);
-    let needsUpdate = false; // Necessary to prevent infinite loops
-
-    // First, prune the palette of any colors that are no longer associated with bookmarks
-    paletteIDs.forEach((id) => {
-      if (!bookmarkIDs.has(id)) {
-        delete newPalette[id];
-        needsUpdate = true;
-      }
-    });
-
-    // Second, assign colors to new bookmarks
-    bookmarkIDs.forEach((id) => {
-      if (!newPalette[id]) {
-        newPalette[id] = findNextColor(newPalette);
-        needsUpdate = true;
-      }
-    });
-
-    // Only update if needed to prevent infinite loops (this effect re-runs when palette changes)
-    if (needsUpdate) setPalette(newPalette);
-  }, [bookmarks, palette, setPalette]);
-}
 
 /**
  * Get the color associated with a bookmark.
@@ -136,18 +90,19 @@ export function useSyncBookmarkPalette() {
  */
 export const bookmarkColorSelector = selectorFamily<string, string | undefined>({
   key: 'bookmark-color-selector',
-  get: (id) => ({ get }) => (id ?
-    get(colorPaletteAtom)[id] ?? get(nextColorSelector)
-    : get(nextColorSelector)),
-});
+  get: (id) => ({ get }) => {
+    const bookmarks = get(bookmarkSelector);
+    const nextColor = get(nextColorSelector);
 
-/**
- * @returns The current color palette used for bookmarks
- * @private used to make the atom readonly to external access
- */
-export const colorPaletteSelector = selector<Record<string, string>>({
-  key: 'color-palette-selector',
-  get: ({ get }) => get(colorPaletteAtom),
+    if (id === undefined) return nextColor;
+
+    const bookmark = bookmarks.find((b) => b.id === id);
+    if (bookmark) {
+      return bookmark.colorIndex < queryColorPalette.length ? queryColorPalette[bookmark.colorIndex] : extraQueryColor;
+    }
+
+    return nextColor;
+  },
 });
 
 /**

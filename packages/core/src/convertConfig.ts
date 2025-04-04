@@ -327,6 +327,9 @@ function convert0_1_3(config: Version0_1_3): UpsetConfig {
     (config as unknown as UpsetConfig).querySelection = null;
     (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
   }
+
+  config.bookmarks = config.bookmarks.map((b, i) => ({ ...b, colorIndex: i }));
+
   delete (config as any).elementSelection;
   delete (config as any).selected;
   return config as unknown as UpsetConfig;

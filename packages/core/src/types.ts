@@ -394,6 +394,14 @@ export type Bookmark = {
    * The size of the bookmarked selection
    */
   size: number;
+  /**
+   * The index of this bookmark's color in the color palette.
+   * Specific colors in the palette are decided by the implementation, however,
+   * we store the index here so that bookmark colors are consistent across sessions.
+   * Note that this is not guaranteed to be within the bounds of the color palette,
+   * so implementations should be careful to handle this case.
+   */
+  colorIndex: number;
 };
 
 /**

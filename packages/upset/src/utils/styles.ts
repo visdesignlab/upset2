@@ -35,6 +35,9 @@ export const queryColorPalette = [
   '#17becf',
 ];
 
+/** Color to use for selected & bookmarked intersections when the query color palette runs out */
+export const extraQueryColor = '#000';
+
 /** Color for the active vega selections (orange) */
 export const vegaSelectionColor = '#ff7f0e';
 
