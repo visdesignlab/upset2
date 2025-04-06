@@ -1,6 +1,7 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import {
   Alert,
+  Box,
   IconButton, Tooltip,
   Typography,
 } from '@mui/material';
@@ -9,6 +10,7 @@ import { useRecoilValue } from 'recoil';
 
 import { useCallback, useMemo, useState } from 'react';
 import AddchartIcon from '@mui/icons-material/Addchart';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
   selectedItemsCounter,
@@ -88,9 +90,10 @@ export const ElementSidebar = ({ open, close }: Props) => {
   const columns = useRecoilValue(columnsAtom);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const [queryOpen, setQueryOpen] = useState(false);
 
-  /** Whether to show the alert message when no bookmark/selection chips are present */
-  const showEmptyAlert = useMemo(
+  /** Whether the bookmark chips are empty */
+  const haveChips = useMemo(
     () => bookmarked.length > 0 || currentIntersection || vegaSelection || querySelection,
     [bookmarked.length, currentIntersection, vegaSelection, querySelection],
   );
@@ -123,25 +126,36 @@ export const ElementSidebar = ({ open, close }: Props) => {
       label="Element View Sidebar"
       title="Element View"
       buttons={
-        <Tooltip title="Add Plot">
-          <IconButton onClick={() => setOpenAddPlot(true)}>
-            <AddchartIcon />
-          </IconButton>
-        </Tooltip>
+        <>
+          <Tooltip title="Add plot">
+            <IconButton onClick={() => setOpenAddPlot(true)}>
+              <AddchartIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element query`}>
+            <IconButton onClick={() => { setQueryOpen(!queryOpen); }}>
+              <QueryStatsIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       }
     >
-      {!showEmptyAlert && (
+      <Box
+        height={queryOpen ? 140 : 0}
+        overflow="hidden"
+        style={{ transition: 'height 0.2s ease-in-out', marginBottom: queryOpen ? '1em' : 0 }}
+      >
+        <QueryInterface />
+      </Box>
+      {!haveChips && (
         <Alert severity="info" style={{ paddingTop: '2px', paddingBottom: '2px' }}>
           Selected intersections and elements will appear here.
         </Alert>
       )}
       <BookmarkChips />
+      <Box height="1em" />
       <ElementVisualization />
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
-      <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
-        Element Queries
-      </UpsetHeading>
-      <QueryInterface />
       <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
         Element Table
         <Typography display="inline" variant="caption" style={{ marginLeft: '0.5em' }}>
