@@ -39,6 +39,9 @@ type Props = {
   close: () => void
 }
 
+/** Default vertical margin between elements */
+const DEFAULT_SPACING = '0.5em';
+
 /**
  * Immediately downloads a csv containing items with the given columns
  * @param items Rows to download
@@ -143,7 +146,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
       <Box
         height={queryOpen ? 140 : 0}
         overflow="hidden"
-        style={{ transition: 'height 0.2s ease-in-out', marginBottom: queryOpen ? '1em' : 0 }}
+        style={{ transition: 'height 0.2s ease-in-out', marginBottom: queryOpen ? DEFAULT_SPACING : 0 }}
       >
         <QueryInterface />
       </Box>
@@ -153,7 +156,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Alert>
       )}
       <BookmarkChips />
-      <Box height="1em" />
+      <Box height={DEFAULT_SPACING} />
       <ElementVisualization />
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
