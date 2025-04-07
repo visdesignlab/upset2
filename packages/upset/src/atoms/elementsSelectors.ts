@@ -17,7 +17,6 @@ import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
-import { bookmarkIsVisibleSelector } from './config/queryBySetsAtoms';
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
@@ -139,16 +138,16 @@ const filteredItems = selector<FilteredItems>({
 });
 
 /**
- * Returns all items from any visible intersection that are within the bounds of the current element selection if active.
- * If inactive, returns all items within a bookmarked/selected intersection.
- * If no selections are active, and no rows are selected or bookmarked, returns all items in visible intersections.
+ * If the selection type is 'vega' or 'query', returns items from visible intersections included in the selection.
+ * If the selection type is 'row', returns items from the selected intersection.
+ * If the selection type is 'none', returns all items in visible intersections.
  */
 export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   key: 'selected-elements',
   get: ({ get }) => {
     const type = get(currentSelectionType);
     if (type === 'vega' || type === 'query') return get(filteredItems).included;
-    if (get(bookmarkIsVisibleSelector)) return get(bookmarkedItemsSelector);
+    if (type === 'row') return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
     return get(processedItemsSelector);
   },
 });
