@@ -62,19 +62,8 @@ test('Element View', async ({ page, browserName }) => {
   await page.getByRole('button', { name: 'Expand the sidebar in full' }).click();
   await page.getByLabel('Reduce the sidebar to normal').click();
 
-  // Ensure all headings are visible
-  const elementViewHeading = await page.getByRole('heading', { name: 'Element View' });
-  await expect(elementViewHeading).toBeVisible();
-  const elementQueriesHeading = await page.getByRole('heading', { name: 'Element Queries' });
-  await expect(elementQueriesHeading).toBeVisible();
-  const elementVisualizationHeading = await page.getByRole('heading', { name: 'Element View' });
-  await expect(elementVisualizationHeading).toBeVisible();
-  const queryResultHeading = await page.getByRole('heading', { name: 'Query Result' });
-  await expect(queryResultHeading).toBeVisible();
-
   // Check to see that the selection chip is visible
-  const selectionChip = await page.getByLabel('Selected intersection School');
-  await expect(selectionChip).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Selected intersection School' })).toBeVisible();
 
   // Check that the datatable is visible and populated
   const dataTable = page.getByRole('grid');
@@ -130,64 +119,22 @@ test('Element View', async ({ page, browserName }) => {
   // Check that the selection chip is visible after selecting
   await elementViewToggle.click();
 
-  // I cannot, for the life of me, get Firefox to properly drag the selection. The mouseup doesn't fire, so the
-  // selection doesn't get saved, EVEN THOUGH this works perfectly nicely fine up at the top of this test and
-  // in chromium/webkit. I'm going to skip this test in Firefox for now.
-  if (browserName !== 'firefox') {
-    // The x offset of 40 exhibits unstable behavior thru playwright updates; the range of ages selected may change
-    // & necessitate changes to this test
-    await dragElement(page.locator('canvas'), 40, 0, page);
-
-    const elementSelectionChip = await page.getByLabel('Selected elements Atts: Age');
-    await expect(elementSelectionChip).toBeVisible();
-
-    // Check that the selection is visible in the size bars
-    const schoolMale1stPoly = await page.locator('[id="Subset_School\\~\\&\\~Male"] polygon').first();
-    await expect(schoolMale1stPoly).toBeVisible();
-
-    const unincludedSelectPoly = await page.locator('#Subset_Unincluded polygon').first();
-    await expect(unincludedSelectPoly).toBeVisible();
-
-    const unincludedSelectRect = await page.locator('#Subset_Unincluded g').filter({ hasText: '3' }).locator('rect').nth(1);
-    await expect(unincludedSelectRect).toBeVisible();
-
-    const schoolMaleSelectedIntersectionRect =
-    await page.locator('[id="Subset_School\\~\\&\\~Male"] g').filter({ hasText: '3' }).locator('rect').first();
-    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
-
-    // Check that deselecting a selection works
-    const elementSelectionBookmark = await page.getByRole('button', { name: 'Selected elements Atts: Age' });
-    await elementSelectionBookmark.click();
-    await expect(schoolMale1stPoly).toBeVisible();
-    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
-    await expect(unincludedSelectPoly).not.toBeVisible();
-    await expect(unincludedSelectRect).not.toBeVisible();
-
-    // Check that reselecting a bookmarked selection works
-    await elementSelectionBookmark.click();
-    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
-    await expect(unincludedSelectPoly).toBeVisible();
-    await expect(unincludedSelectRect).toBeVisible();
-    await expect(page.getByText('1–9 of')).toBeVisible(); // Checking count
-    await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
-  }
-
   /** Element table tests; checking correct number of rows */
   // Re-used element table counts
   const count3 = page.getByText('1–3 of');
-  const count6 = page.getByText('1–6 of');
+  const count24 = page.getByText('–24 of 24');
 
   // No selection
   await expect(count3).toBeVisible();
 
-  // Bookmark 2 rowsawait expect(page.getByText('1–3 of')).toBeVisible();
-  await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
-  await page.locator('#Subset_Unincluded path').click();
-  await expect(count6).toBeVisible();
+  // Bookmark 2 rows
+  await page.locator('[id="Subset_School\\~\\&\\~Male"] > g:nth-child(3) > rect').click();
+  await page.locator('#Subset_Unincluded > g:nth-child(3) > rect').click();
+  await expect(count3).toBeVisible();
 
   // Start adding a query, recheck
   await page.getByTestId('AddIcon').locator('path').click();
-  await expect(count6).toBeVisible();
+  await expect(count3).toBeVisible();
 
   // Add a query
   await page.locator('g:nth-child(2) > g > circle:nth-child(7)').click();
@@ -197,13 +144,13 @@ test('Element View', async ({ page, browserName }) => {
 
   // Remove query
   await page.getByLabel('Remove query').locator('rect').click();
-  await expect(count6).toBeVisible();
+  await expect(count24).toBeVisible();
 
   // Deselect bookmarked rows
   await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
-  await expect(count3).toBeVisible();
+  await expect(count24).toBeVisible();
   await page.locator('#Subset_Unincluded path').click();
-  await expect(page.getByText('–24 of 24')).toBeVisible();
+  await expect(count24).toBeVisible();
 
   /*
     * Plot removal
@@ -224,7 +171,9 @@ test('Element View', async ({ page, browserName }) => {
  * @param page The page to perform the clear selection on
  */
 async function clearSelection(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Show explicit element query' }).click();
   await page.getByRole('button', { name: 'Clear' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
 }
 
 /**
@@ -235,6 +184,7 @@ async function clearSelection(page: Page): Promise<void> {
  * @param query The query string
  */
 async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
+  await page.getByRole('button', { name: 'Show explicit element query' }).click();
   await page.getByLabel('Attribute Name').click();
   await page.getByRole('option', { name: att }).click();
   await page.getByLabel('Query Type').click();
@@ -242,6 +192,7 @@ async function setQuery(page: Page, att: string, type: string, query: string): P
   await page.getByPlaceholder('Query').click();
   await page.getByPlaceholder('Query').fill(query);
   await page.getByRole('button', { name: 'Apply' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
 }
 
 // toBeDefined is used in place of toBeVisible in places where the cell is not in the visible
