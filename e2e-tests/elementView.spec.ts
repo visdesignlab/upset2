@@ -29,7 +29,193 @@ async function dragElement(element: Locator, xOffset: number, yOffset: number, p
   await page.mouse.up();
 }
 
-test('Element View', async ({ page, browserName }) => {
+/**
+ * Asserts that the row with the given id has the specified number of selection ticks on the size bar.
+ * Note that all selection ticks have a backing white tick, so count should be double the number of visible ticks
+ * @param page The page to perform the assertion on
+ * @param id The id of the row to check
+ * @param count The expected number of ticks
+ */
+async function assertRowTickCount(page: Page, id: string, count: number): Promise<void> {
+  const ticks = page.locator(`[id="${id}"]`).locator('polygon');
+  await expect(ticks).toHaveCount(count);
+}
+
+/**
+ * Asserts that the element table has the specified number of elements.
+ * @param page The page to perform the assertion on
+ * @param count The expected number of elements in the table
+ */
+async function assertTableCount(page: Page, count: number): Promise<void> {
+  await expect(page.getByRole('heading', { name: `Element Table${count} of 24 elements` })).toBeVisible();
+  await expect(page.getByText(`1–${count} of`)).toBeVisible();
+}
+
+/**
+ * Sets a query in the element view; element view must be open
+ * @param page The current testing page
+ * @param att The attribute to query
+ * @param type The type of query
+ * @param query The query string
+ */
+async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
+  await page.getByRole('button', { name: 'Show explicit element query' }).click();
+  await page.getByLabel('Attribute Name').click();
+  await page.getByRole('option', { name: att }).click();
+  await page.getByLabel('Query Type').click();
+  await page.getByRole('option', { name: type, exact: true }).click();
+  await page.getByPlaceholder('Query').click();
+  await page.getByPlaceholder('Query').fill(query);
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
+}
+
+/**
+ * Clears the selection in the element view; element view must be open
+ * @param page The page to perform the clear selection on
+ */
+async function clearSelection(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Show explicit element query' }).click();
+  await page.getByRole('button', { name: 'Clear' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
+}
+
+test('Selection Types', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.getByLabel('Element View Sidebar Toggle').click();
+  await page.locator('[id="Subset_School\\~\\&\\~Male"]').getByLabel('Evil').locator('circle').click();
+
+  // Basic row selection
+  await expect(page.getByRole('button', { name: 'Selected intersection School' })).toHaveText('School & Male - 3');
+  await assertRowTickCount(page, 'Subset_School\\~\\&\\~Male', 2);
+  await assertTableCount(page, 3);
+
+  // Switching row selection
+  await page.locator('[id="Subset_Evil\\~\\&\\~Male"]').getByText('2').nth(1).click();
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertTableCount(page, 2);
+
+  // Basic vega selection with a row selection
+  await dragElement(page.locator('canvas'), 40, 0, page);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertTableCount(page, 9);
+  await expect(page.getByRole('button', { name: 'Selected elements Atts: Age' })).toHaveText('Atts: Age: [39 to 57]');
+
+  // Deactivate vega selection via the chip
+  await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertTableCount(page, 24);
+  await expect(page.getByRole('button', { name: 'Selected elements Atts: Age' })).toHaveText('Atts: Age: [39 to 57]');
+
+  // Reactivate vega selection via the chip
+  await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertTableCount(page, 9);
+  await expect(page.getByRole('button', { name: 'Selected elements Atts: Age' })).toHaveText('Atts: Age: [39 to 57]');
+
+  // Make a bookmark
+  await page.locator('[id="Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant"] > g:nth-child(3) > rect').click();
+  await expect(page.getByRole('button', { name: 'Bookmarked intersection Evil' })).toHaveText('Evil & Male & Power Plant - 2');
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 2);
+
+  // Make another bookmark
+  await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3) > rect').click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 2);
+
+  // Reactivate row selection via chip
+  await page.getByRole('button', { name: 'Bookmarked intersection Evil' }).click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 2);
+
+  // Query selection
+  await setQuery(page, 'Name', 'contains', 'a');
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 15);
+
+  // Deactivate query selection via chip
+  await page.getByRole('button', { name: 'Selected elements Name' }).click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 24);
+
+  // Reactivate query selection via chip
+  await page.getByRole('button', { name: 'Selected elements Name' }).click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 15);
+
+  // Remove bookmark via chip
+  await page.getByRole('button', { name: 'Bookmarked intersection Evil' }).locator('svg').click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 15);
+
+  // Remove bookmark via bookmark column
+  await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] path').click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 15);
+
+  // Remove query selection
+  await clearSelection(page);
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 24);
+
+  // Remove vega selection
+  await page.locator('canvas').click({
+    position: {
+      x: 162,
+      y: 86,
+    },
+  });
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 0);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 0);
+  await assertRowTickCount(page, 'Subset_Unincluded', 0);
+  await assertRowTickCount(page, 'Subset_Male', 0);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 24);
+});
+
+test('Element View', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   // Open element view
@@ -165,35 +351,6 @@ test('Element View', async ({ page, browserName }) => {
   await page.getByRole('menuitem', { name: 'Remove Plot' }).click();
   await expect(page.locator('canvas')).not.toBeVisible();
 });
-
-/**
- * Clears the selection in the element view; element view must be open
- * @param page The page to perform the clear selection on
- */
-async function clearSelection(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Show explicit element query' }).click();
-  await page.getByRole('button', { name: 'Clear' }).click();
-  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
-}
-
-/**
- * Sets a query in the element view; element view must be open
- * @param page The current testing page
- * @param att The attribute to query
- * @param type The type of query
- * @param query The query string
- */
-async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
-  await page.getByRole('button', { name: 'Show explicit element query' }).click();
-  await page.getByLabel('Attribute Name').click();
-  await page.getByRole('option', { name: att }).click();
-  await page.getByLabel('Query Type').click();
-  await page.getByRole('option', { name: type, exact: true }).click();
-  await page.getByPlaceholder('Query').click();
-  await page.getByPlaceholder('Query').fill(query);
-  await page.getByRole('button', { name: 'Apply' }).click();
-  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
-}
 
 // toBeDefined is used in place of toBeVisible in places where the cell is not in the visible
 // portion of the table, as playwright has issues scrolling the table
