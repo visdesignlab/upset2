@@ -525,7 +525,7 @@ export function getActions(provenance: UpsetProvenance) {
      * Sets the type of the current active selection
      */
     setSelectionType: (selectionType: SelectionType | null) => provenance.apply(
-      selectionType ? `Set selection type to ${selectionType}` : 'Deselected current selection',
+      selectionType ? `Set selection type to ${selectionType}` : 'Cleared selection type',
       setSelectionTypeAction(selectionType),
     ),
     /**
