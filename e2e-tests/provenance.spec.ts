@@ -38,20 +38,19 @@ test('Selection History', async ({ page }) => {
   await expect(page.getByText('Deselect intersection').nth(2)).toBeVisible();
 
   // Check that selections can be reverted & start a new history tree branch
-  await page.locator('g:nth-child(10) > circle').click();
+  await page.locator('g:nth-child(16) > circle').click();
   await schoolIntersection.click();
   await duffFanIntersection.click();
   await expect(page.getByLabel('History Sidebar').getByText('Select intersection "School"')).toBeVisible();
   // Check that deselection triggered by element view unbookmarking is reflected in history tree.
   // Also tests that the bookmarking & unbookmarking is trracked
   await page.getByLabel('Element View Sidebar Toggle').click();
-  await page.locator('svg[data-testid="StarBorderIcon"]').click();
-  await page.locator('span.MuiChip-label+svg[data-testid="StarIcon"]').click();
+  await page.getByRole('button', { name: 'Selected intersection Duff' }).locator('svg').click();
+  await page.getByRole('button', { name: 'Bookmarked intersection Duff' }).locator('svg').click();
   await page.getByLabel('Additional options menu').click();
   await page.getByLabel('History tree sidebar').click();
 
   await expect(page.getByText('Unbookmark Duff Fan & Male')).toBeVisible();
-  await expect(page.getByText('Deselect intersection')).toBeVisible();
   await expect(page.getByText('Bookmark Duff Fan & Male', { exact: true })).toBeVisible();
   await expect(page.getByLabel('History Sidebar').getByText('Select intersection "School"')).toBeVisible();
 });

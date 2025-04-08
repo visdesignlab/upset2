@@ -10,6 +10,7 @@ import { ProvenanceContext } from '../Root';
 import translate from '../../utils/transform';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { hiddenSetSortAtom } from '../../atoms/config/visibleSetsAtoms';
+import { UpsetActions } from '../../provenance';
 
 type Props = {
     hiddenSets: string[];
@@ -17,7 +18,7 @@ type Props = {
   };
 
 export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);

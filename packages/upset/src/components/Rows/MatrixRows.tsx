@@ -1,4 +1,6 @@
-import { isRowAggregate, Row, RenderRow, isPopulatedSetQuery } from '@visdesignlab/upset2-core';
+import {
+  isRowAggregate, Row, RenderRow, isPopulatedSetQuery,
+} from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
@@ -69,7 +71,7 @@ const shouldRender = (row: Row, collapsedIds: string[]) => {
  *
  * @function rowTransitions
  * Generates transitions for the rows using react-spring's `useTransition`.
- * 
+ *
  * @param {Row} row - The row object.
  * @param {number} index - The index of the row.
  * @returns {number} The calculated y-transform value.

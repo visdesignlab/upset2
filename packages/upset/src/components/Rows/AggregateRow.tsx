@@ -1,22 +1,26 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
 import { FC, useContext } from 'react';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import { currentSelectionType, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
 import translate from '../../utils/transform';
-import { highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY } from '../../utils/styles';
+import {
+  highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
+} from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
-import { BookmarkStar } from '../Columns/BookmarkStar';
+import { BookmarkColumnIcon } from '../Columns/BookmarkColumnIcon';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { ProvenanceContext } from '../Root';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
+import { UpsetActions } from '../../provenance';
+import { rowHoverAtom } from '../../atoms/highlightAtom';
 
 /**
  * Props for the AggregateRow component.
@@ -70,9 +74,12 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const selectionType = useRecoilValue(currentSelectionType);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  const { actions } = useContext(ProvenanceContext);
-  const selected = useRecoilValue(aggregateSelectedCount(aggregateRow));
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const vegaSelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }));
+  const querySelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'query' }));
+  const setHoveredRow = useSetRecoilState(rowHoverAtom);
 
   let width = dimensions.body.rowWidth;
   if (aggregateRow.level === 2) {
@@ -92,13 +99,18 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   return (
     <g
       id={aggregateRow.id}
-      onClick={() =>
-        aggregateRow &&
-        (currentIntersection?.id === aggregateRow.id
-          ? actions.setSelected(null)
-          : actions.setSelected(aggregateRow))
-      }
+      onClick={() => {
+        if (aggregateRow && currentIntersection?.id === aggregateRow.id && selectionType === 'row') {
+          actions.setRowSelection(null);
+          actions.setSelectionType(null);
+        } else {
+          actions.setRowSelection(aggregateRow);
+          actions.setSelectionType('row');
+        }
+      }}
       css={mousePointer}
+      onMouseEnter={() => setHoveredRow(aggregateRow.id)}
+      onMouseLeave={() => setHoveredRow(null)}
     >
       <g
         transform={translate(
@@ -108,7 +120,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       >
         <rect
           transform={translate(0, 2)}
-          css={currentIntersection?.id === aggregateRow.id && highlight}
+          css={currentIntersection?.id === aggregateRow.id && selectionType === 'row' && highlight}
           height={
             ['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)
               ? (dimensions.body.rowHeight - 4) * 2
@@ -168,16 +180,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
             : 0,
         )}
       >
-        <BookmarkStar row={aggregateRow} />
-        <SizeBar
-          row={aggregateRow}
-          size={aggregateRow.size}
-          selected={selected}
-        />
-        <AttributeBars
-          attributes={aggregateRow.attributes}
-          row={aggregateRow}
-        />
+        <BookmarkColumnIcon row={aggregateRow} />
+        <SizeBar row={aggregateRow} size={aggregateRow.size} vegaSelected={vegaSelected} querySelected={querySelected} />
+        <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>
   );
