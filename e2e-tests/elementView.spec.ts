@@ -91,7 +91,8 @@ test('Selection Types', async ({ page }) => {
   await assertTableCount(page, 3);
 
   // Switching row selection
-  await page.locator('[id="Subset_Evil\\~\\&\\~Male"]').getByText('2').nth(1).click();
+  // await page.locator('[id="Subset_Evil\\~\\&\\~Male"]').getByText('2').nth(1).click();
+  await page.locator('[id="Subset_Evil\\~\\&\\~Male"] > g:nth-child(4) > rect').first().click();
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
   await assertTableCount(page, 2);
 
