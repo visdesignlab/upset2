@@ -54,6 +54,6 @@ export const ElementTable: FC = () => {
   const columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
 
   return (
-    <DataGrid style={{ minHeight: 550 }} rows={rows} columns={columns} />
+    <DataGrid style={{ height: 650 }} rows={rows} columns={columns} />
   );
 };
