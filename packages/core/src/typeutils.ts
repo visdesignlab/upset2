@@ -1,25 +1,7 @@
 import {
   Aggregate,
-  Aggregates, AttQuery, AttSelection, ElementSelection, NumericalQuery, NumericalSelection, Row, Rows, SetMembershipStatus, SetQuery, Subset, Subsets,
+  Aggregates, QuerySelection, VegaSelection, Row, Rows, SetMembershipStatus, SetQuery, Subset, Subsets,
 } from './types';
-
-/**
- * Checks if a given selection is numerical.
- * @param s - The selection to check.
- * @returns True if the selection is numerical, false otherwise.
- */
-export function selectionIsNumerical(s: ElementSelection): s is NumericalSelection {
-  return s.type === 'numerical';
-}
-
-/**
- * Checks if a given selection is an element selection.
- * @param s - The selection to check.
- * @returns True if the selection is an element selection, false otherwise.
- */
-export function selectionIsAtt(s: ElementSelection): s is AttSelection {
-  return s.type === 'element';
-}
 
 /**
  * Converts an element selection to a bookmark.
@@ -28,7 +10,7 @@ export function selectionIsAtt(s: ElementSelection): s is AttSelection {
  * @param selection The numerical attribute query.
  * @returns The element selection.
  */
-export function numericalQueryToString(selection: NumericalQuery): string {
+export function vegaSelectionToString(selection: VegaSelection): string {
   let label = 'Atts: ';
   Object.entries(selection).forEach(([k, v]) => {
     // Ternary/toPrecision sets 2 sig fig bound on small numbers
@@ -52,23 +34,8 @@ export function numericalQueryToString(selection: NumericalQuery): string {
  * @param selection The element query.
  * @returns The element selection.
  */
-export function attQueryToString(selection: AttQuery): string {
+export function querySelectionToString(selection: QuerySelection): string {
   return `${selection.att} ${selection.type} ${selection.query}`;
-}
-
-/**
- * Converts an element selection to a string.
- * @param selection The element selection.
- * @returns The string representation of the element selection.
- */
-export function elementSelectionToString(selection: ElementSelection): string {
-  if (selectionIsNumerical(selection)) {
-    return numericalQueryToString(selection.query);
-  }
-  if (selectionIsAtt(selection)) {
-    return attQueryToString(selection.query);
-  }
-  throw new Error('Unknown selection type');
 }
 
 /**
@@ -127,7 +94,7 @@ export function isRowSubset(row: Row): row is Subset {
  * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
  * @returns Whether a and b are equal
  */
-export function numericalQueriesEqual(a: NumericalQuery | undefined, b: NumericalQuery | undefined, decimalPlaces = 4): boolean {
+export function vegaSelectionsEqual(a: VegaSelection | undefined, b: VegaSelection | undefined, decimalPlaces: number = 4): boolean {
   // We want undefined == {}
   if (!a || Object.keys(a).length === 0) {
     return (!b || Object.keys(b).length === 0);

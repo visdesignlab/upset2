@@ -15,6 +15,7 @@ import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
 import translate from '../../utils/transform';
 import { columnHoverAtom } from '../../atoms/highlightAtom';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
+import { UpsetActions } from '../../provenance';
 
 /**
  * Props for the SetHeader component.
@@ -47,9 +48,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
 
   const setColumnHover = useSetRecoilState(columnHoverAtom);
 
-  const { actions } = useContext(
-    ProvenanceContext,
-  );
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
@@ -77,7 +76,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     {
       label: `Bring ${setName.replace('Set_', 'Set: ')} to top`,
       onClick: () => {
-        actions.sortBy(setName);
+        actions.sortBy(setName, 'Descending');
         handleContextMenuClose();
       },
     },
@@ -157,7 +156,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
           onClick={(e) => {
             e.stopPropagation();
             if (sortBy !== set.setName) {
-              actions.sortBy(set.setName);
+              actions.sortBy(set.setName, 'Descending');
             }
           }}
         >

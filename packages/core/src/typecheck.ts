@@ -1,11 +1,10 @@
 import {
-  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, Column, NumericalQuery, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
-  AttQuery,
+  Aggregate, AggregateBy, aggregateByList, AltText, AttributePlots, AttributePlotType, BaseElement, BaseIntersection, Bookmark, Column, VegaSelection, Histogram, PlotInformation, Row, RowType, Scatterplot, Subset, Subsets, UpsetConfig,
+  QuerySelection,
   ElementQueryType,
   SetQueryMembership,
   SetQuery,
   SetMembershipStatus,
-  ElementSelection,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -109,11 +108,11 @@ export function isAltText(val: unknown): val is AltText {
 }
 
 /**
- * Validates that the given value is a NumericalQuery.
+ * Validates that the given value is a VegaSelection.
  * @param value The value to check.
- * @returns whether the value is a NumericalQuery.
+ * @returns whether the value is a VegaSelection.
  */
-export function isNumericalQuery(value: unknown): value is NumericalQuery {
+export function isVegaSelection(value: unknown): value is VegaSelection {
   return (
     isObject(value)
     && Object.values(value).every((v) => Array.isArray(v)
@@ -127,19 +126,19 @@ export function isNumericalQuery(value: unknown): value is NumericalQuery {
 }
 
 /**
- * Type guard for ElementQuery
+ * Type guard for QuerySelection
  * @param val The value to check.
- * @returns whether the value is a ElementQuery
+ * @returns whether the value is a QuerySelection
  */
-export function isAttQuery(val: unknown): val is AttQuery {
+export function isQuerySelection(val: unknown): val is QuerySelection {
   return (
     isObject(val)
     && Object.hasOwn(val, 'att')
     && Object.hasOwn(val, 'type')
     && Object.hasOwn(val, 'query')
-    && typeof (val as AttQuery).att === 'string'
-    && Object.values(ElementQueryType).includes((val as AttQuery).type)
-    && typeof (val as AttQuery).query === 'string'
+    && typeof (val as QuerySelection).att === 'string'
+    && Object.values(ElementQueryType).includes((val as QuerySelection).type)
+    && typeof (val as QuerySelection).query === 'string'
   );
 }
 
@@ -186,10 +185,12 @@ export function isBookmark(b: unknown): b is Bookmark {
   return isObject(b)
     && Object.hasOwn(b, 'id')
     && Object.hasOwn(b, 'label')
-    && Object.hasOwn(b, 'type')
+    && Object.hasOwn(b, 'size')
+    && Object.hasOwn(b, 'colorIndex')
     && typeof (b as Bookmark).id === 'string'
     && typeof (b as Bookmark).label === 'string'
-    && typeof (b as Bookmark).size === 'number';
+    && typeof (b as Bookmark).size === 'number'
+    && typeof (b as Bookmark).colorIndex === 'number';
 }
 
 /**
@@ -227,31 +228,6 @@ export function isSubsets(s: unknown): s is Subsets {
     && Array.isArray((s as Subsets).order)
     && Object.entries((s as Subsets).values).every(([k, v]) => typeof k === 'string' && isSubset(v))
     && (s as Subsets).order.every((o: unknown) => typeof o === 'string');
-}
-
-/**
- * Type guard for Selection
- * @param s variable to check
- * @returns {boolean}
- */
-export function isElementSelection(s: unknown): s is ElementSelection {
-  if (
-    !isObject(s)
-    || !Object.hasOwn(s, 'type')
-    || !Object.hasOwn(s, 'query')
-    || !Object.hasOwn(s, 'active')
-  ) return false;
-
-  if (typeof (s as {active: unknown}).active !== 'boolean') return false;
-
-  switch ((s as {type: unknown, query: unknown}).type) {
-    case 'element':
-      return isAttQuery((s as {type: unknown, query: unknown}).query);
-    case 'numerical':
-      return isNumericalQuery((s as {type: unknown, query: unknown}).query);
-    default:
-      return false;
-  }
 }
 
 /**
@@ -389,8 +365,10 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     && Object.hasOwn(config, 'collapsed')
     && Object.hasOwn(config, 'plots')
     && Object.hasOwn(config, 'allSets')
-    && Object.hasOwn(config, 'selected')
-    && Object.hasOwn(config, 'elementSelection')
+    && Object.hasOwn(config, 'rowSelection')
+    && Object.hasOwn(config, 'vegaSelection')
+    && Object.hasOwn(config, 'querySelection')
+    && Object.hasOwn(config, 'selectionType')
     && Object.hasOwn(config, 'version')
     && Object.hasOwn(config, 'userAltText')
     && Object.hasOwn(config, 'intersectionSizeLabels')
@@ -406,7 +384,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   const {
     plotInformation, horizontal, firstAggregateBy, firstOverlapDegree, secondAggregateBy, secondOverlapDegree,
     sortVisibleBy, sortBy, sortByOrder, filters, visibleSets, visibleAttributes, attributePlots, bookmarks, collapsed,
-    plots, allSets, selected, elementSelection, version, userAltText, intersectionSizeLabels, setSizeLabels,
+    plots, allSets, rowSelection, vegaSelection, querySelection, selectionType, version, userAltText, intersectionSizeLabels, setSizeLabels,
     showHiddenSets, setQuery,
   } = config as UpsetConfig;
 
@@ -580,19 +558,19 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // selected
-  if (!(selected === null || isRow(selected))) {
+  if (!(rowSelection === null || isRow(rowSelection))) {
     console.warn('Upset config error: Selected is not a row');
     return false;
   }
 
   // elementSelection
-  if (!(elementSelection === null || isElementSelection(elementSelection))) {
-    console.warn('Upset config error: Element selection is not a selection', elementSelection);
+  if (!(vegaSelection === null || isVegaSelection(vegaSelection))) {
+    console.warn('Upset config error: Element selection is not a selection', vegaSelection);
     return false;
   }
 
   // version
-  if (version !== '0.1.3') {
+  if (version !== '0.1.4') {
     console.warn('Upset config error: Invalid version');
     return false;
   }
@@ -630,6 +608,18 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // setQuery
   if (setQuery !== null && !isSetQuery(setQuery)) {
     console.warn('Upset config error: Set query is not an object');
+    return false;
+  }
+
+  // querySelection
+  if (querySelection !== null && !isQuerySelection(querySelection)) {
+    console.warn('Upset config error: Query selection is not a valid QuerySelection');
+    return false;
+  }
+
+  // selectionType
+  if (selectionType !== null && !['row', 'vega', 'query'].includes(selectionType)) {
+    console.warn('Upset config error: Active selection is not valid');
     return false;
   }
 

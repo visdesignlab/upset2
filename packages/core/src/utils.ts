@@ -1,9 +1,9 @@
 import {
   Item, ElementQueryType, Plot,
-  ElementSelection,
   FilteredItems,
+  VegaSelection,
+  QuerySelection,
 } from './types';
-import { selectionIsAtt, selectionIsNumerical } from './typeutils';
 
 /**
  * Version safe deep copy using structured cloning.
@@ -36,57 +36,71 @@ export function hashString(str: string): number {
 }
 
 /**
- * Filter items based on a selection
+ * Filters items based on a Vega selection
+ * This function checks if each item in the items array falls within the specified range for each attribute in the filter.
+ * If an item meets all the criteria, it is included in the 'included' array; otherwise, it is added to the 'excluded' array.
  * @param items Items to filter
- * @param filter Selection to filter by
- * @returns Filtered items
+ * @param filter Vega selection to filter by
+ * @returns Filtered items, with 'included' and 'excluded' arrays
  */
-export function filterItems(items: Item[], filter: ElementSelection): FilteredItems {
+export function filterByVega(items: Item[], filter: VegaSelection): FilteredItems {
   const included: Item[] = [];
   const excluded: Item[] = [];
-  if (selectionIsNumerical(filter)) {
-    items.forEach(
-      (item) => {
-        if (Object.entries(filter.query).every(
-          ([key, value]) => typeof item[key] === 'number'
-              && item[key] as number >= value[0]
-              && item[key] as number <= value[1],
-        )) included.push(item);
-        else excluded.push(item);
-      },
-    );
-  } if (selectionIsAtt(filter)) {
-    const { att, query } = filter.query;
-
-    items.forEach((item) => {
-      let add = false;
-      if (Object.hasOwn(item, att)) {
-        switch (filter.query.type) {
-          case ElementQueryType.CONTAINS:
-            add = (`${item[att]}`).includes(query);
-            break;
-          case ElementQueryType.EQUALS:
-            add = (`${item[att]}` === query);
-            break;
-          case ElementQueryType.LENGTH:
-            add = ((`${item[att]}`).length === Number(query));
-            break;
-          case ElementQueryType.REGEX:
-            add = (new RegExp(query).test(`${item[att]}`));
-            break;
-          case ElementQueryType.GREATER_THAN:
-            add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
-            break;
-          case ElementQueryType.LESS_THAN:
-            add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
-            break;
-          default:
-        }
-      }
-      if (add) included.push(item);
+  items.forEach(
+    (item) => {
+      if (Object.entries(filter).every(
+        ([key, value]) => typeof item[key] === 'number'
+            && item[key] as number >= value[0]
+            && item[key] as number <= value[1],
+      )) included.push(item);
       else excluded.push(item);
-    });
-  }
+    },
+  );
+  return { included, excluded };
+}
+
+/**
+ * Filters items based on a query selection
+ * This function checks if each item in the items array matches the specified query for the given attribute.
+ * Depending on the query type (e.g., contains, equals, regex), it determines if the item should be included or excluded.
+ * @param items Items to filter
+ * @param filter Query selection to filter by
+ * @returns Filtered items, with 'included' and 'excluded' arrays
+ */
+export function filterByQuery(items: Item[], filter: QuerySelection): FilteredItems {
+  const included: Item[] = [];
+  const excluded: Item[] = [];
+
+  const { att, query, type } = filter;
+
+  items.forEach((item) => {
+    let add = false;
+    if (Object.hasOwn(item, att)) {
+      switch (type) {
+        case ElementQueryType.CONTAINS:
+          add = (`${item[att]}`).includes(query);
+          break;
+        case ElementQueryType.EQUALS:
+          add = (`${item[att]}` === query);
+          break;
+        case ElementQueryType.LENGTH:
+          add = ((`${item[att]}`).length === Number(query));
+          break;
+        case ElementQueryType.REGEX:
+          add = (new RegExp(query).test(`${item[att]}`));
+          break;
+        case ElementQueryType.GREATER_THAN:
+          add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
+          break;
+        case ElementQueryType.LESS_THAN:
+          add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
+          break;
+        default:
+      }
+    }
+    if (add) included.push(item);
+    else excluded.push(item);
+  });
   return { included, excluded };
 }
 

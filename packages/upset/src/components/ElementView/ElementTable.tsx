@@ -1,4 +1,3 @@
-import { Box } from '@mui/material';
 import { DataGrid, GridRowsProp } from '@mui/x-data-grid';
 import { Item } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
@@ -40,7 +39,7 @@ function useColumns(columns: string[]) {
       type: setColumns.includes(col) ? 'boolean' : 'string',
       description: displayName,
     };
-  }), [columns]);
+  }), [columns, setColumns]);
 }
 
 /**
@@ -55,12 +54,6 @@ export const ElementTable: FC = () => {
   const columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
 
   return (
-    <Box
-      sx={{
-        minHeight: 550,
-      }}
-    >
-      <DataGrid rows={rows} columns={columns} />
-    </Box>
+    <DataGrid style={{ minHeight: 550 }} rows={rows} columns={columns} />
   );
 };

@@ -29,7 +29,194 @@ async function dragElement(element: Locator, xOffset: number, yOffset: number, p
   await page.mouse.up();
 }
 
-test('Element View', async ({ page, browserName }) => {
+/**
+ * Asserts that the row with the given id has the specified number of selection ticks on the size bar.
+ * Note that all selection ticks have a backing white tick, so count should be double the number of visible ticks
+ * @param page The page to perform the assertion on
+ * @param id The id of the row to check
+ * @param count The expected number of ticks
+ */
+async function assertRowTickCount(page: Page, id: string, count: number): Promise<void> {
+  const ticks = page.locator(`[id="${id}"]`).locator('polygon');
+  await expect(ticks).toHaveCount(count);
+}
+
+/**
+ * Asserts that the element table has the specified number of elements.
+ * @param page The page to perform the assertion on
+ * @param count The expected number of elements in the table
+ */
+async function assertTableCount(page: Page, count: number): Promise<void> {
+  await expect(page.getByRole('heading', { name: `Element Table${count} of 24 elements` })).toBeVisible();
+  await expect(page.getByText(`1–${count} of`)).toBeVisible();
+}
+
+/**
+ * Sets a query in the element view; element view must be open
+ * @param page The current testing page
+ * @param att The attribute to query
+ * @param type The type of query
+ * @param query The query string
+ */
+async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
+  await page.getByRole('button', { name: 'Show explicit element query' }).click();
+  await page.getByLabel('Attribute Name').click();
+  await page.getByRole('option', { name: att }).click();
+  await page.getByLabel('Query Type').click();
+  await page.getByRole('option', { name: type, exact: true }).click();
+  await page.getByPlaceholder('Query').click();
+  await page.getByPlaceholder('Query').fill(query);
+  await page.getByRole('button', { name: 'Apply' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
+}
+
+/**
+ * Clears the selection in the element view; element view must be open
+ * @param page The page to perform the clear selection on
+ */
+async function clearSelection(page: Page): Promise<void> {
+  await page.getByRole('button', { name: 'Show explicit element query' }).click();
+  await page.getByRole('button', { name: 'Clear' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
+}
+
+test('Selection Types', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.getByLabel('Element View Sidebar Toggle').click();
+  await page.locator('[id="Subset_School\\~\\&\\~Male"]').getByLabel('Evil').locator('circle').click();
+
+  // Basic row selection
+  await expect(page.getByRole('button', { name: 'Selected intersection School' })).toHaveText('School & Male - 3');
+  await assertRowTickCount(page, 'Subset_School\\~\\&\\~Male', 2);
+  await assertTableCount(page, 3);
+
+  // Switching row selection
+  // await page.locator('[id="Subset_Evil\\~\\&\\~Male"]').getByText('2').nth(1).click();
+  await page.locator('[id="Subset_Evil\\~\\&\\~Male"] > g:nth-child(4) > rect').first().click();
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertTableCount(page, 2);
+
+  // Basic vega selection with a row selection
+  await dragElement(page.locator('canvas'), 40, 0, page);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertTableCount(page, 9);
+  await expect(page.getByRole('button', { name: 'Selected elements Atts: Age' })).toHaveText('Atts: Age: [39 to 57]');
+
+  // Deactivate vega selection via the chip
+  await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertTableCount(page, 24);
+  await expect(page.getByRole('button', { name: 'Selected elements Atts: Age' })).toHaveText('Atts: Age: [39 to 57]');
+
+  // Reactivate vega selection via the chip
+  await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertTableCount(page, 9);
+  await expect(page.getByRole('button', { name: 'Selected elements Atts: Age' })).toHaveText('Atts: Age: [39 to 57]');
+
+  // Make a bookmark
+  await page.locator('[id="Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant"] > g:nth-child(3) > rect').click();
+  await expect(page.getByRole('button', { name: 'Bookmarked intersection Evil' })).toHaveText('Evil & Male & Power Plant - 2');
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 2);
+
+  // Make another bookmark
+  await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3) > rect').click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 2);
+
+  // Reactivate row selection via chip
+  await page.getByRole('button', { name: 'Bookmarked intersection Evil' }).click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 2);
+
+  // Query selection
+  await setQuery(page, 'Name', 'contains', 'a');
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 15);
+
+  // Deactivate query selection via chip
+  await page.getByRole('button', { name: 'Selected elements Name' }).click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 24);
+
+  // Reactivate query selection via chip
+  await page.getByRole('button', { name: 'Selected elements Name' }).click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
+  await assertTableCount(page, 15);
+
+  // Remove bookmark via chip
+  await page.getByRole('button', { name: 'Bookmarked intersection Evil' }).locator('svg').click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 15);
+
+  // Remove bookmark via bookmark column
+  await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] path').click();
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Unincluded', 4);
+  await assertRowTickCount(page, 'Subset_Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 15);
+
+  // Remove query selection
+  await clearSelection(page);
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Unincluded', 2);
+  await assertRowTickCount(page, 'Subset_Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 24);
+
+  // Remove vega selection
+  await page.locator('canvas').click({
+    position: {
+      x: 162,
+      y: 86,
+    },
+  });
+  await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 0);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 0);
+  await assertRowTickCount(page, 'Subset_Unincluded', 0);
+  await assertRowTickCount(page, 'Subset_Male', 0);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
+  await assertTableCount(page, 24);
+});
+
+test('Element View', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   // Open element view
@@ -62,19 +249,8 @@ test('Element View', async ({ page, browserName }) => {
   await page.getByRole('button', { name: 'Expand the sidebar in full' }).click();
   await page.getByLabel('Reduce the sidebar to normal').click();
 
-  // Ensure all headings are visible
-  const elementViewHeading = await page.getByRole('heading', { name: 'Element View' });
-  await expect(elementViewHeading).toBeVisible();
-  const elementQueriesHeading = await page.getByRole('heading', { name: 'Element Queries' });
-  await expect(elementQueriesHeading).toBeVisible();
-  const elementVisualizationHeading = await page.getByRole('heading', { name: 'Element View' });
-  await expect(elementVisualizationHeading).toBeVisible();
-  const queryResultHeading = await page.getByRole('heading', { name: 'Query Result' });
-  await expect(queryResultHeading).toBeVisible();
-
   // Check to see that the selection chip is visible
-  const selectionChip = await page.getByLabel('Selected intersection School');
-  await expect(selectionChip).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Selected intersection School' })).toBeVisible();
 
   // Check that the datatable is visible and populated
   const dataTable = page.getByRole('grid');
@@ -130,64 +306,22 @@ test('Element View', async ({ page, browserName }) => {
   // Check that the selection chip is visible after selecting
   await elementViewToggle.click();
 
-  // I cannot, for the life of me, get Firefox to properly drag the selection. The mouseup doesn't fire, so the
-  // selection doesn't get saved, EVEN THOUGH this works perfectly nicely fine up at the top of this test and
-  // in chromium/webkit. I'm going to skip this test in Firefox for now.
-  if (browserName !== 'firefox') {
-    // The x offset of 40 exhibits unstable behavior thru playwright updates; the range of ages selected may change
-    // & necessitate changes to this test
-    await dragElement(page.locator('canvas'), 40, 0, page);
-
-    const elementSelectionChip = await page.getByLabel('Selected elements Atts: Age');
-    await expect(elementSelectionChip).toBeVisible();
-
-    // Check that the selection is visible in the size bars
-    const schoolMale1stPoly = await page.locator('[id="Subset_School\\~\\&\\~Male"] polygon').first();
-    await expect(schoolMale1stPoly).toBeVisible();
-
-    const unincludedSelectPoly = await page.locator('#Subset_Unincluded polygon').first();
-    await expect(unincludedSelectPoly).toBeVisible();
-
-    const unincludedSelectRect = await page.locator('#Subset_Unincluded g').filter({ hasText: '3' }).locator('rect').nth(1);
-    await expect(unincludedSelectRect).toBeVisible();
-
-    const schoolMaleSelectedIntersectionRect =
-    await page.locator('[id="Subset_School\\~\\&\\~Male"] g').filter({ hasText: '3' }).locator('rect').first();
-    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
-
-    // Check that deselecting a selection works
-    const elementSelectionBookmark = await page.getByRole('button', { name: 'Selected elements Atts: Age' });
-    await elementSelectionBookmark.click();
-    await expect(schoolMale1stPoly).toBeVisible();
-    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
-    await expect(unincludedSelectPoly).not.toBeVisible();
-    await expect(unincludedSelectRect).not.toBeVisible();
-
-    // Check that reselecting a bookmarked selection works
-    await elementSelectionBookmark.click();
-    await expect(schoolMaleSelectedIntersectionRect).toBeVisible();
-    await expect(unincludedSelectPoly).toBeVisible();
-    await expect(unincludedSelectRect).toBeVisible();
-    await expect(page.getByText('1–9 of')).toBeVisible(); // Checking count
-    await page.getByRole('button', { name: 'Selected elements Atts: Age' }).click();
-  }
-
   /** Element table tests; checking correct number of rows */
   // Re-used element table counts
   const count3 = page.getByText('1–3 of');
-  const count6 = page.getByText('1–6 of');
+  const count24 = page.getByText('–24 of 24');
 
   // No selection
   await expect(count3).toBeVisible();
 
-  // Bookmark 2 rowsawait expect(page.getByText('1–3 of')).toBeVisible();
-  await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
-  await page.locator('#Subset_Unincluded path').click();
-  await expect(count6).toBeVisible();
+  // Bookmark 2 rows
+  await page.locator('[id="Subset_School\\~\\&\\~Male"] > g:nth-child(3) > rect').click();
+  await page.locator('#Subset_Unincluded > g:nth-child(3) > rect').click();
+  await expect(count3).toBeVisible();
 
   // Start adding a query, recheck
   await page.getByTestId('AddIcon').locator('path').click();
-  await expect(count6).toBeVisible();
+  await expect(count3).toBeVisible();
 
   // Add a query
   await page.locator('g:nth-child(2) > g > circle:nth-child(7)').click();
@@ -197,13 +331,13 @@ test('Element View', async ({ page, browserName }) => {
 
   // Remove query
   await page.getByLabel('Remove query').locator('rect').click();
-  await expect(count6).toBeVisible();
+  await expect(count24).toBeVisible();
 
   // Deselect bookmarked rows
   await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
-  await expect(count3).toBeVisible();
+  await expect(count24).toBeVisible();
   await page.locator('#Subset_Unincluded path').click();
-  await expect(page.getByText('–24 of 24')).toBeVisible();
+  await expect(count24).toBeVisible();
 
   /*
     * Plot removal
@@ -218,31 +352,6 @@ test('Element View', async ({ page, browserName }) => {
   await page.getByRole('menuitem', { name: 'Remove Plot' }).click();
   await expect(page.locator('canvas')).not.toBeVisible();
 });
-
-/**
- * Clears the selection in the element view; element view must be open
- * @param page The page to perform the clear selection on
- */
-async function clearSelection(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Clear' }).click();
-}
-
-/**
- * Sets a query in the element view; element view must be open
- * @param page The current testing page
- * @param att The attribute to query
- * @param type The type of query
- * @param query The query string
- */
-async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
-  await page.getByLabel('Attribute Name').click();
-  await page.getByRole('option', { name: att }).click();
-  await page.getByLabel('Query Type').click();
-  await page.getByRole('option', { name: type, exact: true }).click();
-  await page.getByPlaceholder('Query').click();
-  await page.getByPlaceholder('Query').fill(query);
-  await page.getByRole('button', { name: 'Apply' }).click();
-}
 
 // toBeDefined is used in place of toBeVisible in places where the cell is not in the visible
 // portion of the table, as playwright has issues scrolling the table
