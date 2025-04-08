@@ -10,7 +10,7 @@ import { useRecoilValue } from 'recoil';
 
 import { useCallback, useMemo, useState } from 'react';
 import AddchartIcon from '@mui/icons-material/Addchart';
-import QueryStatsIcon from '@mui/icons-material/QueryStats';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
   selectedItemsCounter,
@@ -137,7 +137,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
           </Tooltip>
           <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element query`}>
             <IconButton onClick={() => { setQueryOpen(!queryOpen); }}>
-              <QueryStatsIcon />
+              <ManageSearchIcon />
             </IconButton>
           </Tooltip>
         </>
