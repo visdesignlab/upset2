@@ -21,6 +21,8 @@ import {
 
 const CHIP_ICON_FONT_SIZE = 'small';
 
+const SELECTED_BACKGROUND = 'rgba(0,0,0,0.2)';
+
 /**
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
  * with options to add and remove bookmarks
@@ -96,7 +98,7 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: nextColor,
           },
-          backgroundColor: selectionType === 'row' ? 'rgba(0,0,0,0.2)' : 'default',
+          backgroundColor: selectionType === 'row' ? SELECTED_BACKGROUND : 'default',
         })}
         icon={<BookmarkBorderIcon
           fontSize={CHIP_ICON_FONT_SIZE}
@@ -138,7 +140,7 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: vegaSelectionColor,
           },
-          backgroundColor: selectionType === 'vega' ? 'rgba(0,0,0,0.2)' : 'default',
+          backgroundColor: selectionType === 'vega' ? SELECTED_BACKGROUND : 'default',
         })}
         icon={<WorkspacesIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
@@ -157,7 +159,7 @@ export const BookmarkChips = () => {
           '.MuiChip-icon': {
             color: querySelectionColor,
           },
-          backgroundColor: selectionType === 'query' ? 'rgba(0,0,0,0.2)' : 'default',
+          backgroundColor: selectionType === 'query' ? SELECTED_BACKGROUND : 'default',
         })}
         icon={<CodeIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
