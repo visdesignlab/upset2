@@ -9,6 +9,11 @@ export const dataAtom = atom<CoreUpsetData | Record<string, never>>({
   default: {},
 });
 
+export const totalItemsSelector = selector<number>({
+  key: 'total-items',
+  get: ({ get }) => Object.keys(get(dataAtom).items).length,
+});
+
 /**
  * Returns all columns that can be used in a string query, ie are not numeric, not set columns,
  * and not private columns that start with _

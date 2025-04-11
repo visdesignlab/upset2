@@ -213,7 +213,7 @@ export const SettingsSidebar = () => {
     });
     // This simply sets the config visibleAtts to all newAtts, so it removes atts as well
     actions.addMultipleAttributes(newAtts);
-  }, [visibleAtts, actions]);
+  }, [actions]);
 
   return (
     <Box

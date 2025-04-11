@@ -4,7 +4,7 @@ import {
   AttributePlotType, convertConfig, CoreUpsetData, deepCopy, UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import {
-  createContext, FC, useEffect, useMemo,
+  createContext, FC, useCallback, useEffect, useMemo,
 } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -85,13 +85,13 @@ export const Root: FC<Props> = ({
   useEffect(() => {
     if (!extProvenance) setState(convertConfig(config));
     setData(data);
-  }, []);
+  }, [config, data, extProvenance, setState, setData]);
 
   useEffect(() => {
     if (canEditPlotInformation !== undefined) {
       setCanEditPlotInformation(canEditPlotInformation);
     }
-  }, [canEditPlotInformation]);
+  }, [canEditPlotInformation, setCanEditPlotInformation]);
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
@@ -112,7 +112,7 @@ export const Root: FC<Props> = ({
     const provenance = initializeProvenanceTracking(config, setState);
     const actions = getActions(provenance);
     return { provenance, actions };
-  }, [config]);
+  }, [config, extProvenance, setState]);
 
   // Mandatory state defaults should go here
   useEffect(() => {
@@ -123,7 +123,7 @@ export const Root: FC<Props> = ({
       }
     });
     setState(state);
-  }, []);
+  }, [provenance, setState]);
 
   // This hook will populate initial sets, items, attributes
   useEffect(() => {
@@ -134,12 +134,12 @@ export const Root: FC<Props> = ({
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
     setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
-  }, [data, allowAttributeRemoval]);
+  }, [data, allowAttributeRemoval, setAllColumns, setAttributeColumns, setData, setItems, setSets, setAllowAttributeRemoval]);
 
   // close all open context menus
-  const removeContextMenu = () => {
+  const removeContextMenu = useCallback(() => {
     setContextMenu(null);
-  };
+  }, [setContextMenu]);
 
   useEffect(() => {
     document.addEventListener('contextmenu', removeContextMenu, false);
@@ -147,12 +147,12 @@ export const Root: FC<Props> = ({
     return function removeListeners() {
       document.removeEventListener('contextmenu', removeContextMenu, false);
     };
-  }, []);
+  }, [removeContextMenu]);
 
   // Sets the footer height atom if provided as an argument
   const setFooterHeight = useSetRecoilState(footerHeightAtom);
   // Footer height needs to be doubled to work right... idk why that is!
-  useEffect(() => { if (footerHeight) setFooterHeight(2 * footerHeight); }, [footerHeight]);
+  useEffect(() => { if (footerHeight) setFooterHeight(2 * footerHeight); }, [footerHeight, setFooterHeight]);
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
 

@@ -2,6 +2,7 @@ import { css } from '@emotion/react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import React, { useContext } from 'react';
 import { Tooltip } from '@mui/material';
+import { SortByOrder } from '@visdesignlab/upset2-core';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import translate from '../../utils/transform';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
@@ -9,9 +10,10 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { ProvenanceContext } from '../Root';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
+import { UpsetActions } from '../../provenance';
 
 export const DegreeHeader = () => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -19,7 +21,7 @@ export const DegreeHeader = () => {
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
-  const sortByDegree = (order: string) => {
+  const sortByDegree = (order: SortByOrder) => {
     actions.sortBy('Degree', order);
   };
 
