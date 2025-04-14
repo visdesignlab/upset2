@@ -2,6 +2,8 @@
 
 UpSet 2 is deployed at [https://upset.multinet.app/](https://upset.multinet.app/).  
 
+Documentation for UpSet 2 is deployed at [https://vdl.sci.utah.edu/upset2/](https://vdl.sci.utah.edu/upset2/).
+
 Deployment Status: [![Netlify Status](https://api.netlify.com/api/v1/badges/edb8054f-7bfd-4b6a-8325-b26c279e2991/deploy-status)](https://app.netlify.com/sites/upset2/deploys)
 
 ## About
