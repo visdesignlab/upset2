@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 150.4 157.12">
+  <circle cx="82.4" cy="68" r="62.5" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 11px;"/>
+  <g>
+    <line x1="103.83" y1="53.9" x2="122.83" y2="53.9" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 9px;"/>
+    <line x1="103.23" y1="67.56" x2="115.11" y2="67.56" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 9px;"/>
+    <line x1="103.23" y1="81.81" x2="129.36" y2="81.81" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 9px;"/>
+  </g>
+  <circle cx="67.9" cy="64.5" r="33" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 11px;"/>
+  <g>
+    <circle cx="54.13" cy="64.18" r="10.13" style="fill: #fff; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 6px;"/>
+    <circle cx="54.13" cy="33.77" r="10.13" style="fill: #fff; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 6px;"/>
+    <circle cx="54.13" cy="94.58" r="10.13" style="fill: #fff; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 6px;"/>
+  </g>
+  <line x1="75.93" y1="33.77" x2="116.47" y2="33.77" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 18px;"/>
+  <line x1="74.67" y1="63.91" x2="105.4" y2="64" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 18px;"/>
+  <line x1="74.67" y1="94.31" x2="130.4" y2="94.31" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 18px;"/>
+  <ellipse cx="53.9" cy="108" rx="4" ry="3.5" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 11px;"/>
+  <g>
+    <ellipse cx="117.9" cy="95.5" rx="20" ry="7" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 10px;"/>
+    <ellipse cx="89.9" cy="104" rx="5" ry="2.5" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 10px;"/>
+  </g>
+  <ellipse cx="48.4" cy="23" rx="11.5" ry="2.5" transform="translate(-5.07 19.5) rotate(-21.67)" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 11px;"/>
+  <line x1="102.9" y1="81" x2="129.4" y2="81" style="fill: none; stroke: #3376a0; stroke-miterlimit: 10; stroke-width: 9px;"/>
+  <ellipse cx="83.9" cy="22.5" rx="5.5" ry=".5" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 12px;"/>
+  <ellipse cx="102.55" cy="28.6" rx="6.58" ry="17.66" transform="translate(21.06 97.11) rotate(-55.64)" style="fill: #fff; stroke: #fff; stroke-miterlimit: 10; stroke-width: 12px;"/>
+  <g>
+    <circle cx="67.9" cy="64.5" r="39" style="fill: none; stroke: #666; stroke-miterlimit: 10; stroke-width: 5px;"/>
+    <line x1="45.4" y1="97" x2="7.4" y2="152" style="fill: none; stroke: #666; stroke-miterlimit: 10; stroke-width: 18px;"/>
+  </g>
+</svg>
