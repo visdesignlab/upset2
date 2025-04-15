@@ -135,7 +135,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
               <AddchartIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element query`}>
+          <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element selection`}>
             <IconButton onClick={() => { setQueryOpen(!queryOpen); }}>
               <ManageSearchIcon />
             </IconButton>
