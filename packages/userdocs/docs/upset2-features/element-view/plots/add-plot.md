@@ -3,7 +3,7 @@ sidebar_position: 1
 ---
 # Adding Plots
 
-By default, you'll see a bar chart for each numerical attribute in your dataset. However, you can add as many plots to the sidebar as you'd like. To add a plot, click the **Add Plot** button to open the add plot dialog:
+By default, you'll see a bar chart for each numeric attribute in your dataset. However, you can add as many plots to the sidebar as you'd like. To add a plot, click the **Add Plot** button to open the add plot dialog:
 
 ![Add Plot Button](./img/add-plot/add-button.png)
 

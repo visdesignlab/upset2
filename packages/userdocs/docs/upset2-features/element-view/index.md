@@ -15,7 +15,7 @@ If no selections or bookmarks exist, a blue notice will appear here instead.
 
 ![Selection Chips](./img/index/selection-chips.png)
 
-Below the selection chips are the plots, which also may be empty. By default, the plots consist of a histogram for each numerical attribute in the dataset. See [Plots](./plots/index.md).
+Below the selection chips are the plots, which also may be empty. By default, the plots consist of a histogram for each numeric attribute in the dataset. See [Plots](./plots/index.md).
 
 ![Plots](./img/index/plots.png)
 
