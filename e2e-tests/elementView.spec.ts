@@ -59,7 +59,7 @@ async function assertTableCount(page: Page, count: number): Promise<void> {
  * @param query The query string
  */
 async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
-  await page.getByRole('button', { name: 'Show explicit element query' }).click();
+  await page.getByRole('button', { name: 'Show explicit element selection' }).click();
   await page.getByLabel('Attribute Name').click();
   await page.getByRole('option', { name: att }).click();
   await page.getByLabel('Query Type').click();
@@ -67,7 +67,7 @@ async function setQuery(page: Page, att: string, type: string, query: string): P
   await page.getByPlaceholder('Query').click();
   await page.getByPlaceholder('Query').fill(query);
   await page.getByRole('button', { name: 'Apply' }).click();
-  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element selection' }).click();
 }
 
 /**
@@ -75,9 +75,9 @@ async function setQuery(page: Page, att: string, type: string, query: string): P
  * @param page The page to perform the clear selection on
  */
 async function clearSelection(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Show explicit element query' }).click();
+  await page.getByRole('button', { name: 'Show explicit element selection' }).click();
   await page.getByRole('button', { name: 'Clear' }).click();
-  await page.getByRole('button', { name: 'Hide explicit element query' }).click();
+  await page.getByRole('button', { name: 'Hide explicit element selection' }).click();
 }
 
 test('Selection Types', async ({ page }) => {
