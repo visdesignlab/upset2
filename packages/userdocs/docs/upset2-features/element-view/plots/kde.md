@@ -21,4 +21,4 @@ whereas elements from the *Comedy* intersection are more evenly distributed and 
 
 ## Selections
 
-Selections add an additional line to KDEs; see [KDE Selections](../selections/graphical.md#kde)
+Graphical selections add an additional line to KDEs; see [KDE Selections](../selections/graphical.md#kde). Explicit selections do not affect element view plots.

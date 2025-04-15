@@ -24,4 +24,4 @@ whereas there are few or no elements in the *Drama* intersection with ratings be
 
 ## Selections
 
-Selections add their own bars to histograms; see [Histogram Selection](../selections/graphical.md#histogram).
+Graphical selections add their own bars to histograms; see [Histogram Selection](../selections/graphical.md#histogram). Explicit selections do not affect element view plots.
