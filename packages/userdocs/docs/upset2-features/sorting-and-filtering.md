@@ -12,7 +12,7 @@ The following methods all alter the ordering of the intersections within an UpSe
 
 ### Sort By Size, Degree, Deviation
 
-It is possible to sort in ascending or descending order by the size, degree, or deviation of an UpSet plot. Sorting by any of these attributes simply sorts by comparing the numerical values of the intersections.
+It is possible to sort in ascending or descending order by the size, degree, or deviation of an UpSet plot. Sorting by any of these attributes simply sorts by comparing the numeric values of the intersections.
 
 Example plot of Movies sorted by size in descending order:
 

@@ -81,6 +81,16 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
           add = (`${item[att]}`).includes(query);
           break;
         case ElementQueryType.EQUALS:
+          switch (typeof item[att]) {
+            case 'number':
+              add = Math.abs((item[att] as number) - Number(query)) < 0.0001;
+              break;
+            case 'string':
+              add = (`${item[att]}`) === query;
+              break;
+            default:
+              add = false;
+          }
           add = (`${item[att]}` === query);
           break;
         case ElementQueryType.LENGTH:

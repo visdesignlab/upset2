@@ -113,14 +113,11 @@ export const ElementSidebar = ({ open, close }: Props) => {
     if (selectionType === 'query' && querySelection) {
       return `Currently showing elements in visible intersections matching the query "${querySelectionToString(querySelection)}."`;
     }
-    if (bookmarked.length > 0) {
-      return `Currently showing elements in the ${bookmarked.length} bookmarked intersections${currentIntersection ? ' and the selected intersection' : ''}.`;
-    }
-    if (currentIntersection) {
+    if (selectionType === 'row' && currentIntersection) {
       return `Currently showing elements in the selected intersection ${currentIntersection.elementName}.`;
     }
     return 'Currently showing all elements in visible intersections.';
-  }, [selectionType, vegaSelection, querySelection, bookmarked, currentIntersection]);
+  }, [selectionType, vegaSelection, querySelection, currentIntersection]);
 
   return (
     <Sidebar
@@ -135,7 +132,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
               <AddchartIcon />
             </IconButton>
           </Tooltip>
-          <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element query`}>
+          <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element selection`}>
             <IconButton onClick={() => { setQueryOpen(!queryOpen); }}>
               <ManageSearchIcon />
             </IconButton>
