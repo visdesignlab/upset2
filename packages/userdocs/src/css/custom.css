@@ -4,6 +4,78 @@
  * work well for content-centric websites.
  */
 
+ .footer-wrapper {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 30px 0px;
+  align-items: center;
+}
+
+.footer-wrapper .logo {
+  height: 60px;
+}
+
+.footer-wrapper .col {
+  padding: 5px !important;
+}
+
+html[data-theme='light'] .dark-theme-display-component {
+  display: none;
+}
+
+html[data-theme='dark'] .light-theme-display-component {
+  display: none;
+}
+
+.footer-wrapper a {
+  opacity: 0.73;
+}
+
+.footer-wrapper a:hover {
+  opacity: 1;
+}
+
+@media only screen and (max-width: 1230px) {
+  .navbar__title {
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 1200px) {
+  .navbar__items {
+    font-size: 0.8rem;
+  }
+}
+
+@media only screen and (max-width: 1024px) {
+  .footer-wrapper .logo {
+    height: 40px;
+  }
+
+  .navbar__items {
+    font-size: 0.7rem;
+  }
+}
+
+@media only screen and (max-width: 996px) {
+  .footer-wrapper .col {
+    --ifm-col-width: calc(3 / 12 * 100%);
+  }
+
+  .footer__link-item {
+    width: 100%;
+  }
+}
+
+@media only screen and (max-width:768px) {
+  .footer-wrapper .col {
+    --ifm-col-width: 100%;
+    margin: 10px 0px;
+  }
+}
+
+
 /* You can override the default Infima variables here. */
 :root {
   --ifm-color-primary: #3376A0;

@@ -88,48 +88,30 @@ const config: Config = {
       ],
     },
     footer: {
-      style: 'dark',
-      // links: [
-      //   {
-      //     title: 'Docs',
-      //     items: [
-      //       {
-      //         label: 'Documentation',
-      //         to: '/docs/intro',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     title: 'Community',
-      //     items: [
-      //       {
-      //         label: 'Stack Overflow',
-      //         href: 'https://stackoverflow.com/questions/tagged/upset',
-      //       },
-      //       {
-      //         label: 'Discord',
-      //         href: 'https://discordapp.com/invite/docusaurus',
-      //       },
-      //       {
-      //         label: 'X',
-      //         href: 'https://x.com/docusaurus',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     title: 'More',
-      //     items: [
-      //       {
-      //         label: 'Blog',
-      //         to: '/blog',
-      //       },
-      //       {
-      //         label: 'GitHub',
-      //         href: 'https://github.com/facebook/docusaurus',
-      //       },
-      //     ],
-      //   },
-      // ],
+      style: 'light',
+      links: [
+        {
+          html: ` 
+              <div class="footer-wrapper row">
+                <a class="col " target="_blank" href="https://vdl.sci.utah.edu/">
+                    <img src="./img/vdl-logo-light.svg" class='logo light-theme-display-component'/>
+                    <img src="./img/vdl-logo-dark.svg" class='logo dark-theme-display-component'/>
+                </a>
+                <a class="col " target="_blank" href="https://www.sci.utah.edu/">
+                  <img src="./img/sci-logo-light.svg" class='logo light-theme-display-component'/>
+                  <img src="./img/sci-logo-dark.svg" class='logo dark-theme-display-component'/>
+                </a>
+                <a class="col " target="_blank" href="https://www.cs.utah.edu/">
+                  <img src="./img/ULogo-light.svg" class='logo light-theme-display-component'/>
+                  <img src="./img/ULogo-dark.svg" class='logo dark-theme-display-component'/>
+                </a>
+                <a class="col " target="_blank" href="https://chanzuckerberg.com/">
+                  <img src="./img/czi-logo.svg" class='logo'/>
+                </a>                                                       
+              </div>
+            `,
+        },
+      ],
       // copyright: `Copyright © ${new Date().getFullYear()} UpSet 2.0, VisDesignLab. Built with Docusaurus.`,
     },
     prism: {
