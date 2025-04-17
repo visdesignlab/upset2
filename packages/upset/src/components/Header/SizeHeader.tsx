@@ -7,7 +7,7 @@ import React, {
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { Tooltip } from '@mui/material';
-import { isPopulatedSetQuery } from '@visdesignlab/upset2-core';
+import { isPopulatedSetQuery, SortByOrder } from '@visdesignlab/upset2-core';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
@@ -21,6 +21,7 @@ import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
 import { setQuerySelector } from '../../atoms/config/queryBySetsAtoms';
 import { setQuerySizeSelector } from '../../atoms/setQuerySizeSelector';
+import { UpsetActions } from '../../provenance';
 
 const hide = css`
   opacity: 0;
@@ -36,7 +37,7 @@ const show = css`
  * Header showing label & axis for cardinality bars
  */
 export const SizeHeader: FC = () => {
-  const { actions } = useContext(ProvenanceContext);
+  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -57,7 +58,7 @@ export const SizeHeader: FC = () => {
   const globalScale = useScale([0, itemCount], [0, dimensions.attribute.width]);
   const detailScale = useScale([0, maxC], [0, dimensions.attribute.width]);
 
-  const sortBySize = (order: string) => {
+  const sortBySize = (order: SortByOrder) => {
     actions.sortBy('Size', order);
   };
 

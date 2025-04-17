@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Icon,
   TextField,
   Typography,
@@ -85,7 +86,6 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     if (!canEditPlotInformation) return;
 
     setTextEditing(false);
-    if (!currState.useUserAlt) actions.setUseUserAltText(true);
     if (currState.userAltText?.shortDescription !== userShortText
         || currState.userAltText?.longDescription !== userLongText) { actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' }); }
   }, [currState, userShortText, userLongText, actions]);
@@ -120,6 +120,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       }
     }
 
+    setAltText(null);
     if (open) generate();
   }, [currState]);
 
@@ -182,88 +183,93 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       <UpsetHeading level="h2" divStyle={{ marginTop: '10px' }}>Text Description</UpsetHeading>
       )}
       {/* 0.875em for default 16px = 1em makes 14px, which is the standard for much of the UI */}
-      <Box style={{ overflowY: 'auto', fontSize: '0.875em' }}>
-        {textGenErr && !userLongText && !userShortText ? (
-          <Typography variant="body1" color="error">{textGenErr}</Typography>
-        ) : (
-          textEditing ? (
-            <>
-              <Button
-                color="primary"
-                style={{ float: 'right' }}
-                onClick={saveButtonClick}
-                id="saveAltTextButton"
-                tabIndex={7}
-              >
-                Save
-              </Button>
-              <Button
-                color="warning"
-                style={{ float: 'right' }}
-                onClick={() => {
-                  setUserLongText(altText?.longDescription);
-                  setUserShortText(altText?.shortDescription);
-                }}
-                tabIndex={8}
-              >
-                Reset Descriptions
-              </Button>
-              <br />
-              <TextField
-                multiline
-                fullWidth
-                onChange={(e) => (useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value))}
-                value={(displayAltText)}
-                tabIndex={6}
-                aria-flowto="saveAltTextButton"
-              />
-              <br />
-            </>
+      {/* if no error and currently fetching alt text (altText is null), show loading spinner */}
+      {textGenErr === false && altText === null ? (
+        <Box style={{ textAlign: 'center' }}>
+          <CircularProgress />
+        </Box>
+      ) :
+        <Box style={{ overflowY: 'auto', fontSize: '0.875em' }}>
+          {textGenErr && !userLongText && !userShortText ? (
+            <Typography variant="body1" color="error">{textGenErr}</Typography>
           ) : (
-            <Box
-              sx={{
-                overflowY: 'auto',
-                borderRadius: '4px',
-                border: '2px solid white',
-                width: 'calc(100% - 10px)', // We have 10px of padding + border
-              }}
-              tabIndex={3}
-            >
-              {canEditPlotInformation && (
-              // Only show the edit button if the user has edit permissions
-              <Button
-                style={{
-                  display: 'inline-block',
-                  width: '24px',
-                  float: 'right',
-                  cursor: 'pointer',
+            textEditing ? (
+              <>
+                <Button
+                  color="primary"
+                  style={{ float: 'right' }}
+                  onClick={saveButtonClick}
+                  id="saveAltTextButton"
+                  tabIndex={7}
+                >
+                  Save
+                </Button>
+                <Button
+                  color="warning"
+                  style={{ float: 'right' }}
+                  onClick={() => {
+                    setUserLongText(altText?.longDescription);
+                    setUserShortText(altText?.shortDescription);
+                  }}
+                  tabIndex={8}
+                >
+                  Reset Descriptions
+                </Button>
+                <br />
+                <TextField
+                  multiline
+                  fullWidth
+                  onChange={(e) => (useLong ? setUserLongText(e.target.value) : setUserShortText(e.target.value))}
+                  value={(displayAltText)}
+                  tabIndex={6}
+                  aria-flowto="saveAltTextButton"
+                />
+                <br />
+              </>
+            ) : (
+              <Box
+                sx={{
+                  overflowY: 'auto',
+                  borderRadius: '4px',
+                  border: '2px solid white',
+                  width: 'calc(100% - 10px)', // We have 10px of padding + border
                 }}
-                onClick={enableTextEditing}
-                tabIndex={5}
-                aria-label="Alt Text Description Editor"
+                tabIndex={3}
               >
-                <Icon style={{ overflow: 'visible' }}>
-                  <EditIcon />
-                </Icon>
-              </Button>
-              )}
-              <ReactMarkdownWrapper
-                text={displayAltText}
-              />
-            </Box>
-          )
-        )}
-        <Button
-          onClick={() => setUseLong(!useLong)}
-          tabIndex={4}
-          style={{
-            width: '100%',
-            textAlign: 'center',
-          }}
-        >
-          {useLong ? 'Show Less' : 'Show More'}
-        </Button>
-      </Box>
+                {canEditPlotInformation && (
+                // Only show the edit button if the user has edit permissions
+                <Button
+                  style={{
+                    display: 'inline-block',
+                    width: '24px',
+                    float: 'right',
+                    cursor: 'pointer',
+                  }}
+                  onClick={enableTextEditing}
+                  tabIndex={5}
+                  aria-label="Alt Text Description Editor"
+                >
+                  <Icon style={{ overflow: 'visible' }}>
+                    <EditIcon />
+                  </Icon>
+                </Button>
+                )}
+                <ReactMarkdownWrapper
+                  text={displayAltText}
+                />
+                <Button
+                  onClick={() => setUseLong(!useLong)}
+                  tabIndex={4}
+                  style={{
+                    width: '100%',
+                    textAlign: 'center',
+                  }}
+                >
+                  {useLong ? 'Show Less' : 'Show More'}
+                </Button>
+              </Box>)
+          )}
+        </Box>}
     </Sidebar>
   );
 };

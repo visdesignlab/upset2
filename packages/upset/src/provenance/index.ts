@@ -5,10 +5,11 @@ import {
   convertConfig,
   ColumnName,
   AltText,
-  ElementSelection,
   plotToString,
   SetQuery,
-  selectionIsNumerical,
+  VegaSelection,
+  QuerySelection,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -327,21 +328,38 @@ const setPlotInformationAction = register<PlotInformation>(
   },
 );
 
-const setSelectedAction = register<Row | null>(
+const setRowSelectionAction = register<Row | null>(
   'select-intersection',
   (state: UpsetConfig, intersection) => {
-    state.selected = intersection;
+    state.rowSelection = intersection;
     return state;
   },
 );
 
-const setElementSelectionAction = register<ElementSelection | null>(
+const setVegaSelectionAction = register<VegaSelection | null>(
   'select-elements',
-  (state: UpsetConfig, elementSelection) => {
-    state.elementSelection = elementSelection;
+  (state: UpsetConfig, vegaSelection) => {
+    state.vegaSelection = vegaSelection;
     return state;
   },
 );
+
+const setSelectionTypeAction = register<SelectionType | null>(
+  'set-selection-type',
+  (state: UpsetConfig, selectionType) => {
+    state.selectionType = selectionType;
+    return state;
+  },
+);
+
+const setQuerySelectionAction = register<QuerySelection | null>(
+  'set-query-selection',
+  (state: UpsetConfig, querySelection) => {
+    state.querySelection = querySelection;
+    return state;
+  },
+);
+
 /**
  * Sets the alt text for the user
  * @param {AltText} altText The alt text to set
@@ -486,23 +504,37 @@ export function getActions(provenance: UpsetProvenance) {
     collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
     setPlotInformation: (plotInformation: PlotInformation) => provenance.apply('Update plot information', setPlotInformationAction(plotInformation)),
-    setSelected: (intersection: Row | null) => provenance.apply(
+    setRowSelection: (intersection: Row | null) => provenance.apply(
       intersection ?
         `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"` :
         'Deselect intersection',
-      setSelectedAction(intersection),
+      setRowSelectionAction(intersection),
     ),
     /**
-     * Sets a global element selection for the plot,
-     * which is a filter on items based on their attributes.
+     * Sets the global vega brush in use for the plot
      * @param selection The selection to set
      */
-    setElementSelection: (selection: ElementSelection | null) => provenance.apply(
+    setVegaSelection: (selection: VegaSelection | null) => provenance.apply(
       // Object.keys check is for numerical queries, which can come out of vega as {}
-      selection && selectionIsNumerical(selection) ? (Object.keys(selection.query).length > 0 ?
-        `Selected elements based on the following keys: ${Object.keys(selection.query).join(' ')}`
-        : 'Deselected elements') : (selection ? `Selected elements based on ${selection.query.att}` : 'Deselected elements'),
-      setElementSelectionAction(selection),
+      selection && Object.keys(selection).length > 0 ?
+        `Selected elements based on the following keys: ${Object.keys(selection).join(' ')}`
+        : 'Cleared element selection',
+      setVegaSelectionAction(selection),
+    ),
+    /**
+     * Sets the type of the current active selection
+     */
+    setSelectionType: (selectionType: SelectionType | null) => provenance.apply(
+      selectionType ? `Set selection type to ${selectionType}` : 'Cleared selection type',
+      setSelectionTypeAction(selectionType),
+    ),
+    /**
+     * Sets the element query selection for the plot
+     * @param selection The query selection to set
+     */
+    setQuerySelection: (selection: QuerySelection | null) => provenance.apply(
+      selection ? `Selected elements based on ${selection.att}` : 'Cleared query selection',
+      setQuerySelectionAction(selection),
     ),
     setUserAltText: (altText: AltText | null) => provenance.apply(
       altText ? 'Set user alt text' : 'Cleared user alt text',

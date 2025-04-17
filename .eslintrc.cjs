@@ -9,6 +9,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     'airbnb',
     'plugin:import/typescript',
+    'plugin:react-hooks/recommended',
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -68,5 +69,6 @@ module.exports = {
     'no-nested-ternary': 'off',
     'jsx-a11y/tabindex-no-positive': 'off',
     'no-bitwise': 'warn',
+    'no-restricted-syntax': 'warn',
   },
 };

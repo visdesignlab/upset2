@@ -1,26 +1,33 @@
 import DownloadIcon from '@mui/icons-material/Download';
 import {
   Alert,
+  Box,
   IconButton, Tooltip,
+  Typography,
 } from '@mui/material';
-import { Item } from '@visdesignlab/upset2-core';
+import { Item, querySelectionToString, vegaSelectionToString } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
 
 import { useCallback, useMemo, useState } from 'react';
 import AddchartIcon from '@mui/icons-material/Addchart';
+import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import { columnsAtom } from '../../atoms/columnAtom';
 import {
-  elementSelectionSelector, selectedItemsCounter,
+  selectedItemsCounter,
   selectedOrBookmarkedItemsSelector,
 } from '../../atoms/elementsSelectors';
-import { BookmarkChips } from './BookmarkChips';
+import { BookmarkChips } from './SelectionChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
-import { bookmarkSelector, currentIntersectionSelector } from '../../atoms/config/currentIntersectionAtom';
+import {
+  bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection,
+} from '../../atoms/config/selectionAtoms';
 import { Sidebar } from '../custom/Sidebar';
 import { UpsetHeading } from '../custom/theme/heading';
 import { AddPlotDialog } from './AddPlotDialog';
+import { totalItemsSelector } from '../../atoms/dataAtom';
+import { HelpCircle } from '../custom/HelpCircle';
 
 /**
  * Props for the ElementSidebar component
@@ -31,6 +38,9 @@ type Props = {
   /** Function to close the sidebar */
   close: () => void
 }
+
+/** Default vertical margin between elements */
+const DEFAULT_SPACING = '0.5em';
 
 /**
  * Immediately downloads a csv containing items with the given columns
@@ -74,23 +84,40 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  */
 export const ElementSidebar = ({ open, close }: Props) => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
-  const currentElementSelection = useRecoilValue(elementSelectionSelector);
+  const vegaSelection = useRecoilValue(currentVegaSelection);
+  const querySelection = useRecoilValue(currentQuerySelection);
+  const selectionType = useRecoilValue(currentSelectionType);
   const selectedItems = useRecoilValue(selectedOrBookmarkedItemsSelector);
   const itemCount = useRecoilValue(selectedItemsCounter);
+  const totalItemCount = useRecoilValue(totalItemsSelector);
   const columns = useRecoilValue(columnsAtom);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
+  const [queryOpen, setQueryOpen] = useState(false);
 
-  /** Whether to show the 'Element Queries' section */
-  const showQueries = useMemo(
-    () => bookmarked.length > 0 || currentIntersection || currentElementSelection,
-    [bookmarked.length, currentIntersection, currentElementSelection],
+  /** Whether the bookmark chips are empty */
+  const haveChips = useMemo(
+    () => bookmarked.length > 0 || currentIntersection || vegaSelection || querySelection,
+    [bookmarked.length, currentIntersection, vegaSelection, querySelection],
   );
 
   /**
    * Closes the AddPlotDialog
    */
   const onClose = useCallback(() => setOpenAddPlot(false), [setOpenAddPlot]);
+
+  const tableHelpText = useMemo(() => {
+    if (selectionType === 'vega' && vegaSelection) {
+      return `Currently showing elements in visible intersections matching the selection "${vegaSelectionToString(vegaSelection)}."`;
+    }
+    if (selectionType === 'query' && querySelection) {
+      return `Currently showing elements in visible intersections matching the query "${querySelectionToString(querySelection)}."`;
+    }
+    if (selectionType === 'row' && currentIntersection) {
+      return `Currently showing elements in the selected intersection ${currentIntersection.elementName}.`;
+    }
+    return 'Currently showing all elements in visible intersections.';
+  }, [selectionType, vegaSelection, querySelection, currentIntersection]);
 
   return (
     <Sidebar
@@ -99,30 +126,44 @@ export const ElementSidebar = ({ open, close }: Props) => {
       label="Element View Sidebar"
       title="Element View"
       buttons={
-        <Tooltip title="Add Plot">
-          <IconButton onClick={() => setOpenAddPlot(true)}>
-            <AddchartIcon />
-          </IconButton>
-        </Tooltip>
+        <>
+          <Tooltip title="Add plot">
+            <IconButton onClick={() => setOpenAddPlot(true)}>
+              <AddchartIcon />
+            </IconButton>
+          </Tooltip>
+          <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element selection`}>
+            <IconButton onClick={() => { setQueryOpen(!queryOpen); }}>
+              <ManageSearchIcon />
+            </IconButton>
+          </Tooltip>
+        </>
       }
     >
-      <UpsetHeading level="h3">
-        Selections
-      </UpsetHeading>
-      {!showQueries && (
+      <Box
+        height={queryOpen ? 140 : 0}
+        overflow="hidden"
+        style={{ transition: 'height 0.2s ease-in-out', marginBottom: queryOpen ? DEFAULT_SPACING : 0 }}
+      >
+        <QueryInterface />
+      </Box>
+      {!haveChips && (
         <Alert severity="info" style={{ paddingTop: '2px', paddingBottom: '2px' }}>
           Selected intersections and elements will appear here.
         </Alert>
       )}
       <BookmarkChips />
+      <Box height={DEFAULT_SPACING} />
       <ElementVisualization />
       <AddPlotDialog open={openAddPlot} onClose={onClose} />
       <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
-        Element Queries
-      </UpsetHeading>
-      <QueryInterface />
-      <UpsetHeading level="h2" divStyle={{ marginTop: '1em' }}>
-        Query Result
+        Element Table
+        <Typography display="inline" variant="caption" style={{ marginLeft: '0.5em' }}>
+          {`${itemCount} of ${totalItemCount} elements`}
+        </Typography>
+        {/* Size 21 causes the icon to visually match the size of the download icon.
+            Additionally, margin & padding move the whole row, so relative positioning is necessary */}
+        <HelpCircle text={tableHelpText} style={{ float: 'right', position: 'relative', bottom: '1px' }} size={21} />
         <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton
             onClick={() => {
@@ -133,7 +174,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
               );
             }}
             // This needs to stay shorter than the h2 text or the divider spacing gets off
-            style={{ height: '1.2em' }}
+            style={{ height: '1.2em', float: 'right' }}
           >
             <DownloadIcon />
           </IconButton>

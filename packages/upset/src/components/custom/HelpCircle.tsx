@@ -1,5 +1,6 @@
 import { QuestionMark } from '@mui/icons-material';
 import { Tooltip, IconButton } from '@mui/material';
+import { CSSProperties } from 'react';
 
 type Margin = {
     top: number,
@@ -15,11 +16,14 @@ export const defaultMargin: Margin = {
   right: 2.5,
 };
 
-export const HelpCircle = ({ text, margin = { ...defaultMargin }, size = 13 }: { text: string, margin?: Margin, size?: number }) => (
+export const HelpCircle = ({
+  text, margin = { ...defaultMargin }, size = 13, style = undefined,
+}: { text: string, margin?: Margin, size?: number, style?: CSSProperties }) => (
   <Tooltip
     title={text}
     placement="top"
     arrow
+    style={style}
   >
     <IconButton
       sx={{
