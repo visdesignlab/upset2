@@ -21,7 +21,7 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/intro">
-            Get started with UpSet 2.0
+            Get started
           </Link>
         </div>
       </div>
