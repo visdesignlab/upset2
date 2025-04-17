@@ -81,6 +81,11 @@ const config: Config = {
 
         { to: 'about', label: 'About', position: 'left' },
         {
+          href: 'https://upset.multinet.app',
+          label: 'Go To UpSet',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/visdesignlab/upset2',
           label: 'GitHub',
           position: 'right',
