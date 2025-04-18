@@ -25,8 +25,8 @@ export function createAddScatterplotSpec(
     attribute: string;
     logScale: boolean;
   },
-  height: number = 400,
-  width: number = 400,
+  height = 400,
+  width = 400,
 ): VisualizationSpec {
   return {
     width,
@@ -100,11 +100,24 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
         scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
       color: {
-        condition: {
-          param: 'brush',
-          empty: false,
-          value: vegaSelectionColor,
-        },
+        condition: [
+          {
+            test: {
+              and: [
+                { param: 'brush', empty: false },
+                {
+                  not: {
+                    and: [
+                      { field: 'selectionType', equal: 'row' },
+                      { field: 'isCurrent', equal: true },
+                    ],
+                  },
+                },
+              ],
+            },
+            value: vegaSelectionColor,
+          },
+        ],
         field: 'subset',
         legend: null,
         scale: { range: { field: 'color' } },
@@ -112,14 +125,21 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
       opacity: {
         condition: [
           {
-            param: 'brush',
-            empty: false,
+            test: {
+              and: [
+                {
+                  param: 'brush',
+                  empty: false,
+                },
+                { field: 'selectionType', equal: 'vega' },
+              ],
+            },
             value: 0.8,
           },
           {
             test: {
               and: [
-                BRUSH_EMPTY,
+                { or: [BRUSH_EMPTY, { not: { field: 'selectionType', equal: 'vega' } }] },
                 {
                   or: [
                     { field: 'isCurrentSelected', equal: false },
@@ -135,9 +155,22 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
       order: {
         condition: [
           {
-            param: 'brush',
-            empty: false,
+            test: {
+              and: [
+                { param: 'brush', empty: false },
+                { field: 'selectionType', equal: 'vega' },
+              ],
+            },
             value: 3,
+          },
+          {
+            test: {
+              and: [
+                { field: 'isCurrent', equal: true },
+                { field: 'selectionType', equal: 'row' },
+              ],
+            },
+            value: 4,
           },
           {
             test: {
