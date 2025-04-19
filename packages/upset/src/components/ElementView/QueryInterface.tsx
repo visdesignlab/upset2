@@ -4,7 +4,7 @@ import {
   TextField,
 } from '@mui/material';
 import { Box } from '@mui/system';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { ElementQueryType, NumericalQueryType } from '@visdesignlab/upset2-core';
 import {
   useCallback, useContext, useEffect, useState,
@@ -14,6 +14,7 @@ import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
 import { currentSelectionType, currentQuerySelection } from '../../atoms/config/selectionAtoms';
+import { columnSelectAtom } from '../../atoms/highlightAtom';
 
 /**
  * Default type for the element query
@@ -34,6 +35,7 @@ export const QueryInterface = () => {
   const selectionType = useRecoilValue(currentSelectionType);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const attTypes = useRecoilValue(attTypesSelector);
+  const setColSelection = useSetRecoilState(columnSelectAtom);
 
   const FIELD_MARGIN = '5px';
   const FIELD_CSS = { marginTop: FIELD_MARGIN, width: '50%' };
@@ -53,7 +55,7 @@ export const QueryInterface = () => {
       setTypeField(DEFAULT_TYPE);
       setQueryField(undefined);
     }
-  }, [currentSelection]);
+  }, [currentSelection, atts]);
 
   /*
    * Functions
@@ -79,8 +81,9 @@ export const QueryInterface = () => {
         query: queryField,
       });
       actions.setSelectionType('query');
+      setColSelection([]);
     }
-  }, [attField, typeField, queryField, atts, actions, currentSelection, selectionType]);
+  }, [attField, typeField, queryField, atts, actions, currentSelection, selectionType, setColSelection]);
 
   return atts.length > 0 ? (
     <Box css={{ marginTop: '10px' }}>
