@@ -18,6 +18,7 @@ import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { currentSelectionType, currentVegaSelection } from '../../atoms/config/selectionAtoms';
+import { columnSelectAtom } from '../../atoms/highlightAtom';
 
 const BRUSH_NAME = 'brush';
 
@@ -62,6 +63,7 @@ export const ElementVisualization = () => {
   const selectionType = useRecoilValue(currentSelectionType);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
+  const setColumnSelection = useSetRecoilState(columnSelectAtom);
 
   /**
    * Internal State
@@ -107,6 +109,10 @@ export const ElementVisualization = () => {
       && !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
     ) {
       actions.setVegaSelection(draftSelection.current);
+
+      // reset the column selection highlight state because the selection has changed
+      setColumnSelection([]);
+
       if (selectionType !== 'vega') actions.setSelectionType('vega');
     } else if (selection) {
       actions.setVegaSelection(null);
