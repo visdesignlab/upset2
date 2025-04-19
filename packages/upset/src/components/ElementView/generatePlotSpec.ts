@@ -5,7 +5,7 @@ import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
 import { Predicate } from 'vega-lite/build/src/predicate';
 import { LogicalComposition } from 'vega-lite/build/src/logical';
-import { vegaSelectionColor } from '../../utils/styles';
+import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
 
 /**
    * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
@@ -340,6 +340,20 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
       {
         params,
         mark: 'bar',
+        encoding: {
+          x: { bin: { maxbins: hist.bins }, field: hist.attribute },
+          y: { aggregate: 'count', title: 'Frequency', stack: null },
+          color: { value: DEFAULT_ELEMENT_COLOR },
+          opacity: {
+            condition: { test: BRUSH_EMPTY, value: 1 },
+            value: 0.4,
+          },
+        },
+      }, {
+        mark: 'bar',
+        transform: [
+          { filter: { field: 'bookmarked', equal: true } },
+        ],
         encoding: {
           x: { bin: { maxbins: hist.bins }, field: hist.attribute },
           y: { aggregate: 'count', title: 'Frequency', stack: null },
