@@ -8,6 +8,16 @@ import { LogicalComposition } from 'vega-lite/build/src/logical';
 import { vegaSelectionColor } from '../../utils/styles';
 
 /**
+   * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
+   * @private The left-side predicate evaluates to true if the brush is empty OR the item is in the brush;
+   *          the right-side predicate evaluates to true if the item is selected OR the brush is empty.
+   *          This creates a logical gadget that evaluates to true if the brush is empty regardless of the item state.
+   */
+const BRUSH_EMPTY: LogicalComposition<Predicate> = {
+  and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
+};
+
+/**
  * Creates the spec for a single scatterplot.
  * Used in the "Add Plot" dialog.
  * @param x - The attribute to plot on the x-axis.
@@ -60,16 +70,6 @@ export function createAddScatterplotSpec(
  * @returns The Vega-Lite spec for the scatterplots.
  */
 export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
-  /**
-   * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
-   * @private The left-side predicate evaluates to true if the brush is empty OR the item is in the brush;
-   *          the right-side predicate evaluates to true if the item is selected OR the brush is empty.
-   *          This creates a logical gadget that evaluates to true if the brush is empty regardless of the item state.
-   */
-  const BRUSH_EMPTY: LogicalComposition<Predicate> = {
-    and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
-  };
-
   return {
     width: 200,
     height: 200,
@@ -341,16 +341,14 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
         params,
         mark: 'bar',
         encoding: {
-          x: {
-            bin: { maxbins: hist.bins },
-            field: hist.attribute,
-          },
-          y: {
-            aggregate: 'count',
-            title: 'Frequency',
-          },
+          x: { bin: { maxbins: hist.bins }, field: hist.attribute },
+          y: { aggregate: 'count', title: 'Frequency', stack: null },
           color: COLOR,
-          opacity: OPACITY,
+          opacity: {
+            condition: { test: BRUSH_EMPTY, value: 1 },
+            value: 0.4,
+          },
+          order: { aggregate: 'count', field: hist.attribute, sort: 'descending' },
         },
       }, {
         transform: [{
