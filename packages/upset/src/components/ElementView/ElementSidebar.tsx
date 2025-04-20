@@ -16,7 +16,7 @@ import {
   selectedItemsCounter,
   selectedOrBookmarkedItemsSelector,
 } from '../../atoms/elementsSelectors';
-import { BookmarkChips } from './SelectionChips';
+import { SelectionChips } from './SelectionChips';
 import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
@@ -152,7 +152,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
           Selected intersections and elements will appear here.
         </Alert>
       )}
-      <BookmarkChips />
+      <SelectionChips />
       <Box height={DEFAULT_SPACING} />
       <ElementVisualization />
       <AddPlotDialog open={openAddPlot} onClose={onClose} />

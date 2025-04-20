@@ -27,7 +27,7 @@ const SELECTED_BACKGROUND = 'rgba(0,0,0,0.2)';
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
  * with options to add and remove bookmarks
  */
-export const BookmarkChips = () => {
+export const SelectionChips = () => {
   const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const nextColor = useRecoilValue(nextColorSelector);
