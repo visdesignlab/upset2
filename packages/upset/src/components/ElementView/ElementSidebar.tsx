@@ -28,6 +28,7 @@ import { UpsetHeading } from '../custom/theme/heading';
 import { AddPlotDialog } from './AddPlotDialog';
 import { totalItemsSelector } from '../../atoms/dataAtom';
 import { HelpCircle } from '../custom/HelpCircle';
+import { dataAttributeSelector } from '../../atoms/attributeAtom';
 
 /**
  * Props for the ElementSidebar component
@@ -94,12 +95,16 @@ export const ElementSidebar = ({ open, close }: Props) => {
   const bookmarked = useRecoilValue(bookmarkSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const [queryOpen, setQueryOpen] = useState(false);
+  const atts = useRecoilValue(dataAttributeSelector);
 
   /** Whether the bookmark chips are empty */
   const haveChips = useMemo(
     () => bookmarked.length > 0 || currentIntersection || vegaSelection || querySelection,
     [bookmarked.length, currentIntersection, vegaSelection, querySelection],
   );
+
+  /** Whether this data has any attributes */
+  const haveAtts = useMemo(() => atts.length > 0, [atts.length]);
 
   /**
    * Closes the AddPlotDialog
@@ -128,12 +133,12 @@ export const ElementSidebar = ({ open, close }: Props) => {
       buttons={
         <>
           <Tooltip title="Add plot">
-            <IconButton onClick={() => setOpenAddPlot(true)}>
+            <IconButton onClick={() => setOpenAddPlot(true)} disabled={!haveAtts}>
               <AddchartIcon />
             </IconButton>
           </Tooltip>
           <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} explicit element selection`}>
-            <IconButton onClick={() => { setQueryOpen(!queryOpen); }}>
+            <IconButton onClick={() => { setQueryOpen(!queryOpen); }} disabled={!haveAtts}>
               <ManageSearchIcon />
             </IconButton>
           </Tooltip>
