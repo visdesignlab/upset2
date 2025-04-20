@@ -1,5 +1,6 @@
 import {
   Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
@@ -245,10 +246,11 @@ export function createAddHistogramSpec(attribute: string, bins: number, density:
 /**
  * Creates the spec for a single histogram in the element view matrix.
  * @param histograms The histograms to plot.
- * @param overlaySelectedRow Whether a layer showing only bars for the selected row should be overlaid on all other layers.
+ * @param selectionType The currently active selection type, from the currentSelectionType selector
+ * @param haveSelection Whether a vega selection exists
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boolean) : VisualizationSpec {
+export function generateHistogramSpec(hist: Histogram, selectionType: SelectionType, haveSelection: boolean) : VisualizationSpec {
   const params = [
     {
       name: 'brush',
@@ -273,7 +275,10 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
     value: 0.4,
   };
 
-  if (hist.frequency) {
+  /** Whether the selection type is 'row' */
+  const selectionTypeRow = selectionType === 'row';
+
+  if (hist.frequency) { // KDE plot
     return {
       width: 200,
       height: 200,
@@ -295,7 +300,7 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: { value: DEFAULT_ELEMENT_COLOR },
-            opacity: OPACITY,
+            opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
           },
         }, { // This layer displays probability density for all elements, grouped by subset
           params,
@@ -309,7 +314,7 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: OPACITY,
+            opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
           },
         }, { // This layer displays probability density for selected elements
           transform: [
@@ -322,10 +327,10 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
             color: { value: vegaSelectionColor },
-            opacity: { value: overlaySelectedRow ? 0.4 : 1 },
+            opacity: { value: selectionTypeRow ? 0.4 : 1 },
           },
         }, // This layer displays probability density for the selected intersection
-        ...(overlaySelectedRow ? [{
+        ...(selectionTypeRow ? [{
           transform: [
             { filter: { field: 'isCurrent', equal: true } },
             { density: hist.attribute, groupby: ['subset', 'color'] },
@@ -344,7 +349,7 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
     };
   }
 
-  return {
+  return { // Histogram/bar chart
     width: 200,
     height: 200,
     signals: [
@@ -389,7 +394,7 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
           color: { value: vegaSelectionColor },
         },
       },
-      ...(overlaySelectedRow ? [{
+      ...(selectionTypeRow && haveSelection ? [{
         transform: [{ filter: { field: 'isCurrent', equal: true } }],
         mark: 'bar' as AnyMark, // Vega being weird about types in destructured objects
         encoding: {
@@ -411,10 +416,11 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
 /**
  * Generates a vega spec for a plot.
  * @param plot The plot to generate a spec for
- * @param overlaySelectedRow Whether to overlay the selected row on top of the plot
+ * @param selectionType The currently active selection type, from the currentSelectionType selector
+ * @param haveSelection Whether a vega selection exists
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot, overlaySelectedRow: boolean): VisualizationSpec {
+export function generateVegaSpec(plot: Plot, selectionType: SelectionType, haveSelection: boolean): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
@@ -423,7 +429,7 @@ export function generateVegaSpec(plot: Plot, overlaySelectedRow: boolean): Visua
     return { ...BASE, ...generateScatterplotSpec(plot) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot, overlaySelectedRow) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot, selectionType, haveSelection) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }

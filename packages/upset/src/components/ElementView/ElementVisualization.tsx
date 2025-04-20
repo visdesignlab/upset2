@@ -78,7 +78,7 @@ export const ElementVisualization = () => {
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (
-    { plot, spec: generateVegaSpec(plot, (selectionType === 'row' && !!selection)) }
+    { plot, spec: generateVegaSpec(plot, selectionType, !!selection) }
   )), [plots, selectionType, selection]);
 
   /**
