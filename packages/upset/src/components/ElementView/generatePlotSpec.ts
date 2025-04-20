@@ -100,24 +100,22 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
         scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
       color: {
-        condition: [
-          {
-            test: {
-              and: [
-                { param: 'brush', empty: false },
-                {
-                  not: {
-                    and: [
-                      { field: 'selectionType', equal: 'row' },
-                      { field: 'isCurrent', equal: true },
-                    ],
-                  },
+        condition: [{
+          test: {
+            and: [
+              { param: 'brush', empty: false },
+              {
+                not: {
+                  and: [
+                    { field: 'selectionType', equal: 'row' },
+                    { field: 'isCurrent', equal: true },
+                  ],
                 },
-              ],
-            },
-            value: vegaSelectionColor,
+              },
+            ],
           },
-        ],
+          value: vegaSelectionColor,
+        }],
         field: 'subset',
         legend: null,
         scale: { range: { field: 'color' } },
@@ -337,7 +335,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
       { name: 'brush', value: {} },
     ],
     layer: [
-      {
+      { // Shows all elements in grey
         params,
         mark: 'bar',
         encoding: {
@@ -349,7 +347,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
             value: 0.4,
           },
         },
-      }, {
+      }, { // Shows elements in bookmarked intersections colored & layered by intersection membership
         mark: 'bar',
         transform: [
           { filter: { field: 'bookmarked', equal: true } },
@@ -364,7 +362,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
           },
           order: { aggregate: 'count', field: hist.attribute, sort: 'descending' },
         },
-      }, {
+      }, { // Shows selected elements in orange
         transform: [{
           filter: { param: 'brush', empty: false },
         }],
@@ -379,9 +377,28 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
             title: 'Frequency',
           },
           color: { value: vegaSelectionColor },
-          opacity: { value: 1 },
         },
       },
+      // Failed attempt at having the selected row appear on top of the histogram
+      // Does not play nice with layers 2 and 3; for some reason only works with layer 1... TODO
+      // {
+      //   transform: [
+      //     { filter: { field: 'selectionType', equal: 'row' } },
+      //     { filter: { field: 'isCurrent', equal: true } },
+      //   ],
+      //   mark: 'bar',
+      //   encoding: {
+      //     x: {
+      //       field: hist.attribute,
+      //       bin: { maxbins: hist.bins },
+      //     },
+      //     y: {
+      //       aggregate: 'count',
+      //       title: 'Frequency',
+      //     },
+      //     color: { value: '#abc' },
+      //   },
+      // },
     ],
   };
 }
