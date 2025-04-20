@@ -281,20 +281,29 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
         { name: 'brush', value: {} },
       ],
       layer: [
-        { // This layer displays probability density for all elements, grouped by subset
+        { // This layer shows all elements in grey
           transform: [
-            {
-              density: hist.attribute,
-              groupby: ['subset', 'color'],
-            },
+            { density: hist.attribute },
             { // Hacky way to get the correct name for the attribute & sync with other plots
               // Otherwise, the attribute name is "value", so selections don't sync and the signal sent
               // by selecting on this plot doesn't include the name of the attribute being selected
-              calculate: 'datum["value"]',
-              as: hist.attribute,
+              calculate: 'datum["value"]', as: hist.attribute,
             },
           ],
+          mark: 'line',
+          encoding: {
+            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            y: { field: 'density', type: 'quantitative', title: 'Probability' },
+            color: { value: DEFAULT_ELEMENT_COLOR },
+            opacity: OPACITY,
+          },
+        }, { // This layer displays probability density for all elements, grouped by subset
           params,
+          transform: [
+            { filter: { field: 'bookmarked', equal: true } },
+            { density: hist.attribute, groupby: ['subset', 'color'] },
+            { calculate: 'datum["value"]', as: hist.attribute },
+          ],
           mark: 'line',
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
@@ -302,7 +311,7 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
             color: COLOR,
             opacity: OPACITY,
           },
-        }, { // This layer displays probability density for selected elements, grouped
+        }, { // This layer displays probability density for selected elements
           transform: [
             { filter: { param: 'brush', empty: false } },
             { density: hist.attribute },
@@ -315,7 +324,7 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
             color: { value: vegaSelectionColor },
             opacity: { value: overlaySelectedRow ? 0.4 : 1 },
           },
-        },
+        }, // This layer displays probability density for the selected intersection
         ...(overlaySelectedRow ? [{
           transform: [
             { filter: { field: 'isCurrent', equal: true } },
