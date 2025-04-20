@@ -10,7 +10,7 @@ and bookmarked by clicking the empty bookmark icon.
 
 A bookmarked intersection is shown with a filled-in bookmark icon, and this icon persists regardless of whether it's selected. 
 Clicking the filled-in bookmark icon unbookmarks the intersection. 
-When an intersection selection is active, all bookmarked and selected rows have their size bars filled in with their color, 
+When an intersection selection is active, all bookmarked and selected intersections have their size bars filled in with their color, 
 and colors from the other two selection types are not shown in the size bars.
 
 ![Two bookmarked intersections and a selected intersection with other inactive selections](./img/intersection/override-others.png)

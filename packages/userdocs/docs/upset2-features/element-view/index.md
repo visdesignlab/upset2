@@ -10,7 +10,7 @@ The second from the left opens the explicit query interface just below the heade
 
 ![Header Icons](./img/index/extra-icons.png)
 
-Below the header (and the explicit query interface, if open) are the bookmark & selection chips, which show selections and bookmarked rows; see [Selection Chips](./selections/index.md#selection-chips).
+Below the header (and the explicit query interface, if open) are the bookmark & selection chips, which show selections and bookmarked intersections; see [Selection Chips](./selections/index.md#selection-chips).
 If no selections or bookmarks exist, a blue notice will appear here instead.
 
 ![Selection Chips](./img/index/selection-chips.png)

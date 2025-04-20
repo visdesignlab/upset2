@@ -15,4 +15,4 @@ The **attribute columns**, boxed in pink, show attributes and their value for ea
 
 The **set membership columns**, boxed in blue, indicate which sets each element belongs to, with a check indicating inclusion in that column's set and an X indicating exclusion. 
 
-The **pagination controls**, in orange: set the number of rows per page (on the left), indicate the indexes of elements on the current page out of the total currently displayed by the table (in the middle), and paginate forward and backwards (buttons on the right).
+The **pagination controls**, in orange: set the number of intersections per page (on the left), indicate the indexes of elements on the current page out of the total currently displayed by the table (in the middle), and paginate forward and backwards (buttons on the right).

@@ -225,7 +225,7 @@ The configuration options are documented below:
   - `"Alphabetical"`: Sort from A - Z. *Note* Only A - Z sorting is supported.
   - `"Ascending"`: Sort based on size, low to high.
   - `"Descending"`: Sort based on size, high to low.
-- `sortBy` (string): Describes the sorting of the subset rows. Defaults to `S"ize"`. Possible values:
+- `sortBy` (string): Describes the sorting of the subset rows. Defaults to `"Size"`. Possible values:
   - `"Size"`: Sorts the plot by the subset size (cardinality) rows.
   - `"Degree"`: Sorts the plot by the degree (set membership) of the rows.
   - `"Deviation"`: Sorts the plot by the calculated deviation. See [the original 2014 paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/) for more information about deviation and how it is calculated.
