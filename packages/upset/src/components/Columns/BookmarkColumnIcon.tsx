@@ -88,11 +88,9 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
     if (bookmarked) {
       actions.removeBookmark(bookmark);
       if (selected) actions.setRowSelection(null);
-      if (selectionType === 'row') actions.setSelectionType(null);
     } else {
       actions.addBookmark(bookmark);
       if (!selected) actions.setRowSelection(row);
-      if (selectionType !== 'row') actions.setSelectionType('row');
     }
   };
 

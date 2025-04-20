@@ -289,7 +289,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
             },
             { // Hacky way to get the correct name for the attribute & sync with other plots
               // Otherwise, the attribute name is "value", so selections don't sync and the signal sent
-              // by selecting on this plot doesn''t include the name of the attribute being selected
+              // by selecting on this plot doesn't include the name of the attribute being selected
               calculate: 'datum["value"]',
               as: hist.attribute,
             },

@@ -9,7 +9,6 @@ import {
   SetQuery,
   VegaSelection,
   QuerySelection,
-  SelectionType,
 } from '@visdesignlab/upset2-core';
 
 import { Registry, StateChangeFunction, initializeTrrack } from '@trrack/core';
@@ -328,34 +327,73 @@ const setPlotInformationAction = register<PlotInformation>(
   },
 );
 
+/**
+ * Sets the current row selection and selection type to 'row'
+ * All other selection setters should clear this when they set their own selections;
+ * row selections are not supposed to persist when other selections are active (unlike other selections)
+ */
 const setRowSelectionAction = register<Row | null>(
   'select-intersection',
   (state: UpsetConfig, intersection) => {
     state.rowSelection = intersection;
+
+    if (intersection) state.selectionType = 'row';
+    else state.selectionType = null;
+
     return state;
   },
 );
 
+/**
+ * Sets the current vega selection and selection type to 'vega', and clears the row selection
+ */
 const setVegaSelectionAction = register<VegaSelection | null>(
   'select-elements',
   (state: UpsetConfig, vegaSelection) => {
     state.vegaSelection = vegaSelection;
+
+    if (vegaSelection) {
+      state.selectionType = 'vega';
+      state.rowSelection = null;
+    } else if (state.selectionType === 'vega') {
+      state.selectionType = null;
+      state.rowSelection = null;
+    }
+
     return state;
   },
 );
 
-const setSelectionTypeAction = register<SelectionType | null>(
+/**
+ * Sets the current selection type to 'vega', 'query', or null
+ * Should only be used when the selection type is being changed by itself; other selection setters handle selection type
+ */
+const setSelectionTypeAction = register<'query' | 'vega' | null>(
   'set-selection-type',
   (state: UpsetConfig, selectionType) => {
     state.selectionType = selectionType;
+    // Since we're for sure not in a row selection, we can clear it
+    state.rowSelection = null;
     return state;
   },
 );
 
+/**
+ * Sets the current query selection and selection type to 'query', and clears the row selection
+ */
 const setQuerySelectionAction = register<QuerySelection | null>(
   'set-query-selection',
   (state: UpsetConfig, querySelection) => {
     state.querySelection = querySelection;
+
+    if (querySelection) {
+      state.selectionType = 'query';
+      state.rowSelection = null;
+    } else if (state.selectionType === 'query') {
+      state.selectionType = null;
+      state.rowSelection = null;
+    }
+
     return state;
   },
 );
@@ -511,7 +549,7 @@ export function getActions(provenance: UpsetProvenance) {
       setRowSelectionAction(intersection),
     ),
     /**
-     * Sets the global vega brush in use for the plot
+     * Sets the vega selection and selection type to 'vega', and clears the row selection
      * @param selection The selection to set
      */
     setVegaSelection: (selection: VegaSelection | null) => provenance.apply(
@@ -522,14 +560,17 @@ export function getActions(provenance: UpsetProvenance) {
       setVegaSelectionAction(selection),
     ),
     /**
-     * Sets the type of the current active selection
+     * Activates a saved selection. This should ONLY be used when the selection of the given type has already been set.
+     * If null, clears the selection type.
+     * DON'T use this concurrently with setVegaSelection or setQuerySelection; these handle selection type themselves.
+     * @param selectionType The selection type to activate
      */
-    setSelectionType: (selectionType: SelectionType | null) => provenance.apply(
-      selectionType ? `Set selection type to ${selectionType}` : 'Cleared selection type',
+    activateSelectionType: (selectionType: 'vega' | 'query' | null) => provenance.apply(
+      selectionType ? `Activated the ${selectionType === 'vega' ? 'graphical selection' : 'element query'}` : 'Deactivated the active selection',
       setSelectionTypeAction(selectionType),
     ),
     /**
-     * Sets the element query selection for the plot
+     * Sets the element query and selection type to 'query', and clears the row selection
      * @param selection The query selection to set
      */
     setQuerySelection: (selection: QuerySelection | null) => provenance.apply(

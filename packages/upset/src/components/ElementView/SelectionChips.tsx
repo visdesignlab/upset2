@@ -47,11 +47,7 @@ export const SelectionChips = () => {
   function chipClicked(bookmark: Bookmark) {
     if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
       actions.setRowSelection(null);
-      actions.setSelectionType(null);
-    } else {
-      if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
-      if (selectionType !== 'row') actions.setSelectionType('row');
-    }
+    } else if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
   }
 
   return (
@@ -124,10 +120,7 @@ export const SelectionChips = () => {
           }
         }}
         onClick={() => {
-          if (selectionType === 'row') {
-            actions.setSelectionType(null);
-            actions.setRowSelection(null);
-          } else actions.setSelectionType('row');
+          if (selectionType === 'row') actions.setRowSelection(null);
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
       />
@@ -145,8 +138,8 @@ export const SelectionChips = () => {
         icon={<WorkspacesIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
         onClick={() => {
-          if (selectionType === 'vega') actions.setSelectionType(null);
-          else actions.setSelectionType('vega');
+          if (selectionType === 'vega') actions.activateSelectionType(null);
+          else actions.activateSelectionType('vega');
         }}
         label={vegaSelectionToString(vegaSelection)}
       />
@@ -164,8 +157,8 @@ export const SelectionChips = () => {
         icon={<CodeIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
         onClick={() => {
-          if (selectionType === 'query') actions.setSelectionType(null);
-          else actions.setSelectionType('query');
+          if (selectionType === 'query') actions.activateSelectionType(null);
+          else actions.activateSelectionType('query');
         }}
         label={querySelectionToString(querySelection)}
       />

@@ -17,7 +17,7 @@ import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
-import { currentSelectionType, currentVegaSelection } from '../../atoms/config/selectionAtoms';
+import { currentVegaSelection } from '../../atoms/config/selectionAtoms';
 import { columnSelectAtom } from '../../atoms/highlightAtom';
 
 const BRUSH_NAME = 'brush';
@@ -60,7 +60,6 @@ export const ElementVisualization = () => {
   const histograms = useRecoilValue(histogramSelector);
   const items = useRecoilValue(processedItemsSelector);
   const selection = useRecoilValue(currentVegaSelection);
-  const selectionType = useRecoilValue(currentSelectionType);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setColumnSelection = useSetRecoilState(columnSelectAtom);
@@ -97,7 +96,7 @@ export const ElementVisualization = () => {
     views.filter(({ plot }) => plot.id !== signaled.id).forEach(({ view }) => {
       signalView(view, value);
     });
-  }, [draftSelection, currentClick.current, views]);
+  }, [draftSelection, views]);
 
   /**
    * Saves the current selection to the state.
@@ -112,14 +111,11 @@ export const ElementVisualization = () => {
 
       // reset the column selection highlight state because the selection has changed
       setColumnSelection([]);
-
-      if (selectionType !== 'vega') actions.setSelectionType('vega');
     } else if (selection) {
       actions.setVegaSelection(null);
-      if (selectionType === 'vega') actions.setSelectionType(null);
     }
     draftSelection.current = null;
-  }, [draftSelection.current, selection, actions]);
+  }, [selection, actions, setColumnSelection]);
 
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
