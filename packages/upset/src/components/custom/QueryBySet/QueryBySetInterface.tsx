@@ -42,7 +42,7 @@ export const QueryBySetInterface = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQueryInterface = useSetRecoilState(queryBySetsInterfaceAtom);
-  const [queryName, setQueryName] = useState('Query');
+  const [queryName, setQueryName] = useState('Intersection Query');
   const [membership, setMembership] = useState<SetQueryMembership>({});
   const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance]);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
