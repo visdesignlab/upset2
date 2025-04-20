@@ -7,6 +7,7 @@ import { Predicate } from 'vega-lite/build/src/predicate';
 import { LogicalComposition } from 'vega-lite/build/src/logical';
 import { AnyMark } from 'vega-lite/build/src/mark';
 import { Aggregate } from 'vega-lite/build/src/aggregate';
+import { StandardType } from 'vega-lite/build/src/type';
 import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
 
 /**
@@ -299,38 +300,37 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: {
-              condition: [{
-                test: BRUSH_EMPTY, value: 1,
-              }, {
-                test: { and: [{ field: 'selectionType', equal: 'row' }, { field: 'isCurrent', equal: 'true' }] },
-                value: 1,
-              }],
-              value: 0.4,
-            },
+            opacity: OPACITY,
           },
-        },
-        { // This layer displays probability density for selected elements, grouped
+        }, { // This layer displays probability density for selected elements, grouped
           transform: [
-            {
-              filter: { param: 'brush', empty: false },
-            },
-            {
-              density: hist.attribute,
-            },
-            {
-              calculate: 'datum["value"]',
-              as: hist.attribute,
-            },
+            { filter: { param: 'brush', empty: false } },
+            { density: hist.attribute },
+            { calculate: 'datum["value"]', as: hist.attribute },
           ],
           mark: 'line',
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
             color: { value: vegaSelectionColor },
-            opacity: { value: 1 },
+            opacity: { value: overlaySelectedRow ? 0.4 : 1 },
           },
         },
+        ...(overlaySelectedRow ? [{
+          transform: [
+            { filter: { field: 'isCurrent', equal: true } },
+            { density: hist.attribute, groupby: ['subset', 'color'] },
+            { calculate: 'datum["value"]', as: hist.attribute },
+          ],
+          mark: 'line' as AnyMark, // Vega is weird about some types in destructured objects
+          encoding: {
+            // More vega weirdness
+            x: { field: hist.attribute, type: 'quantitative' as StandardType, title: hist.attribute },
+            y: { field: 'density', type: 'quantitative' as StandardType },
+            color: COLOR,
+            opacity: { value: 1 },
+          },
+        }] : []),
       ],
     };
   }
@@ -382,14 +382,14 @@ export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boole
       },
       ...(overlaySelectedRow ? [{
         transform: [{ filter: { field: 'isCurrent', equal: true } }],
-        mark: 'bar' as AnyMark,
+        mark: 'bar' as AnyMark, // Vega being weird about types in destructured objects
         encoding: {
           x: {
             field: hist.attribute,
             bin: { maxbins: hist.bins },
           },
           y: {
-            aggregate: 'count' as Aggregate,
+            aggregate: 'count' as Aggregate, // More vega weirdness
             title: 'Frequency',
           },
           color: COLOR,
