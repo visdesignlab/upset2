@@ -32,11 +32,11 @@ Useable for both numeric and string attributes.
 
 For **string attributes**, the attribute value must occur **before** the query string in alphabetical order to match a **less than** selection and **after** the query string to match a **greater than** selection. This alphabetical ordering is case-sensitive and not limited to the english alphabet, with numbers coming before lowercase letters coming before uppercase letters: `1 < a`, `a < A`, etc. This comparison is compatible with all UTF-8 characters, including diacritics, and the ordering is handled according to the language settings of the browser in use. 
 
-For **numeric attributes**, the two values are converted to strings, then compared as string attributes. Practically, this functions as numeric `<` and `>` operations, where attribute values are included in *less than* queries if the attribute value is less than the numeric value of the query string, and vice versa for *greater than* queries.
-
 <details>
 Internally, `localCompare` is used to determine order with, the attribute value as the `referenceString` (AKA `this`) and the query string as the `compareString`. See [the localCompare docs](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/localeCompare) for details.
 </details>
+
+For **numeric attributes**, the two values are converted to numbers and compared using standard `>` and `<` operators.
 
 ### Contains
 
