@@ -89,10 +89,8 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
               add = (`${item[att]}`) === query;
               break;
             default:
-              add = false;
-          }
-          add = (`${item[att]}` === query);
-          break;
+              add = (`${item[att]}` === query);
+          } break;
         case ElementQueryType.LENGTH:
           add = ((`${item[att]}`).length === Number(query));
           break;
@@ -100,11 +98,27 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
           add = (new RegExp(query).test(`${item[att]}`));
           break;
         case ElementQueryType.GREATER_THAN:
-          add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
-          break;
+          switch (typeof item[att]) {
+            case 'number':
+              add = Number(item[att]) > Number(query);
+              break;
+            case 'string':
+              add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
+              break;
+            default:
+              add = `${item[att]}` < `${query}`;
+          } break;
         case ElementQueryType.LESS_THAN:
-          add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
-          break;
+          switch (typeof item[att]) {
+            case 'number':
+              add = Number(item[att]) < Number(query);
+              break;
+            case 'string':
+              add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
+              break;
+            default:
+              add = `${item[att]}` > `${query}`;
+          } break;
         default:
       }
     }
