@@ -5,6 +5,8 @@ import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
 import { Predicate } from 'vega-lite/build/src/predicate';
 import { LogicalComposition } from 'vega-lite/build/src/logical';
+import { AnyMark } from 'vega-lite/build/src/mark';
+import { Aggregate } from 'vega-lite/build/src/aggregate';
 import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
 
 /**
@@ -242,10 +244,10 @@ export function createAddHistogramSpec(attribute: string, bins: number, density:
 /**
  * Creates the spec for a single histogram in the element view matrix.
  * @param histograms The histograms to plot.
- * @param selectColor The color to use for the line showing density of selected values.
+ * @param overlaySelectedRow Whether a layer showing only bars for the selected row should be overlaid on all other layers.
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
+export function generateHistogramSpec(hist: Histogram, overlaySelectedRow: boolean) : VisualizationSpec {
   const params = [
     {
       name: 'brush',
@@ -266,10 +268,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
 
   /** Opacity for layers showing all elements (not selection layers) */
   const OPACITY = {
-    condition: {
-      param: 'brush',
-      value: 1,
-    },
+    condition: { test: BRUSH_EMPTY, value: 1 },
     value: 0.4,
   };
 
@@ -300,7 +299,15 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: OPACITY,
+            opacity: {
+              condition: [{
+                test: BRUSH_EMPTY, value: 1,
+              }, {
+                test: { and: [{ field: 'selectionType', equal: 'row' }, { field: 'isCurrent', equal: 'true' }] },
+                value: 1,
+              }],
+              value: 0.4,
+            },
           },
         },
         { // This layer displays probability density for selected elements, grouped
@@ -342,10 +349,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
           x: { bin: { maxbins: hist.bins }, field: hist.attribute },
           y: { aggregate: 'count', title: 'Frequency', stack: null },
           color: { value: DEFAULT_ELEMENT_COLOR },
-          opacity: {
-            condition: { test: BRUSH_EMPTY, value: 1 },
-            value: 0.4,
-          },
+          opacity: OPACITY,
         },
       }, { // Shows elements in bookmarked intersections colored & layered by intersection membership
         mark: 'bar',
@@ -356,10 +360,7 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
           x: { bin: { maxbins: hist.bins }, field: hist.attribute },
           y: { aggregate: 'count', title: 'Frequency', stack: null },
           color: COLOR,
-          opacity: {
-            condition: { test: BRUSH_EMPTY, value: 1 },
-            value: 0.4,
-          },
+          opacity: OPACITY,
           order: { aggregate: 'count', field: hist.attribute, sort: 'descending' },
         },
       }, { // Shows selected elements in orange
@@ -379,26 +380,21 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
           color: { value: vegaSelectionColor },
         },
       },
-      // Failed attempt at having the selected row appear on top of the histogram
-      // Does not play nice with layers 2 and 3; for some reason only works with layer 1... TODO
-      // {
-      //   transform: [
-      //     { filter: { field: 'selectionType', equal: 'row' } },
-      //     { filter: { field: 'isCurrent', equal: true } },
-      //   ],
-      //   mark: 'bar',
-      //   encoding: {
-      //     x: {
-      //       field: hist.attribute,
-      //       bin: { maxbins: hist.bins },
-      //     },
-      //     y: {
-      //       aggregate: 'count',
-      //       title: 'Frequency',
-      //     },
-      //     color: { value: '#abc' },
-      //   },
-      // },
+      ...(overlaySelectedRow ? [{
+        transform: [{ filter: { field: 'isCurrent', equal: true } }],
+        mark: 'bar' as AnyMark,
+        encoding: {
+          x: {
+            field: hist.attribute,
+            bin: { maxbins: hist.bins },
+          },
+          y: {
+            aggregate: 'count' as Aggregate,
+            title: 'Frequency',
+          },
+          color: COLOR,
+        },
+      }] : []),
     ],
   };
 }
@@ -406,9 +402,10 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
 /**
  * Generates a vega spec for a plot.
  * @param plot The plot to generate a spec for
+ * @param overlaySelectedRow Whether to overlay the selected row on top of the plot
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot): VisualizationSpec {
+export function generateVegaSpec(plot: Plot, overlaySelectedRow: boolean): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
@@ -417,7 +414,7 @@ export function generateVegaSpec(plot: Plot): VisualizationSpec {
     return { ...BASE, ...generateScatterplotSpec(plot) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot, overlaySelectedRow) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }

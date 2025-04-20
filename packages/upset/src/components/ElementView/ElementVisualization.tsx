@@ -17,7 +17,7 @@ import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
-import { currentVegaSelection } from '../../atoms/config/selectionAtoms';
+import { currentSelectionType, currentVegaSelection } from '../../atoms/config/selectionAtoms';
 import { columnSelectAtom } from '../../atoms/highlightAtom';
 
 const BRUSH_NAME = 'brush';
@@ -61,6 +61,7 @@ export const ElementVisualization = () => {
   const items = useRecoilValue(processedItemsSelector);
   const selection = useRecoilValue(currentVegaSelection);
   const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const selectionType = useRecoilValue(currentSelectionType);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setColumnSelection = useSetRecoilState(columnSelectAtom);
 
@@ -77,8 +78,8 @@ export const ElementVisualization = () => {
   }), [items]);
   const plots = useMemo(() => (scatterplots as Plot[]).concat(histograms), [scatterplots, histograms]);
   const specs = useMemo(() => plots.map((plot) => (
-    { plot, spec: generateVegaSpec(plot) }
-  )), [plots]);
+    { plot, spec: generateVegaSpec(plot, (selectionType === 'row' && !!selection)) }
+  )), [plots, selectionType, selection]);
 
   /**
    * Functions
