@@ -36,4 +36,4 @@ obscured by unbookmarked points (but may be by selected or other bookmarked poin
 
 ## Selections
 
-Graphical selections can also affect the color, opacity, and ordering of points; see [Scatterplot Selection](../selections/graphical.md#scatterplot). Explicit selections do not affect element view plots.
+Graphical selections can also affect the color, opacity, and ordering of points; see [Scatterplot Selection](../selections/graphical.md#scatterplot). Element queries do not affect element view plots.

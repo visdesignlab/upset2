@@ -1,25 +1,25 @@
 ---
 sidebar_position: 3
 ---
-# Explicit Selections
+# Element Query
 
-Explicit element selections query elements by a single attribute by checking whether each element's matches a query string; if a match is found, the element is considered part of the query. The technique for matching is selected when creating a query. For queries on numeric attributes, *less than*, *greater than*, and *equals* can be used to compare elements to the query string. For queries on textual (string) attributes, Upset 2.0 provides *equals*, *contains*, *length equals*, *less than*, *greater than*, and *regex* query types.
+Element queries query elements by a single attribute by checking whether each element's matches a query string; if a match is found, the element is considered part of the query. The technique for matching is selected when creating a query. For queries on numeric attributes, *less than*, *greater than*, and *equals* can be used to compare elements to the query string. For queries on textual (string) attributes, Upset 2.0 provides *equals*, *contains*, *length equals*, *less than*, *greater than*, and *regex* query types.
 
-## Creating an explicit selection
+## Creating an element query
 
-To show the interface for creating an explicit element selection, click the button in the header of the element view:
+To show the interface for creating an element query, click the button in the header of the element view:
 
-![Show explicit element selection button](./img/explicit/button.png)
+![Show element query button](./img/query/button.png)
 
-This opens the explicit selection interface, which has 3 fields:
+This opens the element query interface, which has 3 fields:
 
-![Explicit selection interface](./img/explicit/interface.png)
+![Element query interface](./img/query/interface.png)
 
 The **Attribute** dropdown, boxed in pink, selects the attribute to be used to determine element inclusion. The **Query Type** dropdown, in blue, determines the comparison type to compare attribute values to the **Query**, in green. The **Apply Button** saves & activates the selection. While a selection is saved (and regardless of whether it's active), the apply button turns into a red **Clear Button** which deletes the saved selection and allows entry of a new selection.
 
 ## Query Types
 
-An element is counted as being part of the explicit selection if its attribute value for the selected attribute matches the query string. Whether a value matches the query is determined by the query type and the attribute type, detailed below:
+An element is counted as being part of the element query if its attribute value for the selected attribute matches the query string. Whether a value matches the query is determined by the query type and the attribute type, detailed below:
 
 ### Equals
 

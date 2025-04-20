@@ -3,7 +3,7 @@ sidebar_position: 3
 ---
 # Element Table
 
-The element table appears at the bottom of the element view, displaying a list of all elements from the active selection and their attributes. For **explicit and graphical selections**, it shows all elements from visible intersections which fall within the bounds of the selection. For **intersection selections**, it shows all elements in the selected intersection. If no selection is active, all visible elements are shown.
+The element table appears at the bottom of the element view, displaying a list of all elements from the active selection and their attributes. For **element queries and graphical selections**, it shows all elements from visible intersections which fall within the bounds of the selection. For **intersection selections**, it shows all elements in the selected intersection. If no selection is active, all visible elements are shown.
 
 ![The element table](./img/element-table.png)
 
