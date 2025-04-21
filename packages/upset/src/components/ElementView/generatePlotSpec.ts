@@ -349,64 +349,44 @@ export function generateHistogramSpec(hist: Histogram, selectionType: SelectionT
     };
   }
 
-  return { // Histogram/bar chart
+  return {
     width: 200,
     height: 200,
     signals: [
       { name: 'brush', value: {} },
     ],
     layer: [
-      { // Shows all elements in grey
+      {
         params,
         mark: 'bar',
         encoding: {
           x: { bin: { maxbins: hist.bins }, field: hist.attribute },
-          y: { aggregate: 'count', title: 'Frequency', stack: null },
-          color: { value: DEFAULT_ELEMENT_COLOR },
-          opacity: OPACITY,
-        },
-      }, { // Shows elements in bookmarked intersections colored & layered by intersection membership
-        mark: 'bar',
-        transform: [
-          { filter: { field: 'bookmarked', equal: true } },
-        ],
-        encoding: {
-          x: { bin: { maxbins: hist.bins }, field: hist.attribute },
-          y: { aggregate: 'count', title: 'Frequency', stack: null },
+          y: { aggregate: 'count', title: 'Frequency' },
           color: COLOR,
           opacity: OPACITY,
-          order: { aggregate: 'count', field: hist.attribute, sort: 'descending' },
         },
-      }, { // Shows selected elements in orange
+      }, {
         transform: [{
           filter: { param: 'brush', empty: false },
         }],
         mark: 'bar',
         encoding: {
-          x: {
-            field: hist.attribute,
-            bin: { maxbins: hist.bins },
-          },
-          y: {
-            aggregate: 'count',
-            title: 'Frequency',
-          },
+          x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+          y: { aggregate: 'count', title: 'Frequency' },
           color: { value: vegaSelectionColor },
+          opacity: { value: 1 },
         },
       },
       ...(selectionTypeRow && haveSelection ? [{
-        transform: [{ filter: { field: 'isCurrent', equal: true } }],
-        mark: 'bar' as AnyMark, // Vega being weird about types in destructured objects
+        transform: [
+          { filter: { field: 'isCurrent', equal: true } },
+        ],
+        mark: 'bar' as AnyMark, // Vega is weird about some types in destructured objects
         encoding: {
-          x: {
-            field: hist.attribute,
-            bin: { maxbins: hist.bins },
-          },
-          y: {
-            aggregate: 'count' as Aggregate, // More vega weirdness
-            title: 'Frequency',
-          },
+          x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+          y: { aggregate: 'count' as Aggregate, title: 'Frequency' },
           color: COLOR,
+          opacity: { value: 1 },
         },
       }] : []),
     ],
