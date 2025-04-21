@@ -193,12 +193,12 @@ The configuration (grammar) is used both as internal tracking for UpSet 2.0, and
 If no configuration options are provided, the default will be:
 
 - No aggregation
-- Sort rows by `Size - Descending`
+- Sort intersections by `Size - Descending`
 - Sort visible sets by `Alphabetical`
 - Minimum degree filter: 0
 - Maximum degree filter: 6
-- Show the "no set" row
-- Hide empty rows
+- Show the "no set" intersection
+- Hide empty intersections
 
 The configuration options are documented below:
 
@@ -209,15 +209,15 @@ The configuration options are documented below:
 - `horizontal`: Boolean value describing whether or not the plot is horizontal. Defaults to `false`. *Note* this value is not used by UpSet 2.0 but may be used to generate text descriptions.
 - `firstAggregateBy` (string): Describes the first aggregation state. Defaults to `"None"`. Possible values:
   - `"None"`: No first level of aggregation.
-  - `"Sets"`: Aggregate by which rows contain each set.
-  - `"Degree"`: Aggregate by the Degree (set membership count) of the rows.
+  - `"Sets"`: Aggregate by which intersections contain each set.
+  - `"Degree"`: Aggregate by the Degree (set membership count) of the intersections.
   - `"Deviations"`: Aggregate by positive and negative deviation.
   - `"Overlaps"`: Aggregate by the minimum specified overlap degree.
 - `firstOverlapDegree`: Describes the first aggregation's degree of overlap required. This is only used if `firstAggregateBy` is set to `Overlaps`. Defaults to `2`.
 - `secondAggregateBy` (string): Describes the second (nested) aggregation state. Must be `"None"` if `firstAggregateBy` is set to `"None"`. If `firstAggregateBy` is *not* `"None"`, this value *cannot* be the same as `firstAggregateBy`. Possible values:
   - `"None"`: No first level of aggregation.
-  - `"Sets"`: Aggregate by which rows contain each set.
-  - `"Degree"`: Aggregate by the Degree (set membership count) of the rows.
+  - `"Sets"`: Aggregate by which intersections contain each set.
+  - `"Degree"`: Aggregate by the Degree (set membership count) of the intersections.
   - `"Deviations"`: Aggregate by positive and negative deviation.
   - `"Overlaps"`: Aggregate by the minimum specified overlap degree.
 - `secondOverlapDegree`:  Describes the second aggregation's degree of overlap required. This is only used if `secondAggregateBy` is set to `Overlaps`. Defaults to `2`.
@@ -225,12 +225,12 @@ The configuration options are documented below:
   - `"Alphabetical"`: Sort from A - Z. *Note* Only A - Z sorting is supported.
   - `"Ascending"`: Sort based on size, low to high.
   - `"Descending"`: Sort based on size, high to low.
-- `sortBy` (string): Describes the sorting of the subset rows. Defaults to `"Size"`. Possible values:
-  - `"Size"`: Sorts the plot by the subset size (cardinality) rows.
-  - `"Degree"`: Sorts the plot by the degree (set membership) of the rows.
+- `sortBy` (string): Describes the sorting of the subset intersections. Defaults to `"Size"`. Possible values:
+  - `"Size"`: Sorts the plot by the subset size (cardinality) intersections.
+  - `"Degree"`: Sorts the plot by the degree (set membership) of the intersections.
   - `"Deviation"`: Sorts the plot by the calculated deviation. See [the original 2014 paper](https://vdl.sci.utah.edu/publications/2014_infovis_upset/) for more information about deviation and how it is calculated.
   - `Set_{Set Name}`: Sort the plot by Degree (Ascending), but always sort subsets containing the provided set first. For example, a dataset containing movie genres could be sorted by `Set_Comedy`.
-  - `Any attribute`: Sort the plot by the calculated mean of an attribute value. For example, if the dataset contains an attribute named `ReleaseDate`, sorting by `"ReleaseDate"` would use the calculated average release date for the items in the rows.
+  - `Any attribute`: Sort the plot by the calculated mean of an attribute value. For example, if the dataset contains an attribute named `ReleaseDate`, sorting by `"ReleaseDate"` would use the calculated average release date for the items in the intersections.
 - `sortByOrder` (string): The order to sort the plot. This is simply an order indicator, the actual sort type is defined in `sortBy`. Possible values:
   - `"Ascending"`: Sort from low to high
   - `"Descending"`: Sort from high to low
@@ -238,7 +238,7 @@ The configuration options are documented below:
 - `filters`: An object that defines which subsets (rows) are shown in the UpSet plot.
   - `maxVisible` (number): The maximum degree (set membership count) that a subset can have and still be shown. Defaults to `6`.
   - `minVisible` (number): The minimum degree (set membership count) that a subset must have and still be shown. Defaults to `0`.
-  - `hideEmpty` (boolean): Whether or not to hide empty subset rows. Defaults to `true`.
+  - `hideEmpty` (boolean): Whether or not to hide empty subset intersections. Defaults to `true`.
   - `hideNoSet` (boolean): Whether or not to hide the subset which is a member of *no* sets. Defaults to `false`.
 - `visibleSets` (string[]): List of which sets are visible and loaded into the UpSet plot. (Ex: ["Set_Comedy", "Set_Drama", "Set_Action"]).
 - `visibleAttributes` (string[]): List of which attributes are visible and loaded into the UpSet plot. (Ex: ["ReleaseDate", "AvgRating"]).
@@ -246,7 +246,7 @@ The configuration options are documented below:
   - `id` (string): Generated id for the subset. In UpSet 2.0, the id uses `~&~` as a set delimiter, and always prepends `Subset_`. Ex: `Subset_Action~&~Adventure~&~Comedy`
   - `label` (string): Human readable label for the subset. Ex: `Action & Adventure & Comedy`
   - `size` (number): The size of the subset.
-- `collapsed` (string[]): List of the aggregate rows which are currently collapsed. (Ex: `["Agg_Degree_1, Agg_Degree_4"]).
+- `collapsed` (string[]): List of the aggregate intersections which are currently collapsed. (Ex: `["Agg_Degree_1, Agg_Degree_4"]).
 - `plots`: Object for noting which plots are currently rendered in the element sidebar. Has two fields: `scatterplots` and `histograms`. Both are lists of the below object. *Note* This should not be included in your grammar unless it was generated with the UpSet 2.0 interface.
   - keys:
     - `id` (string): Generated id for the plot.
@@ -258,13 +258,13 @@ The configuration options are documented below:
 - `allSets`: List of set objects for every set in the dataset. Each object requires the following fields:
   - `name` (string): Set id. Prepend `Set_` to the set name. Ex: `Set_Action`.
   - `size` (number): The size of the set.
-- `selected`: The currently selected row. This value should not be populated manually, as the data is specific to UpSet 2.0 and automatically generated.
+- `selected`: The currently selected intersection. This value should not be populated manually, as the data is specific to UpSet 2.0 and automatically generated.
 
 To export the grammar of an UpSet 2.0 plot programmatically, use the `exportState` function. This function has the following parameters:
 
 - `provenance`: The Trrack object for the provenance being used by the UpSet plot.
 - `data` (optional): The raw data used to generated the plot.
-- `rows` (optional): The processed row data generated by the UpSet data pipeline.
+- `rows` (optional): The processed intersection data generated by the UpSet data pipeline.
 
 Example of full configuration (grammar) JSON produced for default Simpsons dataset:
 
