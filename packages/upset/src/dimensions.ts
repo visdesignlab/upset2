@@ -8,11 +8,11 @@
  * @returns The dimensions of the plot, in an object with a variety of fields
  */
 export function calculateDimensions(
-  nVisibleSets: number = 0,
-  nHiddenSets: number = 0,
-  nIntersections: number = 0,
-  nAttributes: number = 0,
-  degree: boolean = false,
+  nVisibleSets = 0,
+  nHiddenSets = 0,
+  nIntersections = 0,
+  nAttributes = 0,
+  degree = false,
 ) {
   const gap = 20;
 
