@@ -81,6 +81,12 @@ export const SelectionChips = () => {
               e.stopPropagation(); // Prevents the onclick on the chip from firing
             }}
           />}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            actions.removeBookmark(bookmark);
+            if (currentIntersection?.id === bookmark.id) actions.setRowSelection(null);
+          }}
           onClick={() => {
             chipClicked(bookmark);
           }}
@@ -137,6 +143,11 @@ export const SelectionChips = () => {
         })}
         icon={<WorkspacesIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          actions.setVegaSelection(null);
+        }}
         onClick={() => {
           if (selectionType === 'vega') actions.activateSelectionType(null);
           else actions.activateSelectionType('vega');
@@ -156,6 +167,11 @@ export const SelectionChips = () => {
         })}
         icon={<CodeIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          actions.setQuerySelection(null);
+        }}
         onClick={() => {
           if (selectionType === 'query') actions.activateSelectionType(null);
           else actions.activateSelectionType('query');

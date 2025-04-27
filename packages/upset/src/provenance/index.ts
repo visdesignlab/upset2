@@ -345,7 +345,9 @@ const setRowSelectionAction = register<Row | null>(
 );
 
 /**
- * Sets the current vega selection and selection type to 'vega', and clears the row selection
+ * Sets the current vega selection
+ * If vegaSelection is null and selectionType is 'vega', clears the selection type and row selection;
+ * if vegaSelection exists, sets the selection type to 'vega' and clears the row selection.
  */
 const setVegaSelectionAction = register<VegaSelection | null>(
   'select-elements',
@@ -379,7 +381,9 @@ const setSelectionTypeAction = register<'query' | 'vega' | null>(
 );
 
 /**
- * Sets the current query selection and selection type to 'query', and clears the row selection
+ * Sets the current query selection
+ * If querySelection is null and selectionType is 'query', clears the selection type and row selection;
+ * if querySelection exists, sets the selection type to 'query' and clears the row selection.
  */
 const setQuerySelectionAction = register<QuerySelection | null>(
   'set-query-selection',
