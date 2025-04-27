@@ -6,11 +6,11 @@ The element view sidebar allows for intersection-wise and attribute-wise interac
 
 The sidebar header contains 2 extra icons (in addition to the default close and expand icons). 
 The leftmost allows for adding new plots to the sidebar; see [Adding Plots](./plots/add-plot.md). 
-The second from the left opens the explicit query interface just below the header; see [Selections](./selections/index.md).
+The second from the left opens the element query interface just below the header; see [Selections](./selections/index.md).
 
 ![Header Icons](./img/index/extra-icons.png)
 
-Below the header (and the explicit query interface, if open) are the bookmark & selection chips, which show selections and bookmarked rows; see [Selection Chips](./selections/index.md#selection-chips).
+Below the header (and the element query interface, if open) are the bookmark & selection chips, which show selections and bookmarked intersections; see [Selection Chips](./selections/index.md#selection-chips).
 If no selections or bookmarks exist, a blue notice will appear here instead.
 
 ![Selection Chips](./img/index/selection-chips.png)

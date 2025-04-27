@@ -27,7 +27,7 @@ const SELECTED_BACKGROUND = 'rgba(0,0,0,0.2)';
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
  * with options to add and remove bookmarks
  */
-export const BookmarkChips = () => {
+export const SelectionChips = () => {
   const { provenance, actions }: {provenance: UpsetProvenance, actions: UpsetActions} = useContext(ProvenanceContext);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const nextColor = useRecoilValue(nextColorSelector);
@@ -47,11 +47,7 @@ export const BookmarkChips = () => {
   function chipClicked(bookmark: Bookmark) {
     if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
       actions.setRowSelection(null);
-      actions.setSelectionType(null);
-    } else {
-      if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
-      if (selectionType !== 'row') actions.setSelectionType('row');
-    }
+    } else if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
   }
 
   return (
@@ -85,6 +81,12 @@ export const BookmarkChips = () => {
               e.stopPropagation(); // Prevents the onclick on the chip from firing
             }}
           />}
+          onContextMenu={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            actions.removeBookmark(bookmark);
+            if (currentIntersection?.id === bookmark.id) actions.setRowSelection(null);
+          }}
           onClick={() => {
             chipClicked(bookmark);
           }}
@@ -124,10 +126,7 @@ export const BookmarkChips = () => {
           }
         }}
         onClick={() => {
-          if (selectionType === 'row') {
-            actions.setSelectionType(null);
-            actions.setRowSelection(null);
-          } else actions.setSelectionType('row');
+          if (selectionType === 'row') actions.setRowSelection(null);
         }}
         label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
       />
@@ -144,9 +143,14 @@ export const BookmarkChips = () => {
         })}
         icon={<WorkspacesIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${vegaSelectionToString(vegaSelection)}`}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          actions.setVegaSelection(null);
+        }}
         onClick={() => {
-          if (selectionType === 'vega') actions.setSelectionType(null);
-          else actions.setSelectionType('vega');
+          if (selectionType === 'vega') actions.activateSelectionType(null);
+          else actions.activateSelectionType('vega');
         }}
         label={vegaSelectionToString(vegaSelection)}
       />
@@ -163,9 +167,14 @@ export const BookmarkChips = () => {
         })}
         icon={<CodeIcon fontSize={CHIP_ICON_FONT_SIZE} />}
         aria-label={`Selected elements ${querySelectionToString(querySelection)}`}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          actions.setQuerySelection(null);
+        }}
         onClick={() => {
-          if (selectionType === 'query') actions.setSelectionType(null);
-          else actions.setSelectionType('query');
+          if (selectionType === 'query') actions.activateSelectionType(null);
+          else actions.activateSelectionType('query');
         }}
         label={querySelectionToString(querySelection)}
       />

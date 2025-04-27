@@ -60,6 +60,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
     const currentIntersection = get(currentIntersectionSelector);
     if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id)) bookmarkIDs.push(currentIntersection?.id);
 
+    const selectionType = get(currentSelectionType);
     const intersections = get(rowsSelector);
     const result: Item[] = [];
 
@@ -76,6 +77,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
         isCurrentSelected: !!currentIntersection,
         isCurrent: !!(currentIntersection?.id === id),
         bookmarked: true,
+        ...(selectionType ? { selectionType } : {}),
       })));
     });
 
@@ -95,6 +97,7 @@ export const processedItemsSelector = selector<Item[]>({
     const items = get(itemsAtom);
     const bookmarkedIDs = get(bookmarkSelector).map((b) => b.id);
     const currentIntersection = get(currentIntersectionSelector);
+    const selectionType = get(currentSelectionType);
     // A wild assignment, but the array returned by Recoil is readonly and we need to add to it
     const result: Item[] = ([] as Item[]).concat(get(bookmarkedItemsSelector));
 
@@ -107,6 +110,7 @@ export const processedItemsSelector = selector<Item[]>({
           isCurrentSelected: !!currentIntersection,
           isCurrent: false,
           bookmarked: false,
+          ...(selectionType ? { selectionType } : {}),
         })));
       }
     });

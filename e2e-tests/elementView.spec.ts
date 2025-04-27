@@ -59,7 +59,7 @@ async function assertTableCount(page: Page, count: number): Promise<void> {
  * @param query The query string
  */
 async function setQuery(page: Page, att: string, type: string, query: string): Promise<void> {
-  await page.getByRole('button', { name: 'Show explicit element selection' }).click();
+  await page.getByRole('button', { name: 'Show element query' }).click();
   await page.getByLabel('Attribute Name').click();
   await page.getByRole('option', { name: att }).click();
   await page.getByLabel('Query Type').click();
@@ -67,7 +67,7 @@ async function setQuery(page: Page, att: string, type: string, query: string): P
   await page.getByPlaceholder('Query').click();
   await page.getByPlaceholder('Query').fill(query);
   await page.getByRole('button', { name: 'Apply' }).click();
-  await page.getByRole('button', { name: 'Hide explicit element selection' }).click();
+  await page.getByRole('button', { name: 'Hide element query' }).click();
 }
 
 /**
@@ -75,9 +75,9 @@ async function setQuery(page: Page, att: string, type: string, query: string): P
  * @param page The page to perform the clear selection on
  */
 async function clearSelection(page: Page): Promise<void> {
-  await page.getByRole('button', { name: 'Show explicit element selection' }).click();
+  await page.getByRole('button', { name: 'Show element query' }).click();
   await page.getByRole('button', { name: 'Clear' }).click();
-  await page.getByRole('button', { name: 'Hide explicit element selection' }).click();
+  await page.getByRole('button', { name: 'Hide element query' }).click();
 }
 
 test('Selection Types', async ({ page }) => {
@@ -91,8 +91,7 @@ test('Selection Types', async ({ page }) => {
   await assertTableCount(page, 3);
 
   // Switching row selection
-  // await page.locator('[id="Subset_Evil\\~\\&\\~Male"]').getByText('2').nth(1).click();
-  await page.locator('[id="Subset_Evil\\~\\&\\~Male"] > g:nth-child(4) > rect').first().click();
+  await page.locator('[id="Subset_Evil\\~\\&\\~Male"] > g:nth-child(3) > rect').click();
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
   await assertTableCount(page, 2);
 
@@ -122,8 +121,8 @@ test('Selection Types', async ({ page }) => {
 
   // Make a bookmark
   await page.locator('[id="Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant"] > g:nth-child(3) > rect').click();
-  await expect(page.getByRole('button', { name: 'Bookmarked intersection Evil' })).toHaveText('Evil & Male & Power Plant - 2');
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await expect(page.getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' })).toHaveText('Evil & Male & Power Plant - 2');
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
   await assertRowTickCount(page, 'Subset_Unincluded', 2);
   await assertRowTickCount(page, 'Subset_Male', 2);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
@@ -132,16 +131,16 @@ test('Selection Types', async ({ page }) => {
   // Make another bookmark
   await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] > g:nth-child(3) > rect').click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
   await assertRowTickCount(page, 'Subset_Unincluded', 2);
   await assertRowTickCount(page, 'Subset_Male', 2);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
   await assertTableCount(page, 2);
 
   // Reactivate row selection via chip
-  await page.getByRole('button', { name: 'Bookmarked intersection Evil' }).click();
+  await page.getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' }).click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
   await assertRowTickCount(page, 'Subset_Unincluded', 2);
   await assertRowTickCount(page, 'Subset_Male', 2);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
@@ -150,7 +149,7 @@ test('Selection Types', async ({ page }) => {
   // Query selection
   await setQuery(page, 'Name', 'contains', 'a');
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
   await assertRowTickCount(page, 'Subset_Male', 4);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
@@ -159,7 +158,7 @@ test('Selection Types', async ({ page }) => {
   // Deactivate query selection via chip
   await page.getByRole('button', { name: 'Selected elements Name' }).click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
   await assertRowTickCount(page, 'Subset_Male', 4);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
@@ -168,16 +167,16 @@ test('Selection Types', async ({ page }) => {
   // Reactivate query selection via chip
   await page.getByRole('button', { name: 'Selected elements Name' }).click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
   await assertRowTickCount(page, 'Subset_Male', 4);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 2);
   await assertTableCount(page, 15);
 
   // Remove bookmark via chip
-  await page.getByRole('button', { name: 'Bookmarked intersection Evil' }).locator('svg').click();
+  await page.getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' }).locator('svg').click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
   await assertRowTickCount(page, 'Subset_Male', 4);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
@@ -186,7 +185,7 @@ test('Selection Types', async ({ page }) => {
   // Remove bookmark via bookmark column
   await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] path').click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
   await assertRowTickCount(page, 'Subset_Male', 4);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
@@ -195,7 +194,7 @@ test('Selection Types', async ({ page }) => {
   // Remove query selection
   await clearSelection(page);
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 2);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
   await assertRowTickCount(page, 'Subset_Unincluded', 2);
   await assertRowTickCount(page, 'Subset_Male', 2);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
@@ -209,7 +208,7 @@ test('Selection Types', async ({ page }) => {
     },
   });
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 0);
-  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 0);
+  await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 2);
   await assertRowTickCount(page, 'Subset_Unincluded', 0);
   await assertRowTickCount(page, 'Subset_Male', 0);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant', 0);
@@ -464,8 +463,7 @@ test('Query Selection', async ({ page }) => {
   await expect(age8Cell).toBeVisible();
   await expect(martinCell).toBeDefined();
   await expect(age10Cell2).toBeVisible();
-  // Only visible because the intersection is selected
-  await expect(schoolMaleSelectPoly).toBeVisible();
+  await expect(schoolMaleSelectPoly).not.toBeVisible();
   await expect(schoolSelectPoly).not.toBeVisible();
   await expect(maleSelectPoly).not.toBeVisible();
 });

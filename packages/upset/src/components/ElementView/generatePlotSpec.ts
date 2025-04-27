@@ -1,11 +1,25 @@
 import {
   Histogram, isHistogram, isScatterplot, Plot, Scatterplot,
+  SelectionType,
 } from '@visdesignlab/upset2-core';
 import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
 import { Predicate } from 'vega-lite/build/src/predicate';
 import { LogicalComposition } from 'vega-lite/build/src/logical';
-import { vegaSelectionColor } from '../../utils/styles';
+import { AnyMark } from 'vega-lite/build/src/mark';
+import { Aggregate } from 'vega-lite/build/src/aggregate';
+import { StandardType } from 'vega-lite/build/src/type';
+import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
+
+/**
+   * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
+   * @private The left-side predicate evaluates to true if the brush is empty OR the item is in the brush;
+   *          the right-side predicate evaluates to true if the item is selected OR the brush is empty.
+   *          This creates a logical gadget that evaluates to true if the brush is empty regardless of the item state.
+   */
+const BRUSH_EMPTY: LogicalComposition<Predicate> = {
+  and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
+};
 
 /**
  * Creates the spec for a single scatterplot.
@@ -25,8 +39,8 @@ export function createAddScatterplotSpec(
     attribute: string;
     logScale: boolean;
   },
-  height: number = 400,
-  width: number = 400,
+  height = 400,
+  width = 400,
 ): VisualizationSpec {
   return {
     width,
@@ -60,16 +74,6 @@ export function createAddScatterplotSpec(
  * @returns The Vega-Lite spec for the scatterplots.
  */
 export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
-  /**
-   * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
-   * @private The left-side predicate evaluates to true if the brush is empty OR the item is in the brush;
-   *          the right-side predicate evaluates to true if the item is selected OR the brush is empty.
-   *          This creates a logical gadget that evaluates to true if the brush is empty regardless of the item state.
-   */
-  const BRUSH_EMPTY: LogicalComposition<Predicate> = {
-    and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
-  };
-
   return {
     width: 200,
     height: 200,
@@ -100,11 +104,22 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
         scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
       color: {
-        condition: {
-          param: 'brush',
-          empty: false,
+        condition: [{
+          test: {
+            and: [
+              { param: 'brush', empty: false },
+              {
+                not: {
+                  and: [
+                    { field: 'selectionType', equal: 'row' },
+                    { field: 'isCurrent', equal: true },
+                  ],
+                },
+              },
+            ],
+          },
           value: vegaSelectionColor,
-        },
+        }],
         field: 'subset',
         legend: null,
         scale: { range: { field: 'color' } },
@@ -112,14 +127,21 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
       opacity: {
         condition: [
           {
-            param: 'brush',
-            empty: false,
+            test: {
+              and: [
+                {
+                  param: 'brush',
+                  empty: false,
+                },
+                { field: 'selectionType', equal: 'vega' },
+              ],
+            },
             value: 0.8,
           },
           {
             test: {
               and: [
-                BRUSH_EMPTY,
+                { or: [BRUSH_EMPTY, { not: { field: 'selectionType', equal: 'vega' } }] },
                 {
                   or: [
                     { field: 'isCurrentSelected', equal: false },
@@ -135,9 +157,22 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
       order: {
         condition: [
           {
-            param: 'brush',
-            empty: false,
+            test: {
+              and: [
+                { param: 'brush', empty: false },
+                { field: 'selectionType', equal: 'vega' },
+              ],
+            },
             value: 3,
+          },
+          {
+            test: {
+              and: [
+                { field: 'isCurrent', equal: true },
+                { field: 'selectionType', equal: 'row' },
+              ],
+            },
+            value: 4,
           },
           {
             test: {
@@ -211,10 +246,11 @@ export function createAddHistogramSpec(attribute: string, bins: number, density:
 /**
  * Creates the spec for a single histogram in the element view matrix.
  * @param histograms The histograms to plot.
- * @param selectColor The color to use for the line showing density of selected values.
+ * @param selectionType The currently active selection type, from the currentSelectionType selector
+ * @param haveSelection Whether a vega selection exists
  * @returns An array of Vega-Lite specs for the histograms.
  */
-export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
+export function generateHistogramSpec(hist: Histogram, selectionType: SelectionType, haveSelection: boolean) : VisualizationSpec {
   const params = [
     {
       name: 'brush',
@@ -235,14 +271,14 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
 
   /** Opacity for layers showing all elements (not selection layers) */
   const OPACITY = {
-    condition: {
-      param: 'brush',
-      value: 1,
-    },
+    condition: { test: BRUSH_EMPTY, value: 1 },
     value: 0.4,
   };
 
-  if (hist.frequency) {
+  /** Whether the selection type is 'row' */
+  const selectionTypeRow = selectionType === 'row';
+
+  if (hist.frequency) { // KDE plot
     return {
       width: 200,
       height: 200,
@@ -250,49 +286,65 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
         { name: 'brush', value: {} },
       ],
       layer: [
-        { // This layer displays probability density for all elements, grouped by subset
+        { // This layer shows all elements in grey
           transform: [
-            {
-              density: hist.attribute,
-              groupby: ['subset', 'color'],
-            },
+            { density: hist.attribute },
             { // Hacky way to get the correct name for the attribute & sync with other plots
               // Otherwise, the attribute name is "value", so selections don't sync and the signal sent
-              // by selecting on this plot doesn''t include the name of the attribute being selected
-              calculate: 'datum["value"]',
-              as: hist.attribute,
+              // by selecting on this plot doesn't include the name of the attribute being selected
+              calculate: 'datum["value"]', as: hist.attribute,
             },
           ],
+          mark: 'line',
+          encoding: {
+            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            y: { field: 'density', type: 'quantitative', title: 'Probability' },
+            color: { value: DEFAULT_ELEMENT_COLOR },
+            opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
+          },
+        }, { // This layer displays probability density for all elements, grouped by subset
           params,
+          transform: [
+            { filter: { field: 'bookmarked', equal: true } },
+            { density: hist.attribute, groupby: ['subset', 'color'] },
+            { calculate: 'datum["value"]', as: hist.attribute },
+          ],
           mark: 'line',
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
-            opacity: OPACITY,
+            opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
           },
-        },
-        { // This layer displays probability density for selected elements, grouped
+        }, { // This layer displays probability density for selected elements
           transform: [
-            {
-              filter: { param: 'brush', empty: false },
-            },
-            {
-              density: hist.attribute,
-            },
-            {
-              calculate: 'datum["value"]',
-              as: hist.attribute,
-            },
+            { filter: { param: 'brush', empty: false } },
+            { density: hist.attribute },
+            { calculate: 'datum["value"]', as: hist.attribute },
           ],
           mark: 'line',
           encoding: {
             x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
             y: { field: 'density', type: 'quantitative' },
             color: { value: vegaSelectionColor },
+            opacity: { value: selectionTypeRow ? 0.4 : 1 },
+          },
+        }, // This layer displays probability density for the selected intersection
+        ...(selectionTypeRow ? [{
+          transform: [
+            { filter: { field: 'isCurrent', equal: true } },
+            { density: hist.attribute, groupby: ['subset', 'color'] },
+            { calculate: 'datum["value"]', as: hist.attribute },
+          ],
+          mark: 'line' as AnyMark, // Vega is weird about some types in destructured objects
+          encoding: {
+            // More vega weirdness
+            x: { field: hist.attribute, type: 'quantitative' as StandardType, title: hist.attribute },
+            y: { field: 'density', type: 'quantitative' as StandardType },
+            color: COLOR,
             opacity: { value: 1 },
           },
-        },
+        }] : []),
       ],
     };
   }
@@ -308,14 +360,8 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
         params,
         mark: 'bar',
         encoding: {
-          x: {
-            bin: { maxbins: hist.bins },
-            field: hist.attribute,
-          },
-          y: {
-            aggregate: 'count',
-            title: 'Frequency',
-          },
+          x: { bin: { maxbins: hist.bins }, field: hist.attribute },
+          y: { aggregate: 'count', title: 'Frequency' },
           color: COLOR,
           opacity: OPACITY,
         },
@@ -325,18 +371,24 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
         }],
         mark: 'bar',
         encoding: {
-          x: {
-            field: hist.attribute,
-            bin: { maxbins: hist.bins },
-          },
-          y: {
-            aggregate: 'count',
-            title: 'Frequency',
-          },
+          x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+          y: { aggregate: 'count', title: 'Frequency' },
           color: { value: vegaSelectionColor },
           opacity: { value: 1 },
         },
       },
+      ...(selectionTypeRow && haveSelection ? [{
+        transform: [
+          { filter: { field: 'isCurrent', equal: true } },
+        ],
+        mark: 'bar' as AnyMark, // Vega is weird about some types in destructured objects
+        encoding: {
+          x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+          y: { aggregate: 'count' as Aggregate, title: 'Frequency' },
+          color: COLOR,
+          opacity: { value: 1 },
+        },
+      }] : []),
     ],
   };
 }
@@ -344,9 +396,11 @@ export function generateHistogramSpec(hist: Histogram) : VisualizationSpec {
 /**
  * Generates a vega spec for a plot.
  * @param plot The plot to generate a spec for
+ * @param selectionType The currently active selection type, from the currentSelectionType selector
+ * @param haveSelection Whether a vega selection exists
  * @returns The vega spec for the plot
  */
-export function generateVegaSpec(plot: Plot): VisualizationSpec {
+export function generateVegaSpec(plot: Plot, selectionType: SelectionType, haveSelection: boolean): VisualizationSpec {
   const BASE = {
     data: { name: 'elements' },
   };
@@ -355,7 +409,7 @@ export function generateVegaSpec(plot: Plot): VisualizationSpec {
     return { ...BASE, ...generateScatterplotSpec(plot) } as VisualizationSpec;
   }
   if (isHistogram(plot)) {
-    return { ...BASE, ...generateHistogramSpec(plot) } as VisualizationSpec;
+    return { ...BASE, ...generateHistogramSpec(plot, selectionType, haveSelection) } as VisualizationSpec;
   }
   throw new Error('Invalid plot type');
 }

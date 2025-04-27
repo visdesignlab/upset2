@@ -24,7 +24,7 @@ import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { UpsetActions, UpsetProvenance } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
-import { currentSelectionType, currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
+import { currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -42,12 +42,11 @@ export const QueryBySetInterface = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQueryInterface = useSetRecoilState(queryBySetsInterfaceAtom);
-  const [queryName, setQueryName] = useState('Query');
+  const [queryName, setQueryName] = useState('Intersection Query');
   const [membership, setMembership] = useState<SetQueryMembership>({});
-  const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance.getState()]);
+  const rows = useMemo(() => getRows(data, provenance.getState(), true), [data, provenance]);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
-  const selectionType = useRecoilValue(currentSelectionType);
 
   const queryResult = useMemo(() => getQueryResult(rows, membership), [rows, membership]);
 
@@ -59,7 +58,7 @@ export const QueryBySetInterface = () => {
     });
 
     setMembership(newMembership);
-  }, [visibleSets]);
+  }, [visibleSets, membership]);
 
   function handleEditQueryTitle() {
     // There is likely a better way to do this, but for now alert works fine.
@@ -151,7 +150,7 @@ export const QueryBySetInterface = () => {
     });
 
     return queryString;
-  }, [membership, queryResult]);
+  }, [membership]);
 
   /**
    * Adds a new query to the set of queries.
@@ -174,11 +173,10 @@ export const QueryBySetInterface = () => {
 
     // We need to clear the current selection in case the selected row disappears after query
     if (currentIntersection !== null) actions.setRowSelection(null);
-    if (selectionType === 'row') actions.setSelectionType(null);
     actions.addSetQuery(query, queryResultString);
     setColumnSelect([]); // Column select doesn't clear itself for some reason
     setQueryInterface(false);
-  }, [queryName, membership, queryResultString]);
+  }, [queryName, membership, queryResultString, actions, currentIntersection, setColumnSelect, setQueryInterface]);
 
   return (
     <g

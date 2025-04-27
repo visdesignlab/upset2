@@ -4,9 +4,9 @@ Derived attributes refer to Deviation and Degree. These two attributes are calcu
 
 ## Degree
 
-Degree represents the number of overlaps present in a given row. The degree for a row which includes three sets would have a degree of 3. The "no-set" intersection has a degree of 0.
+Degree represents the number of overlaps present in a given intersection. The degree for a intersection which includes three sets would have a degree of 3. The "no-set" intersection has a degree of 0.
 
-A plot can be sorted by degree or aggregated by degree. [Aggregation by degree](../aggregation#aggregation-by-degree) is an efficient method to inspect whether most items are part of none, one, two or more other sets. [Sorting by degree](../sorting-and-filtering#sort-by-degree) is an efficient method for linearly organizing the rows by overlap count. Finally, degree can be used to [filter intersections](../sorting-and-filtering#filter-by-degree) within a specific range of overlaps.
+A plot can be sorted by degree or aggregated by degree. [Aggregation by degree](../aggregation#aggregation-by-degree) is an efficient method to inspect whether most items are part of none, one, two or more other sets. [Sorting by degree](../sorting-and-filtering#sort-by-degree) is an efficient method for linearly organizing the intersections by overlap count. Finally, degree can be used to [filter intersections](../sorting-and-filtering#filter-by-degree) within a specific range of overlaps.
 
 Degree is visualized by a number which represents the degree of the intersection.
 
