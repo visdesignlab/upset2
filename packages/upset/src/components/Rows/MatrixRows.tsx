@@ -1,7 +1,7 @@
 import {
   isRowAggregate, Row, RenderRow, isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 import { a, useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
@@ -87,49 +87,36 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
   const setQuery = useRecoilValue(setQuerySelector);
   const queryBySetsInterface = useRecoilValue(queryBySetsInterfaceAtom);
 
-  let yTransform = 0;
-
-  /**
-  * Calculates the y-transform for a given row
-  * If queryBySetsInterface is true, all rows are shifted down by the height of the interface
-  */
-  const calculateYTransform = (row: Row, index: number) => {
-    if (shouldRender(row, collapsedIds) && index > 0) {
-      yTransform += dimensions.body.rowHeight;
-    }
-
-    // Shift the rows down by the height of the set query interface or the set query row if populated
-    let transformShift = 0;
+  const transformShift = useMemo(() => {
     if (queryBySetsInterface) {
-      transformShift += dimensions.setQuery.height + dimensions.setQuery.spacer;
+      return dimensions.setQuery.height + dimensions.setQuery.spacer;
     }
     if (isPopulatedSetQuery(setQuery)) {
-      transformShift += dimensions.body.rowHeight * 2;
+      return dimensions.body.rowHeight * 2;
     }
+    return 0;
+  }, [queryBySetsInterface, dimensions, setQuery]);
 
-    return yTransform + transformShift;
-  };
+  let yTransform = 0;
 
   const rowTransitions = useTransition(
     rows.map(({ row, id }, index) => {
       // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
-      if (index > 0) {
+      if (index > 0 && shouldRender(row, collapsedIds)) {
         const prevRow = rows[index - 1].row;
-        /*
-         * Only add an extra rowHeight to the transform if the previous row is
-         * an aggregate containing set membership circles which is NOT contained in a collapsed parent aggregate
-         */
+        // Only use aggRowHeight if the previous row is an aggregate containing set membership circles
+        // which is NOT contained in a collapsed parent aggregate
         if (isRowAggregate(prevRow)
           && !(prevRow.parent && collapsedIds.includes(prevRow.parent))
           && TALL_ROW_TYPES.includes(prevRow.aggregateBy)) {
-          yTransform += dimensions.body.rowHeight;
-        }
+          yTransform += dimensions.body.aggRowHeight;
+        } else yTransform += dimensions.body.rowHeight;
       }
 
       return {
         id,
         row,
-        y: calculateYTransform(row, index),
+        y: yTransform + transformShift,
       };
     }),
     {

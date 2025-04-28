@@ -103,18 +103,8 @@ export function calculateDimensions(
 
   const body = {
     rowHeight: 24,
-    /**
-     * Height for a 'Sets' or 'Overlaps' type aggregate row, which needs to be taller to show set membership.
-     *
-     * @private
-     * In theory, this is a mutable style value that controls row height in the plot.
-     * In practice, it does change the height of the row, but not the offsets of the other rows.
-     * Trial and error has shown that 50 does not break the plot. Other values either cause the rows to overflow the
-     * bottom of the the svg/page or the aggregate row to overlap the row below it. Clearly, God has decreed
-     * 50 to be the correct value, and who am I to argue with the Almighty?
-     * @todo reduce reliance on God.
-     */
-    aggRowHeight: 50,
+    /** Height for a 'Sets' or 'Overlaps' type aggregate row, which needs to be taller to show set membership. */
+    aggRowHeight: 44,
     rowWidth: header.totalWidth,
     aggregateOffset: 15,
     get height() {
