@@ -88,7 +88,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     setTextEditing(false);
     if (currState.userAltText?.shortDescription !== userShortText
         || currState.userAltText?.longDescription !== userLongText) { actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' }); }
-  }, [currState, userShortText, userLongText, actions]);
+  }, [currState, userShortText, userLongText, actions, canEditPlotInformation]);
 
   /**
    * Sets text editing to true and sets default user alttexts if necessary
@@ -101,7 +101,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     setTextEditing(true);
     if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
     if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
-  }, [currState, altText]);
+  }, [currState, altText, canEditPlotInformation]);
 
   /**
    * Effects
@@ -122,7 +122,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
     setAltText(null);
     if (open) generate();
-  }, [currState]);
+  }, [currState, generateAltText, open]);
 
   /**
    * Constants
