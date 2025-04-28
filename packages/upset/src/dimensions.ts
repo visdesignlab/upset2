@@ -2,17 +2,19 @@
  * Calculates the dimensions of the plot
  * @param nVisibleSets Number of visible sets
  * @param nHiddenSets Number of hidden sets
- * @param nIntersections Number of intersections
+ * @param nIntersections TOTAL Number of intersections, including aggregates
  * @param nAttributes Number of visible attributes, excluding Degree
+ * @param nTallRows Number of rows that require additional height (e.g., aggregate rows with types defined in TALL_ROW_TYPES)
  * @param degree Whether to show the Degree column
  * @returns The dimensions of the plot, in an object with a variety of fields
  */
 export function calculateDimensions(
-  nVisibleSets: number = 0,
-  nHiddenSets: number = 0,
-  nIntersections: number = 0,
-  nAttributes: number = 0,
-  degree: boolean = false,
+  nVisibleSets = 0,
+  nHiddenSets = 0,
+  nIntersections = 0,
+  nTallRows = 0,
+  nAttributes = 0,
+  degree = false,
 ) {
   const gap = 20;
 
@@ -101,10 +103,12 @@ export function calculateDimensions(
 
   const body = {
     rowHeight: 24,
+    /** Height for a 'Sets' or 'Overlaps' type aggregate row, which needs to be taller to show set membership. */
+    aggRowHeight: 44,
     rowWidth: header.totalWidth,
     aggregateOffset: 15,
     get height() {
-      return nIntersections * this.rowHeight;
+      return (nIntersections - nTallRows) * this.rowHeight + nTallRows * this.aggRowHeight;
     },
   };
 
@@ -137,3 +141,6 @@ export function calculateDimensions(
     setQuery,
   };
 }
+
+/** Types of aggregate row requiring additional height. These should use body.aggRowHeight */
+export const TALL_ROW_TYPES = ['Sets', 'Overlaps'];

@@ -2,7 +2,7 @@ import { atom, selector } from 'recoil';
 import { calculateDimensions } from '../dimensions';
 import { visibleAttributesSelector } from './config/visibleAttributes';
 import { hiddenSetSelector, visibleSetSelector } from './config/visibleSetsAtoms';
-import { rowCountSelector } from './renderRowsAtom';
+import { displayedRowCountSelector, tallRowCountSelector } from './renderRowsAtom';
 
 export const dimensionsSelector = selector<
 ReturnType<typeof calculateDimensions>
@@ -10,8 +10,9 @@ ReturnType<typeof calculateDimensions>
   key: 'dimensions',
   get: ({ get }) => {
     const visibleSets = get(visibleSetSelector);
-    const rowCount = get(rowCountSelector);
+    const rowCount = get(displayedRowCountSelector);
     const hiddenSets = get(hiddenSetSelector);
+    const tallRowCount = get(tallRowCountSelector);
     let attributes = get(visibleAttributesSelector);
 
     const degree = attributes.includes('Degree');
@@ -21,6 +22,7 @@ ReturnType<typeof calculateDimensions>
       visibleSets.length,
       hiddenSets.length,
       rowCount,
+      tallRowCount,
       attributes.length,
       degree,
     );
