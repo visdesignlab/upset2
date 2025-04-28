@@ -2,7 +2,9 @@ import { firstAggregation, secondAggregation } from './aggregate';
 import { filterRows } from './filter';
 import { getSubsets } from './process';
 import { sortRows } from './sort';
-import { areRowsAggregates, getBelongingSetsFromSetMembership, isPopulatedSetQuery, isRowAggregate } from './typeutils';
+import {
+  areRowsAggregates, getBelongingSetsFromSetMembership, isPopulatedSetQuery, isRowAggregate,
+} from './typeutils';
 import {
   Row, Rows, SetQueryMembership, Sets, UpsetConfig,
 } from './types';
@@ -14,7 +16,7 @@ export type RowMap = Record<string, Row>;
 
 /**
  * Represents a row to be rendered.
- * 
+ *
  * @typedef {Object} RenderRow
  * @property {string} id - The unique identifier for the row.
  * @property {Row} row - The row data to be rendered.
@@ -35,7 +37,7 @@ export type RenderRow = {
 export const flattenRows = (
   rows: Rows,
   flattenedRows: RenderRow[] = [],
-  idPrefix: string = '',
+  idPrefix = '',
 ): RenderRow[] => {
   rows.order.forEach((rowId) => {
     const row = rows.values[rowId];

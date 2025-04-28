@@ -2,8 +2,9 @@
  * Calculates the dimensions of the plot
  * @param nVisibleSets Number of visible sets
  * @param nHiddenSets Number of hidden sets
- * @param nIntersections Number of intersections
+ * @param nIntersections TOTAL Number of intersections, including aggregates
  * @param nAttributes Number of visible attributes, excluding Degree
+ * @param nTallRows Number of rows that require additional height (e.g., aggregate rows with types defined in TALL_ROW_TYPES)
  * @param degree Whether to show the Degree column
  * @returns The dimensions of the plot, in an object with a variety of fields
  */
@@ -11,6 +12,7 @@ export function calculateDimensions(
   nVisibleSets = 0,
   nHiddenSets = 0,
   nIntersections = 0,
+  nTallRows = 0,
   nAttributes = 0,
   degree = false,
 ) {
@@ -101,10 +103,22 @@ export function calculateDimensions(
 
   const body = {
     rowHeight: 24,
+    /**
+     * Height for a 'Sets' or 'Overlaps' type aggregate row, which needs to be taller to show set membership.
+     *
+     * @private
+     * In theory, this is a mutable style value that controls row height in the plot.
+     * In practice, it does change the height of the row, but not the offsets of the other rows.
+     * Trial and error has shown that 50 does not break the plot. Other values either cause the rows to overflow the
+     * bottom of the the svg/page or the aggregate row to overlap the row below it. Clearly, God has decreed
+     * 50 to be the correct value, and who am I to argue with the Almighty?
+     * @todo reduce reliance on God.
+     */
+    aggRowHeight: 50,
     rowWidth: header.totalWidth,
     aggregateOffset: 15,
     get height() {
-      return nIntersections * this.rowHeight;
+      return (nIntersections - nTallRows) * this.rowHeight + nTallRows * this.aggRowHeight;
     },
   };
 
@@ -137,3 +151,6 @@ export function calculateDimensions(
     setQuery,
   };
 }
+
+/** Types of aggregate row requiring additional height. These should use body.aggRowHeight */
+export const TALL_ROW_TYPES = ['Sets', 'Overlaps'];

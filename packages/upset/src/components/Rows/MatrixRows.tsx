@@ -11,6 +11,7 @@ import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
 import { queryBySetsInterfaceAtom, setQuerySelector } from '../../atoms/config/queryBySetsAtoms';
+import { TALL_ROW_TYPES } from '../../dimensions';
 
 type Props = {
   rows: RenderRow[];
@@ -120,7 +121,7 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
          */
         if (isRowAggregate(prevRow)
           && !(prevRow.parent && collapsedIds.includes(prevRow.parent))
-          && ['Sets', 'Overlaps'].includes(prevRow.aggregateBy)) {
+          && TALL_ROW_TYPES.includes(prevRow.aggregateBy)) {
           yTransform += dimensions.body.rowHeight;
         }
       }
