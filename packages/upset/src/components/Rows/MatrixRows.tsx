@@ -87,6 +87,10 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
   const setQuery = useRecoilValue(setQuerySelector);
   const queryBySetsInterface = useRecoilValue(queryBySetsInterfaceAtom);
 
+  /**
+   * Shifts all rows down by the height of the queryBySets interface
+   * or the query row if either is active.
+   */
   const transformShift = useMemo(() => {
     if (queryBySetsInterface) {
       return dimensions.setQuery.height + dimensions.setQuery.spacer;
