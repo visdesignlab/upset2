@@ -21,6 +21,7 @@ import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 import { UpsetActions } from '../../provenance';
 import { rowHoverAtom } from '../../atoms/highlightAtom';
+import { TALL_ROW_TYPES } from '../../dimensions';
 
 /**
  * Props for the AggregateRow component.
@@ -120,8 +121,8 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           transform={translate(0, 2)}
           css={currentIntersection?.id === aggregateRow.id && selectionType === 'row' && highlight}
           height={
-            ['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)
-              ? (dimensions.body.rowHeight - 4) * 2
+            TALL_ROW_TYPES.includes(aggregateRow.aggregateBy)
+              ? dimensions.body.aggRowHeight - 4
               : dimensions.body.rowHeight - 4
           }
           width={width}
@@ -161,7 +162,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           {desc}
         </text>
       </g>
-      {['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy) && (
+      {TALL_ROW_TYPES.includes(aggregateRow.aggregateBy) && (
         <g transform={translate(0, dimensions.body.rowHeight - 5)}>
           <Matrix
             sets={visibleSets}
@@ -170,14 +171,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           />
         </g>
       )}
-      <g
-        transform={translate(
-          0,
-          ['Sets', 'Overlaps'].includes(aggregateRow.aggregateBy)
-            ? dimensions.body.rowHeight - 5
-            : 0,
-        )}
-      >
+      <g>
         <BookmarkColumnIcon row={aggregateRow} />
         <SizeBar row={aggregateRow} size={aggregateRow.size} vegaSelected={vegaSelected} querySelected={querySelected} />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
