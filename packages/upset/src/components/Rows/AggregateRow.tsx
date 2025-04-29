@@ -30,14 +30,21 @@ type Props = {
   aggregateRow: Aggregate;
 };
 
-const iconSize = '20px';
+const ICON_SIZE = 20;
+const ICON_SIZE_TEXT = `${ICON_SIZE}px`;
+const ICON_ADJUSTMENT = 1.5;
 
 /**
  * Expanded icon for the AggregateRow component.
  */
 const expanded = (
-  <g className="icon" textAnchor="middle" dominantBaseline="middle">
-    <SvgIcon height={iconSize} width={iconSize}>
+  <g
+    className="icon"
+    textAnchor="middle"
+    dominantBaseline="middle"
+    transform={translate(ICON_ADJUSTMENT, ICON_ADJUSTMENT)}
+  >
+    <SvgIcon height={ICON_SIZE_TEXT} width={ICON_SIZE_TEXT}>
       <KeyboardArrowDownIcon />
     </SvgIcon>
   </g>
@@ -48,15 +55,12 @@ const expanded = (
  */
 export const collapsed = (
   <g
-    transform={`rotate(180) translate(-${iconSize.replace(
-      'px',
-      '',
-    )}, -${iconSize.replace('px', '')})`}
+    transform={`${translate(-ICON_SIZE + ICON_ADJUSTMENT, -ICON_SIZE + ICON_ADJUSTMENT)} rotate(180)`}
     className="icon"
     textAnchor="middle"
     dominantBaseline="middle"
   >
-    <SvgIcon height={iconSize} width={iconSize}>
+    <SvgIcon height={ICON_SIZE_TEXT} width={ICON_SIZE_TEXT}>
       <KeyboardArrowDownIcon />
     </SvgIcon>
   </g>
@@ -137,8 +141,8 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           {collapsedIds.includes(aggregateRow.id) ? collapsed : expanded}
           {/* onclick background element */}
           <rect
-            width={iconSize}
-            height={iconSize}
+            width={ICON_SIZE_TEXT}
+            height={ICON_SIZE_TEXT}
             fill="transparent"
             onClick={(e) => {
               e.stopPropagation();
