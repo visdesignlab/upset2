@@ -55,7 +55,7 @@ const expanded = (
  */
 export const collapsed = (
   <g
-    transform={`${translate(-ICON_SIZE + ICON_ADJUSTMENT, -ICON_SIZE + ICON_ADJUSTMENT)} rotate(180)`}
+    transform={`rotate(180) ${translate(-ICON_SIZE - ICON_ADJUSTMENT, -ICON_SIZE - ICON_ADJUSTMENT)}`}
     className="icon"
     textAnchor="middle"
     dominantBaseline="middle"
