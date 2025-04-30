@@ -1,7 +1,7 @@
 {
     "$schema": "https://typedoc.org/schema.json",
     "name": "Developer Reference",
-    "entryPoints": ["../app", "../core", "../upset"],
+    "entryPoints": ["../core", "../upset"],
     "entryPointStrategy": "packages",
     "out": "./docs/typedoc",
     "exclude": ["**.d.ts**","**.test.tsx**","**.test.ts**","**.spec.tsx**","**.spec","**/node_modules/**","**/env.ts","**/assets/**"],
