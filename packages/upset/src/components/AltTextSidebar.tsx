@@ -81,14 +81,30 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
    * Handler for when the save button is clicked
    */
   const saveButtonClick: () => void = useCallback(() => {
+    setTextEditing(false);
+
     // if the user doesn't have edit permissions, don't allow saving
     // The user shouldn't be able to edit in this case, but this is a failsafe
     if (!canEditPlotInformation) return;
 
-    setTextEditing(false);
-    if (currState.userAltText?.shortDescription !== userShortText
-        || currState.userAltText?.longDescription !== userLongText) { actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' }); }
-  }, [currState, userShortText, userLongText, actions]);
+    // This block of checks clears the user alt text if it matches the generated alt text
+    let short: string | null | undefined = null;
+    let long: string | null | undefined = null;
+    if (userShortText === altText?.shortDescription) {
+      short = undefined;
+      setUserShortText(undefined);
+    } else short = userShortText ?? undefined;
+    if (userLongText === altText?.longDescription) {
+      long = undefined;
+      setUserLongText(undefined);
+    } else long = userLongText ?? undefined;
+
+    // This block of checks only fires the action if the user alt text has changed
+    if (
+      currState.userAltText?.shortDescription !== short
+      || currState.userAltText?.longDescription !== long
+    ) actions.setUserAltText({ shortDescription: userShortText ?? '', longDescription: userLongText ?? '' });
+  }, [currState, userShortText, userLongText, actions, canEditPlotInformation, altText]);
 
   /**
    * Sets text editing to true and sets default user alttexts if necessary
@@ -101,7 +117,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     setTextEditing(true);
     if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
     if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
-  }, [currState, altText]);
+  }, [currState, altText, canEditPlotInformation]);
 
   /**
    * Effects
@@ -122,14 +138,14 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
 
     setAltText(null);
     if (open) generate();
-  }, [currState]);
+  }, [currState, generateAltText, open]);
 
   /**
    * Constants
    */
 
   /**
-   * Number of tab indicies used by the PlotInformation component
+   * Number of tab indices used by the PlotInformation component
    * @see PlotInformation to count the number of tab indices used
    */
   const PLOT_INFO_TABS = 7;
