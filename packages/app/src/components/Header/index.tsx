@@ -164,12 +164,16 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
             Upset — Visualizing Intersecting Sets
           </Typography>
           <ButtonGroup>
-            <IconButton color="inherit" onClick={() => provenance.undo()} disabled={trrackPosition.isAtRoot} aria-label="Undo">
-              <UndoIcon />
-            </IconButton>
-            <IconButton color="inherit" onClick={() => provenance.redo()} disabled={trrackPosition.isAtLatest} aria-label="Redo">
-              <RedoIcon />
-            </IconButton>
+            <Tooltip title="Undo">
+              <IconButton color="inherit" onClick={() => provenance.undo()} disabled={trrackPosition.isAtRoot} aria-label="Undo">
+                <UndoIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Redo">
+              <IconButton color="inherit" onClick={() => provenance.redo()} disabled={trrackPosition.isAtLatest} aria-label="Redo">
+                <RedoIcon />
+              </IconButton>
+            </Tooltip>
           </ButtonGroup>
         </Box>
         <Box sx={{
