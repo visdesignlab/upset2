@@ -3,13 +3,13 @@ import {
   Button,
   FormControl,
   FormControlLabel,
-  Grid,
   InputLabel,
   MenuItem,
   Select,
   Switch,
   TextField,
 } from '@mui/material';
+import Grid from '@mui/material/GridLegacy';
 import { FC, useContext, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
