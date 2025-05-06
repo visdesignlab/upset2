@@ -1,6 +1,6 @@
 import { useContext, useState } from 'react';
 import { Alert, Button, Dialog, DialogContent, DialogTitle, Snackbar } from '@mui/material';
-import { ProvenanceContext } from '../App';
+import { ProvenanceContext } from '../provenance';
 import { useSetRecoilState } from 'recoil';
 import { importErrorAtom } from '../atoms/importErrorAtom';
 

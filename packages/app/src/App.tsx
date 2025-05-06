@@ -1,5 +1,5 @@
-import {
-  createContext, useEffect, useMemo, useState,
+import { 
+  useEffect, useMemo, useState,
 } from 'react';
 
 import {
@@ -16,6 +16,7 @@ import { DataTable } from './components/DataTable';
 import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
+import { ProvenanceContext } from './provenance';
 
 /** @jsxImportSource @emotion/react */
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -23,11 +24,6 @@ import { getMultinetSession } from './api/session';
 const defaultVisibleSets = 6;
 
 type SessionState = ProvenanceGraph<UpsetConfig, string> | null | 'not found';
-
-export const ProvenanceContext = createContext<{
-  provenance: UpsetProvenance;
-  actions: UpsetActions;
-}>(undefined!);
 
 function App() {
   const multinetData = useRecoilValue(dataSelector);
@@ -69,26 +65,23 @@ function App() {
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
-    if (sessionState) {
-      const prov: UpsetProvenance = initializeProvenanceTracking(conf ?? undefined);
-      const act: UpsetActions = getActions(prov);
+    const prov: UpsetProvenance = initializeProvenanceTracking(conf ?? undefined);
+    const act: UpsetActions = getActions(prov);
 
-      // Make sure the provenance state gets converted every time this is called
-      (prov as UpsetProvenance & {_getState: typeof prov.getState})._getState = prov.getState;
-      prov.getState = () => convertConfig(
-        (prov as UpsetProvenance & {_getState: typeof prov.getState})._getState(),
-      );
+    // Make sure the provenance state gets converted every time this is called
+    (prov as UpsetProvenance & {_getState: typeof prov.getState})._getState = prov.getState;
+    prov.getState = () => convertConfig(
+      (prov as UpsetProvenance & {_getState: typeof prov.getState})._getState(),
+    );
 
-      if (sessionState && sessionState !== 'not found') {
-        prov.importObject(deepCopy(sessionState));
-      }
-
-      // Make sure the config atom stays up-to-date with the provenance
-      prov.currentChange(() => setState(prov.getState()));
-
-      return { provenance: prov, actions: act };
+    if (sessionState && sessionState !== 'not found') {
+      prov.importObject(deepCopy(sessionState));
     }
-    return { provenance: null, actions: null };
+
+    // Make sure the config atom stays up-to-date with the provenance
+    prov.currentChange(() => setState(prov.getState()));
+
+    return { provenance: prov, actions: act };
   }, [conf, setState, sessionState]);
 
   /*
@@ -112,29 +105,28 @@ function App() {
     update();
   }, [sessionId, workspace]);
 
-  const provContext = useMemo(() => (provenance && actions ? { provenance, actions } : null), [provenance, actions]);
+  const provContext = useMemo(() => ({ provenance, actions }), [provenance, actions]);
 
   // Update the state on first render and if the provenance object changes
   useEffect(() => { if (provenance?.getState()) setState(provenance?.getState()); }, [provenance, setState]);
 
   return (
     <BrowserRouter>
-      {(provenance && provContext) ?
-        <ProvenanceContext.Provider
-          value={provContext}
-        >
-          <Routes>
-            <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
-            <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
-            <Route path="/datatable" element={<DataTable />} />
-          </Routes>
-        </ProvenanceContext.Provider>
-        :
+      <ProvenanceContext.Provider
+        value={provContext}
+      >
         <Routes>
-          <Route path="*" element={<CircularProgress />} />
-          <Route path="/" element={<CircularProgress />} />
+          <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
+          <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
           <Route path="/datatable" element={<DataTable />} />
-        </Routes>}
+        </Routes>
+      </ProvenanceContext.Provider>
+      :
+      <Routes>
+        <Route path="*" element={<CircularProgress />} />
+        <Route path="/" element={<CircularProgress />} />
+        <Route path="/datatable" element={<DataTable />} />
+      </Routes>
     </BrowserRouter>
   );
 }
