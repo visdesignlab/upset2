@@ -1,4 +1,4 @@
-import { 
+import {
   useEffect, useMemo, useState,
 } from 'react';
 
@@ -7,7 +7,9 @@ import {
 } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { convertConfig, deepCopy, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
+  convertConfig, deepCopy, DefaultConfig, UpsetConfig,
+} from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -116,17 +118,23 @@ function App() {
         value={provContext}
       >
         <Routes>
-          <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
-          <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
+          {/* Session state is set to 'not found' if we fail to load it,
+          so we only show a spinner if we're trying to load the session (not if we've failed or aren't trying) */}
+          {sessionId && !sessionState ? (
+            <>
+              <Route path="*" element={<CircularProgress />} />
+              <Route path="/" element={<CircularProgress />} />
+            </>
+          ) : (
+            <>
+              <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
+              <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
+            </>
+          )}
           <Route path="/datatable" element={<DataTable />} />
         </Routes>
       </ProvenanceContext.Provider>
-      :
-      <Routes>
-        <Route path="*" element={<CircularProgress />} />
-        <Route path="/" element={<CircularProgress />} />
-        <Route path="/datatable" element={<DataTable />} />
-      </Routes>
+      <Routes />
     </BrowserRouter>
   );
 }
