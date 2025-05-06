@@ -223,8 +223,9 @@ test('Element View', async ({ page }) => {
   await elementViewToggle.click();
 
   // Make sure the query table has results by default
-  const lisaCell = page.getByRole('cell', { name: 'Lisa' });
-  const cell8 = page.getByRole('cell', { name: '8', exact: true });
+  const lisaCell = page.getByRole('gridcell', { name: 'Lisa' });
+  const cell8 = page.getByRole('gridcell', { name: '8', exact: true });
+
   await expect(cell8).toBeVisible();
   await expect(lisaCell).toBeDefined();
 
@@ -232,8 +233,8 @@ test('Element View', async ({ page }) => {
   await dragElement(page.locator('canvas'), 40, 0, page);
   await expect(page.locator('#Subset_Male polygon').nth(1)).toBeVisible();
   await expect(page.getByLabel('Selected elements Atts: Age')).toBeVisible();
-  await expect(page.getByRole('cell', { name: 'Homer' })).toBeVisible();
-  await expect(page.getByRole('cell', { name: '40' })).toBeVisible();
+  await expect(page.getByRole('gridcell', { name: 'Homer' })).toBeVisible();
+  await expect(page.getByRole('gridcell', { name: '40' })).toBeVisible();
   await expect(lisaCell).not.toBeVisible();
   await expect(cell8).not.toBeVisible();
 
@@ -255,9 +256,9 @@ test('Element View', async ({ page }) => {
   const dataTable = page.getByRole('grid');
   dataTable.scrollIntoViewIfNeeded();
   await expect(dataTable).toBeVisible();
-  const nameCell = await page.getByRole('cell', { name: 'Bart' });
+  const nameCell = await page.getByRole('gridcell', { name: 'Bart' });
   await expect(nameCell).toBeVisible();
-  const ageCell = await page.getByRole('cell', { name: '10' }).first();
+  const ageCell = await page.getByRole('gridcell', { name: '10' }).first();
   await expect(ageCell).toBeVisible();
 
   // Check that the add plot button is visible
@@ -360,12 +361,12 @@ test('Query Selection', async ({ page }) => {
   await page.locator('[id="Subset_School\\~\\&\\~Male"]').getByLabel('Blue Hair').locator('circle').click();
 
   // Selected elements for testing
-  const ralphCell = page.getByRole('cell', { name: 'Ralph' });
-  const age8Cell = page.getByRole('cell', { name: '8', exact: true }).first();
-  const bartCell = page.getByRole('cell', { name: 'Bart' });
-  const age10Cell1 = page.getByRole('cell', { name: '10' }).first();
-  const age10Cell2 = page.getByRole('cell', { name: '10' }).nth(1);
-  const martinCell = page.getByRole('cell', { name: 'Martin Prince' });
+  const ralphCell = page.getByRole('gridcell', { name: 'Ralph' });
+  const age8Cell = page.getByRole('gridcell', { name: '8', exact: true }).first();
+  const bartCell = page.getByRole('gridcell', { name: 'Bart' });
+  const age10Cell1 = page.getByRole('gridcell', { name: '10' }).first();
+  const age10Cell2 = page.getByRole('gridcell', { name: '10' }).nth(1);
+  const martinCell = page.getByRole('gridcell', { name: 'Martin Prince' });
   const schoolSelectPoly = page.locator('#Subset_School polygon').nth(1);
   const maleSelectPoly = page.locator('#Subset_Male polygon').nth(1);
   const schoolMaleSelectPoly = page.locator('[id="Subset_School\\~\\&\\~Male"] polygon').nth(1);
