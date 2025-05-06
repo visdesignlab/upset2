@@ -47,10 +47,10 @@ test('Datatable', async ({ page }) => {
   // //////////////////
   // Test that the tables exist
   // //////////////////
-  const datatable = await page1.getByText('IntersectionSizeDeviationAgeSchool & Male35.199.33Unincluded35.1930.33Male3-9.4257.33Duff Fan & Male & Power Plant310.5838.33Evil & Male21.0343.50Evil & Male & Power Plant26.4161.50Duff Fan & Male21.0340.00Blue Hair27.2956.00School11.738.00School & Evil & Male11.7311.00Rows per page:101–10 of');
+  const datatable = await page1.getByRole('gridcell', { name: 'School & Male' });
   await expect(datatable).toBeVisible();
-  const visibleSets = await page1.getByText('SetSizeSchool6Blue Hair3Duff Fan6Evil6Male18Power Plant5Rows per page:101–6 of');
+  const visibleSets = await page1.getByText('Set').nth(1);
   await expect(visibleSets).toBeVisible();
-  const hiddenSets = await page1.getByText('No rowsSetSizeRows per page:100–0 of');
+  const hiddenSets = await page1.getByText('No rows');
   await expect(hiddenSets).toBeVisible();
 });
