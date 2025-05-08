@@ -13,8 +13,8 @@ export const helpText = {
     Overlaps: 'Aggregate all subsets by a minimum number of set overlaps',
   },
   filter: {
-    HideEmptySets: 'Hide all subsets that contain no items',
-    HideNoSet: 'Hide the row that contains the items that are in no set.',
+    HideEmptySets: 'Show/Hide all subsets that contain no elements. Warning: this may add many intersections',
+    HideNoSet: 'Show/Hide the intersection that contains the elements that are in no set.',
     Degree: 'Show only intersections that have a degree higher than the "Min Degree" and lower than the "Max Degree" value.',
   },
   general: {
