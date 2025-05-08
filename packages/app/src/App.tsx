@@ -134,7 +134,6 @@ function App() {
           <Route path="/datatable" element={<DataTable />} />
         </Routes>
       </ProvenanceContext.Provider>
-      <Routes />
     </BrowserRouter>
   );
 }
