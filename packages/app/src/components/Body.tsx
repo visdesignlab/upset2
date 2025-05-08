@@ -8,7 +8,6 @@ import { Backdrop, CircularProgress } from '@mui/material';
 import { encodedDataAtom } from '../atoms/dataAtom';
 import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
-import { ProvenanceContext } from '../App';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
 import { altTextSidebarAtom } from '../atoms/altTextSidebarAtom';
@@ -18,6 +17,7 @@ import { generateAltText } from '../api/generateAltText';
 import { api } from '../api/api';
 import { rowsSelector } from '../atoms/selectors';
 import { FOOTER_HEIGHT } from './Root';
+import { ProvenanceContext } from '../provenance';
 
 type Props = {
   data: CoreUpsetData;
@@ -50,10 +50,10 @@ export const Body = ({ data, config }: Props) => {
   };
 
   useEffect(() => {
-    provObject.provenance.currentChange(() => {
+    provObject?.provenance.currentChange(() => {
       updateMultinetSession(workspace || '', sessionId || '', provObject.provenance.exportObject());
     });
-  }, [provObject.provenance, sessionId, workspace]);
+  }, [provObject?.provenance, sessionId, workspace]);
 
   // Check if the user has permissions to edit the plot
   const [permissions, setPermissions] = useState(false);
@@ -81,7 +81,8 @@ export const Body = ({ data, config }: Props) => {
    * @returns A promise that resolves to the generated alt text.
    */
   const getAltText: () => Promise<AltText> = useCallback(async () => {
-    const state = provObject.provenance.getState();
+    const state = provObject?.provenance.getState();
+    if (!state) return Promise.reject(new Error('Provenance state is not available.'));
     // Rows must be cloned to avoid a recoil error triggered far down in this call chain when a function writes rows
     const ATConfig = getAltTextConfig(state, data, deepCopy(rows));
 
@@ -106,7 +107,7 @@ export const Body = ({ data, config }: Props) => {
       }
     }
     return response.alttxt;
-  }, [provObject.provenance, data, rows]);
+  }, [provObject?.provenance, data, rows]);
 
   if (data === null) return null;
 

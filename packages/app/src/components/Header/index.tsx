@@ -17,7 +17,7 @@ import {
 } from '../../atoms/queryParamAtom';
 import { provenanceVisAtom } from '../../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../../atoms/elementSidebarAtom';
-import { ProvenanceContext } from '../../App';
+import { ProvenanceContext } from '../../provenance';
 import { ImportModal } from '../ImportModal';
 import { importErrorAtom } from '../../atoms/importErrorAtom';
 import { altTextSidebarAtom } from '../../atoms/altTextSidebarAtom';
