@@ -13,20 +13,18 @@ export const dataSelector = selector<CoreUpsetData | null>({
 
     let rows;
     try {
-      rows = (
-        await getTable(workspace, table)
-      ).results;
+      rows = await getTable(workspace, table);
     } catch (e) {
       return null;
     }
 
     const annotations = await getColumnTypes(workspace, table);
-    
-    return process(rows as any, { columns: annotations } as any);
+
+    return process(rows, { columns: annotations } as any);
   },
 });
 
 export const encodedDataAtom = atom<CoreUpsetData | null>({
   key: 'encoded-upset-data',
-  default: null
-})
+  default: null,
+});
