@@ -31,7 +31,7 @@ export const oneHotEncode = (encodeList: string[], data: CoreUpsetData, empty?: 
   });
 
   // create the new annotations to pass into process, these are needed to ensure that the columns are added to columnTypes
-  const newAnnotations = Array.from(uniqueColNames).map((col) => ({ [col]: 'boolean' } as { [key: string]: 'boolean' }))
+  const newAnnotations = Array.from(uniqueColNames).map((col) => ({ [col]: 'boolean' as const }))
     .reduce((obj, item) => Object.assign(obj, item), {});
 
   const annotations = { ...encodedData.columnTypes, ...newAnnotations };
