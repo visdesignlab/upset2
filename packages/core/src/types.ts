@@ -26,14 +26,6 @@ export type Column = {
   size: number;
 };
 
-export type ColumnDefs = {
-  [columnName: string]: 'number' | 'boolean' | 'string' | 'label';
-};
-
-export type Meta = {
-  columns: ColumnDefs;
-};
-
 /**
  * Textual information about the plot; included in the UpsetConfig
  * @private This is typechecked by isPlotinformation in typecheck.ts; changes here must be reflected there
@@ -254,7 +246,7 @@ export type ColumnType = 'primary key' | 'edge source' | 'edge target' | 'label'
  * Maps column names to their string type
  */
 export type ColumnTypes = {
-    [key: string]: ColumnType;
+    [name: string]: ColumnType;
 }
 
 export type CoreUpsetData = {

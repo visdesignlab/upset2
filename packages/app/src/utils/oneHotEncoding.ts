@@ -1,4 +1,6 @@
-import { CoreUpsetData, deepCopy, process } from '@visdesignlab/upset2-core';
+import {
+  CoreUpsetData, deepCopy, process,
+} from '@visdesignlab/upset2-core';
 
 export const oneHotEncode = (encodeList: string[], data: CoreUpsetData, empty?: boolean) => {
   const newColNames: string[] = [];
@@ -29,9 +31,11 @@ export const oneHotEncode = (encodeList: string[], data: CoreUpsetData, empty?: 
   });
 
   // create the new annotations to pass into process, these are needed to ensure that the columns are added to columnTypes
-  const newAnnotations = Array.from(uniqueColNames).map((col) => ({ [col]: 'boolean' }))
+  const newAnnotations = Array.from(uniqueColNames).map((col) => ({ [col]: 'boolean' } as { [key: string]: 'boolean' }))
     .reduce((obj, item) => Object.assign(obj, item), {});
+
   const annotations = { ...encodedData.columnTypes, ...newAnnotations };
 
-  return (process(Object.values(encodedData.items) as any, { columns: annotations } as any));
+  // Casting as the columnTypes will always be 'boolean', so
+  return process(Object.values(encodedData.items).map((item) => ({ _key: '', _rev: '', ...item })), annotations);
 };

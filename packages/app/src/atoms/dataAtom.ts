@@ -20,7 +20,7 @@ export const dataSelector = selector<CoreUpsetData | null>({
 
     const annotations = await getColumnTypes(workspace, table);
 
-    return process(rows, { columns: annotations } as any);
+    return process(rows, annotations);
   },
 });
 
