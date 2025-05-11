@@ -49,21 +49,10 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
 
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
-  if (
-    typeof summary !== 'number'
-    && (
-      summary.max === undefined
-      || summary.min === undefined
-      || summary.first === undefined
-      || summary.third === undefined
-      || summary.median === undefined)) {
-    return null;
-  }
-
   /*
-   * Get the attribute plot to render based on the selected attribute plot type
-   * @returns {JSX.Element} The JSX element of the attribute
-   */
+  * Get the attribute plot to render based on the selected attribute plot type
+  * @returns {JSX.Element} The JSX element of the attribute
+  */
   const getAttributePlotToRender = useCallback((): React.JSX.Element => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
     if (Object.keys(attributePlots).includes(attribute)) {
@@ -89,13 +78,24 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   }, [attribute, attributePlots, row, scale, summary, values]);
 
   /**
-   * Round a number to 3 decimal places
-   */
+           * Round a number to 3 decimal places
+          */
   function round3(num: number | undefined): number {
     if (num === undefined) {
       return NaN;
     }
     return Math.round(num * 1000) / 1000;
+  }
+
+  if (
+    typeof summary !== 'number'
+            && (
+              summary.max === undefined
+              || summary.min === undefined
+              || summary.first === undefined
+              || summary.third === undefined
+              || summary.median === undefined)) {
+    return null;
   }
 
   return (
