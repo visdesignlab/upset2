@@ -58,6 +58,7 @@
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
     "eslint-plugin-react-hooks": "^5.2.0",
-    "vite": "^6.1.2"
+    "vite": "^6.1.2",
+    "@welldone-software/why-did-you-render": "^10.0.1"
   }
 }
