@@ -35,6 +35,14 @@ export const queryColorPalette = [
   '#17becf',
 ];
 
+/**
+ * Colors for stacked categorical bar charts
+ * This is a rough rainbow, scrambled to provide more contrast
+ */
+export const categoryColorPalette = [
+  '#ffbc42', '#d81159', '#8f2d56', '#218380', '#73d2de',
+];
+
 /** Color to use for selected & bookmarked intersections when the query color palette runs out */
 export const extraQueryColor = '#000';
 

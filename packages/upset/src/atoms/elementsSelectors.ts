@@ -25,7 +25,7 @@ import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
  * @param id - The ID of the row to get items for.
  * @returns The items in the row
  */
-const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
+export const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
   key: 'row-items',
   get: (id: string | null | undefined) => ({ get }) => {
     if (!id) return [];

@@ -1,5 +1,12 @@
 import { Aggregate, Subset } from '@visdesignlab/upset2-core';
-import { FC, memo } from 'react';
+import { FC, memo, useMemo } from 'react';
+import { useRecoilValue } from 'recoil';
+import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
+import translate from '../../../utils/transform';
+import { categoricalCountSelector } from '../../../atoms/attributeAtom';
+import { useScale } from '../../../hooks/useScale';
+import { maxRowSizeSelector } from '../../../atoms/maxSizeAtom';
+import { categoryColorPalette } from '../../../utils/styles';
 
 /**
  * Attribute bar props
@@ -15,12 +22,53 @@ type Props = {
   row: Subset | Aggregate;
 }
 
+/** A stacked bar */
+type Bar = {
+  /** Bar width in px */
+  width: number;
+  /** Bar offset from left in px */
+  offset: number;
+  /** The named category */
+  category: string;
+}
+
+/**
+ * A stacked bar showing the values of a categorical attribute for one intersection
+ * @param attribute - The attribute to render
+ * @param row - The row to render the attribute bar for
+ */
 export const CategoricalAttBar: FC<Props> = memo(
   ({ attribute, row }: Props) => {
-    console.log(attribute, row);
+    const dimensions = useRecoilValue(dimensionsSelector);
+    const attCounts = useRecoilValue(categoricalCountSelector({ row: row.id, attribute }));
+    const maxSize = useRecoilValue(maxRowSizeSelector);
+    const scale = useScale([0, maxSize], [0, dimensions.attribute.width]);
+
+    const bars: Bar[] = useMemo(() => {
+      let offset = 0;
+      return Object.entries(attCounts).map(
+        ([category, count]) => {
+          const result = { width: scale(count), offset, category };
+          offset += result.width;
+          return result;
+        },
+      );
+    }, [attCounts, scale]);
+
     return (
       <g>
-        <text>Hi!</text>
+        {bars.map((bar, index) => (
+          <g
+            key={`${row.id}-${attribute}-${bar.category}`}
+            transform={translate(bar.offset, 0)}
+          >
+            <rect
+              fill={categoryColorPalette[index % categoryColorPalette.length]}
+              width={bar.width}
+              height={dimensions.attribute.plotHeight}
+            />
+          </g>
+        ))}
       </g>
     );
   },
