@@ -3,6 +3,7 @@ import { ColumnTypes } from '@visdesignlab/upset2-core';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { rowItemsSelector } from './elementsSelectors';
+import { categoryColorPalette, extraCategoryColors } from '../utils/styles';
 
 /**
  * All attributes, including degree and deviation
@@ -90,4 +91,26 @@ export const categoricalCountSelector = selectorFamily<
       });
       return result;
     },
+});
+
+/**
+ * Returns a given number of colors to display categorical data in stacked bar charts
+ * @param {number} count Number of colors to return
+ * @returns {string[]} Array of colors in hex format
+ */
+export const categoricalColorSelector = selectorFamily<string[], number>({
+  key: 'categorical-color',
+  get: (count) => () => {
+    if (count < categoryColorPalette.length) {
+      return categoryColorPalette.slice(0, count);
+    }
+
+    const colors = categoryColorPalette;
+    let alternate = false;
+    for (let i = categoryColorPalette.length; i < count; i++) {
+      colors.push(extraCategoryColors[alternate ? 1 : 0]);
+      alternate = !alternate;
+    }
+    return colors;
+  },
 });

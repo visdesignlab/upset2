@@ -3,10 +3,9 @@ import { FC, memo, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
-import { categoricalCountSelector } from '../../../atoms/attributeAtom';
+import { categoricalColorSelector, categoricalCountSelector } from '../../../atoms/attributeAtom';
 import { useScale } from '../../../hooks/useScale';
 import { maxRowSizeSelector } from '../../../atoms/maxSizeAtom';
-import { categoryColorPalette } from '../../../utils/styles';
 
 /**
  * Attribute bar props
@@ -42,6 +41,7 @@ export const CategoricalAttBar: FC<Props> = memo(
     const dimensions = useRecoilValue(dimensionsSelector);
     const attCounts = useRecoilValue(categoricalCountSelector({ row: row.id, attribute }));
     const maxSize = useRecoilValue(maxRowSizeSelector);
+    const colors = useRecoilValue(categoricalColorSelector(Object.keys(attCounts).length));
     const scale = useScale([0, maxSize], [0, dimensions.attribute.width]);
 
     const bars: Bar[] = useMemo(() => {
@@ -63,7 +63,7 @@ export const CategoricalAttBar: FC<Props> = memo(
             transform={translate(bar.offset, 0)}
           >
             <rect
-              fill={categoryColorPalette[index % categoryColorPalette.length]}
+              fill={colors[index]}
               width={bar.width}
               height={dimensions.attribute.plotHeight}
             />

@@ -40,7 +40,19 @@ export const queryColorPalette = [
  * This is a rough rainbow, scrambled to provide more contrast
  */
 export const categoryColorPalette = [
-  '#ffbc42', '#d81159', '#8f2d56', '#218380', '#73d2de',
+  '#FFBD42',
+  '#F50F63',
+  '#B91830',
+  '#7A5095',
+  '#003F5C',
+  '#21837F',
+  '#73D2DE',
+];
+
+/** 2 colors to alternate when the category total overflows the categoryColorPalette */
+export const extraCategoryColors = [
+  '#555',
+  '#bbb',
 ];
 
 /** Color to use for selected & bookmarked intersections when the query color palette runs out */
