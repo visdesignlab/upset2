@@ -9,19 +9,19 @@ import React, { Suspense } from 'react';
 import { RecoilRoot } from 'recoil';
 import { createRoot } from 'react-dom/client';
 
+import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
+import localforage from 'localforage';
 import App from './App';
 import DefaultTheme from './components/theme';
 import { api } from './api/api';
 import { oAuth } from './api/auth';
 import { client_id } from './api/env';
-import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
-import localforage from 'localforage';
 
 // Not quite recommended but the only way I could get why-did-you-render to work with vite
 // from https://github.com/welldone-software/why-did-you-render/issues/243#issuecomment-1112542230
 if (process.env.NODE_ENV === 'development') {
   // Ignoring this because... it actually works
-  // @ts-ignore: await at top level
+  // @ts-expect-error: await at top level
   const { default: whyDidYouRender } = await import('@welldone-software/why-did-you-render');
   whyDidYouRender(React, {
     logOnDifferentValues: true,
@@ -46,14 +46,13 @@ if (sharedLoginCookie !== null) {
 }
 
 oAuth.maybeRestoreLogin().then(() => {
-
   Object.assign(api.axios.defaults.headers.common, oAuth.authHeaders);
-  
+
   // If logged out, remove the local storage item
   if (!Object.keys(oAuth.authHeaders).includes('Authorization')) {
     localStorage.removeItem(loginTokenKey);
   }
-  
+
   const tokenString = localStorage.getItem(loginTokenKey);
   if (tokenString !== null) {
     writeSharedLoginCookie(tokenString);
@@ -61,7 +60,7 @@ oAuth.maybeRestoreLogin().then(() => {
     invalidateSharedLoginCookie();
   }
 
-  const container = document.getElementById('root') as HTMLElement
+  const container = document.getElementById('root') as HTMLElement;
   const root = createRoot(container);
   root.render(
     <React.StrictMode>
@@ -82,12 +81,12 @@ oAuth.maybeRestoreLogin().then(() => {
               </Box>
             }
           >
-            <Box sx={{overflow: 'hidden'}}>
+            <Box sx={{ overflow: 'hidden' }}>
               <App />
             </Box>
           </Suspense>
         </RecoilRoot>
       </ThemeProvider>
-    </React.StrictMode>
+    </React.StrictMode>,
   );
 });
