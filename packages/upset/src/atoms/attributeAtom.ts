@@ -4,6 +4,7 @@ import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { rowItemsSelector } from './elementsSelectors';
 import { categoryColorPalette, extraCategoryColors } from '../utils/styles';
+import { maxRowSizeSelector } from './maxSizeAtom';
 
 /**
  * All attributes, including degree and deviation
@@ -58,8 +59,11 @@ export const attributeMinMaxSelector = selectorFamily<
   key: 'attribute-min-max',
   get:
     (attribute: string) => ({ get }) => {
+      const attTypes = get(attTypesSelector);
+      const maxSize = get(maxRowSizeSelector);
       const values = get(attributeValuesSelector(attribute));
 
+      if (attTypes[attribute] === 'category') return { min: 0, max: maxSize };
       return {
         min: Math.min(...values),
         max: Math.max(...values),
