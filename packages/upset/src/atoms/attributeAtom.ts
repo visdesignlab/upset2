@@ -53,7 +53,34 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
 });
 
 /**
+ * Returns the categories of a given categorical attribute,
+ * sorted by how many items have this category in the entire dataset
+ * @param {string} attribute Attribute name
+ * @returns {string[]} Array of category names, sorted by their size
+ */
+const categorySizeOrderSelector = selectorFamily<string[], string>({
+  key: 'category-size-order',
+  get:
+    (attribute: string) => ({ get }) => {
+      const items = Object.values(get(itemsAtom));
+
+      const categories = items.reduce((acc, item) => {
+        const value = item[attribute];
+        if (typeof value === 'string' && value) {
+          acc[value] = (acc[value] || 0) + 1;
+        }
+        return acc;
+      }, {} as { [key: string]: number });
+
+      return Object.entries(categories)
+        .sort((a, b) => b[1] - a[1])
+        .map((entry) => entry[0]);
+    },
+});
+
+/**
  * Counts the number of items in each category for a given attribute and row
+ * Categories are sorted by their size in the entire dataset
  * @param {string} row Row ID
  * @param {string} attribute Attribute name
  * @returns {Object} Object with category names as keys and their counts as values
@@ -67,7 +94,11 @@ export const categoricalCountSelector = selectorFamily<
     ({ row, attribute }) => ({ get }) => {
       const items = get(rowItemsSelector(row));
 
-      const result: { [key: string]: number } = {};
+      const result = get(categorySizeOrderSelector(attribute)).reduce((acc, category) => {
+        acc[category] = 0;
+        return acc;
+      }, {} as { [key: string]: number });
+
       items.forEach((item) => {
         if (typeof item[attribute] !== 'string' || !item[attribute]) return;
         const value = item[attribute];
