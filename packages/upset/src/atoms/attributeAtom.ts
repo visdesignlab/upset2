@@ -4,7 +4,7 @@ import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { rowItemsSelector } from './elementsSelectors';
 import { categoryColorPalette, extraCategoryColors } from '../utils/styles';
-import { maxRowSizeSelector } from './maxSizeAtom';
+import { rowsSelector } from './renderRowsAtom';
 
 /**
  * All attributes, including degree and deviation
@@ -52,25 +52,6 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
     },
 });
 
-export const attributeMinMaxSelector = selectorFamily<
-  { min: number; max: number },
-  string
->({
-  key: 'attribute-min-max',
-  get:
-    (attribute: string) => ({ get }) => {
-      const attTypes = get(attTypesSelector);
-      const maxSize = get(maxRowSizeSelector);
-      const values = get(attributeValuesSelector(attribute));
-
-      if (attTypes[attribute] === 'category') return { min: 0, max: maxSize };
-      return {
-        min: Math.min(...values),
-        max: Math.max(...values),
-      };
-    },
-});
-
 /**
  * Counts the number of items in each category for a given attribute and row
  * @param {string} row Row ID
@@ -98,6 +79,25 @@ export const categoricalCountSelector = selectorFamily<
 });
 
 /**
+ * @param {string} attribute Attribute name
+ * @returns the maximum number of items with the given categorical attribute in a single row.
+ * Specifically: items don't have to have a value for a categorical attribute, so rows can have fewer
+ * items in a category than the number of items in the row. This selector returns the largest row for this categorical
+ * attribute; this is equivalent to the size of the biggest stacked bar displayed for this attribute.
+ */
+export const maxCategorySizeSelector = selectorFamily<number, string>({
+  key: 'max-categorical-count',
+  get:
+    (attribute) => ({ get }) => {
+      const rows = get(rowsSelector);
+      return Object.values(rows).reduce((max, row) => {
+        const count = get(categoricalCountSelector({ row: row.id, attribute }));
+        return Math.max(max, Object.values(count).reduce((a, b) => a + b, 0));
+      }, 0);
+    },
+});
+
+/**
  * Returns a given number of colors to display categorical data in stacked bar charts
  * @param {number} count Number of colors to return
  * @returns {string[]} Array of colors in hex format
@@ -117,4 +117,28 @@ export const categoricalColorSelector = selectorFamily<string[], number>({
     }
     return colors;
   },
+});
+
+/**
+ * @returns the minimum and maximum values for a given attribute
+ * @param {string} attribute Attribute name
+ * Used for numeric and categorical attributes to set the scale of the axis in the attribute column header
+ */
+export const attributeMinMaxSelector = selectorFamily<
+  { min: number; max: number },
+  string
+>({
+  key: 'attribute-min-max',
+  get:
+    (attribute: string) => ({ get }) => {
+      const attTypes = get(attTypesSelector);
+      const maxSize = get(maxCategorySizeSelector(attribute));
+      const values = get(attributeValuesSelector(attribute));
+
+      if (attTypes[attribute] === 'category') return { min: 0, max: maxSize };
+      return {
+        min: Math.min(...values),
+        max: Math.max(...values),
+      };
+    },
 });

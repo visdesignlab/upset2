@@ -6,9 +6,8 @@ import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
-import { categoricalColorSelector, categoricalCountSelector } from '../../../atoms/attributeAtom';
+import { categoricalColorSelector, categoricalCountSelector, maxCategorySizeSelector } from '../../../atoms/attributeAtom';
 import { useScale } from '../../../hooks/useScale';
-import { maxRowSizeSelector } from '../../../atoms/maxSizeAtom';
 
 /**
  * Attribute bar props
@@ -45,7 +44,7 @@ export const CategoricalAttBar: FC<Props> = memo(
   ({ attribute, row }: Props) => {
     const dimensions = useRecoilValue(dimensionsSelector);
     const attCounts = useRecoilValue(categoricalCountSelector({ row: row.id, attribute }));
-    const maxSize = useRecoilValue(maxRowSizeSelector);
+    const maxSize = useRecoilValue(maxCategorySizeSelector(attribute));
     const colors = useRecoilValue(categoricalColorSelector(Object.keys(attCounts).length));
     const scale = useScale([0, maxSize], [0, dimensions.attribute.width]);
     const [hovered, setHovered] = useState<string | null>(null);
