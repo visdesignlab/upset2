@@ -1,6 +1,9 @@
 import { Aggregate, Subset } from '@visdesignlab/upset2-core';
-import { FC, memo, useMemo } from 'react';
+import {
+  FC, memo, useMemo, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
+import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import { categoricalColorSelector, categoricalCountSelector } from '../../../atoms/attributeAtom';
@@ -29,6 +32,8 @@ type Bar = {
   offset: number;
   /** The named category */
   category: string;
+  /** The size of the named category in this bar */
+  size: number;
 }
 
 /**
@@ -43,12 +48,15 @@ export const CategoricalAttBar: FC<Props> = memo(
     const maxSize = useRecoilValue(maxRowSizeSelector);
     const colors = useRecoilValue(categoricalColorSelector(Object.keys(attCounts).length));
     const scale = useScale([0, maxSize], [0, dimensions.attribute.width]);
+    const [hovered, setHovered] = useState<string | null>(null);
 
     const bars: Bar[] = useMemo(() => {
       let offset = 0;
       return Object.entries(attCounts).map(
-        ([category, count]) => {
-          const result = { width: scale(count), offset, category };
+        ([category, size]) => {
+          const result = {
+            width: scale(size), offset, category, size,
+          };
           offset += result.width;
           return result;
         },
@@ -62,11 +70,16 @@ export const CategoricalAttBar: FC<Props> = memo(
             key={`${row.id}-${attribute}-${bar.category}`}
             transform={translate(bar.offset, 0)}
           >
-            <rect
-              fill={colors[index]}
-              width={bar.width}
-              height={dimensions.attribute.plotHeight}
-            />
+            <Tooltip title={`${bar.category} — ${bar.size}`}>
+              <rect
+                fill={colors[index]}
+                width={bar.width}
+                height={dimensions.attribute.plotHeight + (hovered === bar.category ? 4 : 0)}
+                y={hovered === bar.category ? -2 : 0}
+                onMouseEnter={() => setHovered(bar.category)}
+                onMouseLeave={() => setHovered(null)}
+              />
+            </Tooltip>
           </g>
         ))}
       </g>
