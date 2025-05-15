@@ -1,5 +1,3 @@
-import { DSVRowArray } from 'd3-dsv';
-
 import {
   max, mean, median, min, quantile,
 } from 'd3-array';
@@ -13,6 +11,7 @@ import {
   Item,
   Items,
   Meta,
+  TableRow,
   SetMembershipStatus,
   Sets,
   Subset,
@@ -117,7 +116,7 @@ function getAttributeColumns(columns: ColumnDefs): ColumnName[] {
  * @param columns - The column definitions.
  * @returns An object containing the processed data.
  */
-function processRawData(data: DSVRowArray, columns: ColumnDefs) {
+function processRawData(data: TableRow[], columns: ColumnDefs) {
   const labelColumn = getLabel(columns) || '_id';
   const setColumns = getSetColumns(columns);
   const attributeColumns = getAttributeColumns(columns);
@@ -130,9 +129,9 @@ function processRawData(data: DSVRowArray, columns: ColumnDefs) {
     const id = row['_id'] ? row['_id'] : getId('Item', idx.toString());
 
     const item: Item = {
-      _id: id,
       _label: labelColumn === 'id' ? id : (row[labelColumn] as string),
       ...row,
+      _id: id, // This needs to be down here so it overwrites the _id from the row object
     };
     items[id] = item;
 
@@ -247,7 +246,7 @@ function getSets(
  * @param meta - The metadata object containing information about the columns.
  * @returns The core upset data object.
  */
-export function process(data: DSVRowArray, meta: Meta): CoreUpsetData {
+export function process(data: TableRow[], meta: Meta): CoreUpsetData {
   const { columns } = meta;
 
   const {
@@ -312,7 +311,9 @@ export function getSubsets(
   }
 
   items.forEach((item) => {
-    const itemMembership = vSetNames.map((v) => item[v]).join('');
+    const itemMembership = vSetNames.map(
+      (v) => (((typeof item[v] === 'number' && !Number.isNaN(item[v])) || typeof item[v] === 'boolean') ? item[v] : 0),
+    ).join('');
     setIntersectionMembership[itemMembership].push(item['_id']);
   });
 

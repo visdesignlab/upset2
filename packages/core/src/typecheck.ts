@@ -5,6 +5,7 @@ import {
   SetQueryMembership,
   SetQuery,
   SetMembershipStatus,
+  TableRow,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -625,4 +626,24 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 
   return true;
   /* eslint-enable no-console */
+}
+
+/** Checks if a variable is a TableRow */
+export function isTableRow(row: unknown): row is TableRow {
+  return (
+    typeof row === 'object'
+    && row !== null
+    && !Array.isArray(row)
+    && Object.keys(row).length > 0
+    && Object.hasOwn(row, '_id')
+    && typeof (row as TableRow)._id === 'string'
+    && Object.hasOwn(row, '_key')
+    && typeof (row as TableRow)._key === 'string'
+    && Object.hasOwn(row, '_rev')
+    && typeof (row as TableRow)._rev === 'string'
+    && Object.values(row).every((value) => (
+      typeof value === 'string'
+      || typeof value === 'number'
+      || typeof value === 'boolean'
+    )));
 }
