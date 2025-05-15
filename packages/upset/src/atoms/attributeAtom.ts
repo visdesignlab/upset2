@@ -3,7 +3,7 @@ import { ColumnTypes } from '@visdesignlab/upset2-core';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { rowItemsSelector } from './elementsSelectors';
-import { categoryColorPalette, extraCategoryColors } from '../utils/styles';
+import { categoryColorPalette } from '../utils/styles';
 import { rowsSelector } from './renderRowsAtom';
 
 /**
@@ -129,24 +129,22 @@ export const maxCategorySizeSelector = selectorFamily<number, string>({
 });
 
 /**
- * Returns a given number of colors to display categorical data in stacked bar charts
- * @param {number} count Number of colors to return
- * @returns {string[]} Array of colors in hex format
+ * Gets a mapping of category names to colors for a given categorical attribute
+ * Can only map up to the number of colors in the categoryColorPalette (currently 7); additional categories
+ * not mapped should use the extraCategoryColors
+ * @param {number} att Attribute to return category colors for
+ * @returns A map of category names to colors
  */
-export const categoricalColorSelector = selectorFamily<string[], number>({
+export const categoricalColorSelector = selectorFamily<{[category: string]: string}, string>({
   key: 'categorical-color',
-  get: (count) => () => {
-    if (count < categoryColorPalette.length) {
-      return categoryColorPalette.slice(0, count);
-    }
-
-    const colors = categoryColorPalette;
-    let alternate = false;
-    for (let i = categoryColorPalette.length; i < count; i++) {
-      colors.push(extraCategoryColors[alternate ? 1 : 0]);
-      alternate = !alternate;
-    }
-    return colors;
+  get: (att) => ({ get }) => {
+    const categories = get(categorySizeOrderSelector(att));
+    return categories.reduce((acc, category, index) => {
+      if (index < categoryColorPalette.length) {
+        acc[category] = categoryColorPalette[index];
+      }
+      return acc;
+    }, {} as { [category: string]: string });
   },
 });
 
