@@ -1,6 +1,23 @@
 export type ColumnName = string;
 
 /**
+ * A row in a Multinet table, as typed by the Multinet package
+ */
+export type MultinetTableRow = {
+  _key: string;
+  _id: string;
+  _rev: string;
+}
+
+/**
+ * A row of data imported from a Multinet table, containing both the default Multinet fields
+ * and any additional fields that may be present in the table.
+ */
+export type TableRow = MultinetTableRow & {
+  [key: string]: string | number | boolean;
+}
+
+/**
  * Base type for a column in the plot
  * @private typechecked by isColumn in typecheck.ts; changes here must be reflected there
  */
