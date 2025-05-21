@@ -25,7 +25,7 @@ export default meta;
 
 const Template = (args) => (moviesData ? (
   <div style={{ height: 300 }}>
-    <Upset data={moviesData} hideSettings allowAttributeRemoval visualizeDatasetAttributes={['AvgRating']} visualizeUpsetAttributes={false} />
+    <Upset data={moviesData} hideSettings allowAttributeRemoval visibleDatasetAttributes={['AvgRating']} visualizeUpsetAttributes={false} />
   </div>
 ) : (
   <div>

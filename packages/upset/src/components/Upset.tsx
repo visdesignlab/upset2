@@ -1,13 +1,10 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { UpsetConfig, DefaultConfig, convertConfig } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
 import { UpsetProps } from '../types';
 import { processRawData } from '../utils/data';
-
-const defaultVisibleSets = 6;
 
 /**
  * Renders the Upset component.
@@ -33,7 +30,7 @@ export const Upset: FC<UpsetProps> = ({
   data,
   parentHasHeight = false,
   config = {},
-  visualizeDatasetAttributes,
+  visibleDatasetAttributes,
   visualizeUpsetAttributes = false,
   allowAttributeRemoval = false,
   canEditPlotInformation = false,
@@ -46,7 +43,7 @@ export const Upset: FC<UpsetProps> = ({
   generateAltText,
 }) => {
   // If the provided data is not already processed by UpSet core, process it
-  const processData = useMemo(() => {
+  const processedData = useMemo(() => {
     // the CoreUpsetData will never be an Array, and the UpsetItem[] will always be an Array
     if (data instanceof Array) {
       return processRawData(data);
@@ -54,47 +51,6 @@ export const Upset: FC<UpsetProps> = ({
 
     return data;
   }, [data]);
-
-  // Combine the partial config and add visible sets if empty
-  // Also add missing attributes if specified
-  const combinedConfig = useMemo(() => {
-    const conf: UpsetConfig = { ...DefaultConfig, ...(Object.entries(config).length > 0 ? convertConfig(config) : {}) };
-
-    const DEFAULT_NUM_ATTRIBUTES = 3;
-
-    if (conf.visibleSets.length === 0) {
-      const setList = Object.entries(processData.sets);
-      conf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]); // get first 6 set names
-      conf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
-    }
-
-    const defaultAttributes = (visualizeUpsetAttributes) ? DefaultConfig.visibleAttributes : [];
-
-    /**
-     * visualizeAttributes can either be undefined or an array of strings.
-     * if visualizeAttributes is defined, load the attributes named within. Otherwise, load the first DEFAULT_NUM_ATTRIBUTES.
-     */
-    if (visualizeDatasetAttributes) {
-      conf.visibleAttributes = [
-        ...defaultAttributes,
-        ...visualizeDatasetAttributes.filter((attr) => processData.attributeColumns.includes(attr)),
-      ];
-    } else {
-      conf.visibleAttributes = [
-        ...defaultAttributes,
-        ...processData.attributeColumns.slice(0, DEFAULT_NUM_ATTRIBUTES),
-      ];
-    }
-
-    // for every visible attribute other than deviaiton and degree, set their initial attribute plot type to 'Box Plot'
-    conf.visibleAttributes.forEach((attr) => {
-      if (attr !== 'Degree' && attr !== 'Deviation' && !conf.attributePlots[attr]) {
-        conf.attributePlots = { ...conf.attributePlots, [attr]: 'Box Plot' };
-      }
-    });
-
-    return conf;
-  }, [config]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
@@ -108,8 +64,10 @@ export const Upset: FC<UpsetProps> = ({
       >
         <RecoilRoot>
           <Root
-            data={processData}
-            config={combinedConfig}
+            data={processedData}
+            config={config}
+            visibleDatasetAttributes={visibleDatasetAttributes}
+            visualizeUpsetAttributes={visualizeUpsetAttributes}
             allowAttributeRemoval={allowAttributeRemoval}
             canEditPlotInformation={canEditPlotInformation}
             hideSettings={hideSettings}

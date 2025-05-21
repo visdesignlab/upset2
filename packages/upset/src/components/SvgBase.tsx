@@ -26,7 +26,6 @@ export const SvgBase: FC = ({ children }) => {
 
   return (
     // These rules are for accessibility; unnecessary here as the plot is not accessible anyway.
-    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
     <div
       css={css`
         height: 100%;

@@ -1,7 +1,7 @@
 import {
   Aggregate, SixNumberSummary, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
@@ -46,25 +46,13 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
   const values = useRecoilValue(attValuesSelector({ row, att: attribute }));
-
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
-  if (
-    typeof summary !== 'number'
-    && (
-      summary.max === undefined
-      || summary.min === undefined
-      || summary.first === undefined
-      || summary.third === undefined
-      || summary.median === undefined)) {
-    return null;
-  }
-
   /*
-   * Get the attribute plot to render based on the selected attribute plot type
-   * @returns {JSX.Element} The JSX element of the attribute
-   */
-  const getAttributePlotToRender = useCallback((): React.JSX.Element => {
+  * Get the attribute plot to render based on the selected attribute plot type
+  * @returns {JSX.Element} The JSX element of the attribute
+  */
+  const attPlotToRender: React.JSX.Element = useMemo(() => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
     if (Object.keys(attributePlots).includes(attribute)) {
       const plot = attributePlots[attribute];
@@ -98,6 +86,17 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
     return Math.round(num * 1000) / 1000;
   }
 
+  if (
+    typeof summary !== 'number'
+    && (
+      summary.max === undefined
+      || summary.min === undefined
+      || summary.first === undefined
+      || summary.third === undefined
+      || summary.median === undefined)) {
+    return null;
+  }
+
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
       {
@@ -112,7 +111,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           >
             {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
             <g>
-              {getAttributePlotToRender()}
+              {attPlotToRender}
             </g>
           </Tooltip>
       }
