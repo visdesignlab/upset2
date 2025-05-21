@@ -1,7 +1,7 @@
 import {
   Aggregate, SixNumberSummary, Subset, isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC, useCallback } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
@@ -49,22 +49,11 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
 
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
-  if (
-    typeof summary !== 'number'
-    && (
-      summary.max === undefined
-      || summary.min === undefined
-      || summary.first === undefined
-      || summary.third === undefined
-      || summary.median === undefined)) {
-    return null;
-  }
-
   /*
    * Get the attribute plot to render based on the selected attribute plot type
    * @returns {JSX.Element} The JSX element of the attribute
    */
-  const getAttributePlotToRender = useCallback((): React.JSX.Element => {
+  const getAttributePlotToRender: React.JSX.Element = useMemo(() => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
     if (Object.keys(attributePlots).includes(attribute)) {
       const plot = attributePlots[attribute];
@@ -91,11 +80,22 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   /**
    * Round a number to 3 decimal places
    */
-  function round3(num: number | undefined): number {
+  const round3 = useCallback((num: number | undefined): number => {
     if (num === undefined) {
       return NaN;
     }
     return Math.round(num * 1000) / 1000;
+  }, []);
+
+  if (
+    typeof summary !== 'number'
+    && (
+      summary.max === undefined
+      || summary.min === undefined
+      || summary.first === undefined
+      || summary.third === undefined
+      || summary.median === undefined)) {
+    return null;
   }
 
   return (
@@ -112,7 +112,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           >
             {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
             <g>
-              {getAttributePlotToRender()}
+              {getAttributePlotToRender}
             </g>
           </Tooltip>
       }
