@@ -1,6 +1,4 @@
-import {
-  Aggregate, SixNumberSummary, Subset, isRowAggregate,
-} from '@visdesignlab/upset2-core';
+import { Aggregate, SixNumberSummary, Subset, isRowAggregate } from '@visdesignlab/upset2-core';
 import React, { FC, useCallback, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
@@ -49,9 +47,9 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
   /*
-  * Get the attribute plot to render based on the selected attribute plot type
-  * @returns {JSX.Element} The JSX element of the attribute
-  */
+   * Get the attribute plot to render based on the selected attribute plot type
+   * @returns {JSX.Element} The JSX element of the attribute
+   */
   const attPlotToRender: React.JSX.Element = useMemo(() => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
     if (Object.keys(attributePlots).includes(attribute)) {
@@ -59,18 +57,43 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
 
       // render a dotplot for all rows <= 5, except for Strip Plots which encode the same information
       if (row.size <= DOT_PLOT_THRESHOLD && plot !== 'Strip Plot') {
-        return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
+        return (
+          <DotPlot
+            scale={scale}
+            values={values}
+            attribute={attribute}
+            isAggregate={isRowAggregate(row)}
+            row={row}
+          />
+        );
       }
 
       switch (plot) {
         case 'Box Plot':
           return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
         case 'Strip Plot':
-          return <StripPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} />;
+          return (
+            <StripPlot
+              scale={scale}
+              values={values}
+              attribute={attribute}
+              isAggregate={isRowAggregate(row)}
+              row={row}
+            />
+          );
         case 'Density Plot':
           return <DensityPlot values={values} attribute={attribute} row={row} />;
         default:
-          return <DotPlot scale={scale} values={values} attribute={attribute} isAggregate={isRowAggregate(row)} row={row} jitter />;
+          return (
+            <DotPlot
+              scale={scale}
+              values={values}
+              attribute={attribute}
+              isAggregate={isRowAggregate(row)}
+              row={row}
+              jitter
+            />
+          );
       }
     }
     return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
@@ -87,34 +110,32 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   }, []);
 
   if (
-    typeof summary !== 'number'
-    && (
-      summary.max === undefined
-      || summary.min === undefined
-      || summary.first === undefined
-      || summary.third === undefined
-      || summary.median === undefined)) {
+    typeof summary !== 'number' &&
+    (summary.max === undefined ||
+      summary.min === undefined ||
+      summary.first === undefined ||
+      summary.third === undefined ||
+      summary.median === undefined)
+  ) {
     return null;
   }
 
   return (
     <g transform={translate(0, dimensions.attribute.plotHeight / 2)}>
-      {
-        typeof summary === 'number' ?
-          <DeviationBar deviation={summary} /> :
-          <Tooltip
-            title={
-              <div style={{ whiteSpace: 'pre-line' }}>
-                {`Q1: ${round3(summary.first)}\nMean: ${round3(summary.mean)}\nMedian: ${round3(summary.median)}\nQ3: ${round3(summary.third)}`}
-              </div>
-            }
-          >
-            {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
-            <g>
-              {attPlotToRender}
-            </g>
-          </Tooltip>
-      }
+      {typeof summary === 'number' ? (
+        <DeviationBar deviation={summary} />
+      ) : (
+        <Tooltip
+          title={
+            <div style={{ whiteSpace: 'pre-line' }}>
+              {`Q1: ${round3(summary.first)}\nMean: ${round3(summary.mean)}\nMedian: ${round3(summary.median)}\nQ3: ${round3(summary.third)}`}
+            </div>
+          }
+        >
+          {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
+          <g>{attPlotToRender}</g>
+        </Tooltip>
+      )}
     </g>
   );
 };
