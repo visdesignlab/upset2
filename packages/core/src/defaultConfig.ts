@@ -1,6 +1,7 @@
 import { convertConfig } from './convertConfig';
 import { AttributePlotType, CoreUpsetData, UpsetConfig } from './types';
 import { isUpsetConfig } from './typecheck';
+import { deepCopy } from './utils';
 
 export const UPSET_ATTS = ['Degree', 'Deviation'];
 
@@ -102,7 +103,7 @@ export function populateConfigDefaults(
     }
 
   // for every visible attribute other than deviation and degree, set their initial attribute plot type to 'Box Plot'
-  config.attributePlots = config.attributePlots ?? {};
+  config.attributePlots = deepCopy(config.attributePlots ?? {});
   config.visibleAttributes.forEach((attr) => {
     // @ts-expect-error attributePlots is guaranteed to exist... why doesn't TS know this??
     if (attr !== 'Degree' && attr !== 'Deviation' && !config.attributePlots[attr]) {
