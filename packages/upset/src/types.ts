@@ -111,7 +111,7 @@ export interface UpsetProps {
   * Defaults to the first 3 if no value is provided.
   * If an empty list is provided, displays no attributes.
   */
-  visualizeDatasetAttributes?: string[];
+  visibleDatasetAttributes?: string[];
 
   /**
    * Whether or not to visualize UpSet generated attributes (`degree` and `deviation`).
