@@ -46,14 +46,13 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
   const values = useRecoilValue(attValuesSelector({ row, att: attribute }));
-
   const attributePlots = useRecoilValue(attributePlotsSelector);
 
   /*
-   * Get the attribute plot to render based on the selected attribute plot type
-   * @returns {JSX.Element} The JSX element of the attribute
-   */
-  const getAttributePlotToRender: React.JSX.Element = useMemo(() => {
+  * Get the attribute plot to render based on the selected attribute plot type
+  * @returns {JSX.Element} The JSX element of the attribute
+  */
+  const attPlotToRender: React.JSX.Element = useMemo(() => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
     if (Object.keys(attributePlots).includes(attribute)) {
       const plot = attributePlots[attribute];
@@ -112,7 +111,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           >
             {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
             <g>
-              {getAttributePlotToRender}
+              {attPlotToRender}
             </g>
           </Tooltip>
       }

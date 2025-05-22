@@ -1,6 +1,6 @@
 import React, { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { SortByOrder, AttributePlotType } from '@visdesignlab/upset2-core';
+import { SortByOrder, AttributePlotType, UPSET_ATTS } from '@visdesignlab/upset2-core';
 
 import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -105,7 +105,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
       },
     ];
 
-    if (!['Degree', 'Deviation'].includes(label)) {
+    if (!UPSET_ATTS.includes(label)) {
     // for every possible value of the type AttributePlotType (from core), add a menu item
       Object.values(AttributePlotType).forEach((plot) => {
         items.push(
