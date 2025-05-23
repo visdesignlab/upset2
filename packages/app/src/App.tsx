@@ -1,15 +1,14 @@
-import {
-  useEffect, useMemo, useState,
-} from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import {
-  UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking,
+  UpsetProvenance,
+  UpsetActions,
+  getActions,
+  initializeProvenanceTracking,
 } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import {
-  convertConfig, deepCopy, DefaultConfig, UpsetConfig,
-} from '@visdesignlab/upset2-core';
+import { convertConfig, deepCopy, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -21,9 +20,6 @@ import { getMultinetSession } from './api/session';
 import { ProvenanceContext } from './provenance';
 
 /** @jsxImportSource @emotion/react */
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-
-const defaultVisibleSets = 6;
 
 type SessionState = ProvenanceGraph<UpsetConfig, string> | null | 'not found';
 
@@ -31,32 +27,26 @@ function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
   const setState = useSetRecoilState(configAtom);
-  const data = (encodedData === null) ? multinetData : encodedData;
+  const data = encodedData === null ? multinetData : encodedData;
   const { workspace, sessionId } = useRecoilValue(queryParamAtom);
   const [sessionState, setSessionState] = useState<SessionState>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
 
   const conf = useMemo(() => {
     const config: UpsetConfig = { ...DefaultConfig };
     if (data !== null) {
-      const newConf: UpsetConfig = JSON.parse(JSON.stringify(config));
-      if (config.visibleSets.length === 0) {
-        const setList = Object.entries(data.sets);
-        newConf.visibleSets = setList.slice(0, defaultVisibleSets).map((set) => set[0]); // get first 6 set names
-        newConf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
-      }
-
-      // Add first 4 attribute columns (deviation + 3 attrs) to visibleAttributes
-      newConf.visibleAttributes = [...DefaultConfig.visibleAttributes, ...data.attributeColumns.slice(0, 4)];
+      const newConf: UpsetConfig = structuredClone(config);
 
       // Default: a histogram for each attribute if no plots exist
       if (newConf.plots.histograms.length + newConf.plots.scatterplots.length === 0) {
-        newConf.plots.histograms = data.attributeColumns.map((attr) => ({
-          attribute: attr,
-          bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
-          type: 'Histogram',
-          frequency: false,
-          id: Date.now().toString() + attr, // Add the attribute name so that the IDs aren't duplicated
-        }));
+        newConf.plots.histograms = data.attributeColumns
+          .filter((att) => data.columnTypes[att] === 'number' || data.columnTypes[att] === 'date')
+          .map((attr) => ({
+            attribute: attr,
+            bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
+            type: 'Histogram',
+            frequency: false,
+            id: Date.now().toString() + attr, // Add the attribute name so that the IDs aren't duplicated
+          }));
       }
 
       return newConf;
@@ -71,10 +61,9 @@ function App() {
     const act: UpsetActions = getActions(prov);
 
     // Make sure the provenance state gets converted every time this is called
-    (prov as UpsetProvenance & {_getState: typeof prov.getState})._getState = prov.getState;
-    prov.getState = () => convertConfig(
-      (prov as UpsetProvenance & {_getState: typeof prov.getState})._getState(),
-    );
+    (prov as UpsetProvenance & { _getState: typeof prov.getState })._getState = prov.getState;
+    prov.getState = () =>
+      convertConfig((prov as UpsetProvenance & { _getState: typeof prov.getState })._getState());
 
     if (sessionState && sessionState !== 'not found') {
       prov.importObject(deepCopy(sessionState));
@@ -95,7 +84,11 @@ function App() {
       if (sessionId) {
         const session = await getMultinetSession(workspace || '', sessionId);
         // Load the session if the object is not empty
-        if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
+        if (
+          session?.state &&
+          typeof session.state === 'object' &&
+          Object.keys(session.state).length !== 0
+        ) {
           setSessionState(session.state);
         } else {
           setSessionState('not found');
@@ -110,13 +103,13 @@ function App() {
   const provContext = useMemo(() => ({ provenance, actions }), [provenance, actions]);
 
   // Update the state on first render and if the provenance object changes
-  useEffect(() => { if (provenance?.getState()) setState(provenance?.getState()); }, [provenance, setState]);
+  useEffect(() => {
+    if (provenance?.getState()) setState(provenance?.getState());
+  }, [provenance, setState]);
 
   return (
     <BrowserRouter>
-      <ProvenanceContext.Provider
-        value={provContext}
-      >
+      <ProvenanceContext.Provider value={provContext}>
         <Routes>
           {/* Session state is set to 'not found' if we fail to load it,
           so we only show a spinner if we're trying to load the session (not if we've failed or aren't trying) */}
@@ -127,8 +120,18 @@ function App() {
             </>
           ) : (
             <>
-              <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
-              <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
+              <Route
+                path="*"
+                element={
+                  <Root provenance={provenance} actions={actions} data={null} config={conf} />
+                }
+              />
+              <Route
+                path="/"
+                element={
+                  <Root provenance={provenance} actions={actions} data={data} config={conf} />
+                }
+              />
             </>
           )}
           <Route path="/datatable" element={<DataTable />} />

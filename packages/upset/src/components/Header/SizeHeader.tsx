@@ -133,7 +133,7 @@ export const SizeHeader: FC = () => {
 
     const maxS = Math.max(...sizes);
     setMaxSize(maxS);
-  }, [subsets, maxSize, advancedScale, setQuery]);
+  }, [subsets, advancedScale, setQuery, setMaxSize, setQuerySize]);
 
   useEffect(() => {
     const { current: parent } = sliderParentRef;
@@ -177,7 +177,7 @@ export const SizeHeader: FC = () => {
         .on('drag', null)
         .on('end', null);
     };
-  }, [sliderRef, sliderParentRef, dimensions, globalScale]);
+  }, [sliderRef, sliderParentRef, dimensions, globalScale, itemCount, setMaxSize]);
 
   return (
     <g
