@@ -37,15 +37,15 @@ import { AltText } from '../types';
 import { footerHeightAtom } from '../atoms/dimensionsAtom';
 
 // Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context
-const defaultProv = initializeProvenanceTracking(DefaultConfig, () => {
+const defaultProvenance = initializeProvenanceTracking(DefaultConfig, () => {
   throw new Error('Setter called on default provenance object');
 });
-const defaultActions = getActions(defaultProv);
+const defaultActions = getActions(defaultProvenance);
 
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
-}>({ provenance: defaultProv, actions: defaultActions });
+}>({ provenance: defaultProvenance, actions: defaultActions });
 
 const baseStyle = css`
   padding: 0.25em;
