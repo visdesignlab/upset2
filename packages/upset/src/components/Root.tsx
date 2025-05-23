@@ -1,11 +1,13 @@
-/* eslint-disable no-shadow */
 import { css } from '@emotion/react';
 import {
-  AttributePlotType, convertConfig, CoreUpsetData, deepCopy, UpsetConfig,
+  convertConfig,
+  CoreUpsetData,
+  DefaultConfig,
+  populateConfigDefaults,
+  UPSET_ATTS,
+  UpsetConfig,
 } from '@visdesignlab/upset2-core';
-import {
-  createContext, FC, useCallback, useEffect, useMemo,
-} from 'react';
+import { createContext, FC, useCallback, useEffect, useMemo } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
@@ -18,7 +20,10 @@ import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import {
-  getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance,
+  getActions,
+  initializeProvenanceTracking,
+  UpsetActions,
+  UpsetProvenance,
 } from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
@@ -31,10 +36,16 @@ import { AltTextSidebar } from './AltTextSidebar';
 import { AltText } from '../types';
 import { footerHeightAtom } from '../atoms/dimensionsAtom';
 
+// Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context
+const defaultProvenance = initializeProvenanceTracking(DefaultConfig, () => {
+  throw new Error('Setter called on default provenance object');
+});
+const defaultActions = getActions(defaultProvenance);
+
 export const ProvenanceContext = createContext<{
   provenance: UpsetProvenance;
   actions: UpsetActions;
-} | any>({});
+}>({ provenance: defaultProvenance, actions: defaultActions });
 
 const baseStyle = css`
   padding: 0.25em;
@@ -43,7 +54,9 @@ const baseStyle = css`
 
 type Props = {
   data: CoreUpsetData;
-  config: UpsetConfig;
+  config: Partial<UpsetConfig>;
+  visibleDatasetAttributes?: string[];
+  visualizeUpsetAttributes?: boolean;
   allowAttributeRemoval?: boolean;
   hideSettings?: boolean;
   canEditPlotInformation?: boolean;
@@ -68,7 +81,19 @@ type Props = {
 };
 
 export const Root: FC<Props> = ({
-  data, config, allowAttributeRemoval, hideSettings, canEditPlotInformation, extProvenance, provVis, elementSidebar, altTextSidebar, footerHeight, generateAltText,
+  data,
+  config,
+  visibleDatasetAttributes,
+  visualizeUpsetAttributes,
+  allowAttributeRemoval,
+  hideSettings,
+  canEditPlotInformation,
+  extProvenance,
+  provVis,
+  elementSidebar,
+  altTextSidebar,
+  footerHeight,
+  generateAltText,
 }) => {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
@@ -80,61 +105,88 @@ export const Root: FC<Props> = ({
   const setData = useSetRecoilState(dataAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
+  const setFooterHeight = useSetRecoilState(footerHeightAtom);
 
-  // Set config. Note that the provenance passed in is ignored if a provenance is passed in
+  // Set the initial state of canEditPlotInformation
   useEffect(() => {
-    if (!extProvenance) setState(convertConfig(config));
-    setData(data);
-  }, [config, data, extProvenance, setState, setData]);
-
-  useEffect(() => {
-    if (canEditPlotInformation !== undefined) {
-      setCanEditPlotInformation(canEditPlotInformation);
-    }
+    if (canEditPlotInformation !== undefined) setCanEditPlotInformation(canEditPlotInformation);
   }, [canEditPlotInformation, setCanEditPlotInformation]);
 
-  // Initialize Provenance and pass it setter to connect
+  // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    if (extProvenance) {
-      const { provenance, actions } = extProvenance;
+    const provenance = extProvenance?.provenance ?? initializeProvenanceTracking(config, setState);
+    const actions = extProvenance?.actions ?? getActions(provenance);
 
-      // This syncs all linked atoms with the provenance state
-      provenance.currentChange(() => {
-        // Old provenance nodes may be using a different config version, so convert it if need be
-        const converted = convertConfig(provenance.getState());
-        setState(converted);
-      });
-
-      provenance.done();
-      return { provenance, actions };
-    }
-
-    const provenance = initializeProvenanceTracking(config, setState);
-    const actions = getActions(provenance);
-    return { provenance, actions };
-  }, [config, extProvenance, setState]);
-
-  // Mandatory state defaults should go here
-  useEffect(() => {
-    const state = deepCopy(convertConfig(provenance.getState()));
-    state.visibleAttributes.forEach((attr) => {
-      if (attr !== 'Degree' && attr !== 'Deviation' && !state.attributePlots[attr]) {
-        state.attributePlots[attr] = AttributePlotType.DensityPlot;
-      }
+    // This syncs all linked atoms with the provenance state
+    provenance.currentChange(() => {
+      // Old provenance nodes may be using a different config version, so convert it if need be
+      const converted = populateConfigDefaults(
+        convertConfig(provenance.getState()),
+        data,
+        visualizeUpsetAttributes ?? false,
+        visibleDatasetAttributes,
+      );
+      setState(converted);
     });
-    setState(state);
-  }, [provenance, setState]);
 
-  // This hook will populate initial sets, items, attributes
+    provenance.done();
+    return { provenance, actions };
+  }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
+
+  useEffect(() => {
+    if (!extProvenance) {
+      setState(
+        populateConfigDefaults(
+          convertConfig(config),
+          data,
+          visualizeUpsetAttributes ?? false,
+          visibleDatasetAttributes,
+        ),
+      );
+    } else {
+      setState(
+        populateConfigDefaults(
+          convertConfig(provenance.getState()),
+          data,
+          visualizeUpsetAttributes ?? false,
+          visibleDatasetAttributes,
+        ),
+      );
+    }
+  }, [
+    config,
+    data,
+    setState,
+    visibleDatasetAttributes,
+    visualizeUpsetAttributes,
+    extProvenance,
+    provenance,
+  ]);
+
+  // This hook is for atoms that are not directly linked to the provenance state
   useEffect(() => {
     setSets(data.sets);
     setItems(data.items);
-    setAttributeColumns(['Degree', 'Deviation', ...data.attributeColumns]);
+    setAttributeColumns([...UPSET_ATTS, ...data.attributeColumns]);
     setAllColumns(data.columns);
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
     setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
-  }, [data, allowAttributeRemoval, setAllColumns, setAttributeColumns, setData, setItems, setSets, setAllowAttributeRemoval]);
+  }, [
+    data,
+    allowAttributeRemoval,
+    setAllColumns,
+    setAttributeColumns,
+    setData,
+    setItems,
+    setSets,
+    setAllowAttributeRemoval,
+  ]);
+
+  // Footer height needs to be doubled to work right... idk why that is!
+  useEffect(() => {
+    if (footerHeight) setFooterHeight(2 * footerHeight);
+  }, [footerHeight, setFooterHeight]);
 
   // close all open context menus
   const removeContextMenu = useCallback(() => {
@@ -149,40 +201,35 @@ export const Root: FC<Props> = ({
     };
   }, [removeContextMenu]);
 
-  // Sets the footer height atom if provided as an argument
-  const setFooterHeight = useSetRecoilState(footerHeightAtom);
-  // Footer height needs to be doubled to work right... idk why that is!
-  useEffect(() => { if (footerHeight) setFooterHeight(2 * footerHeight); }, [footerHeight, setFooterHeight]);
-
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
-
   return (
-    // eslint-disable-next-line react/jsx-no-constructed-context-values
     <ProvenanceContext.Provider value={{ provenance, actions }}>
-      {!hideSettings &&
-      <div
-        css={css`
-          flex: 0 0 auto;
-          overflow: auto;
-          ${baseStyle};
-        `}
-      >
-        <SettingsSidebar />
-      </div>}
+      {!hideSettings && (
+        <div
+          css={css`
+            flex: 0 0 auto;
+            overflow: auto;
+            ${baseStyle};
+          `}
+        >
+          <SettingsSidebar />
+        </div>
+      )}
       <h2
         id="desc"
         css={css`
-          position: absolute; 
-          width: 1px; 
-          height: 1px; 
+          position: absolute;
+          width: 1px;
+          height: 1px;
           padding: 0;
           margin: -1px;
           overflow: hidden;
-          clip: rect(0,0,0,0);
+          clip: rect(0, 0, 0, 0);
           border: 0;
         `}
       >
-        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and apologize for any inconvenience.
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively
+        working on this and apologize for any inconvenience.
       </h2>
       <div
         css={css`
@@ -199,9 +246,17 @@ export const Root: FC<Props> = ({
         </SvgBase>
       </div>
       <ContextMenu />
-      {elementSidebar && elementSidebar.open && <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />}
+      {elementSidebar && elementSidebar.open && (
+        <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />
+      )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
-      {(altTextSidebar && generateAltText) && <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />}
+      {altTextSidebar && generateAltText && (
+        <AltTextSidebar
+          open={altTextSidebar.open}
+          close={altTextSidebar.close}
+          generateAltText={generateAltText}
+        />
+      )}
     </ProvenanceContext.Provider>
   );
 };

@@ -1,5 +1,4 @@
 import { selector } from 'recoil';
-
 import { upsetConfigAtom } from './upsetConfigAtoms';
 
 const plotsMapSelector = selector({
@@ -19,10 +18,7 @@ export const histogramSelector = selector({
 
 export const plotsSelector = selector({
   key: 'all-plots',
-  get: ({ get }) => [
-    ...get(scatterplotsSelector),
-    ...get(histogramSelector),
-  ],
+  get: ({ get }) => [...get(scatterplotsSelector), ...get(histogramSelector)],
 });
 
 export const attributePlotsSelector = selector({
