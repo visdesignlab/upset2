@@ -58,8 +58,6 @@ export const SelectionChips = () => {
     } else if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
   }
 
-  console.log(rows);
-
   return (
     <Stack direction="row" sx={{ flexFlow: 'row wrap' }}>
       {/* All chips from bookmarks */}
