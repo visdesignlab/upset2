@@ -62,7 +62,7 @@ const DEFAULT_VISIBLE_SETS = 6;
  * Takes a config object and populates it with default values if not already set
  * Has no effect on configs with default values already set
  * Does not modify the original config object passed in
- * @param config The config object to populate
+ * @param newConf The config object to populate
  * @param data The data object for this config
  * @param visualizeUpsetAttributes Whether or not to visualize UpSet generated attributes
  * @param visibleDataAttributes Attributes that should be visible. If undefined, the first DEFAULT_NUM_ATTRIBUTES are used
@@ -72,46 +72,61 @@ export function populateConfigDefaults(
   config: Partial<UpsetConfig>,
   data: CoreUpsetData,
   visualizeUpsetAttributes: boolean,
-  visibleDataAttributes: string[] | undefined,
+  visibleDataAttributes: string[] | undefined = undefined,
 ): UpsetConfig {
-  config = {
+  const newConf = {
     ...DefaultConfig,
-    ...(Object.entries(config).length > 0 ? convertConfig(config) : {}),
+    // This deepcopy is necessary to avoid mutating the original ßconfig object
+    ...(Object.entries(config).length > 0 ? deepCopy(convertConfig(config)) : {}),
   };
 
-  if (!config.visibleSets || config.visibleSets.length === 0) {
+  if (!newConf.visibleSets || newConf.visibleSets.length === 0) {
     const setList = Object.entries(data.sets);
-    config.visibleSets = setList.slice(0, DEFAULT_VISIBLE_SETS).map((set) => set[0]); // get first 6 set names
-    config.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
+    newConf.visibleSets = setList.slice(0, DEFAULT_VISIBLE_SETS).map((set) => set[0]); // get first 6 set names
+    newConf.allSets = setList.map((set) => ({ name: set[0], size: set[1].size }));
   }
 
   /**
    * visualizeAttributes can either be undefined or an array of strings.
    * if visualizeAttributes is defined, load the attributes named within. Otherwise, load the first DEFAULT_NUM_ATTRIBUTES.
    */
-  if (!config.visibleAttributes || config.visibleAttributes.length === 0)
+  if (!newConf.visibleAttributes || newConf.visibleAttributes.length === 0)
     if (visibleDataAttributes) {
-      config.visibleAttributes = [
+      newConf.visibleAttributes = [
         ...(visualizeUpsetAttributes ? UPSET_ATTS : []),
         ...visibleDataAttributes.filter((attr) => data.attributeColumns.includes(attr)),
       ];
     } else {
-      config.visibleAttributes = [
+      newConf.visibleAttributes = [
         ...(visualizeUpsetAttributes ? UPSET_ATTS : []),
         ...data.attributeColumns.slice(0, DEFAULT_NUM_ATTRIBUTES),
       ];
     }
 
   // for every visible attribute other than deviation and degree, set their initial attribute plot type to 'Box Plot'
-  config.attributePlots = deepCopy(config.attributePlots ?? {});
-  config.visibleAttributes.forEach((attr) => {
-    // @ts-expect-error attributePlots is guaranteed to exist... why doesn't TS know this??
-    if (attr !== 'Degree' && attr !== 'Deviation' && !config.attributePlots[attr]) {
-      // @ts-expect-error attributePlots is guaranteed to exist... why doesn't TS know this??
-      config.attributePlots[attr] = AttributePlotType.DensityPlot;
+  newConf.attributePlots = deepCopy(newConf.attributePlots ?? {});
+  newConf.visibleAttributes.forEach((attr) => {
+    if (attr !== 'Degree' && attr !== 'Deviation' && !newConf.attributePlots[attr]) {
+      newConf.attributePlots[attr] = AttributePlotType.DensityPlot;
     }
   });
 
-  if (!isUpsetConfig(config)) throw new Error('Config is not a valid UpsetConfig object');
-  return config;
+  // Default: a histogram for each attribute if no plots exist
+  if (!newConf.plots) newConf.plots = { scatterplots: [], histograms: [] };
+  if (!newConf.plots.scatterplots) newConf.plots.scatterplots = [];
+  if (!newConf.plots.histograms) newConf.plots.histograms = [];
+  if (newConf.plots.histograms.length + newConf.plots.scatterplots.length === 0) {
+    newConf.plots.histograms = data.attributeColumns
+      .filter((att) => data.columnTypes[att] === 'number' || data.columnTypes[att] === 'date')
+      .map((attr) => ({
+        attribute: attr,
+        bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
+        type: 'Histogram',
+        frequency: false,
+        id: Date.now().toString() + attr, // Add the attribute name so that the IDs aren't duplicated
+      }));
+  }
+
+  if (!isUpsetConfig(newConf)) throw new Error('Config is not a valid UpsetConfig object');
+  return newConf;
 }

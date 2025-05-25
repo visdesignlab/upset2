@@ -96,7 +96,14 @@ export const Root: FC<Props> = ({
   generateAltText,
 }) => {
   // Get setter for recoil config atom
-  const setState = useSetRecoilState(upsetConfigAtom);
+  const _setState = useSetRecoilState(upsetConfigAtom);
+  const setState = useCallback(
+    (newConfig: UpsetConfig) => {
+      console.trace('Setting new config', { ...newConfig });
+      _setState(newConfig);
+    },
+    [_setState],
+  );
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
   const setCanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
@@ -114,8 +121,20 @@ export const Root: FC<Props> = ({
 
   // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    const provenance = extProvenance?.provenance ?? initializeProvenanceTracking(config, setState);
+    const provenance =
+      extProvenance?.provenance ??
+      initializeProvenanceTracking(
+        populateConfigDefaults(
+          config,
+          data,
+          visualizeUpsetAttributes ?? true,
+          visibleDatasetAttributes,
+        ),
+        setState,
+      );
     const actions = extProvenance?.actions ?? getActions(provenance);
+
+    console.log('initial', provenance.getState(), extProvenance);
 
     // This syncs all linked atoms with the provenance state
     provenance.currentChange(() => {
@@ -134,6 +153,7 @@ export const Root: FC<Props> = ({
   }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
 
   useEffect(() => {
+    console.log('effect', provenance.getState());
     if (!extProvenance) {
       setState(
         populateConfigDefaults(
@@ -201,6 +221,7 @@ export const Root: FC<Props> = ({
     };
   }, [removeContextMenu]);
 
+  console.log('root render with', provenance.getState());
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
   return (
     <ProvenanceContext.Provider value={{ provenance, actions }}>

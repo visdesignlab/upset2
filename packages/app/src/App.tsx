@@ -8,7 +8,13 @@ import {
 } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { convertConfig, deepCopy, DefaultConfig, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
+  convertConfig,
+  deepCopy,
+  DefaultConfig,
+  populateConfigDefaults,
+  UpsetConfig,
+} from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -27,31 +33,13 @@ function App() {
   const multinetData = useRecoilValue(dataSelector);
   const encodedData = useRecoilValue(encodedDataAtom);
   const setState = useSetRecoilState(configAtom);
-  const data = encodedData === null ? multinetData : encodedData;
+  const data = useMemo(() => encodedData ?? multinetData ?? null, [encodedData, multinetData]);
   const { workspace, sessionId } = useRecoilValue(queryParamAtom);
   const [sessionState, setSessionState] = useState<SessionState>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
 
   const conf = useMemo(() => {
     const config: UpsetConfig = { ...DefaultConfig };
-    if (data !== null) {
-      const newConf: UpsetConfig = structuredClone(config);
-
-      // Default: a histogram for each attribute if no plots exist
-      if (newConf.plots.histograms.length + newConf.plots.scatterplots.length === 0) {
-        newConf.plots.histograms = data.attributeColumns
-          .filter((att) => data.columnTypes[att] === 'number' || data.columnTypes[att] === 'date')
-          .map((attr) => ({
-            attribute: attr,
-            bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
-            type: 'Histogram',
-            frequency: false,
-            id: Date.now().toString() + attr, // Add the attribute name so that the IDs aren't duplicated
-          }));
-      }
-
-      return newConf;
-    }
-
+    if (data !== null) return populateConfigDefaults(config, data, true);
     return config;
   }, [data]);
 
@@ -60,17 +48,25 @@ function App() {
     const prov: UpsetProvenance = initializeProvenanceTracking(conf ?? undefined);
     const act: UpsetActions = getActions(prov);
 
+    if (!data) return { provenance: prov, actions: act };
+
     // Make sure the provenance state gets converted every time this is called
     (prov as UpsetProvenance & { _getState: typeof prov.getState })._getState = prov.getState;
     prov.getState = () =>
-      convertConfig((prov as UpsetProvenance & { _getState: typeof prov.getState })._getState());
+      populateConfigDefaults(
+        convertConfig((prov as UpsetProvenance & { _getState: typeof prov.getState })._getState()),
+        data,
+        true,
+      );
 
     if (sessionState && sessionState !== 'not found') {
       prov.importObject(deepCopy(sessionState));
     }
 
     // Make sure the config atom stays up-to-date with the provenance
-    prov.currentChange(() => setState(prov.getState()));
+    prov.currentChange(() =>
+      setState(populateConfigDefaults(convertConfig(prov.getState()), data, true)),
+    );
 
     return { provenance: prov, actions: act };
   }, [conf, setState, sessionState]);
