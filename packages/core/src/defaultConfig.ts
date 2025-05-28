@@ -76,7 +76,7 @@ export function populateConfigDefaults(
 ): UpsetConfig {
   const newConf = {
     ...DefaultConfig,
-    // This deepcopy is necessary to avoid mutating the original ßconfig object
+    // This deepcopy is necessary to avoid mutating the original config object
     ...(Object.entries(config).length > 0 ? deepCopy(convertConfig(config)) : {}),
   };
 
