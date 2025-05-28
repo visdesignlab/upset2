@@ -134,8 +134,6 @@ export const Root: FC<Props> = ({
       );
     const actions = extProvenance?.actions ?? getActions(provenance);
 
-    console.log('initial', provenance.getState(), extProvenance);
-
     // This syncs all linked atoms with the provenance state
     provenance.currentChange(() => {
       // Old provenance nodes may be using a different config version, so convert it if need be
@@ -153,7 +151,6 @@ export const Root: FC<Props> = ({
   }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
 
   useEffect(() => {
-    console.log('effect', provenance.getState());
     if (!extProvenance) {
       setState(
         populateConfigDefaults(
@@ -221,7 +218,6 @@ export const Root: FC<Props> = ({
     };
   }, [removeContextMenu]);
 
-  console.log('root render with', provenance.getState());
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
   return (
     <ProvenanceContext.Provider value={{ provenance, actions }}>
