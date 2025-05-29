@@ -34,7 +34,7 @@ export default defineConfig([
           endOfLine: 'auto',
           singleQuote: true,
           trailingComma: 'all',
-          printWidth: 100,
+          printWidth: 120,
           semi: true,
           tabWidth: 2,
           useTabs: false,
