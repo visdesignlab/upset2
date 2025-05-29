@@ -19,12 +19,7 @@ import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemoval
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
-import {
-  getActions,
-  initializeProvenanceTracking,
-  UpsetActions,
-  UpsetProvenance,
-} from '../provenance';
+import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
@@ -96,14 +91,7 @@ export const Root: FC<Props> = ({
   generateAltText,
 }) => {
   // Get setter for recoil config atom
-  const _setState = useSetRecoilState(upsetConfigAtom);
-  const setState = useCallback(
-    (newConfig: UpsetConfig) => {
-      console.trace('Setting new config', { ...newConfig });
-      _setState(newConfig);
-    },
-    [_setState],
-  );
+  const setState = useSetRecoilState(upsetConfigAtom);
   const [sets, setSets] = useRecoilState(setsAtom);
   const [items, setItems] = useRecoilState(itemsAtom);
   const setCanEditPlotInformation = useSetRecoilState(canEditPlotInformationAtom);
@@ -124,12 +112,8 @@ export const Root: FC<Props> = ({
     const provenance =
       extProvenance?.provenance ??
       initializeProvenanceTracking(
-        populateConfigDefaults(
-          config,
-          data,
-          visualizeUpsetAttributes ?? true,
-          visibleDatasetAttributes,
-        ),
+        // Populate config defaults if not already set (this is only done if extProvenance is not provided)
+        populateConfigDefaults(config, data, visualizeUpsetAttributes ?? true, visibleDatasetAttributes),
         setState,
       );
     const actions = extProvenance?.actions ?? getActions(provenance);
@@ -137,12 +121,7 @@ export const Root: FC<Props> = ({
     // This syncs all linked atoms with the provenance state
     provenance.currentChange(() => {
       // Old provenance nodes may be using a different config version, so convert it if need be
-      const converted = populateConfigDefaults(
-        convertConfig(provenance.getState()),
-        data,
-        visualizeUpsetAttributes ?? false,
-        visibleDatasetAttributes,
-      );
+      const converted = convertConfig(provenance.getState());
       setState(converted);
     });
 
@@ -150,6 +129,9 @@ export const Root: FC<Props> = ({
     return { provenance, actions };
   }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
 
+  /**
+   * We don't want to populate the config defaults if the provenance is already set externally
+   */
   useEffect(() => {
     if (!extProvenance) {
       setState(
@@ -160,25 +142,8 @@ export const Root: FC<Props> = ({
           visibleDatasetAttributes,
         ),
       );
-    } else {
-      setState(
-        populateConfigDefaults(
-          convertConfig(provenance.getState()),
-          data,
-          visualizeUpsetAttributes ?? false,
-          visibleDatasetAttributes,
-        ),
-      );
-    }
-  }, [
-    config,
-    data,
-    setState,
-    visibleDatasetAttributes,
-    visualizeUpsetAttributes,
-    extProvenance,
-    provenance,
-  ]);
+    } else setState(convertConfig(provenance.getState()));
+  }, [config, data, setState, visibleDatasetAttributes, visualizeUpsetAttributes, extProvenance, provenance]);
 
   // This hook is for atoms that are not directly linked to the provenance state
   useEffect(() => {
@@ -245,8 +210,8 @@ export const Root: FC<Props> = ({
           border: 0;
         `}
       >
-        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively
-        working on this and apologize for any inconvenience.
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and
+        apologize for any inconvenience.
       </h2>
       <div
         css={css`
@@ -268,11 +233,7 @@ export const Root: FC<Props> = ({
       )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {altTextSidebar && generateAltText && (
-        <AltTextSidebar
-          open={altTextSidebar.open}
-          close={altTextSidebar.close}
-          generateAltText={generateAltText}
-        />
+        <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />
       )}
     </ProvenanceContext.Provider>
   );

@@ -2,12 +2,7 @@ import { firstAggregation, secondAggregation } from './aggregate';
 import { filterRows } from './filter';
 import { getSubsets } from './process';
 import { sortRows } from './sort';
-import {
-  areRowsAggregates,
-  getBelongingSetsFromSetMembership,
-  isPopulatedSetQuery,
-  isRowAggregate,
-} from './typeutils';
+import { areRowsAggregates, getBelongingSetsFromSetMembership, isPopulatedSetQuery, isRowAggregate } from './typeutils';
 import { CoreUpsetData, Row, Rows, SetQueryMembership, Sets, UpsetConfig } from './types';
 
 /**
@@ -35,11 +30,7 @@ export type RenderRow = {
  * @param idPrefix - The prefix to add to the IDs of the flattened rows (optional, defaults to an empty string).
  * @returns The flattened array of RenderRow objects.
  */
-export const flattenRows = (
-  rows: Rows,
-  flattenedRows: RenderRow[] = [],
-  idPrefix = '',
-): RenderRow[] => {
+export const flattenRows = (rows: Rows, flattenedRows: RenderRow[] = [], idPrefix = ''): RenderRow[] => {
   rows.order.forEach((rowId) => {
     const row = rows.values[rowId];
     const prefix = idPrefix + row.id;
@@ -113,16 +104,10 @@ export function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows
   flattenRows(rows).forEach((renderRow) => {
     let match = true;
     Object.entries(membership).forEach(([set, status]) => {
-      if (
-        status === 'Yes' &&
-        !getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)
-      ) {
+      if (status === 'Yes' && !getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
         match = false;
       }
-      if (
-        status === 'No' &&
-        getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)
-      ) {
+      if (status === 'No' && getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)) {
         match = false;
       }
     });
@@ -145,8 +130,7 @@ export function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows
  * @returns The sorted rows based on the RR and the provided sorting options.
  */
 const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) => {
-  if (!data || typeof data !== 'object' || !Object.hasOwn(data, 'sets'))
-    return { order: [], values: {} };
+  if (!data || typeof data !== 'object' || !Object.hasOwn(data, 'sets')) return { order: [], values: {} };
 
   const vSets: Sets = Object.fromEntries(
     Object.entries(data.sets as Sets).filter(([name]) => state.visibleSets.includes(name)),
@@ -155,12 +139,7 @@ const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) 
   let renderRows: Rows;
 
   if (!ignoreQuery && state.setQuery !== null && isPopulatedSetQuery(state.setQuery)) {
-    const subsets: Rows = getSubsets(
-      data.items,
-      data.sets,
-      state.visibleSets,
-      data.attributeColumns,
-    );
+    const subsets: Rows = getSubsets(data.items, data.sets, state.visibleSets, data.attributeColumns);
     renderRows = getQueryResult(subsets, state.setQuery.query);
   } else {
     renderRows = secondAggRR(data, state);

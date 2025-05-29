@@ -1,20 +1,9 @@
 import { useEffect, useMemo, useState } from 'react';
 
-import {
-  UpsetProvenance,
-  UpsetActions,
-  getActions,
-  initializeProvenanceTracking,
-} from '@visdesignlab/upset2-react';
+import { UpsetProvenance, UpsetActions, getActions, initializeProvenanceTracking } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import {
-  convertConfig,
-  deepCopy,
-  DefaultConfig,
-  populateConfigDefaults,
-  UpsetConfig,
-} from '@visdesignlab/upset2-core';
+import { convertConfig, deepCopy, DefaultConfig, populateConfigDefaults, UpsetConfig } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -38,9 +27,8 @@ function App() {
   const [sessionState, setSessionState] = useState<SessionState>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
 
   const conf = useMemo(() => {
-    const config: UpsetConfig = { ...DefaultConfig };
-    if (data !== null) return populateConfigDefaults(config, data, true);
-    return config;
+    if (data !== null) return populateConfigDefaults({ ...DefaultConfig }, data, true);
+    return undefined;
   }, [data]);
 
   // Initialize Provenance and pass it setter to connect
@@ -64,9 +52,7 @@ function App() {
     }
 
     // Make sure the config atom stays up-to-date with the provenance
-    prov.currentChange(() =>
-      setState(populateConfigDefaults(convertConfig(prov.getState()), data, true)),
-    );
+    prov.currentChange(() => setState(convertConfig(prov.getState())));
 
     return { provenance: prov, actions: act };
   }, [conf, setState, sessionState]);
@@ -80,11 +66,7 @@ function App() {
       if (sessionId) {
         const session = await getMultinetSession(workspace || '', sessionId);
         // Load the session if the object is not empty
-        if (
-          session?.state &&
-          typeof session.state === 'object' &&
-          Object.keys(session.state).length !== 0
-        ) {
+        if (session?.state && typeof session.state === 'object' && Object.keys(session.state).length !== 0) {
           setSessionState(session.state);
         } else {
           setSessionState('not found');
@@ -116,18 +98,8 @@ function App() {
             </>
           ) : (
             <>
-              <Route
-                path="*"
-                element={
-                  <Root provenance={provenance} actions={actions} data={null} config={conf} />
-                }
-              />
-              <Route
-                path="/"
-                element={
-                  <Root provenance={provenance} actions={actions} data={data} config={conf} />
-                }
-              />
+              <Route path="*" element={<Root provenance={provenance} actions={actions} data={null} config={conf} />} />
+              <Route path="/" element={<Root provenance={provenance} actions={actions} data={data} config={conf} />} />
             </>
           )}
           <Route path="/datatable" element={<DataTable />} />
