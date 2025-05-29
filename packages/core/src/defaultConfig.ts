@@ -103,14 +103,6 @@ export function populateConfigDefaults(
       ];
     }
 
-  // for every visible attribute other than deviation and degree, set their initial attribute plot type to 'Box Plot'
-  newConf.attributePlots = deepCopy(newConf.attributePlots ?? {});
-  newConf.visibleAttributes.forEach((attr) => {
-    if (attr !== 'Degree' && attr !== 'Deviation' && !newConf.attributePlots[attr]) {
-      newConf.attributePlots[attr] = AttributePlotType.DensityPlot;
-    }
-  });
-
   // Default: a histogram for each attribute if no plots exist
   if (!newConf.plots) newConf.plots = { scatterplots: [], histograms: [] };
   if (!newConf.plots.scatterplots) newConf.plots.scatterplots = [];

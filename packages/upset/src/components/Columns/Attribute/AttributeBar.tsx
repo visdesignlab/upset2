@@ -96,7 +96,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           );
       }
     }
-    return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
+    return <DensityPlot values={values} attribute={attribute} row={row} />;
   }, [attribute, attributePlots, row, scale, summary, values]);
 
   /**
