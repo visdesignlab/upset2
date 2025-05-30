@@ -38,15 +38,6 @@ function App() {
 
     if (!data) return { provenance: prov, actions: act };
 
-    // Make sure the provenance state gets converted every time this is called
-    (prov as UpsetProvenance & { _getState: typeof prov.getState })._getState = prov.getState;
-    prov.getState = () =>
-      populateConfigDefaults(
-        convertConfig((prov as UpsetProvenance & { _getState: typeof prov.getState })._getState()),
-        data,
-        true,
-      );
-
     if (sessionState && sessionState !== 'not found') {
       prov.importObject(deepCopy(sessionState));
     }
