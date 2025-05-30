@@ -10,6 +10,8 @@ import translate from '../../../utils/transform';
 import { AttributeBar } from './AttributeBar';
 import { DeviationBar } from '../DeviationBar';
 import { Degree } from '../Degree';
+import { attTypesSelector } from '../../../atoms/attributeAtom';
+import { CategoricalAttBar } from './CategoricalAttBar';
 
 /**
  * Props for the AttributeBars component.
@@ -32,6 +34,7 @@ export const AttributeBars: FC<Props> = memo(
   ({ attributes, row }: Props) => {
     const dimensions = useRecoilValue(dimensionsSelector);
     const visibleAttributes = useRecoilValue(visibleAttributesSelector);
+    const colTypes = useRecoilValue(attTypesSelector);
 
     const degreeXOffset = dimensions.degreeColumn.width + dimensions.degreeColumn.gap;
     const attributeXOffset = dimensions.attribute.width + dimensions.attribute.vGap;
@@ -43,14 +46,10 @@ export const AttributeBars: FC<Props> = memo(
    * @returns The column component to render.
    */
     function getColToRender(attribute: string) {
-      switch (attribute) {
-        case 'Degree':
-          return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
-        case 'Deviation':
-          return <DeviationBar deviation={row.attributes.deviation} />;
-        default:
-          return <AttributeBar summary={attributes[attribute]} attribute={attribute} row={row} key={`${row}:${attribute}`} />;
-      }
+      if (attribute === 'Degree') return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
+      if (attribute === 'Deviation') return <DeviationBar deviation={row.attributes.deviation} />;
+      if (colTypes[attribute] === 'category') return <CategoricalAttBar attribute={attribute} row={row} key={`${row}:${attribute}`} />;
+      return <AttributeBar summary={attributes[attribute]} attribute={attribute} row={row} key={`${row}:${attribute}`} />;
     }
 
     return (

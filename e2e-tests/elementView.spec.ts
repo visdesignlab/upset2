@@ -1,6 +1,4 @@
-import {
-  test, expect, Page, Locator,
-} from '@playwright/test';
+import { test, expect, Page, Locator } from '@playwright/test';
 import { beforeTest } from './common';
 
 test.beforeEach(beforeTest);
@@ -121,7 +119,9 @@ test('Selection Types', async ({ page }) => {
 
   // Make a bookmark
   await page.locator('[id="Subset_Evil\\~\\&\\~Male\\~\\&\\~Power_Plant"] > g:nth-child(3) > rect').click();
-  await expect(page.getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' })).toHaveText('Evil & Male & Power Plant - 2');
+  await expect(
+    page.getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' }),
+  ).toHaveText('Evil & Male & Power Plant - 2');
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 4);
   await assertRowTickCount(page, 'Subset_Unincluded', 2);
   await assertRowTickCount(page, 'Subset_Male', 2);
@@ -174,7 +174,10 @@ test('Selection Types', async ({ page }) => {
   await assertTableCount(page, 15);
 
   // Remove bookmark via chip
-  await page.getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' }).locator('svg').click();
+  await page
+    .getByRole('button', { name: 'Bookmarked intersection Evil & Male & Power Plant, size' })
+    .locator('svg')
+    .click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
@@ -183,7 +186,7 @@ test('Selection Types', async ({ page }) => {
   await assertTableCount(page, 15);
 
   // Remove bookmark via bookmark column
-  await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"] path').click();
+  await page.locator('[id="Subset_Duff_Fan\\~\\&\\~Male"]').getByTestId('BookmarkIcon').locator('path').click();
   await assertRowTickCount(page, 'Subset_Duff_Fan\\~\\&\\~Male', 4);
   await assertRowTickCount(page, 'Subset_Evil\\~\\&\\~Male', 6);
   await assertRowTickCount(page, 'Subset_Unincluded', 4);
@@ -274,10 +277,16 @@ test('Element View', async ({ page }) => {
   const vis = await page.getByLabel('Add Plot').locator('canvas');
   await expect(vis).toBeVisible();
 
-  const option1 = await page.locator('div').filter({ hasText: /^AttributeAgeAttribute$/ }).first();
+  const option1 = await page
+    .locator('div')
+    .filter({ hasText: /^AttributeAgeAttribute$/ })
+    .first();
   await expect(option1).toBeVisible();
 
-  const option2 = page.locator('div').filter({ hasText: /^BinsBins$/ }).first();
+  const option2 = page
+    .locator('div')
+    .filter({ hasText: /^BinsBins$/ })
+    .first();
   await expect(option2).toBeVisible();
 
   await expect(page.getByRole('tab', { name: 'KDE' })).toBeVisible();
@@ -334,14 +343,14 @@ test('Element View', async ({ page }) => {
   await expect(count24).toBeVisible();
 
   // Deselect bookmarked rows
-  await page.locator('[id="Subset_School\\~\\&\\~Male"] path').click();
+  await page.locator('[id="Subset_School\\~\\&\\~Male"]').getByTestId('BookmarkIcon').locator('path').click();
   await expect(count24).toBeVisible();
-  await page.locator('#Subset_Unincluded path').click();
+  await page.locator('#Subset_Unincluded').getByTestId('BookmarkIcon').locator('path').click();
   await expect(count24).toBeVisible();
 
   /*
-    * Plot removal
-    */
+   * Plot removal
+   */
   await page.locator('canvas').click({
     button: 'right',
     position: {

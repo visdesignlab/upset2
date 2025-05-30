@@ -14,7 +14,8 @@
       "Evil": false,
       "Male": false,
       "Power Plant": false,
-      "Age": 8
+      "Age": 8,
+      "Generation": "Child"
     },
     {
       "_key": "40726826",
@@ -27,7 +28,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 10
+      "Age": 10,
+      "Generation": "Child"
     },
     {
       "_key": "40726827",
@@ -40,7 +42,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": true,
-      "Age": 40
+      "Age": 40,
+      "Generation": "Adult"
     },
     {
       "_key": "40726828",
@@ -53,7 +56,8 @@
       "Evil": false,
       "Male": false,
       "Power Plant": false,
-      "Age": 36
+      "Age": 36,
+      "Generation": "Adult"
     },
     {
       "_key": "40726829",
@@ -66,7 +70,8 @@
       "Evil": false,
       "Male": false,
       "Power Plant": false,
-      "Age": 1
+      "Age": 1,
+      "Generation": "Child"
     },
     {
       "_key": "40726830",
@@ -79,7 +84,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 39
+      "Age": 39,
+      "Generation": "Adult"
     },
     {
       "_key": "40726831",
@@ -92,7 +98,8 @@
       "Evil": true,
       "Male": true,
       "Power Plant": true,
-      "Age": 90
+      "Age": 90,
+      "Generation": "Elder"
     },
     {
       "_key": "40726832",
@@ -105,7 +112,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 41
+      "Age": 41,
+      "Generation": "Adult"
     },
     {
       "_key": "40726833",
@@ -118,7 +126,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 42
+      "Age": 42,
+      "Generation": "Adult"
     },
     {
       "_key": "40726834",
@@ -131,7 +140,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 10
+      "Age": 10,
+      "Generation": "Child"
     },
     {
       "_key": "40726835",
@@ -144,7 +154,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 85
+      "Age": 85,
+      "Generation": "Elder"
     },
     {
       "_key": "40726836",
@@ -157,7 +168,8 @@
       "Evil": true,
       "Male": true,
       "Power Plant": false,
-      "Age": 46
+      "Age": 46,
+      "Generation": "Adult"
     },
     {
       "_key": "40726837",
@@ -170,7 +182,8 @@
       "Evil": true,
       "Male": true,
       "Power Plant": true,
-      "Age": 33
+      "Age": 33,
+      "Generation": "Adult"
     },
     {
       "_key": "40726838",
@@ -183,7 +196,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 8
+      "Age": 8,
+      "Generation": "Child"
     },
     {
       "_key": "40726839",
@@ -196,7 +210,8 @@
       "Evil": true,
       "Male": true,
       "Power Plant": false,
-      "Age": 37
+      "Age": 37,
+      "Generation": "Adult"
     },
     {
       "_key": "40726840",
@@ -209,7 +224,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 45
+      "Age": 45,
+      "Generation": "Adult"
     },
     {
       "_key": "40726841",
@@ -222,7 +238,8 @@
       "Evil": true,
       "Male": true,
       "Power Plant": false,
-      "Age": 50
+      "Age": 50,
+      "Generation": "Elder"
     },
     {
       "_key": "40726842",
@@ -235,7 +252,8 @@
       "Evil": false,
       "Male": false,
       "Power Plant": false,
-      "Age": 76
+      "Age": 76,
+      "Generation": "Elder"
     },
     {
       "_key": "40726843",
@@ -248,7 +266,8 @@
       "Evil": false,
       "Male": false,
       "Power Plant": false,
-      "Age": 45
+      "Age": 45,
+      "Generation": "Adult"
     },
     {
       "_key": "40726844",
@@ -261,7 +280,8 @@
       "Evil": false,
       "Male": false,
       "Power Plant": false,
-      "Age": 45
+      "Age": 45,
+      "Generation": "Adult"
     },
     {
       "_key": "40726845",
@@ -274,7 +294,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": true,
-      "Age": 38
+      "Age": 38,
+      "Generation": "Adult"
     },
     {
       "_key": "40726846",
@@ -287,7 +308,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": true,
-      "Age": 37
+      "Age": 37,
+      "Generation": "Adult"
     },
     {
       "_key": "40726847",
@@ -300,7 +322,8 @@
       "Evil": true,
       "Male": true,
       "Power Plant": false,
-      "Age": 11
+      "Age": 11,
+      "Generation": "Child"
     },
     {
       "_key": "40726848",
@@ -313,7 +336,8 @@
       "Evil": false,
       "Male": true,
       "Power Plant": false,
-      "Age": 10
+      "Age": 10,
+      "Generation": "Child"
     }
   ]
 }
