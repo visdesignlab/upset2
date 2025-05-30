@@ -109,7 +109,7 @@ export function populateConfigDefaults(
 
   // Default: a histogram for each attribute if no plots exist
   if (!newConf.plots) newConf.plots = { scatterplots: [], histograms: [] };
-  if (!newConf.plots.histograms && !newConf.plots.scatterplots.length) {
+  if (!newConf.plots.histograms.length && !newConf.plots.scatterplots.length) {
     if (!newConf.plots.histograms) newConf.plots.histograms = [];
     newConf.plots.histograms = data.attributeColumns
       .filter((att) => data.columnTypes[att] === 'number' || data.columnTypes[att] === 'date')
