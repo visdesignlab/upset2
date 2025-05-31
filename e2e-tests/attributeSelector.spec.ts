@@ -40,15 +40,11 @@ test('Attribute Dropdown', async ({ page }) => {
   /// /////////////////
   // Deselect and assert that it's removed from the plot
   await toggleAttribute(page, 'Degree', false);
-  await expect(
-    page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect'),
-  ).toHaveCount(0);
+  await expect(page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect')).toHaveCount(0);
 
   // Reselect and assert that it's added back to the plot
   await toggleAttribute(page, 'Degree', true);
-  await expect(
-    page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect'),
-  ).toBeVisible();
+  await expect(page.locator('#upset-svg').getByLabel('Number of intersecting sets').locator('rect')).toBeVisible();
 
   /// /////////////////
   // Deviation
