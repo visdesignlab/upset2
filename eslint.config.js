@@ -16,9 +16,6 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     plugins: { js },
     extends: ['js/recommended'],
-  },
-  {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     languageOptions: { globals: globals.browser },
   },
   {
@@ -34,7 +31,7 @@ export default defineConfig([
           endOfLine: 'auto',
           singleQuote: true,
           trailingComma: 'all',
-          printWidth: 120,
+          printWidth: 90,
           semi: true,
           tabWidth: 2,
           useTabs: false,
