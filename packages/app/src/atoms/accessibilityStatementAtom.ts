@@ -1,6 +1,6 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 export const accessibilityStatementAtom = atom<boolean>({
-    key: 'accessibility-statement',
-    default: false,
+  key: 'accessibility-statement',
+  default: false,
 });

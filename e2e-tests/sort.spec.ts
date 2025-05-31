@@ -21,13 +21,7 @@ const SIZE_ORDER = {
 };
 
 const DEGREE_ORDER = {
-  Ascending: [
-    'Subset_Unincluded',
-    'Subset_Blue_Hair',
-    'Subset_Male',
-    'Subset_School',
-    'Subset_Duff_Fan~&amp;~Male',
-  ],
+  Ascending: ['Subset_Unincluded', 'Subset_Blue_Hair', 'Subset_Male', 'Subset_School', 'Subset_Duff_Fan~&amp;~Male'],
   Descending: [
     'Subset_Duff_Fan~&amp;~Evil~&amp;~Male',
     'Subset_Duff_Fan~&amp;~Male~&amp;~Power Plant',
@@ -136,18 +130,27 @@ test('Sort by Set Male', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
 
   /// Only one option for sortOrder for sets
-  await page.locator('p').filter({ hasText: /^Male$/ }).dispatchEvent('click');
+  await page
+    .locator('p')
+    .filter({ hasText: /^Male$/ })
+    .dispatchEvent('click');
   await compareSortedElements(page, SET_MALE_ORDER.Alphabetical);
 
   // Sort visible sets by size, ascending
   // male is largest, so this should put it at the end.
   // This will alter the order of the sets
-  await page.locator('p').filter({ hasText: /^Male$/ }).dispatchEvent('contextmenu');
+  await page
+    .locator('p')
+    .filter({ hasText: /^Male$/ })
+    .dispatchEvent('contextmenu');
   await page.getByRole('menuitem', { name: 'Sort Sets by Size - Ascending' }).dispatchEvent('click');
 
   await compareSortedElements(page, SET_MALE_ORDER.Ascending);
 
-  await page.locator('p').filter({ hasText: /^Male$/ }).dispatchEvent('contextmenu');
+  await page
+    .locator('p')
+    .filter({ hasText: /^Male$/ })
+    .dispatchEvent('contextmenu');
   await page.getByRole('menuitem', { name: 'Sort Sets by Size - Descending' }).dispatchEvent('click');
 
   await compareSortedElements(page, SET_MALE_ORDER.Descending);

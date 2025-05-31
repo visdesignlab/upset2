@@ -1,5 +1,7 @@
 import {
-  Item, ElementQueryType, Plot,
+  Item,
+  ElementQueryType,
+  Plot,
   FilteredItems,
   VegaSelection,
   QuerySelection,
@@ -30,7 +32,7 @@ export function hashString(str: string): number {
   if (str.length === 0) return hash;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
   }
   return hash;
 }
@@ -46,16 +48,18 @@ export function hashString(str: string): number {
 export function filterByVega(items: Item[], filter: VegaSelection): FilteredItems {
   const included: Item[] = [];
   const excluded: Item[] = [];
-  items.forEach(
-    (item) => {
-      if (Object.entries(filter).every(
-        ([key, value]) => typeof item[key] === 'number'
-            && item[key] as number >= value[0]
-            && item[key] as number <= value[1],
-      )) included.push(item);
-      else excluded.push(item);
-    },
-  );
+  items.forEach((item) => {
+    if (
+      Object.entries(filter).every(
+        ([key, value]) =>
+          typeof item[key] === 'number' &&
+          (item[key] as number) >= value[0] &&
+          (item[key] as number) <= value[1],
+      )
+    )
+      included.push(item);
+    else excluded.push(item);
+  });
   return { included, excluded };
 }
 
@@ -78,7 +82,7 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
     if (Object.hasOwn(item, att)) {
       switch (type) {
         case ElementQueryType.CONTAINS:
-          add = (`${item[att]}`).includes(query);
+          add = `${item[att]}`.includes(query);
           break;
         case ElementQueryType.EQUALS:
           switch (typeof item[att]) {
@@ -86,16 +90,17 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
               add = Math.abs((item[att] as number) - Number(query)) < 0.0001;
               break;
             case 'string':
-              add = (`${item[att]}`) === query;
+              add = `${item[att]}` === query;
               break;
             default:
-              add = (`${item[att]}` === query);
-          } break;
+              add = `${item[att]}` === query;
+          }
+          break;
         case ElementQueryType.LENGTH:
-          add = ((`${item[att]}`).length === Number(query));
+          add = `${item[att]}`.length === Number(query);
           break;
         case ElementQueryType.REGEX:
-          add = (new RegExp(query).test(`${item[att]}`));
+          add = new RegExp(query).test(`${item[att]}`);
           break;
         case ElementQueryType.GREATER_THAN:
           switch (typeof item[att]) {
@@ -103,22 +108,30 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
               add = Number(item[att]) > Number(query);
               break;
             case 'string':
-              add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) > 0;
+              add =
+                `${item[att]}`.localeCompare(query, undefined, {
+                  numeric: typeof item[att] === 'number',
+                }) > 0;
               break;
             default:
               add = `${item[att]}` < `${query}`;
-          } break;
+          }
+          break;
         case ElementQueryType.LESS_THAN:
           switch (typeof item[att]) {
             case 'number':
               add = Number(item[att]) < Number(query);
               break;
             case 'string':
-              add = `${item[att]}`.localeCompare(query, undefined, { numeric: typeof item[att] === 'number' }) < 0;
+              add =
+                `${item[att]}`.localeCompare(query, undefined, {
+                  numeric: typeof item[att] === 'number',
+                }) < 0;
               break;
             default:
               add = `${item[att]}` > `${query}`;
-          } break;
+          }
+          break;
         default:
       }
     }
@@ -135,8 +148,11 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
  */
 export function plotToString(plot: Plot): string {
   switch (plot.type) {
-    case 'Scatterplot': return `Scatterplot: ${plot.x} by ${plot.y}`;
-    case 'Histogram': return `Histogram: ${plot.attribute}`;
-    default: throw Error(`Cannot convert plot ${plot} to string`);
+    case 'Scatterplot':
+      return `Scatterplot: ${plot.x} by ${plot.y}`;
+    case 'Histogram':
+      return `Histogram: ${plot.attribute}`;
+    default:
+      throw Error(`Cannot convert plot ${plot} to string`);
   }
 }

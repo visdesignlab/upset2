@@ -1,5 +1,8 @@
 import {
-  isRowAggregate, Row, RenderRow, isPopulatedSetQuery,
+  isRowAggregate,
+  Row,
+  RenderRow,
+  isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
 import { a, useTransition } from 'react-spring';
@@ -10,7 +13,10 @@ import translate from '../../utils/transform';
 import { AggregateRow } from './AggregateRow';
 import { SubsetRow } from './SubsetRow';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
-import { queryBySetsInterfaceAtom, setQuerySelector } from '../../atoms/config/queryBySetsAtoms';
+import {
+  queryBySetsInterfaceAtom,
+  setQuerySelector,
+} from '../../atoms/config/queryBySetsAtoms';
 import { TALL_ROW_TYPES } from '../../dimensions';
 
 type Props = {
@@ -30,16 +36,16 @@ export function rowRenderer(row: Row) {
 }
 
 /**
-   * Determines whether a row should be rendered based on its parent ID and the list of collapsed IDs.
-   *
-   * @param {Row} row - The row object to check.
-   * @returns {boolean} - Returns `true` if the row should be rendered, otherwise `false`.
-   *
-   * The function checks the following conditions:
-   * 1. If the row has no parent ID, it should be rendered.
-   * 2. If the parent ID contains a hyphen, it extracts the top-level aggregate ID and checks if it is in the list of collapsed IDs.
-   * 3. If the parent ID is in the list of collapsed IDs, the row should not be rendered.
-   */
+ * Determines whether a row should be rendered based on its parent ID and the list of collapsed IDs.
+ *
+ * @param {Row} row - The row object to check.
+ * @returns {boolean} - Returns `true` if the row should be rendered, otherwise `false`.
+ *
+ * The function checks the following conditions:
+ * 1. If the row has no parent ID, it should be rendered.
+ * 2. If the parent ID contains a hyphen, it extracts the top-level aggregate ID and checks if it is in the list of collapsed IDs.
+ * 3. If the parent ID is in the list of collapsed IDs, the row should not be rendered.
+ */
 const shouldRender = (row: Row, collapsedIds: string[]) => {
   const parentId = row.parent;
 
@@ -110,9 +116,11 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
         const prevRow = rows[index - 1].row;
         // Only use aggRowHeight if the previous row is an aggregate containing set membership circles
         // which is NOT contained in a collapsed parent aggregate
-        if (isRowAggregate(prevRow)
-          && !(prevRow.parent && collapsedIds.includes(prevRow.parent))
-          && TALL_ROW_TYPES.includes(prevRow.aggregateBy)) {
+        if (
+          isRowAggregate(prevRow) &&
+          !(prevRow.parent && collapsedIds.includes(prevRow.parent)) &&
+          TALL_ROW_TYPES.includes(prevRow.aggregateBy)
+        ) {
           yTransform += dimensions.body.aggRowHeight;
         } else yTransform += dimensions.body.rowHeight;
       }
@@ -132,11 +140,15 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
 
   return (
     <g id="matrixRows" onClick={(e) => e.stopPropagation()}>
-      { isPopulatedSetQuery(setQuery) && <g id="setQuery" />}
-      {rowTransitions(({ transform }, item) => (
-        shouldRender(item.row, collapsedIds) &&
-          <a.g key={item.id} transform={transform}>{rowRenderer(item.row)}</a.g>
-      ))}
+      {isPopulatedSetQuery(setQuery) && <g id="setQuery" />}
+      {rowTransitions(
+        ({ transform }, item) =>
+          shouldRender(item.row, collapsedIds) && (
+            <a.g key={item.id} transform={transform}>
+              {rowRenderer(item.row)}
+            </a.g>
+          ),
+      )}
     </g>
   );
 };

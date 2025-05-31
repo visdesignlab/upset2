@@ -3,7 +3,7 @@ import { Box, Button, Link } from '@mui/material';
 import { useRecoilState } from 'recoil';
 import { CoreUpsetData } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
-// @ts-ignore Tsconfig not recognizing svg files
+// @ts-expect-error TS does not understand SVG imports
 import vdlLogo from '../../assets/vdl_logo.svg';
 import { accessibilityStatementAtom } from '../../atoms/accessibilityStatementAtom';
 import { AccessibilityStatement } from '../AccessiblityStatement';
@@ -17,7 +17,7 @@ import { FOOTER_HEIGHT } from '../Root';
 type Props = {
   /** The data for this plot */
   data: CoreUpsetData;
-}
+};
 
 /**
  * The footer below the plot
@@ -29,18 +29,30 @@ const Footer: FC<Props> = ({ data }) => {
     alignItems: 'center',
   };
 
-  const [accessibilityStatement, setAccessibilityStatement] = useRecoilState(accessibilityStatementAtom);
+  const [accessibilityStatement, setAccessibilityStatement] = useRecoilState(
+    accessibilityStatementAtom,
+  );
   const [aboutModal, setAboutModal] = useRecoilState(aboutAtom);
 
   return (
-    <Box sx={{
-      position: 'absolute', bottom: 0, width: '100%', height: `${FOOTER_HEIGHT}px`, zIndex: 2,
-    }}
+    <Box
+      sx={{
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        height: `${FOOTER_HEIGHT}px`,
+        zIndex: 2,
+      }}
     >
       <footer>
-        <Box sx={{
-          backgroundColor: '#e0e0e0', width: '100%', display: 'flex', justifyContent: 'space-around', padding: '5px 0',
-        }}
+        <Box
+          sx={{
+            backgroundColor: '#e0e0e0',
+            width: '100%',
+            display: 'flex',
+            justifyContent: 'space-around',
+            padding: '5px 0',
+          }}
         >
           <Button
             sx={categoryCSS}
@@ -91,7 +103,11 @@ const Footer: FC<Props> = ({ data }) => {
           </Button>
 
           {/* Accessibility Statement dialog */}
-          <AccessibilityStatement data={data} open={accessibilityStatement} close={() => setAccessibilityStatement(false)} />
+          <AccessibilityStatement
+            data={data}
+            open={accessibilityStatement}
+            close={() => setAccessibilityStatement(false)}
+          />
           {/* About dialog */}
           <About open={aboutModal} close={() => setAboutModal(false)} />
         </Box>

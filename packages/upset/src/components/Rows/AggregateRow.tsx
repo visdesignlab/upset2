@@ -7,10 +7,18 @@ import SvgIcon from '@mui/material/SvgIcon';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
-import { currentSelectionType, currentIntersectionSelector } from '../../atoms/config/selectionAtoms';
+import {
+  currentSelectionType,
+  currentIntersectionSelector,
+} from '../../atoms/config/selectionAtoms';
 import translate from '../../utils/transform';
 import {
-  highlight, mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
+  highlight,
+  mousePointer,
+  DEFAULT_ROW_BACKGROUND_COLOR,
+  ROW_BORDER_STROKE_COLOR,
+  ROW_BORDER_STROKE_WIDTH,
+  DEFAULT_ROW_BACKGROUND_OPACITY,
 } from '../../utils/styles';
 import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
@@ -81,9 +89,13 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const selectionType = useRecoilValue(currentSelectionType);
   const collapsedIds = useRecoilValue(collapsedSelector);
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
-  const vegaSelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }));
-  const querySelected = useRecoilValue(aggregateSelectedCount({ agg: aggregateRow, type: 'query' }));
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
+  const vegaSelected = useRecoilValue(
+    aggregateSelectedCount({ agg: aggregateRow, type: 'vega' }),
+  );
+  const querySelected = useRecoilValue(
+    aggregateSelectedCount({ agg: aggregateRow, type: 'query' }),
+  );
   const setHoveredRow = useSetRecoilState(rowHoverAtom);
 
   let width = dimensions.body.rowWidth;
@@ -96,8 +108,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
    * Otherwise, description is the element name.
    */
   const desc =
-    aggregateRow.elementName.length < 14 ||
-    aggregateRow.aggregateBy !== 'Overlaps'
+    aggregateRow.elementName.length < 14 || aggregateRow.aggregateBy !== 'Overlaps'
       ? aggregateRow.elementName
       : `${aggregateRow.elementName.slice(0, 14)}...`;
 
@@ -105,7 +116,11 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
     <g
       id={aggregateRow.id}
       onClick={() => {
-        if (aggregateRow && currentIntersection?.id === aggregateRow.id && selectionType === 'row') {
+        if (
+          aggregateRow &&
+          currentIntersection?.id === aggregateRow.id &&
+          selectionType === 'row'
+        ) {
           actions.setRowSelection(null);
         } else {
           actions.setRowSelection(aggregateRow);
@@ -115,15 +130,14 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       onMouseEnter={() => setHoveredRow(aggregateRow.id)}
       onMouseLeave={() => setHoveredRow(null)}
     >
-      <g
-        transform={translate(
-          aggregateRow.level === 2 ? secondLevelXOffset : 2,
-          0,
-        )}
-      >
+      <g transform={translate(aggregateRow.level === 2 ? secondLevelXOffset : 2, 0)}>
         <rect
           transform={translate(0, 2)}
-          css={currentIntersection?.id === aggregateRow.id && selectionType === 'row' && highlight}
+          css={
+            currentIntersection?.id === aggregateRow.id &&
+            selectionType === 'row' &&
+            highlight
+          }
           height={
             TALL_ROW_TYPES.includes(aggregateRow.aggregateBy)
               ? dimensions.body.aggRowHeight - 4
@@ -177,7 +191,12 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       )}
       <g>
         <BookmarkColumnIcon row={aggregateRow} />
-        <SizeBar row={aggregateRow} size={aggregateRow.size} vegaSelected={vegaSelected} querySelected={querySelected} />
+        <SizeBar
+          row={aggregateRow}
+          size={aggregateRow.size}
+          vegaSelected={vegaSelected}
+          querySelected={querySelected}
+        />
         <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
       </g>
     </g>

@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */ // Eslint apparently has never heard of enums...
 export type ColumnName = string;
 
 /**
@@ -7,7 +8,7 @@ export type MultinetTableRow = {
   _key: string;
   _id: string;
   _rev: string;
-}
+};
 
 /**
  * A row of data imported from a Multinet table, containing both the default Multinet fields
@@ -15,7 +16,7 @@ export type MultinetTableRow = {
  */
 export type TableRow = MultinetTableRow & {
   [key: string]: string | number | boolean;
-}
+};
 
 /**
  * Base type for a column in the plot
@@ -24,14 +25,6 @@ export type TableRow = MultinetTableRow & {
 export type Column = {
   name: string;
   size: number;
-};
-
-export type ColumnDefs = {
-  [columnName: string]: 'number' | 'boolean' | 'string' | 'label';
-};
-
-export type Meta = {
-  columns: ColumnDefs;
 };
 
 /**
@@ -73,7 +66,7 @@ export type Item = {
 export type Items = { [k: string]: Item };
 
 /** Items filtered by some query into included and excluded groups */
-export type FilteredItems = {included: Item[], excluded: Item[]};
+export type FilteredItems = { included: Item[]; excluded: Item[] };
 
 /**
  * Represents a six-number summary. Derived for the Boxplot
@@ -111,7 +104,7 @@ export type SixNumberSummary = {
  */
 export type AttributeList = {
   [attribute: string]: SixNumberSummary | number;
-}
+};
 
 /**
  * List of attributes for a subset ([attr1, attr2, deviation, degree, etc])
@@ -208,12 +201,12 @@ export const aggregateByList = [
  * Ways the upset plot can be aggregated
  * @private typechecked by isAggregateBy in typecheck.ts; changes here must be reflected there
  */
-export type AggregateBy = typeof aggregateByList[number];
+export type AggregateBy = (typeof aggregateByList)[number];
 
 export type SortByOrder = 'Ascending' | 'Descending';
 
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
-export type SortVisibleBy = typeof sortVisibleByList[number];
+export type SortVisibleBy = (typeof sortVisibleByList)[number];
 
 /**
  * An aggregate row in the plot
@@ -248,14 +241,24 @@ export type Row = Subset | Aggregate;
  * Possible column types.
  * @private Taken from the TableTypeAnnotation in multinet-api
  */
-export type ColumnType = 'primary key' | 'edge source' | 'edge target' | 'label' | 'string' | 'boolean' | 'category' | 'number' | 'date' | 'ignored';
+export type ColumnType =
+  | 'primary key'
+  | 'edge source'
+  | 'edge target'
+  | 'label'
+  | 'string'
+  | 'boolean'
+  | 'category'
+  | 'number'
+  | 'date'
+  | 'ignored';
 
 /**
  * Maps column names to their string type
  */
 export type ColumnTypes = {
-    [key: string]: ColumnType;
-}
+  [name: string]: ColumnType;
+};
 
 export type CoreUpsetData = {
   label: ColumnName;
@@ -298,9 +301,9 @@ export type Plot = Scatterplot | Histogram;
 /**
  * Represents the different types of attribute plots.
  * Enum value is used here so that the values can be used as keys in upset package.
-*/
+ */
 // linter is saying this is already declared... on this line
-// eslint-disable-next-line no-shadow
+
 export enum AttributePlotType {
   BoxPlot = 'Box Plot',
   DotPlot = 'Dot Plot',
@@ -319,7 +322,7 @@ export type AttributePlots = Record<string, `${AttributePlotType}`>;
  * Possible string types for an element query
  */
 // linter is saying this is already declared... on this line
-// eslint-disable-next-line no-shadow
+
 export enum ElementQueryType {
   EQUALS = 'equals',
   CONTAINS = 'contains',
@@ -333,7 +336,7 @@ export enum ElementQueryType {
  * Possible string types for an element query on a numerical attribute
  */
 // linter is saying this is already declared... on this line
-// eslint-disable-next-line no-shadow
+
 export enum NumericalQueryType {
   EQUALS = 'equals',
   LESS_THAN = 'less than',
@@ -348,18 +351,18 @@ export type QuerySelection = {
   /**
    * Name of the attribute being queried upon
    */
-  att: string,
+  att: string;
   /**
    * Type of the query; determines the mechanism used to evaluate whether the value of att
    * on a given element matches this query
    */
-  type: ElementQueryType,
+  type: ElementQueryType;
   /**
    * The query string. To be included in this query, the value of att on a given
    * element must match this query string according to the rules set by the type.
    */
-  query: string,
-}
+  query: string;
+};
 
 /**
  * Represents a selection of elements based on their numerical attributes,
@@ -372,7 +375,7 @@ export type QuerySelection = {
  * upset/src/components/ElementView/ElementVisualization.tsx.
  * This is typechecked by isVegaSelection in typecheck.ts; changes here must be reflected there.
  */
-export type VegaSelection = {[attName: string] : [number, number]};
+export type VegaSelection = { [attName: string]: [number, number] };
 
 /**
  * Represents the type of selection currently active in the element view.
@@ -384,7 +387,7 @@ export type SelectionType = 'row' | 'vega' | 'query' | null;
  * Represents a query object where each key is a string and the value is a SetMembershipStatus.
  * This type is used to define the membership status of elements in a set.
  */
-export type SetQueryMembership = {[key: string]: SetMembershipStatus};
+export type SetQueryMembership = { [key: string]: SetMembershipStatus };
 
 /**
  * Represents a query for a set.
@@ -392,7 +395,7 @@ export type SetQueryMembership = {[key: string]: SetMembershipStatus};
 export type SetQuery = {
   name: string;
   query: SetQueryMembership;
-}
+};
 
 /**
  * A bookmarked intersection
@@ -424,29 +427,29 @@ export type Bookmark = {
 /**
  * Represents the alternative text for an Upset plot.
  * @private typechecked by isAltText in typecheck.ts; changes here must be reflected there
-*/
+ */
 export type AltText = {
   /**
-  * The long description for the Upset plot.
-  */
+   * The long description for the Upset plot.
+   */
   longDescription: string | null;
 
   /**
-  * The short description for the Upset plot.
-  */
+   * The short description for the Upset plot.
+   */
   shortDescription: string | null;
 
   /**
-  * The technique description for the Upset plot.
-  */
+   * The technique description for the Upset plot.
+   */
   techniqueDescription?: string;
 
   /**
-  * Optional warnings for the Upset plot.
-  * Not yet implemented by the API as of 4/22/24
-  */
+   * Optional warnings for the Upset plot.
+   * Not yet implemented by the API as of 4/22/24
+   */
   warnings?: string;
-}
+};
 
 /**
  * A configuration object for an UpSet plot.
@@ -530,21 +533,21 @@ export type AccessibleDataEntry = {
   degree: number;
   id?: string;
   setMembership?: {
-      [set: string]: SetMembershipStatus;
+    [set: string]: SetMembershipStatus;
   };
   items?: {
-      [row: string]: AccessibleDataEntry;
+    [row: string]: AccessibleDataEntry;
   };
-}
+};
 
 export type AccessibleData = {
   values: {
-      [row: string]: AccessibleDataEntry;
+    [row: string]: AccessibleDataEntry;
   };
-}
+};
 
 export type AltTextConfig = UpsetConfig & {
   rawData?: CoreUpsetData;
   processedData?: Rows;
-  accessibleProcessedData?: AccessibleData
+  accessibleProcessedData?: AccessibleData;
 };

@@ -4,9 +4,7 @@ export * from './types';
 
 export * from './provenance/index';
 
-export {
-  upsetConfigAtom,
-} from './atoms/config/upsetConfigAtoms';
+export { upsetConfigAtom } from './atoms/config/upsetConfigAtoms';
 
 export * from './utils/downloads';
 

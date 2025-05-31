@@ -38,9 +38,7 @@ type Props = {
  */
 export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const { actions }: {actions: UpsetActions} = useContext(
-    ProvenanceContext,
-  );
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
@@ -106,33 +104,29 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
     ];
 
     if (!UPSET_ATTS.includes(label)) {
-    // for every possible value of the type AttributePlotType (from core), add a menu item
+      // for every possible value of the type AttributePlotType (from core), add a menu item
       Object.values(AttributePlotType).forEach((plot) => {
-        items.push(
-          {
-            label: `Change plot type to ${plot}`,
-            onClick: () => {
-              actions.updateAttributePlotType(label, plot);
-              handleContextMenuClose();
-            },
-            disabled: attributePlots[label] === plot,
+        items.push({
+          label: `Change plot type to ${plot}`,
+          onClick: () => {
+            actions.updateAttributePlotType(label, plot);
+            handleContextMenuClose();
           },
-        );
+          disabled: attributePlots[label] === plot,
+        });
       });
     }
 
     // Add remove attribute option if allowed
     if (allowAttributeRemoval) {
-      items.push(
-        {
-          label: `Remove ${label}`,
-          onClick: () => {
-            actions.removeAttribute(label);
-            handleContextMenuClose();
-          },
-          disabled: false,
+      items.push({
+        label: `Remove ${label}`,
+        onClick: () => {
+          actions.removeAttribute(label);
+          handleContextMenuClose();
         },
-      );
+        disabled: false,
+      });
     }
 
     return items;
@@ -144,18 +138,20 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
    * @param e - The mouse event.
    */
   const openContextMenu = (e: MouseEvent) => {
-    setContextMenu(
-      {
-        mouseX: e.clientX,
-        mouseY: e.clientY,
-        id: `header-menu-${label}`,
-        items: getMenuItems(),
-      },
-    );
+    setContextMenu({
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      id: `header-menu-${label}`,
+      items: getMenuItems(),
+    });
   };
 
   return (
-    <Tooltip title={<div dangerouslySetInnerHTML={{ __html: tooltip ?? label }} />} arrow placement="top">
+    <Tooltip
+      title={<div dangerouslySetInnerHTML={{ __html: tooltip ?? label }} />}
+      arrow
+      placement="top"
+    >
       <g
         css={{
           '&:hover': {
@@ -194,8 +190,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
           >
             {label}
           </text>
-          {(sortBy === label) &&
-            <HeaderSortArrow />}
+          {sortBy === label && <HeaderSortArrow />}
         </g>
       </g>
     </Tooltip>

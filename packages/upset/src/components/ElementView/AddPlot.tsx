@@ -65,7 +65,7 @@ type ButtonProps = {
    * If type is scatterplot, whether to use log scale for y axis
    */
   yScaleLog?: boolean;
-}
+};
 
 /**
  * Add button for adding a plot
@@ -73,9 +73,18 @@ type ButtonProps = {
  * @returns Button
  */
 const AddButton: FC<ButtonProps> = ({
-  handleClose, type, bins, attribute, density, x, y, xScaleLog, yScaleLog, disabled,
+  handleClose,
+  type,
+  bins,
+  attribute,
+  density,
+  x,
+  y,
+  xScaleLog,
+  yScaleLog,
+  disabled,
 }) => {
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
   return (
     <Button
@@ -167,42 +176,33 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
       <Grid container item xs={6}>
         <FormControlLabel
           label="Use logscale"
-          control={
-            <Switch
-              value={xScaleLog}
-              onChange={() => setXLogScale(!xScaleLog)}
-            />
-          }
+          control={<Switch value={xScaleLog} onChange={() => setXLogScale(!xScaleLog)} />}
         />
       </Grid>
 
       <Grid container item xs={6}>
         <FormControlLabel
           label="Use logscale"
-          control={
-            <Switch
-              value={yScaleLog}
-              onChange={() => setYLogScale(!yScaleLog)}
-            />
-          }
+          control={<Switch value={yScaleLog} onChange={() => setYLogScale(!yScaleLog)} />}
         />
       </Grid>
       {x && y && Object.values(items).length && (
-      <Box sx={PLOT_CONTAINER_STYLE}>
-        <ScatterplotPlot
-          spec={{
-            id: Date.now().toString(),
-            type: 'Scatterplot',
-            x,
-            y,
-            xScaleLog,
-            yScaleLog,
-          }}
-          data={{
-            elements: Object.values(JSON.parse(JSON.stringify(items))),
-          }}
-        />
-      </Box>)}
+        <Box sx={PLOT_CONTAINER_STYLE}>
+          <ScatterplotPlot
+            spec={{
+              id: Date.now().toString(),
+              type: 'Scatterplot',
+              x,
+              y,
+              xScaleLog,
+              yScaleLog,
+            }}
+            data={{
+              elements: Object.values(JSON.parse(JSON.stringify(items))),
+            }}
+          />
+        </Box>
+      )}
       <AddButton
         disabled={!(x && y && Object.values(items).length)}
         handleClose={handleClose}
@@ -220,7 +220,10 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
  * UI for adding a histogram to the element view
  * @param param0 @see Props
  */
-export const AddHistogram: FC<Props & {density: boolean}> = ({ handleClose, density }) => {
+export const AddHistogram: FC<Props & { density: boolean }> = ({
+  handleClose,
+  density,
+}) => {
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
@@ -247,20 +250,21 @@ export const AddHistogram: FC<Props & {density: boolean}> = ({ handleClose, dens
         </FormControl>
       </Grid>
 
-      {!density &&
-      <Grid container item xs={4}>
-        <TextField
-          disabled={density}
-          label="Bins"
-          value={bins}
-          type="number"
-          onChange={(event) => {
-            const newBins = Number(event.target.value);
+      {!density && (
+        <Grid container item xs={4}>
+          <TextField
+            disabled={density}
+            label="Bins"
+            value={bins}
+            type="number"
+            onChange={(event) => {
+              const newBins = Number(event.target.value);
 
-            if (newBins > 0) setBins(newBins);
-          }}
-        />
-      </Grid>}
+              if (newBins > 0) setBins(newBins);
+            }}
+          />
+        </Grid>
+      )}
 
       <Grid container item xs={12}>
         {attribute && bins > 0 && Object.values(items).length && (
@@ -277,7 +281,6 @@ export const AddHistogram: FC<Props & {density: boolean}> = ({ handleClose, dens
                 elements: Object.values(JSON.parse(JSON.stringify(items))),
               }}
             />
-
           </Box>
         )}
         <AddButton

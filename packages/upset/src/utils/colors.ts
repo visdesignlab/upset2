@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-expressions */
 /* eslint-disable no-bitwise */
 // from https://natclark.com/tutorials/javascript-lighten-darken-hex-color/
 // bitwise operation for generating shades of hex values

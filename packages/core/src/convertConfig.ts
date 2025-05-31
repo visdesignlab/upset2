@@ -1,8 +1,18 @@
 import {
-  AggregateBy, Bookmark, Column, ColumnName, Histogram, PlotInformation, Row, Scatterplot,
-  SortByOrder, SortVisibleBy, UpsetConfig,
+  AggregateBy,
+  Bookmark,
+  Column,
+  ColumnName,
+  Histogram,
+  PlotInformation,
+  Row,
+  Scatterplot,
+  SortByOrder,
+  SortVisibleBy,
+  UpsetConfig,
   AttributePlots,
-  AltText, SetQuery,
+  AltText,
+  SetQuery,
   QuerySelection,
   VegaSelection,
 } from './types';
@@ -39,7 +49,7 @@ type ElementBookmark = Omit<Bookmark, 'size'> & {
    * Indicates type at runtim
    */
   type: 'element';
-}
+};
 
 type NumericalBookmark = Omit<Bookmark, 'size'> & {
   /**
@@ -50,7 +60,7 @@ type NumericalBookmark = Omit<Bookmark, 'size'> & {
    * Indicates type at runtime
    */
   type: 'numerical';
-}
+};
 
 type ElementSelection = NumericalBookmark | ElementBookmark;
 
@@ -63,7 +73,7 @@ type AttSelection_013 = {
   type: 'element';
   query: QuerySelection;
   active: boolean;
-}
+};
 
 /**
  * Wrapper type for a numerical query
@@ -72,7 +82,7 @@ type NumericalSelection_013 = {
   type: 'numerical';
   query: VegaSelection;
   active: boolean;
-}
+};
 
 /**
  * Represents a selection of elements.
@@ -84,36 +94,36 @@ type ElementSelection_013 = AttSelection_013 | NumericalSelection_013;
 
 type Version0_1_0 = {
   plotInformation: PlotInformation;
-    horizontal: boolean;
-    firstAggregateBy: AggregateBy;
-    firstOverlapDegree: number;
-    secondAggregateBy: AggregateBy;
-    secondOverlapDegree: number;
-    sortVisibleBy: SortVisibleBy;
-    sortBy: string;
-    sortByOrder: SortByOrder;
-    filters: {
-      maxVisible: number;
-      minVisible: number;
-      hideEmpty: boolean;
-      hideNoSet: boolean;
-    };
-    visibleSets: ColumnName[];
-    visibleAttributes: ColumnName[];
-    attributePlots: AttributePlots;
-    bookmarks: Bookmark[];
-    collapsed: string[];
-    plots: {
-      scatterplots: Scatterplot[];
-      histograms: Histogram[];
-    };
-    allSets: Column[];
-    selected: Row | null;
-    elementSelection: ElementSelection | null;
-    version: '0.1.0';
-    useUserAlt: boolean;
-    userAltText: AltText | null;
-}
+  horizontal: boolean;
+  firstAggregateBy: AggregateBy;
+  firstOverlapDegree: number;
+  secondAggregateBy: AggregateBy;
+  secondOverlapDegree: number;
+  sortVisibleBy: SortVisibleBy;
+  sortBy: string;
+  sortByOrder: SortByOrder;
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  };
+  visibleSets: ColumnName[];
+  visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
+  bookmarks: Bookmark[];
+  collapsed: string[];
+  plots: {
+    scatterplots: Scatterplot[];
+    histograms: Histogram[];
+  };
+  allSets: Column[];
+  selected: Row | null;
+  elementSelection: ElementSelection | null;
+  version: '0.1.0';
+  useUserAlt: boolean;
+  userAltText: AltText | null;
+};
 
 type Version0_1_1 = {
   plotInformation: PlotInformation;
@@ -149,7 +159,7 @@ type Version0_1_1 = {
   intersectionSizeLabels: boolean;
   setSizeLabels: boolean;
   showHiddenSets: boolean;
-}
+};
 
 type Version0_1_2 = {
   plotInformation: PlotInformation;
@@ -186,7 +196,7 @@ type Version0_1_2 = {
   setSizeLabels: boolean;
   showHiddenSets: boolean;
   setQuery: SetQuery | null;
-}
+};
 
 type Version0_1_3 = {
   plotInformation: PlotInformation;
@@ -261,13 +271,14 @@ type PreVersionConfig = {
  * @param config The config to convert.
  * @returns The converted config.
  */
-// eslint-disable-next-line camelcase
+
 function convert0_1_0(config: Version0_1_0): Version0_1_1 {
   (config as unknown as Version0_1_1).version = '0.1.1';
-  (config as unknown as Version0_1_1).intersectionSizeLabels = DefaultConfig.intersectionSizeLabels;
+  (config as unknown as Version0_1_1).intersectionSizeLabels =
+    DefaultConfig.intersectionSizeLabels;
   (config as unknown as Version0_1_1).setSizeLabels = DefaultConfig.setSizeLabels;
   (config as unknown as Version0_1_1).showHiddenSets = DefaultConfig.showHiddenSets;
-  return (config as unknown as Version0_1_1);
+  return config as unknown as Version0_1_1;
 }
 
 /**
@@ -276,7 +287,7 @@ function convert0_1_0(config: Version0_1_0): Version0_1_1 {
  * @param config - The configuration object of version 0.1.1 to be converted.
  * @returns The updated configuration object with version 0.1.2.
  */
-// eslint-disable-next-line camelcase
+
 function convert0_1_1(config: Version0_1_1): Version0_1_2 {
   (config as unknown as Version0_1_2).version = '0.1.2';
   (config as unknown as Version0_1_2).setQuery = DefaultConfig.setQuery;
@@ -286,11 +297,12 @@ function convert0_1_1(config: Version0_1_1): Version0_1_2 {
 /**
  * Converts a configuration object from version 0.1.2 to version 0.1.3.
  */
-// eslint-disable-next-line camelcase
+
 function convert0_1_2(config: Version0_1_2): Version0_1_3 {
   delete (config as any).useUserAlt;
   const bookmarks = config.bookmarks.filter(
-    (bookmark) => (bookmark as any).type === 'intersection' || (bookmark as any).type === undefined,
+    (bookmark) =>
+      (bookmark as any).type === 'intersection' || (bookmark as any).type === undefined,
   );
   config.bookmarks = bookmarks;
   (config as unknown as Version0_1_3).version = '0.1.3';
@@ -307,7 +319,7 @@ function convert0_1_2(config: Version0_1_2): Version0_1_3 {
 /**
  * Converts a configuration object from version 0.1.3 to version 0.1.4.
  */
-// eslint-disable-next-line camelcase
+
 function convert0_1_3(config: Version0_1_3): UpsetConfig {
   (config as unknown as UpsetConfig).version = '0.1.4';
   (config as unknown as UpsetConfig).rowSelection = config.selected;
@@ -315,13 +327,17 @@ function convert0_1_3(config: Version0_1_3): UpsetConfig {
   if (config.elementSelection?.type === 'numerical') {
     (config as unknown as UpsetConfig).querySelection = null;
     (config as unknown as UpsetConfig).vegaSelection = config.elementSelection.query;
-    if (config.elementSelection.active) (config as unknown as UpsetConfig).selectionType = 'vega';
-    else (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
+    if (config.elementSelection.active)
+      (config as unknown as UpsetConfig).selectionType = 'vega';
+    else
+      (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
   } else if (config.elementSelection?.type === 'element') {
     (config as unknown as UpsetConfig).vegaSelection = null;
     (config as unknown as UpsetConfig).querySelection = config.elementSelection.query;
-    if (config.elementSelection.active) (config as unknown as UpsetConfig).selectionType = 'query';
-    else (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
+    if (config.elementSelection.active)
+      (config as unknown as UpsetConfig).selectionType = 'query';
+    else
+      (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
   } else {
     (config as unknown as UpsetConfig).vegaSelection = null;
     (config as unknown as UpsetConfig).querySelection = null;
@@ -366,12 +382,10 @@ export function convertConfig(config: unknown): UpsetConfig {
   if (typeof config !== 'object' || !config) throw new Error('Config must be an object');
   // Special case for pre-versioning configs
   if (!Object.hasOwn(config, 'version')) preVersionConversion(config as PreVersionConfig);
-
-  /* eslint-disable no-void */
   // Switch case is designed to fallthrough to the next version's conversion function
   // so that all versions are converted cumulatively.
 
-  switch ((config as {version: string}).version) {
+  switch ((config as { version: string }).version) {
     /* eslint-disable no-fallthrough */
     // @ts-expect-error: Fallthrough is intended behavior. This is needed because Typescript build is not parsing eslint flags
     case '0.1.0':
@@ -391,7 +405,6 @@ export function convertConfig(config: unknown): UpsetConfig {
   }
 
   if (!isUpsetConfig(config)) {
-    // eslint-disable-next-line no-console
     console.error('Invalid config output from conversion', config);
   }
   return config as UpsetConfig;

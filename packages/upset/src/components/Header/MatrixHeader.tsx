@@ -1,6 +1,9 @@
 import { useRecoilValue } from 'recoil';
 
-import { hiddenSetSelector, visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
+import {
+  hiddenSetSelector,
+  visibleSetSelector,
+} from '../../atoms/config/visibleSetsAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { maxSetSizeSelector } from '../../atoms/maxSetSizeSelector';
 import { useScale } from '../../hooks/useScale';
@@ -28,16 +31,15 @@ export const MatrixHeader = () => {
       <SetHeader visibleSets={visibleSets} scale={scale} />
       {showHiddenSets && (
         <foreignObject
-          width={
-          dimensions.size.width +
-          dimensions.gap +
-          dimensions.attribute.width
-        }
+          width={dimensions.size.width + dimensions.gap + dimensions.attribute.width}
           height={dimensions.set.size.height + 15}
-          transform={translate(dimensions.matrixColumn.width +
-                dimensions.bookmarkStar.gap +
-                dimensions.bookmarkStar.width +
-                dimensions.bookmarkStar.gap, 0)}
+          transform={translate(
+            dimensions.matrixColumn.width +
+              dimensions.bookmarkStar.gap +
+              dimensions.bookmarkStar.width +
+              dimensions.bookmarkStar.gap,
+            0,
+          )}
         >
           <div
             id="hiddenSetDiv"
@@ -47,7 +49,10 @@ export const MatrixHeader = () => {
               height: '100%',
             }}
           >
-            <svg width={hiddenSets.length * (set.width + 1)} xmlns="http://www.w3.org/2000/svg">
+            <svg
+              width={hiddenSets.length * (set.width + 1)}
+              xmlns="http://www.w3.org/2000/svg"
+            >
               <HiddenSets hiddenSets={hiddenSets} scale={scale} />
             </svg>
           </div>

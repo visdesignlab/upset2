@@ -22,7 +22,10 @@ test('Datatable', async ({ page }) => {
   await expect(heading1).toBeVisible();
 
   // const downloadPromise = page1.waitForEvent('download');
-  const downloadButton = await page1.locator('div').filter({ hasText: /^Intersection DataDownload$/ }).getByRole('button');
+  const downloadButton = await page1
+    .locator('div')
+    .filter({ hasText: /^Intersection DataDownload$/ })
+    .getByRole('button');
   await expect(downloadButton).toBeVisible();
   await downloadButton.click();
   // const download = await downloadPromise;
@@ -31,7 +34,10 @@ test('Datatable', async ({ page }) => {
   const heading2 = await page1.getByRole('heading', { name: 'Visible Sets' });
   await expect(heading2).toBeVisible();
   const download2Promise = page1.waitForEvent('download');
-  const downloadButton2 = await page1.locator('div').filter({ hasText: /^Visible SetsDownload$/ }).getByRole('button');
+  const downloadButton2 = await page1
+    .locator('div')
+    .filter({ hasText: /^Visible SetsDownload$/ })
+    .getByRole('button');
   await expect(downloadButton2).toBeVisible();
   await downloadButton2.click();
   const download2 = await download2Promise;
@@ -41,7 +47,10 @@ test('Datatable', async ({ page }) => {
   const heading3 = await page1.getByRole('heading', { name: 'Hidden Sets' });
   await expect(heading3).toBeVisible();
 
-  const downloadButton3 = await page1.locator('div').filter({ hasText: /^Hidden SetsDownload$/ }).getByRole('button');
+  const downloadButton3 = await page1
+    .locator('div')
+    .filter({ hasText: /^Hidden SetsDownload$/ })
+    .getByRole('button');
   await expect(downloadButton3).toBeVisible();
 
   // //////////////////

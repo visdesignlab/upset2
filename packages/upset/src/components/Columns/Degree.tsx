@@ -9,7 +9,7 @@ import translate from '../../utils/transform';
  */
 type Props = {
   degree: number;
-}
+};
 
 /**
  * Renders the degree component.
@@ -24,14 +24,11 @@ export const Degree: FC<Props> = ({ degree }) => {
   return (
     <g
       transform={translate(
-        dimensions.degreeColumn.width / 2 +
-        -6, // shift the text left to better center align it
+        dimensions.degreeColumn.width / 2 + -6, // shift the text left to better center align it
         dimensions.body.rowHeight / 2 + 5,
       )}
     >
-      <text>
-        {degree > -1 && degree}
-      </text>
+      <text>{degree > -1 && degree}</text>
     </g>
   );
 };

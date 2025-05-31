@@ -41,18 +41,14 @@ export const SetSizeBar: FC<Props> = ({
   const barSize = useMemo(() => scale(size), [size, scale]);
 
   return (
-    <Group
-      tx={tx}
-      ty={ty}
-    >
-      <title>
-        {`${label} - ${size}`}
-      </title>
+    <Group tx={tx} ty={ty}>
+      <title>{`${label} - ${size}`}</title>
 
       <rect
         css={
-          (columnHover.includes(setId) || columnSelect.includes(setId)) ?
-            hoverHighlight : undefined
+          columnHover.includes(setId) || columnSelect.includes(setId)
+            ? hoverHighlight
+            : undefined
         }
         height={dimensions.set.size.height}
         width={dimensions.set.width}
@@ -60,11 +56,11 @@ export const SetSizeBar: FC<Props> = ({
         fill="#f0f0f0"
         fillOpacity={1.0}
       />
-      {(showSize && !hideSizeText && size > 0) && (
+      {showSize && !hideSizeText && size > 0 && (
         <foreignObject
           transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
           height={dimensions.set.width}
-          width={dimensions.set.label.height - (dimensions.set.width / 2)}
+          width={dimensions.set.label.height - dimensions.set.width / 2}
           z={1}
           style={{
             color: '#000000',
@@ -73,12 +69,13 @@ export const SetSizeBar: FC<Props> = ({
             textAlign: 'start',
           }}
         >
-          <p style={{
-            color: 'black',
-            padding: '0',
-            margin: '0',
-            lineHeight: `${dimensions.set.width}px`,
-          }}
+          <p
+            style={{
+              color: 'black',
+              padding: '0',
+              margin: '0',
+              lineHeight: `${dimensions.set.width}px`,
+            }}
           >
             {size}
           </p>
@@ -97,11 +94,11 @@ export const SetSizeBar: FC<Props> = ({
           dimensions.set.size.height - barSize,
         )}
       />
-      {(showSize && !hideSizeText && size > 0) && (
+      {showSize && !hideSizeText && size > 0 && (
         <foreignObject
           transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
           height={dimensions.set.width}
-          width={dimensions.set.label.height - (dimensions.set.width / 2)}
+          width={dimensions.set.label.height - dimensions.set.width / 2}
           z={3}
           style={{
             color: '#000000',
@@ -110,14 +107,15 @@ export const SetSizeBar: FC<Props> = ({
             textAlign: 'start',
           }}
         >
-          <p style={{
-            color: 'white',
-            padding: '0',
-            margin: '0',
-            lineHeight: `${dimensions.set.width}px`,
-            maxWidth: `${barSize - 2}px`,
-            overflow: 'hidden',
-          }}
+          <p
+            style={{
+              color: 'white',
+              padding: '0',
+              margin: '0',
+              lineHeight: `${dimensions.set.width}px`,
+              maxWidth: `${barSize - 2}px`,
+              overflow: 'hidden',
+            }}
           >
             {size}
           </p>
@@ -127,7 +125,7 @@ export const SetSizeBar: FC<Props> = ({
         <foreignObject
           transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
           height={dimensions.set.width}
-          width={dimensions.set.label.height - (dimensions.set.width / 2)}
+          width={dimensions.set.label.height - dimensions.set.width / 2}
           z={100}
           style={{
             color: '#000000',
@@ -137,10 +135,11 @@ export const SetSizeBar: FC<Props> = ({
             textAlign: 'start',
           }}
         >
-          <p style={{
-            padding: '0',
-            margin: '0',
-          }}
+          <p
+            style={{
+              padding: '0',
+              margin: '0',
+            }}
           >
             {label}
           </p>

@@ -4,7 +4,7 @@ import { CSSProperties, FC, PropsWithChildren } from 'react';
 /**
  * The level of the heading
  */
-export type HeadingLevel= 'h1' | 'h2' | 'h3' | 'h4';
+export type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4';
 
 /**
  * Props for UpsetHeading
@@ -21,12 +21,12 @@ type Props = {
   headingStyle?: CSSProperties;
   /** Whether to hide the divider at the bottom */
   hideDivider?: boolean;
-}
+};
 
 /**
  * Maps heading levels to styles for the corresponding typography elements
  */
-const LEVELS: {[level in HeadingLevel]: { fontSize: string; }} = {
+const LEVELS: { [level in HeadingLevel]: { fontSize: string } } = {
   h1: { fontSize: '1.6em' },
   h2: { fontSize: '1.4em' },
   h3: { fontSize: '1.2em' },
@@ -37,7 +37,12 @@ const LEVELS: {[level in HeadingLevel]: { fontSize: string; }} = {
  * A heading for use in the UI; keeps styles consistent
  */
 export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
-  level, paddingLeft, divStyle, headingStyle, children, hideDivider = false,
+  level,
+  paddingLeft,
+  divStyle,
+  headingStyle,
+  children,
+  hideDivider = false,
 }) => {
   const IS_MAJOR = level === 'h1' || level === 'h2' || level === 'h3';
 
@@ -53,10 +58,9 @@ export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
       >
         {children}
       </Typography>
-      {IS_MAJOR && !hideDivider && <Divider
-        style={{ width: '100%', margin: '0 auto' }}
-        aria-hidden
-      />}
+      {IS_MAJOR && !hideDivider && (
+        <Divider style={{ width: '100%', margin: '0 auto' }} aria-hidden />
+      )}
     </div>
   );
 };

@@ -16,8 +16,8 @@ const iconSize = 16;
 const hidden = 'none';
 
 const collapseAllStyle = css`
-    cursor: pointer;
-    transform: translate(-${iconSize}px, 0)
+  cursor: pointer;
+  transform: translate(-${iconSize}px, 0);
 `;
 
 export const CollapseAllButton = () => {
@@ -26,7 +26,7 @@ export const CollapseAllButton = () => {
    */
 
   const firstAggregateBy = useRecoilValue(firstAggregateSelector);
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(rowsSelector);
   const [allCollapsed, setAllCollapsed] = useState(false);
@@ -68,19 +68,22 @@ export const CollapseAllButton = () => {
   }, [allCollapsed, iconSize]);
 
   return (
-    <Group tx={iconSize + dimensions.header.buttonXOffset} ty={dimensions.header.totalHeight - (iconSize * 2)} style={{ display: (firstAggregateBy === 'None') ? hidden : 'inherit' }}>
+    <Group
+      tx={iconSize + dimensions.header.buttonXOffset}
+      ty={dimensions.header.totalHeight - iconSize * 2}
+      style={{ display: firstAggregateBy === 'None' ? hidden : 'inherit' }}
+    >
       <Tooltip placement="top" title={`${allCollapsed ? 'Expand All' : 'Collapse All'}`}>
         <g>
-          <rect height={iconSize} width={iconSize} css={collapseAllStyle} onClick={toggleCollapseAll} opacity={0} />
-          <g
-            transform={getTransform()}
-            css={mousePointer}
+          <rect
+            height={iconSize}
+            width={iconSize}
+            css={collapseAllStyle}
             onClick={toggleCollapseAll}
-          >
-            <SvgIcon
-              height={iconSize}
-              width={iconSize}
-            >
+            opacity={0}
+          />
+          <g transform={getTransform()} css={mousePointer} onClick={toggleCollapseAll}>
+            <SvgIcon height={iconSize} width={iconSize}>
               <DoubleArrow />
             </SvgIcon>
           </g>

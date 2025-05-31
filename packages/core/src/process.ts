@@ -1,21 +1,18 @@
-import {
-  max, mean, median, min, quantile,
-} from 'd3-array';
+import { max, mean, median, min, quantile } from 'd3-array';
 
 import {
   AttributeList,
   BaseIntersection,
-  ColumnDefs,
   ColumnName,
   CoreUpsetData,
   Item,
   Items,
-  Meta,
   TableRow,
   SetMembershipStatus,
   Sets,
   Subset,
   Subsets,
+  ColumnTypes,
 } from './types';
 
 /**
@@ -51,8 +48,7 @@ function calculateDeviation(
     })
     .reduce((acc, val) => acc * val, 1);
 
-  const dev =
-    intersectionSize / totalItems - containedProduct * nonContainedProduct;
+  const dev = intersectionSize / totalItems - containedProduct * nonContainedProduct;
 
   return dev * 100;
 }
@@ -74,7 +70,7 @@ export function getId(prefix: string, ...arr: string[]) {
  * @param columns - The column definitions object.
  * @returns The column name with the value 'label', or false if no such column exists.
  */
-function getLabel(columns: ColumnDefs): ColumnName | false {
+function getLabel(columns: ColumnTypes): ColumnName | false {
   const labelColumns = Object.entries(columns)
     .filter((col) => col[1] === 'label')
     .map((col) => col[0]);
@@ -91,7 +87,7 @@ function getLabel(columns: ColumnDefs): ColumnName | false {
  * @param columns - The column definitions object.
  * @returns An array of column names.
  */
-function getSetColumns(columns: ColumnDefs): ColumnName[] {
+function getSetColumns(columns: ColumnTypes): ColumnName[] {
   return Object.entries(columns)
     .filter((col) => col[1] === 'boolean')
     .map((col) => col[0]);
@@ -103,10 +99,10 @@ function getSetColumns(columns: ColumnDefs): ColumnName[] {
  * @param columns - The column definitions.
  * @returns An array of attribute column names.
  */
-function getAttributeColumns(columns: ColumnDefs): ColumnName[] {
+function getAttributeColumns(columns: ColumnTypes): ColumnName[] {
   return Object.entries(columns)
-    .filter((col) => col[1] === 'number')
-    .map((col) => col[0]);
+    .filter(([_, type]) => type === 'number' || type === 'category')
+    .map(([name, _]) => name);
 }
 
 /**
@@ -116,7 +112,7 @@ function getAttributeColumns(columns: ColumnDefs): ColumnName[] {
  * @param columns - The column definitions.
  * @returns An object containing the processed data.
  */
-function processRawData(data: TableRow[], columns: ColumnDefs) {
+function processRawData(data: TableRow[], columns: ColumnTypes) {
   const labelColumn = getLabel(columns) || '_id';
   const setColumns = getSetColumns(columns);
   const attributeColumns = getAttributeColumns(columns);
@@ -224,11 +220,7 @@ function getSets(
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
       attributes: {
-        ...getSixNumberSummary(
-          items,
-          setMembership[col],
-          attributeColumns,
-        ),
+        ...getSixNumberSummary(items, setMembership[col], attributeColumns),
         deviation: 0,
       },
     };
@@ -246,12 +238,8 @@ function getSets(
  * @param meta - The metadata object containing information about the columns.
  * @returns The core upset data object.
  */
-export function process(data: TableRow[], meta: Meta): CoreUpsetData {
-  const { columns } = meta;
-
-  const {
-    items, setMembership, labelColumn, setColumns, attributeColumns,
-  } =
+export function process(data: TableRow[], columns: ColumnTypes): CoreUpsetData {
+  const { items, setMembership, labelColumn, setColumns, attributeColumns } =
     processRawData(data, columns);
   const sets = getSets(setMembership, setColumns, items, attributeColumns);
 
@@ -304,16 +292,19 @@ export function getSubsets(
   for (let b = 0; b <= comboCount; ++b) {
     const combo = b.toString(2).padStart(vSets.length, '0');
     setIntersectionMembership[combo] = [];
-    const name = vSetNames
-      .filter((_, i) => combo[i] === '1')
-      .join('~&~');
+    const name = vSetNames.filter((_, i) => combo[i] === '1').join('~&~');
     intersectionName[combo] = name || 'Unincluded';
   }
 
   items.forEach((item) => {
-    const itemMembership = vSetNames.map(
-      (v) => (((typeof item[v] === 'number' && !Number.isNaN(item[v])) || typeof item[v] === 'boolean') ? item[v] : 0),
-    ).join('');
+    const itemMembership = vSetNames
+      .map((v) =>
+        (typeof item[v] === 'number' && !Number.isNaN(item[v])) ||
+        typeof item[v] === 'boolean'
+          ? item[v]
+          : 0,
+      )
+      .join('');
     setIntersectionMembership[itemMembership].push(item['_id']);
   });
 
@@ -344,7 +335,10 @@ export function getSubsets(
       setMembershipStatus[set] = combo[idx];
     });
 
-    const subsetAttributes = { ...getSixNumberSummary(dataItems, itm, attributeColumns), deviation: subsetDeviation };
+    const subsetAttributes = {
+      ...getSixNumberSummary(dataItems, itm, attributeColumns),
+      deviation: subsetDeviation,
+    };
 
     const subset: Subset = {
       id: getId('Subset', intersectionName[comboBinary]),

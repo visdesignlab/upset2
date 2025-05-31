@@ -49,7 +49,12 @@ type Props = {
  * @returns {JSX.Element} The rendered dot plot.
  */
 export const DotPlot: FC<Props> = ({
-  scale, values, attribute, isAggregate, row, jitter = false,
+  scale,
+  values,
+  attribute,
+  isAggregate,
+  row,
+  jitter = false,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attributes = useRecoilValue(visibleAttributesSelector);
@@ -81,16 +86,23 @@ export const DotPlot: FC<Props> = ({
     <g>
       <rect
         fill="#ccc"
-        opacity={attributes.indexOf(attribute) % 2 === 1 ? 0.0 : (isAggregate ? 0.4 : 0.2)}
+        opacity={attributes.indexOf(attribute) % 2 === 1 ? 0.0 : isAggregate ? 0.4 : 0.2}
         width={dimensions.attribute.width + dimensions.attribute.dotSize * 2}
         height={dimensions.attribute.plotHeight}
-        x={-(dimensions.attribute.dotSize)}
+        x={-dimensions.attribute.dotSize}
         y={-(dimensions.attribute.plotHeight / 2)}
       />
       {values.map((value, idx) => (
         // There is no unique identifier for the attribute values other than index, so it is used as key
-        // eslint-disable-next-line react/no-array-index-key
-        <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={jitter ? getJitterForIndex(idx) : 0} r={dimensions.attribute.dotSize} fill="black" opacity="0.2" />
+
+        <circle
+          key={`${row.id} + ${idx}`}
+          cx={scale(value)}
+          cy={jitter ? getJitterForIndex(idx) : 0}
+          r={dimensions.attribute.dotSize}
+          fill="black"
+          opacity="0.2"
+        />
       ))}
     </g>
   );

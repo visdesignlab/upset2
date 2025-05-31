@@ -31,15 +31,9 @@ const MemberShipCircle: FC<Props> = (props) => {
         }
         r={(dimensions.set.width - 5) / 2}
       />
-      { membershipStatus === 'May' &&
-        <circle
-          {...base}
-          fill={
-            theme.matrix.member.yes
-          }
-          strokeOpacity={0}
-          r={3}
-        />}
+      {membershipStatus === 'May' && (
+        <circle {...base} fill={theme.matrix.member.yes} strokeOpacity={0} r={3} />
+      )}
     </>
   );
 };

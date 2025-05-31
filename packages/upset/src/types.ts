@@ -17,47 +17,47 @@ export interface SidebarProps {
 }
 
 /**
-* Represents the alternative text for an Upset plot.
-*/
+ * Represents the alternative text for an Upset plot.
+ */
 export interface AltText {
   /**
-  * The long description for the Upset plot.
-  */
+   * The long description for the Upset plot.
+   */
   longDescription: string;
 
   /**
-  * The short description for the Upset plot.
-  */
+   * The short description for the Upset plot.
+   */
   shortDescription: string;
 
   /**
-  * The technique description for the Upset plot.
-  */
+   * The technique description for the Upset plot.
+   */
   techniqueDescription: string;
 
   /**
-  * Optional warnings for the Upset plot.
-  * Not yet implemented by the API as of 4/22/24
-  */
+   * Optional warnings for the Upset plot.
+   * Not yet implemented by the API as of 4/22/24
+   */
   warnings?: string;
 }
 
 export type ContextMenuItem = {
   /**
-  * The label for the context menu item.
-  */
+   * The label for the context menu item.
+   */
   label: string;
 
   /**
-  * The function to call when the context menu item is clicked.
-  */
+   * The function to call when the context menu item is clicked.
+   */
   onClick: () => void;
 
   /**
    * Specifies whether the context menu item is disabled.
    */
   disabled?: boolean;
-}
+};
 
 /**
  * Represents the props for the context menu.
@@ -66,23 +66,23 @@ export type ContextMenuInfo = {
   /**
    * The x-coordinate of the mouse.
    */
-  mouseX: number,
+  mouseX: number;
 
   /**
    * The y-coordinate of the mouse.
    */
-  mouseY: number,
+  mouseY: number;
 
   /**
    * The Unique ID of the context menu.
    */
-  id: string,
+  id: string;
 
   /**
    * The items to display in the context menu.
    */
-  items: ContextMenuItem[],
-}
+  items: ContextMenuItem[];
+};
 
 /**
  * Raw data object for an UpSet plot.
@@ -93,24 +93,24 @@ export interface UpsetItem {
 }
 
 /**
-* Represents the props for the Upset component.
-*/
+ * Represents the props for the Upset component.
+ */
 export interface UpsetProps {
   /**
-  * The data for the Upset component.
-  */
+   * The data for the Upset component.
+   */
   data: CoreUpsetData | UpsetItem[];
 
   /**
-  * Optional configuration for the Upset component.
-  */
+   * Optional configuration for the Upset component.
+   */
   config?: Partial<UpsetConfig>;
 
   /**
-  * List of attribute names (strings) which should be visualized.
-  * Defaults to the first 3 if no value is provided.
-  * If an empty list is provided, displays no attributes.
-  */
+   * List of attribute names (strings) which should be visualized.
+   * Defaults to the first 3 if no value is provided.
+   * If an empty list is provided, displays no attributes.
+   */
   visibleDatasetAttributes?: string[];
 
   /**
@@ -138,39 +138,39 @@ export interface UpsetProps {
   hideSettings?: boolean;
 
   /**
-  * Indicates if the parent component has a fixed height.
-  * If this is set to `false`, the plot will occupy the full viewport height.
-  * When set to `true`, the plot will fit entirely within the parent component.
-  * Defaults to `false`.
-  */
+   * Indicates if the parent component has a fixed height.
+   * If this is set to `false`, the plot will occupy the full viewport height.
+   * When set to `true`, the plot will fit entirely within the parent component.
+   * Defaults to `false`.
+   */
   parentHasHeight?: boolean;
 
   /**
-  * External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions.
-  * This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0.
-  * Provenance is still tracked if nothing is provided.
-  * Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
-  */
+   * External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions.
+   * This should only be used if your tool is using TrrackJS and has all the actions used by UpSet 2.0.
+   * Provenance is still tracked if nothing is provided.
+   * Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible.
+   */
   extProvenance?: {
     provenance: UpsetProvenance;
     actions: UpsetActions;
   };
 
   /**
-  * Sidebar options for the provVis component.
-  */
+   * Sidebar options for the provVis component.
+   */
   provVis?: SidebarProps;
 
   /**
-  * Sidebar options for the element sidebar component.
-  * This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
-  */
+   * Sidebar options for the element sidebar component.
+   * This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
+   */
   elementSidebar?: SidebarProps;
 
   /**
-  * Sidebar options for the alt text sidebar component.
-  * This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
-  */
+   * Sidebar options for the alt text sidebar component.
+   * This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
+   */
   altTextSidebar?: SidebarProps;
 
   /**
@@ -180,7 +180,7 @@ export interface UpsetProps {
   footerHeight?: number;
 
   /**
-  * Async function which should return a generated AltText object.
-  */
+   * Async function which should return a generated AltText object.
+   */
   generateAltText?: () => Promise<AltText>;
 }

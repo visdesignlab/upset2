@@ -13,7 +13,7 @@ import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemo
 import { UpsetActions } from '../../provenance';
 
 export const DegreeHeader = () => {
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -75,14 +75,12 @@ export const DegreeHeader = () => {
   };
 
   const openContextMenu = (e: MouseEvent) => {
-    setContextMenu(
-      {
-        mouseX: e.clientX,
-        mouseY: e.clientY,
-        id: 'header-menu-degree',
-        items: getMenuItems(),
-      },
-    );
+    setContextMenu({
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      id: 'header-menu-degree',
+      items: getMenuItems(),
+    });
   };
 
   return (
@@ -91,7 +89,6 @@ export const DegreeHeader = () => {
         0,
         dimensions.attribute.gap + 1, // not really sure why, but this needs a 1px increase for degree
       )}
-
     >
       <Tooltip title="Number of intersecting sets" arrow placement="top">
         <g
@@ -99,8 +96,8 @@ export const DegreeHeader = () => {
           css={css`
             cursor: context-menu;
             &:hover {
-            opacity: 0.7;
-            transition: opacity 0s;
+              opacity: 0.7;
+              transition: opacity 0s;
             }
           `}
           onContextMenu={(e: any) => {
@@ -126,19 +123,18 @@ export const DegreeHeader = () => {
           >
             <text
               id="header-text"
-              transform={
-                translate(0, 2)
-              }
+              transform={translate(0, 2)}
               css={css`
-                  pointer-event: none;
-                `}
+                pointer-event: none;
+              `}
               dominantBaseline="middle"
               textAnchor="middle"
             >
               #
             </text>
-            { sortBy === 'Degree' &&
-            <HeaderSortArrow translateX={(dimensions.degreeColumn.width / 2) - 16} />}
+            {sortBy === 'Degree' && (
+              <HeaderSortArrow translateX={dimensions.degreeColumn.width / 2 - 16} />
+            )}
           </g>
         </g>
       </Tooltip>

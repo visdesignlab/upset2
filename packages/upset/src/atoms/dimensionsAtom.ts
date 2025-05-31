@@ -4,9 +4,7 @@ import { visibleAttributesSelector } from './config/visibleAttributes';
 import { hiddenSetSelector, visibleSetSelector } from './config/visibleSetsAtoms';
 import { displayedRowCountSelector, tallRowCountSelector } from './renderRowsAtom';
 
-export const dimensionsSelector = selector<
-ReturnType<typeof calculateDimensions>
->({
+export const dimensionsSelector = selector<ReturnType<typeof calculateDimensions>>({
   key: 'dimensions',
   get: ({ get }) => {
     const visibleSets = get(visibleSetSelector);

@@ -1,7 +1,10 @@
 import {
   Aggregate,
   BaseIntersection,
-  Item, Row, flattenedOnlyRows, getItems,
+  Item,
+  Row,
+  flattenedOnlyRows,
+  getItems,
   FilteredItems,
   filterByVega,
   filterByQuery,
@@ -10,7 +13,11 @@ import {
 import { selector, selectorFamily } from 'recoil';
 import {
   bookmarkColorSelector,
-  bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection,
+  bookmarkSelector,
+  currentIntersectionSelector,
+  currentQuerySelection,
+  currentSelectionType,
+  currentVegaSelection,
 } from './config/selectionAtoms';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
@@ -25,19 +32,21 @@ import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
  * @param id - The ID of the row to get items for.
  * @returns The items in the row
  */
-const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
+export const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
   key: 'row-items',
-  get: (id: string | null | undefined) => ({ get }) => {
-    if (!id) return [];
+  get:
+    (id: string | null | undefined) =>
+    ({ get }) => {
+      if (!id) return [];
 
-    const items = get(itemsAtom);
-    const intersections = get(rowsSelector);
-    const row = intersections[id];
+      const items = get(itemsAtom);
+      const intersections = get(rowsSelector);
+      const row = intersections[id];
 
-    if (!row) return [];
+      if (!row) return [];
 
-    return getItems(row).map((el) => items[el]);
-  },
+      return getItems(row).map((el) => items[el]);
+    },
 });
 
 /**
@@ -58,7 +67,8 @@ export const bookmarkedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const bookmarkIDs = ([] as string[]).concat(get(bookmarkSelector).map((b) => b.id));
     const currentIntersection = get(currentIntersectionSelector);
-    if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id)) bookmarkIDs.push(currentIntersection?.id);
+    if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id))
+      bookmarkIDs.push(currentIntersection?.id);
 
     const selectionType = get(currentSelectionType);
     const intersections = get(rowsSelector);
@@ -69,16 +79,18 @@ export const bookmarkedItemsSelector = selector<Item[]>({
       if (!row) return;
 
       const memberElements = get(rowItemsSelector(id));
-      result.push(...memberElements.map((el) => ({
-        ...el,
-        subset: id,
-        subsetName: row.elementName,
-        color: get(bookmarkColorSelector(id)),
-        isCurrentSelected: !!currentIntersection,
-        isCurrent: !!(currentIntersection?.id === id),
-        bookmarked: true,
-        ...(selectionType ? { selectionType } : {}),
-      })));
+      result.push(
+        ...memberElements.map((el) => ({
+          ...el,
+          subset: id,
+          subsetName: row.elementName,
+          color: get(bookmarkColorSelector(id)),
+          isCurrentSelected: !!currentIntersection,
+          isCurrent: !!(currentIntersection?.id === id),
+          bookmarked: true,
+          ...(selectionType ? { selectionType } : {}),
+        })),
+      );
     });
 
     return result;
@@ -104,14 +116,16 @@ export const processedItemsSelector = selector<Item[]>({
     Object.values(rows).forEach((row) => {
       if (!bookmarkedIDs.includes(row.id) && row.id !== currentIntersection?.id) {
         const memberElements = getItems(row);
-        result.push(...memberElements.map((el) => ({
-          ...items[el],
-          color: DEFAULT_ELEMENT_COLOR,
-          isCurrentSelected: !!currentIntersection,
-          isCurrent: false,
-          bookmarked: false,
-          ...(selectionType ? { selectionType } : {}),
-        })));
+        result.push(
+          ...memberElements.map((el) => ({
+            ...items[el],
+            color: DEFAULT_ELEMENT_COLOR,
+            isCurrentSelected: !!currentIntersection,
+            isCurrent: false,
+            bookmarked: false,
+            ...(selectionType ? { selectionType } : {}),
+          })),
+        );
       }
     });
     return result;
@@ -151,7 +165,8 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
   get: ({ get }) => {
     const type = get(currentSelectionType);
     if (type === 'vega' || type === 'query') return get(filteredItems).included;
-    if (type === 'row') return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
+    if (type === 'row')
+      return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
     return get(processedItemsSelector);
   },
 });
@@ -161,18 +176,20 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
  * If the provided attribute does not exist or is not numeric,
  * outputs a console warning & returns an empty list.
  */
-export const attValuesSelector = selectorFamily<number[], {row: Row, att: string}>({
+export const attValuesSelector = selectorFamily<number[], { row: Row; att: string }>({
   key: 'att-values',
-  get: ({ row, att }) => ({ get }) => {
-    const items = get(rowItemsSelector(row.id));
+  get:
+    ({ row, att }) =>
+    ({ get }) => {
+      const items = get(rowItemsSelector(row.id));
 
-    // We could filter the whole array before we map, but attributes should all be the same type,
-    // so its sufficient and more performant to only check the first attribute
-    if (!items[0] || !items[0][att] || typeof items[0][att] !== 'number') {
-      return [];
-    }
-    return items.map((item) => item[att] as number);
-  },
+      // We could filter the whole array before we map, but attributes should all be the same type,
+      // so its sufficient and more performant to only check the first attribute
+      if (!items[0] || !items[0][att] || typeof items[0][att] !== 'number') {
+        return [];
+      }
+      return items.map((item) => item[att] as number);
+    },
 });
 
 /**
@@ -185,18 +202,22 @@ export const intersectionCountSelector = selectorFamily<
   string | null | undefined
 >({
   key: 'intersection-count',
-  get: (id: string | null | undefined) => ({ get }) => {
-    if (!id) return 0;
+  get:
+    (id: string | null | undefined) =>
+    ({ get }) => {
+      if (!id) return 0;
 
-    const data = get(dataAtom);
-    const state = get(upsetConfigAtom);
-    const intersections = flattenedOnlyRows(data, state);
+      const data = get(dataAtom);
+      const state = get(upsetConfigAtom);
+      const intersections = flattenedOnlyRows(data, state);
 
-    if (intersections[id] === undefined) { return 0; }
+      if (intersections[id] === undefined) {
+        return 0;
+      }
 
-    const row = intersections[id];
-    return row.size;
-  },
+      const row = intersections[id];
+      return row.size;
+    },
 });
 
 /**
@@ -213,27 +234,32 @@ export const selectedItemsCounter = selector<number>({
  * @param type - The type of selection ('vega' or 'query') to use for filtering.
  * @returns The number of selected items in the subset
  */
-export const subsetSelectedCount = selectorFamily<number, {id: string, type: SelectionType | null}>({
+export const subsetSelectedCount = selectorFamily<
+  number,
+  { id: string; type: SelectionType | null }
+>({
   key: 'subset-selected',
-  get: ({ id, type }) => ({ get }) => {
-    if (!id) return 0;
-    const rowItems = get(rowItemsSelector(id));
+  get:
+    ({ id, type }) =>
+    ({ get }) => {
+      if (!id) return 0;
+      const rowItems = get(rowItemsSelector(id));
 
-    if (type === 'vega') {
-      const selection = get(currentVegaSelection);
-      if (!selection) return 0;
-      return filterByVega(rowItems, selection).included.length;
-    }
+      if (type === 'vega') {
+        const selection = get(currentVegaSelection);
+        if (!selection) return 0;
+        return filterByVega(rowItems, selection).included.length;
+      }
 
-    if (type === 'query') {
-      const selection = get(currentQuerySelection);
-      if (!selection) return 0;
-      return filterByQuery(rowItems, selection).included.length;
-    }
+      if (type === 'query') {
+        const selection = get(currentQuerySelection);
+        if (!selection) return 0;
+        return filterByQuery(rowItems, selection).included.length;
+      }
 
-    // If the selection type is 'row' or null, no items are selected
-    return 0;
-  },
+      // If the selection type is 'row' or null, no items are selected
+      return 0;
+    },
 });
 
 /**
@@ -244,15 +270,22 @@ export const subsetSelectedCount = selectorFamily<number, {id: string, type: Sel
  * @param type - The type of selection ('vega' or 'query') to use for filtering.
  * @returns The total number of selected items in the aggregate
  */
-export const aggregateSelectedCount = selectorFamily<number, {agg: Aggregate, type: SelectionType | null}>({
+export const aggregateSelectedCount = selectorFamily<
+  number,
+  { agg: Aggregate; type: SelectionType | null }
+>({
   key: 'aggregate-selected',
-  get: ({ agg, type }) => ({ get }) => {
-    let total = 0;
-    Object.entries(agg.items.values as { [id: string]: BaseIntersection | Aggregate }).forEach(([id, value]) => {
-      total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
-        ? get(aggregateSelectedCount({ agg: value as Aggregate, type }))
-        : get(subsetSelectedCount({ id, type }));
-    });
-    return total;
-  },
+  get:
+    ({ agg, type }) =>
+    ({ get }) => {
+      let total = 0;
+      Object.entries(
+        agg.items.values as { [id: string]: BaseIntersection | Aggregate },
+      ).forEach(([id, value]) => {
+        total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
+          ? get(aggregateSelectedCount({ agg: value as Aggregate, type }))
+          : get(subsetSelectedCount({ id, type }));
+      });
+      return total;
+    },
 });

@@ -30,16 +30,20 @@ function useRows(items: Item[]): GridRowsProp {
  */
 function useColumns(columns: string[]): GridColDef[] {
   const setColumns = useRecoilValue(setColumnsSelector);
-  return useMemo(() => columns.map((col) => {
-    // Prefixed with _ since that's how the Item object is structured
-    const displayName = col === '_id' ? 'ID' : col === '_label' ? 'Label' : col;
-    return {
-      field: col,
-      headerName: displayName,
-      type: setColumns.includes(col) ? 'boolean' : 'string',
-      description: displayName,
-    };
-  }), [columns, setColumns]);
+  return useMemo(
+    () =>
+      columns.map((col) => {
+        // Prefixed with _ since that's how the Item object is structured
+        const displayName = col === '_id' ? 'ID' : col === '_label' ? 'Label' : col;
+        return {
+          field: col,
+          headerName: displayName,
+          type: setColumns.includes(col) ? 'boolean' : 'string',
+          description: displayName,
+        };
+      }),
+    [columns, setColumns],
+  );
 }
 
 /**
@@ -51,9 +55,10 @@ export const ElementTable: FC = () => {
   const rows = useRows(elements);
   const setColumns = useRecoilValue(setColumnsSelector);
   // Filtering out columns w/ _ removes metadata columns
-  const columns = useColumns(['_label', ...([...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')))]);
+  const columns = useColumns([
+    '_label',
+    ...[...attributeColumns, ...setColumns].filter((col) => !col.startsWith('_')),
+  ]);
 
-  return (
-    <DataGrid style={{ height: 650 }} rows={rows} columns={columns} />
-  );
+  return <DataGrid style={{ height: 650 }} rows={rows} columns={columns} />;
 };

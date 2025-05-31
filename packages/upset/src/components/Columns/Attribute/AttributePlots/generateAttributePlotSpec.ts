@@ -42,15 +42,20 @@ export function generateAttributePlotSpec(
       mark: 'area',
       transform: [
         {
-          density: 'density', extent: [min, max],
+          density: 'density',
+          extent: [min, max],
         },
       ],
       encoding: {
         x: {
-          field: 'value', type: 'quantitative', axis: null,
+          field: 'value',
+          type: 'quantitative',
+          axis: null,
         },
         y: {
-          field: 'density', type: 'quantitative', axis: null,
+          field: 'density',
+          type: 'quantitative',
+          axis: null,
         },
         color: {
           value: plotColor,
