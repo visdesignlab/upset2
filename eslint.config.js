@@ -10,7 +10,6 @@ import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
   // Configs further down the array will override rules from earlier configs
-  jsxA11y.configs.recommended, // We want other rules from this plugin, but not the recommended ones
   importPlugin.flatConfigs.recommended,
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
@@ -24,6 +23,7 @@ export default defineConfig([
   {
     plugins: {
       react: pluginReact,
+      'jsx-a11y': jsxA11y,
       '@stylistic': stylisticJS,
       'eslint-plugin-react': pluginReact,
     },
