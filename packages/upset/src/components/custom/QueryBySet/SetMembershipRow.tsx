@@ -19,12 +19,12 @@ type Props = {
   /**
    * Membership type for the row, can only be 'Not', 'Maybe', or 'Must'.
    */
-  membershipType?: SetMembershipStatus
+  membershipType?: SetMembershipStatus;
   /**
    * Whether this row is the top level 'combined' row.
    */
   combined?: boolean;
-}
+};
 
 const highlightedSetMemberCircle = css`
   stroke: rgb(161, 217, 155);
@@ -37,7 +37,10 @@ const highlightedSetMemberCircle = css`
  * @param props - The component props. @see @Props
  */
 export const SetMembershipRow: FC<Props> = ({
-  members, setMembers, membershipType, combined = false,
+  members,
+  setMembers,
+  membershipType,
+  combined = false,
 }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
@@ -59,31 +62,45 @@ export const SetMembershipRow: FC<Props> = ({
    *
    * @param set - The name of the set.
    */
-  const selectMembershipCircle = useCallback((set: string) => {
-    if (combined || !membershipType) return;
+  const selectMembershipCircle = useCallback(
+    (set: string) => {
+      if (combined || !membershipType) return;
 
-    const newMembers = { ...members };
-    newMembers[set] = membershipType;
-    setMembers(newMembers);
-  }, [combined, membershipType, members, setMembers]);
+      const newMembers = { ...members };
+      newMembers[set] = membershipType;
+      setMembers(newMembers);
+    },
+    [combined, membershipType, members, setMembers],
+  );
 
   return (
     <g>
-      {!combined &&
+      {!combined && (
         <text
           textAnchor="end"
-          transform={translate(-(dimensions.set.width / 2) - 2, (dimensions.body.rowHeight / 4) - 3)}
+          transform={translate(
+            -(dimensions.set.width / 2) - 2,
+            dimensions.body.rowHeight / 4 - 3,
+          )}
           fontSize="14px"
         >
           {membershipType?.toLowerCase()}
-        </text>}
+        </text>
+      )}
       {visibleSets.map((set, index) => (
         <MemberShipCircle
           onClick={() => selectMembershipCircle(set)}
-          transform={translate(((dimensions.set.width / 2) + dimensions.gap / 2) * index, 0)}
+          transform={translate(
+            (dimensions.set.width / 2 + dimensions.gap / 2) * index,
+            0,
+          )}
           membershipStatus={getMembershipStatusInQuery(set)}
           showoutline
-          css={(!combined && getMembershipStatusInQuery(set) === members[set]) && highlightedSetMemberCircle}
+          css={
+            !combined &&
+            getMembershipStatusInQuery(set) === members[set] &&
+            highlightedSetMemberCircle
+          }
         />
       ))}
     </g>

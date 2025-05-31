@@ -42,7 +42,8 @@ export const dataAttributeSelector = selector<string[]>({
 export const attributeValuesSelector = selectorFamily<number[], string>({
   key: 'attribute-values',
   get:
-    (attribute: string) => ({ get }) => {
+    (attribute: string) =>
+    ({ get }) => {
       const items = get(itemsAtom);
       const values = Object.values(items)
         .map((item) => item[attribute] as number)
@@ -61,16 +62,20 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
 const categorySizeOrderSelector = selectorFamily<string[], string>({
   key: 'category-size-order',
   get:
-    (attribute: string) => ({ get }) => {
+    (attribute: string) =>
+    ({ get }) => {
       const items = Object.values(get(itemsAtom));
 
-      const categories = items.reduce((acc, item) => {
-        const value = item[attribute];
-        if (typeof value === 'string' && value) {
-          acc[value] = (acc[value] || 0) + 1;
-        }
-        return acc;
-      }, {} as { [key: string]: number });
+      const categories = items.reduce(
+        (acc, item) => {
+          const value = item[attribute];
+          if (typeof value === 'string' && value) {
+            acc[value] = (acc[value] || 0) + 1;
+          }
+          return acc;
+        },
+        {} as { [key: string]: number },
+      );
 
       return Object.entries(categories)
         .sort((a, b) => b[1] - a[1])
@@ -91,13 +96,17 @@ export const categoricalCountSelector = selectorFamily<
 >({
   key: 'categorical-count',
   get:
-    ({ row, attribute }) => ({ get }) => {
+    ({ row, attribute }) =>
+    ({ get }) => {
       const items = get(rowItemsSelector(row));
 
-      const result = get(categorySizeOrderSelector(attribute)).reduce((acc, category) => {
-        acc[category] = 0;
-        return acc;
-      }, {} as { [key: string]: number });
+      const result = get(categorySizeOrderSelector(attribute)).reduce(
+        (acc, category) => {
+          acc[category] = 0;
+          return acc;
+        },
+        {} as { [key: string]: number },
+      );
 
       items.forEach((item) => {
         if (typeof item[attribute] !== 'string' || !item[attribute]) return;
@@ -119,11 +128,15 @@ export const categoricalCountSelector = selectorFamily<
 export const maxCategorySizeSelector = selectorFamily<number, string>({
   key: 'max-categorical-count',
   get:
-    (attribute) => ({ get }) => {
+    (attribute) =>
+    ({ get }) => {
       const rows = get(rowsSelector);
       return Object.values(rows).reduce((max, row) => {
         const count = get(categoricalCountSelector({ row: row.id, attribute }));
-        return Math.max(max, Object.values(count).reduce((a, b) => a + b, 0));
+        return Math.max(
+          max,
+          Object.values(count).reduce((a, b) => a + b, 0),
+        );
       }, 0);
     },
 });
@@ -135,17 +148,25 @@ export const maxCategorySizeSelector = selectorFamily<number, string>({
  * @param {number} att Attribute to return category colors for
  * @returns A map of category names to colors
  */
-export const categoricalColorSelector = selectorFamily<{[category: string]: string}, string>({
+export const categoricalColorSelector = selectorFamily<
+  { [category: string]: string },
+  string
+>({
   key: 'categorical-color',
-  get: (att) => ({ get }) => {
-    const categories = get(categorySizeOrderSelector(att));
-    return categories.reduce((acc, category, index) => {
-      if (index < categoryColorPalette.length) {
-        acc[category] = categoryColorPalette[index];
-      }
-      return acc;
-    }, {} as { [category: string]: string });
-  },
+  get:
+    (att) =>
+    ({ get }) => {
+      const categories = get(categorySizeOrderSelector(att));
+      return categories.reduce(
+        (acc, category, index) => {
+          if (index < categoryColorPalette.length) {
+            acc[category] = categoryColorPalette[index];
+          }
+          return acc;
+        },
+        {} as { [category: string]: string },
+      );
+    },
 });
 
 /**
@@ -159,7 +180,8 @@ export const attributeMinMaxSelector = selectorFamily<
 >({
   key: 'attribute-min-max',
   get:
-    (attribute: string) => ({ get }) => {
+    (attribute: string) =>
+    ({ get }) => {
       const attTypes = get(attTypesSelector);
       const maxSize = get(maxCategorySizeSelector(attribute));
       const values = get(attributeValuesSelector(attribute));

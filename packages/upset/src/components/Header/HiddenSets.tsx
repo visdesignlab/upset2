@@ -13,12 +13,12 @@ import { hiddenSetSortAtom } from '../../atoms/config/visibleSetsAtoms';
 import { UpsetActions } from '../../provenance';
 
 type Props = {
-    hiddenSets: string[];
-    scale: ScaleLinear<number, number>;
-  };
+  hiddenSets: string[];
+  scale: ScaleLinear<number, number>;
+};
 
 export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
   const setContextMenu = useSetRecoilState(contextMenuAtom);
@@ -90,7 +90,9 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
             e.stopPropagation();
             openContextMenu(e, item.id);
           }}
-          css={css`cursor: context-menu;`}
+          css={css`
+            cursor: context-menu;
+          `}
         >
           <SetSizeBar
             scale={scale}

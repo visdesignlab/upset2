@@ -7,7 +7,10 @@ import { MatrixRows } from './Rows/MatrixRows';
 import { flattenedRowsSelector } from '../atoms/renderRowsAtom';
 import { QueryBySetInterface } from './custom/QueryBySet/QueryBySetInterface';
 import { SetQueryRow } from './custom/QueryBySet/SetQueryRow';
-import { queryBySetsInterfaceAtom, setQuerySelector } from '../atoms/config/queryBySetsAtoms';
+import {
+  queryBySetsInterfaceAtom,
+  setQuerySelector,
+} from '../atoms/config/queryBySetsAtoms';
 
 export const Body = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -17,28 +20,26 @@ export const Body = () => {
 
   return (
     <g transform={translate(0, dimensions.header.totalHeight + 5)}>
-      { rows.length === 0 ?
+      {rows.length === 0 ? (
         <text
-          transform={
-            translate(
-              dimensions.matrixColumn.width +
+          transform={translate(
+            dimensions.matrixColumn.width +
               dimensions.bookmarkStar.gap +
               dimensions.bookmarkStar.width +
               dimensions.bookmarkStar.gap,
-              dimensions.body.rowHeight,
-            )
-}
+            dimensions.body.rowHeight,
+          )}
           style={{ zIndex: 10 }}
         >
           No intersections to display...
-        </text> :
-        (
-          <g>
-            { queryBySetInterface && <QueryBySetInterface /> }
-            { isPopulatedSetQuery(setQuery) ? <SetQueryRow /> : null }
-            <MatrixRows rows={rows} />
-          </g>
-        )}
+        </text>
+      ) : (
+        <g>
+          {queryBySetInterface && <QueryBySetInterface />}
+          {isPopulatedSetQuery(setQuery) ? <SetQueryRow /> : null}
+          <MatrixRows rows={rows} />
+        </g>
+      )}
     </g>
   );
 };

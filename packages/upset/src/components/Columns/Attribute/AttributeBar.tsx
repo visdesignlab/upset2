@@ -1,4 +1,9 @@
-import { Aggregate, SixNumberSummary, Subset, isRowAggregate } from '@visdesignlab/upset2-core';
+import {
+  Aggregate,
+  SixNumberSummary,
+  Subset,
+  isRowAggregate,
+} from '@visdesignlab/upset2-core';
 import React, { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';

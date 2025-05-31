@@ -1,9 +1,11 @@
 import {
-  Bookmark, QuerySelection, Row, SelectionType, VegaSelection,
+  Bookmark,
+  QuerySelection,
+  Row,
+  SelectionType,
+  VegaSelection,
 } from '@visdesignlab/upset2-core';
-import {
-  selector, selectorFamily,
-} from 'recoil';
+import { selector, selectorFamily } from 'recoil';
 
 import { extraQueryColor, queryColorPalette } from '../../utils/styles';
 import { upsetConfigAtom } from './upsetConfigAtoms';
@@ -77,7 +79,9 @@ export const nextColorSelector = selector<string>({
   key: 'next-color-selector',
   get: ({ get }) => {
     const nextIndex = get(nextColorIndexSelector);
-    return nextIndex < queryColorPalette.length ? queryColorPalette[nextIndex] : extraQueryColor;
+    return nextIndex < queryColorPalette.length
+      ? queryColorPalette[nextIndex]
+      : extraQueryColor;
   },
 });
 
@@ -90,19 +94,23 @@ export const nextColorSelector = selector<string>({
  */
 export const bookmarkColorSelector = selectorFamily<string, string | undefined>({
   key: 'bookmark-color-selector',
-  get: (id) => ({ get }) => {
-    const bookmarks = get(bookmarkSelector);
-    const nextColor = get(nextColorSelector);
+  get:
+    (id) =>
+    ({ get }) => {
+      const bookmarks = get(bookmarkSelector);
+      const nextColor = get(nextColorSelector);
 
-    if (id === undefined) return nextColor;
+      if (id === undefined) return nextColor;
 
-    const bookmark = bookmarks.find((b) => b.id === id);
-    if (bookmark) {
-      return bookmark.colorIndex < queryColorPalette.length ? queryColorPalette[bookmark.colorIndex] : extraQueryColor;
-    }
+      const bookmark = bookmarks.find((b) => b.id === id);
+      if (bookmark) {
+        return bookmark.colorIndex < queryColorPalette.length
+          ? queryColorPalette[bookmark.colorIndex]
+          : extraQueryColor;
+      }
 
-    return nextColor;
-  },
+      return nextColor;
+    },
 });
 
 /**
@@ -116,10 +124,12 @@ export const bookmarkColorSelector = selectorFamily<string, string | undefined>(
  */
 export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
   key: 'is-row-bookmarked',
-  get: (row: Row) => ({ get }) => {
-    const bookmarks = get(bookmarkSelector);
-    return bookmarks.some((b) => b.id === row.id);
-  },
+  get:
+    (row: Row) =>
+    ({ get }) => {
+      const bookmarks = get(bookmarkSelector);
+      return bookmarks.some((b) => b.id === row.id);
+    },
 });
 
 /**
@@ -129,9 +139,11 @@ export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
  */
 export const isRowBookmarkedOrSelected = selectorFamily<boolean, Row>({
   key: 'is-row-bookmarked-or-selected',
-  get: (row: Row) => ({ get }) => {
-    const isBookmarked = get(isRowBookmarkedSelector(row));
-    const currentIntersection = get(currentIntersectionSelector);
-    return isBookmarked || currentIntersection?.id === row.id;
-  },
+  get:
+    (row: Row) =>
+    ({ get }) => {
+      const isBookmarked = get(isRowBookmarkedSelector(row));
+      const currentIntersection = get(currentIntersectionSelector);
+      return isBookmarked || currentIntersection?.id === row.id;
+    },
 });

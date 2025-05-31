@@ -1,5 +1,8 @@
 import {
-  Aggregate, Subset, getBelongingSetsFromSetMembership, isRowAggregate,
+  Aggregate,
+  Subset,
+  getBelongingSetsFromSetMembership,
+  isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -20,11 +23,7 @@ type Props = {
   showConnectingBar?: boolean;
 };
 
-export const Matrix: FC<Props> = ({
-  subset,
-  showConnectingBar = true,
-  sets = [],
-}) => {
+export const Matrix: FC<Props> = ({ subset, showConnectingBar = true, sets = [] }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const setList = useRecoilValue(setsAtom);
   const [columnHover, setColumnHover] = useRecoilState(columnHoverAtom);
@@ -51,17 +50,20 @@ export const Matrix: FC<Props> = ({
               key={set}
               height={dimensions.body.rowHeight}
               width={dimensions.set.width}
-              onMouseEnter={
-                (e) => {
-                  e.stopPropagation();
-                  const memberSets = getBelongingSetsFromSetMembership(subset.setMembership);
-                  setColumnHover([...memberSets, set]);
-                }
-              }
+              onMouseEnter={(e) => {
+                e.stopPropagation();
+                const memberSets = getBelongingSetsFromSetMembership(
+                  subset.setMembership,
+                );
+                setColumnHover([...memberSets, set]);
+              }}
               onMouseLeave={() => setColumnHover([])}
             >
               <rect
-                transform={translate(idx * dimensions.set.width - dimensions.set.width / 2, 0)}
+                transform={translate(
+                  idx * dimensions.set.width - dimensions.set.width / 2,
+                  0,
+                )}
                 height={dimensions.body.rowHeight}
                 width={dimensions.set.width}
                 css={

@@ -43,9 +43,7 @@ type Props = {
  * @param {Row} props.row - The row object. Rows can be either Subsets or Aggregates.
  * @returns {JSX.Element} The rendered strip plot.
  */
-export const StripPlot: FC<Props> = ({
-  scale, values, attribute, isAggregate, row,
-}) => {
+export const StripPlot: FC<Props> = ({ scale, values, attribute, isAggregate, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attributes = useRecoilValue(visibleAttributesSelector);
 
@@ -53,17 +51,17 @@ export const StripPlot: FC<Props> = ({
     <g>
       <rect
         fill="#ccc"
-        opacity={attributes.indexOf(attribute) % 2 === 1 ? 0.0 : (isAggregate ? 0.4 : 0.2)}
+        opacity={attributes.indexOf(attribute) % 2 === 1 ? 0.0 : isAggregate ? 0.4 : 0.2}
         width={dimensions.attribute.width + dimensions.attribute.dotSize * 2}
         height={dimensions.attribute.plotHeight}
-        x={-(dimensions.attribute.dotSize)}
+        x={-dimensions.attribute.dotSize}
         y={-(dimensions.attribute.plotHeight / 2)}
       />
       {values.map((value, idx) => (
         // vertical line for x position, go top to bottom
         <line
           // There is no unique identifier for the attribute values other than index, so it is used as key
-          // eslint-disable-next-line react/no-array-index-key
+
           key={`${row.id} + ${idx}`}
           x1={scale(value)}
           x2={scale(value)}

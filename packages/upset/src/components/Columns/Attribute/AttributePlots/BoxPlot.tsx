@@ -32,7 +32,13 @@ const Tick: FC<{ x1: number; x2: number; y1?: number; y2?: number }> = ({
 export const BoxPlot: FC<Props> = ({ scale, summary }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
-  if (summary.max === undefined || summary.min === undefined || summary.first === undefined || summary.third === undefined || summary.median === undefined) {
+  if (
+    summary.max === undefined ||
+    summary.min === undefined ||
+    summary.first === undefined ||
+    summary.third === undefined ||
+    summary.median === undefined
+  ) {
     return null;
   }
 
@@ -79,10 +85,7 @@ export const BoxPlot: FC<Props> = ({ scale, summary }) => {
         y1={-dimensions.attribute.plotHeight / 2}
         y2={dimensions.attribute.plotHeight / 2}
       />
-      <Tick
-        x1={scale(summary.max)}
-        x2={scale(summary.max)}
-      />
+      <Tick x1={scale(summary.max)} x2={scale(summary.max)} />
     </>
   );
 };

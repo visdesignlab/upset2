@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
 import { drag } from 'd3-drag';
 import { select } from 'd3-selection';
-import React, {
-  FC, useContext, useEffect, useRef, useState,
-} from 'react';
+import React, { FC, useContext, useEffect, useRef, useState } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { Tooltip } from '@mui/material';
@@ -37,7 +35,7 @@ const show = css`
  * Header showing label & axis for cardinality bars
  */
 export const SizeHeader: FC = () => {
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -105,14 +103,12 @@ export const SizeHeader: FC = () => {
   ];
 
   const openContextMenu = (e: MouseEvent) => {
-    setContextMenu(
-      {
-        mouseX: e.clientX,
-        mouseY: e.clientY,
-        id: 'header-menu-Size',
-        items: getMenuItems(),
-      },
-    );
+    setContextMenu({
+      mouseX: e.clientX,
+      mouseY: e.clientY,
+      id: 'header-menu-Size',
+      items: getMenuItems(),
+    });
   };
 
   /**
@@ -172,10 +168,7 @@ export const SizeHeader: FC = () => {
     select(current).call(dragBehavior as any);
 
     return () => {
-      dragBehavior
-        .on('start', null)
-        .on('drag', null)
-        .on('end', null);
+      dragBehavior.on('start', null).on('drag', null).on('end', null);
     };
   }, [sliderRef, sliderParentRef, dimensions, globalScale, itemCount, setMaxSize]);
 
@@ -183,88 +176,86 @@ export const SizeHeader: FC = () => {
     <g
       transform={translate(
         dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap,
+          dimensions.bookmarkStar.gap +
+          dimensions.bookmarkStar.width +
+          dimensions.bookmarkStar.gap,
         dimensions.header.totalHeight - dimensions.size.height,
       )}
     >
-      {advancedScale &&
-      <g className="sliding-scale" ref={sliderParentRef}>
-        <Axis
-          scale={globalScale}
-          fontSize={0.8}
-          type="bottom"
-          margin={0}
-          showLabel={false}
-          label=""
-          hideLine
-        />
-        <Axis
-          transform={translate(0, dimensions.size.scaleHeight)}
-          scale={globalScale}
-          type="top"
-          margin={0}
-          showLabel={false}
-          label=""
-          tickFormatter={() => ''}
-        />
-        <rect
-          height={dimensions.size.scaleHeight}
-          width={globalScale(maxC)}
-          fill="#aaa"
-          opacity="0.2"
-          pointerEvents="none"
-          stroke="none"
-        />
-        <g
-          className="slider-knob"
-          transform={translate(
-            globalScale(maxC),
-            dimensions.size.scaleHeight / 2 - Math.sqrt(200) / 2,
-          )}
-        >
-          <rect
-            ref={sliderRef}
-            fill="#ccc"
-            opacity="0.5"
-            pointerEvents="all"
-            cursor="col-resize"
-            stroke="black"
-            strokeWidth="1px"
-            transform="rotate(45)"
-            height="10"
-            width="10"
+      {advancedScale && (
+        <g className="sliding-scale" ref={sliderParentRef}>
+          <Axis
+            scale={globalScale}
+            fontSize={0.8}
+            type="bottom"
+            margin={0}
+            showLabel={false}
+            label=""
+            hideLine
           />
+          <Axis
+            transform={translate(0, dimensions.size.scaleHeight)}
+            scale={globalScale}
+            type="top"
+            margin={0}
+            showLabel={false}
+            label=""
+            tickFormatter={() => ''}
+          />
+          <rect
+            height={dimensions.size.scaleHeight}
+            width={globalScale(maxC)}
+            fill="#aaa"
+            opacity="0.2"
+            pointerEvents="none"
+            stroke="none"
+          />
+          <g
+            className="slider-knob"
+            transform={translate(
+              globalScale(maxC),
+              dimensions.size.scaleHeight / 2 - Math.sqrt(200) / 2,
+            )}
+          >
+            <rect
+              ref={sliderRef}
+              fill="#ccc"
+              opacity="0.5"
+              pointerEvents="all"
+              cursor="col-resize"
+              stroke="black"
+              strokeWidth="1px"
+              transform="rotate(45)"
+              height="10"
+              width="10"
+            />
+          </g>
         </g>
-      </g>}
+      )}
       <g
         className="sliderInfluence"
         transform={translate(0, dimensions.size.scaleHeight)}
       >
         <path
-          opacity={(!sliding) ? 0.0 : 0.3}
+          opacity={!sliding ? 0.0 : 0.3}
           fill="#ccc"
-          d={`M ${globalScale(maxC)} 0 H 0 V ${dimensions.size
-            .buttonHeight +
-            2 * dimensions.size.gap} H ${dimensions.attribute.width} z`}
+          d={`M ${globalScale(maxC)} 0 H 0 V ${
+            dimensions.size.buttonHeight + 2 * dimensions.size.gap
+          } H ${dimensions.attribute.width} z`}
         />
       </g>
       <Tooltip title="Size (cardinality)" arrow placement="top">
         <g
           className="size-button"
           css={css`
-          ${sliding ? hide : show};
-          cursor: context-menu;
-          &:hover {
-            opacity: 0.7;
-            transition: opacity 0s;
+            ${sliding ? hide : show};
+            cursor: context-menu;
+            &:hover {
+              opacity: 0.7;
+              transition: opacity 0s;
             }
-            `}
-          transform={translate(
-            0,
-            dimensions.size.scaleHeight + dimensions.size.gap,
-          )}
+          `}
+          transform={translate(0, dimensions.size.scaleHeight + dimensions.size.gap)}
           onContextMenu={(e: any) => {
             e.preventDefault();
             e.stopPropagation();
@@ -289,7 +280,7 @@ export const SizeHeader: FC = () => {
             <text
               id="header-text"
               css={css`
-              pointer-event: none;
+                pointer-event: none;
               `}
               dominantBaseline="middle"
               textAnchor="middle"
@@ -297,8 +288,7 @@ export const SizeHeader: FC = () => {
             >
               Size
             </text>
-            { sortBy === 'Size' &&
-            <HeaderSortArrow />}
+            {sortBy === 'Size' && <HeaderSortArrow />}
           </g>
         </g>
       </Tooltip>
@@ -307,7 +297,7 @@ export const SizeHeader: FC = () => {
         transform={translate(
           0,
           dimensions.size.scaleHeight +
-          4 +
+            4 +
             dimensions.size.gap +
             dimensions.size.buttonHeight +
             dimensions.size.gap,

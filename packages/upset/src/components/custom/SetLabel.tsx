@@ -27,17 +27,15 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
       <rect
         className={setId}
         css={
-          (columnHover.includes(setId) || columnSelect.includes(setId)) ?
-            hoverHighlight : undefined
+          columnHover.includes(setId) || columnSelect.includes(setId)
+            ? hoverHighlight
+            : undefined
         }
         height={dimensions.set.label.height - gap}
         width={dimensions.set.width - gap / 2}
         fill="#f0f0f0"
         fillOpacity="1.0"
-        transform={`${translate(
-          gap / 4,
-          gap,
-        )}`}
+        transform={`${translate(gap / 4, gap)}`}
       />
       <foreignObject
         transform={`${translate(0, dimensions.set.label.height - 2)}rotate(-90)`}
@@ -49,19 +47,19 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
           fontSize: '14px',
           overflow: 'hidden',
         }}
-
       >
-        <p style={{
-          height: '100%',
-          padding: '0',
-          margin: '2px 0 0 0',
-          fontWeight: '500',
-          textAlign: 'start',
-          textOverflow: 'ellipsis',
-          overflow: 'hidden',
-          whiteSpace: 'nowrap',
-          width: dimensions.set.label.height - gap,
-        }}
+        <p
+          style={{
+            height: '100%',
+            padding: '0',
+            margin: '2px 0 0 0',
+            fontWeight: '500',
+            textAlign: 'start',
+            textOverflow: 'ellipsis',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            width: dimensions.set.label.height - gap,
+          }}
         >
           {name}
         </p>
