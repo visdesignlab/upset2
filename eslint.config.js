@@ -68,6 +68,7 @@ export default defineConfig([
       'import/named': 'off',
       'import/no-unresolved': 'off',
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }],
+      'react/display-name': 'off',
     },
   },
 ]);
