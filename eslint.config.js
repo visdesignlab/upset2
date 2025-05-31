@@ -4,10 +4,13 @@ import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
 import stylisticJS from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
+  // Configs further down the array will override rules from earlier configs
+  jsxA11y.configs.recommended, // We want other rules from this plugin, but not the recommended ones
   importPlugin.flatConfigs.recommended,
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
