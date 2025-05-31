@@ -112,7 +112,9 @@ export function populateConfigDefaults(
   if (!newConf.plots.histograms.length && !newConf.plots.scatterplots.length) {
     if (!newConf.plots.histograms) newConf.plots.histograms = [];
     newConf.plots.histograms = data.attributeColumns
-      .filter((att) => data.columnTypes[att] === 'number' || data.columnTypes[att] === 'date')
+      .filter(
+        (att) => data.columnTypes[att] === 'number' || data.columnTypes[att] === 'date',
+      )
       .map((attr) => ({
         attribute: attr,
         bins: 20, // 20 bins is the default used in upset/.../AddPlot.tsx
@@ -122,6 +124,7 @@ export function populateConfigDefaults(
       }));
   }
 
-  if (!isUpsetConfig(newConf)) throw new Error('Config is not a valid UpsetConfig object');
+  if (!isUpsetConfig(newConf))
+    throw new Error('Config is not a valid UpsetConfig object');
   return newConf;
 }

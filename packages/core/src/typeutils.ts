@@ -1,6 +1,14 @@
 import {
   Aggregate,
-  Aggregates, QuerySelection, VegaSelection, Row, Rows, SetMembershipStatus, SetQuery, Subset, Subsets,
+  Aggregates,
+  QuerySelection,
+  VegaSelection,
+  Row,
+  Rows,
+  SetMembershipStatus,
+  SetQuery,
+  Subset,
+  Subsets,
 } from './types';
 
 /**
@@ -14,13 +22,18 @@ export function vegaSelectionToString(selection: VegaSelection): string {
   let label = 'Atts: ';
   Object.entries(selection).forEach(([k, v]) => {
     // Ternary/toPrecision sets 2 sig fig bound on small numbers
-    let min: string | number = v[0] < 100 ? parseFloat(v[0].toPrecision(2)) : Math.round(v[0]);
-    let max: string | number = v[1] < 100 ? parseFloat(v[1].toPrecision(2)) : Math.round(v[1]);
+    let min: string | number =
+      v[0] < 100 ? parseFloat(v[0].toPrecision(2)) : Math.round(v[0]);
+    let max: string | number =
+      v[1] < 100 ? parseFloat(v[1].toPrecision(2)) : Math.round(v[1]);
     // Convert numbers with lots of 0s to exponential notation with 2 sig figs
     if (min >= 10000 || min <= 0.0009) min = min.toPrecision(2);
     if (max >= 10000 || max <= 0.0009) max = max.toPrecision(2);
     // Truncate names
-    if (k.length > 16) { k = k.slice(0, 13); k += '...'; }
+    if (k.length > 16) {
+      k = k.slice(0, 13);
+      k += '...';
+    }
     if (label !== 'Atts: ') label += ', ';
     label += `${k}: [${min} to ${max}]`;
   });
@@ -94,10 +107,14 @@ export function isRowSubset(row: Row): row is Subset {
  * @param {number} decimalPlaces The number of decimal places to use when comparing equality of numbers, default 4
  * @returns Whether a and b are equal
  */
-export function vegaSelectionsEqual(a: VegaSelection | undefined, b: VegaSelection | undefined, decimalPlaces: number = 4): boolean {
+export function vegaSelectionsEqual(
+  a: VegaSelection | undefined,
+  b: VegaSelection | undefined,
+  decimalPlaces: number = 4,
+): boolean {
   // We want undefined == {}
   if (!a || Object.keys(a).length === 0) {
-    return (!b || Object.keys(b).length === 0);
+    return !b || Object.keys(b).length === 0;
   }
   if (!a || !b) return false;
 
@@ -110,9 +127,10 @@ export function vegaSelectionsEqual(a: VegaSelection | undefined, b: VegaSelecti
   }
 
   return keys.every(
-    (key) => Object.hasOwn(b, key)
-      && prep(a[key][0]) === prep(b[key][0])
-      && prep(a[key][1]) === prep(b[key][1]),
+    (key) =>
+      Object.hasOwn(b, key) &&
+      prep(a[key][0]) === prep(b[key][0]) &&
+      prep(a[key][1]) === prep(b[key][1]),
   );
 }
 
