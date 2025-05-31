@@ -9,7 +9,11 @@ import React, { Suspense } from 'react';
 import { RecoilRoot } from 'recoil';
 import { createRoot } from 'react-dom/client';
 
-import { readSharedLoginCookie, writeSharedLoginCookie, invalidateSharedLoginCookie } from 'multinet';
+import {
+  readSharedLoginCookie,
+  writeSharedLoginCookie,
+  invalidateSharedLoginCookie,
+} from 'multinet';
 import localforage from 'localforage';
 import App from './App';
 import DefaultTheme from './components/theme';
@@ -19,10 +23,14 @@ import { client_id } from './api/env';
 
 // Not quite recommended but the only way I could get why-did-you-render to work with vite
 // from https://github.com/welldone-software/why-did-you-render/issues/243#issuecomment-1112542230
+// also, process is indeed defined in vite
+// eslint-disable-next-line no-undef
 if (process.env.NODE_ENV === 'development') {
   // Ignoring this because... it actually works
   // @ts-expect-error: await at top level
-  const { default: whyDidYouRender } = await import('@welldone-software/why-did-you-render');
+  const { default: whyDidYouRender } = await import(
+    '@welldone-software/why-did-you-render'
+  );
   whyDidYouRender(React, {
     logOnDifferentValues: true,
     trackAllPureComponents: true,

@@ -1,6 +1,6 @@
-import { atom } from "recoil";
+import { atom } from 'recoil';
 
 export const aboutAtom = atom<boolean>({
-    key: 'about-modal',
-    default: false,
+  key: 'about-modal',
+  default: false,
 });

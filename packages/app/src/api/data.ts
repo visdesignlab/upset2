@@ -9,11 +9,11 @@ import { api } from './api';
  * @returns {Promise<Paginated<TableRow>>} - A promise that resolves to the retrieved table.
  */
 export async function getTable(workspace: string, table: string): Promise<TableRow[]> {
-  return (
-    api.table(workspace, table, {
+  return api
+    .table(workspace, table, {
       limit: Number.MAX_SAFE_INTEGER,
-    }).then((response) => response.results.filter(isTableRow))
-  );
+    })
+    .then((response) => response.results.filter(isTableRow));
 }
 
 /**
@@ -23,8 +23,9 @@ export async function getTable(workspace: string, table: string): Promise<TableR
  * @param {string} table - The name of the table.
  * @returns {Promise<ColumnTypes>} - A promise that resolves to the column types.
  */
-export async function getColumnTypes(workspace: string, table: string): Promise<ColumnTypes> {
-  return (
-    api.columnTypes(workspace, table)
-  );
+export async function getColumnTypes(
+  workspace: string,
+  table: string,
+): Promise<ColumnTypes> {
+  return api.columnTypes(workspace, table);
 }
