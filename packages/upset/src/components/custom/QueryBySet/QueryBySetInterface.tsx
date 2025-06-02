@@ -113,8 +113,8 @@ export const QueryBySetInterface = () => {
     let queryString = 'intersections of ';
 
     // 'May' sets have no string representation and so are ignored
-    const yesSets = membershipValues.filter((status) => status === 'Yes');
-    const noSets = membershipValues.filter((status) => status === 'No');
+    const yesSets = Object.entries(membership).filter(([_, status]) => status === 'Yes');
+    const noSets = Object.entries(membership).filter(([_, status]) => status === 'No');
 
     /**
      * YES SETS
