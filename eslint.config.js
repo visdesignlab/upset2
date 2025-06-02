@@ -59,6 +59,15 @@ export default defineConfig([
           caughtErrorsIgnorePattern: '^_',
         },
       ],
+      // needs to be duplicated because we have this rule in 2 plugins (=
+      'no-unused-vars': [
+        'warn', // or "error"
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
       'max-len': 'off',
       'no-param-reassign': 'off',
       'import/no-cycle': 'off',
