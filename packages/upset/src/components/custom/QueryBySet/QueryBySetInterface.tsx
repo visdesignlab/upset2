@@ -64,7 +64,7 @@ export const QueryBySetInterface = () => {
     });
 
     setMembership(newMembership);
-  }, [visibleSets, membership]);
+  }, [visibleSets]); // DO NOT add membership here, otherwise it will cause an infinite loop
 
   function handleEditQueryTitle() {
     // There is likely a better way to do this, but for now alert works fine.
@@ -113,8 +113,8 @@ export const QueryBySetInterface = () => {
     let queryString = 'intersections of ';
 
     // 'May' sets have no string representation and so are ignored
-    const yesSets = Object.entries(membership).filter(([_, status]) => status === 'Yes');
-    const noSets = Object.entries(membership).filter(([_, status]) => status === 'No');
+    const yesSets = membershipValues.filter((status) => status === 'Yes');
+    const noSets = membershipValues.filter((status) => status === 'No');
 
     /**
      * YES SETS
