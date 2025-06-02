@@ -19,7 +19,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
   const { actions, provenance } = useContext(ProvenanceContext);
   const setImportError = useSetRecoilState(importErrorAtom);
 
-  const isMissingFields = (newState: any) => {
+  function isMissingFields(newState: Record<string, never>): boolean {
     const state = provenance.getState();
     let isMissing = false;
 
@@ -31,7 +31,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
     });
 
     return isMissing;
-  };
+  }
 
   async function readFile(file: File) {
     const data = await file.text();
@@ -39,7 +39,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
     let newState;
     try {
       newState = JSON.parse(data);
-    } catch (e) {
+    } catch {
       throw new Error('Invalid File Upload. Please upload a .json UpSet state file.');
     }
     const state = provenance.getState();
@@ -70,8 +70,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
               'state-upload-file',
             ) as HTMLInputElement;
 
-            input !== null &&
-              input.files !== null &&
+            if (input !== null && input.files !== null)
               readFile(input.files[0]).catch((e) => {
                 setIsError({
                   isOpen: true,
