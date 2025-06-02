@@ -262,11 +262,11 @@ export function sortRows(
   ) as any;
 
   aggs.order.forEach((aggId) => {
-    const { items } = aggs.values[aggId];
+    const { rows: items } = aggs.values[aggId];
 
     const newItems = sortRows(items, sortBy, vSetSortBy, visibleSets, sortByOrder);
 
-    aggs.values[aggId].items = newItems;
+    aggs.values[aggId].rows = newItems;
   });
 
   return aggs;

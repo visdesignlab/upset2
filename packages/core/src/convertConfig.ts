@@ -1,3 +1,5 @@
+// Disabled as using any cast is useful for converting and there's no point hard typechecking these fields
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   AggregateBy,
   Bookmark,

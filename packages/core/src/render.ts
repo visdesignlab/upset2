@@ -48,7 +48,7 @@ export const flattenRows = (
       row,
     });
     if (isRowAggregate(row)) {
-      flattenRows(row.items, flattenedRows, prefix);
+      flattenRows(row.rows, flattenedRows, prefix);
     }
   });
 

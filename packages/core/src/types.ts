@@ -121,10 +121,10 @@ export type Attributes = AttributeList & {
 };
 
 /**
- * Represents a base element.
+ * Template for a row/intersection which can be a subset or an aggregate
  * @private typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
  */
-export type BaseElement = {
+export type BaseRow = {
   /**
    * The ID of the element.
    */
@@ -135,8 +135,9 @@ export type BaseElement = {
   elementName: string;
   /**
    * The items associated with the element.
+   * Optional, as aggregates do not have items.
    */
-  items: string[];
+  items?: string[];
   /**
    * The type of the element.
    */
@@ -163,7 +164,7 @@ export const UNINCLUDED = 'unincluded';
  * Base Intersection type for subsets and aggregates.
  * @private typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
  */
-export type BaseIntersection = BaseElement & {
+export type BaseIntersection = BaseRow & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
 
@@ -216,7 +217,7 @@ export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
   description: string;
-  items:
+  rows:
     | Subsets
     | {
         values: { [agg_id: string]: Aggregate };

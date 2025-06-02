@@ -5,7 +5,7 @@ import {
   AltText,
   AttributePlots,
   AttributePlotType,
-  BaseElement,
+  BaseRow,
   BaseIntersection,
   Bookmark,
   Column,
@@ -59,7 +59,7 @@ export function isRowType(t: unknown): t is RowType {
  * @param r variable to check
  * @returns {boolean}
  */
-export function isBaseElement(r: unknown): r is BaseElement {
+export function isBaseElement(r: unknown): r is BaseRow {
   return (
     isObject(r) &&
     Object.hasOwn(r, 'id') &&
@@ -68,13 +68,13 @@ export function isBaseElement(r: unknown): r is BaseElement {
     Object.hasOwn(r, 'type') &&
     Object.hasOwn(r, 'attributes') &&
     Object.hasOwn(r, 'items') &&
-    typeof (r as BaseElement).id === 'string' &&
-    typeof (r as BaseElement).elementName === 'string' &&
-    typeof (r as BaseElement).size === 'number' &&
-    typeof (r as BaseElement).attributes === 'object' &&
-    isRowType((r as BaseElement).type) &&
-    Array.isArray((r as BaseElement).items) &&
-    (r as BaseElement).items.every((i: unknown) => typeof i === 'string')
+    typeof (r as BaseRow).id === 'string' &&
+    typeof (r as BaseRow).elementName === 'string' &&
+    typeof (r as BaseRow).size === 'number' &&
+    typeof (r as BaseRow).attributes === 'object' &&
+    isRowType((r as BaseRow).type) &&
+    Array.isArray((r as BaseRow).items) &&
+    (r as BaseRow).items.every((i: unknown) => typeof i === 'string')
   );
 }
 
@@ -289,16 +289,16 @@ export function isAggregate(a: unknown): a is Aggregate {
     isAggregateBy((a as Aggregate).aggregateBy) &&
     typeof (a as Aggregate).level === 'number' &&
     typeof (a as Aggregate).description === 'string' &&
-    (isSubsets((a as Aggregate).items) ||
-      (typeof (a as Aggregate).items === 'object' &&
-        Object.hasOwn((a as Aggregate).items, 'values') &&
-        Object.hasOwn((a as Aggregate).items, 'order') &&
-        typeof (a as Aggregate).items.values === 'object' &&
-        Object.entries((a as Aggregate).items.values).every(
+    (isSubsets((a as Aggregate).rows) ||
+      (typeof (a as Aggregate).rows === 'object' &&
+        Object.hasOwn((a as Aggregate).rows, 'values') &&
+        Object.hasOwn((a as Aggregate).rows, 'order') &&
+        typeof (a as Aggregate).rows.values === 'object' &&
+        Object.entries((a as Aggregate).rows.values).every(
           (k, v) => typeof k === 'string' && isAggregate(v),
         ) &&
-        Array.isArray((a as Aggregate).items.order) &&
-        (a as Aggregate).items.order.every((o: unknown) => typeof o === 'string')))
+        Array.isArray((a as Aggregate).rows.order) &&
+        (a as Aggregate).rows.order.every((o: unknown) => typeof o === 'string')))
   );
 }
 

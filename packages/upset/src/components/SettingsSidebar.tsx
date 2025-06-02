@@ -24,7 +24,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { AggregateBy, aggregateByList, BaseElement } from '@visdesignlab/upset2-core';
+import { AggregateBy, aggregateByList, BaseRow } from '@visdesignlab/upset2-core';
 import React, {
   CSSProperties,
   FC,
@@ -340,7 +340,7 @@ export const SettingsSidebar = () => {
                 }
                 onChange={handleSetChange}
               >
-                {Object.values(allSets).map((set: BaseElement) => (
+                {Object.values(allSets).map((set: BaseRow) => (
                   <MenuItem key={set.id} value={set.id}>
                     <Checkbox checked={visibleSets.includes(set.id)} />
                     <ListItemText primary={set.elementName} />
