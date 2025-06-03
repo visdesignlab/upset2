@@ -115,7 +115,7 @@ export const Root: FC<Props> = ({
 
   // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    const provenance =
+    const provenance: UpsetProvenance & { _getState?: typeof provenance.getState } =
       extProvenance?.provenance ??
       initializeProvenanceTracking(
         // Populate config defaults if not already set (this is only done if extProvenance is not provided)
@@ -135,6 +135,10 @@ export const Root: FC<Props> = ({
       const converted = convertConfig(provenance.getState());
       setState(converted);
     });
+
+    // Ensure that the provenance state is always in the correct format
+    const originalGetState = provenance.getState.bind(provenance);
+    provenance.getState = () => convertConfig(originalGetState());
 
     provenance.done();
     return { provenance, actions };
