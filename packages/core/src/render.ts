@@ -2,12 +2,8 @@ import { firstAggregation, secondAggregation } from './aggregate';
 import { filterRows } from './filter';
 import { getSubsets } from './process';
 import { sortRows } from './sort';
-import {
-  areRowsAggregates, getBelongingSetsFromSetMembership, isPopulatedSetQuery, isRowAggregate,
-} from './typeutils';
-import {
-  Row, Rows, SetQueryMembership, Sets, UpsetConfig,
-} from './types';
+import { areRowsAggregates, getBelongingSetsFromSetMembership, isPopulatedSetQuery, isRowAggregate } from './typeutils';
+import { CoreUpsetData, Row, Rows, SetQueryMembership, Sets, UpsetConfig } from './types';
 
 /**
  * Maps Row IDs to Row objects
@@ -34,11 +30,7 @@ export type RenderRow = {
  * @param idPrefix - The prefix to add to the IDs of the flattened rows (optional, defaults to an empty string).
  * @returns The flattened array of RenderRow objects.
  */
-export const flattenRows = (
-  rows: Rows,
-  flattenedRows: RenderRow[] = [],
-  idPrefix = '',
-): RenderRow[] => {
+export const flattenRows = (rows: Rows, flattenedRows: RenderRow[] = [], idPrefix = ''): RenderRow[] => {
   rows.order.forEach((rowId) => {
     const row = rows.values[rowId];
     const prefix = idPrefix + row.id;
@@ -60,7 +52,7 @@ export const flattenRows = (
  * @param state - The UpsetConfig object containing the configuration state.
  * @returns The result of the first aggregation.
  */
-const firstAggRR = (data: any, state: UpsetConfig) => {
+const firstAggRR = (data: CoreUpsetData, state: UpsetConfig) => {
   const subsets = getSubsets(data.items, data.sets, state.visibleSets, data.attributeColumns);
   return firstAggregation(
     subsets,
@@ -81,7 +73,7 @@ const firstAggRR = (data: any, state: UpsetConfig) => {
  * @param state - The configuration state for the aggregation.
  * @returns The second-level aggregation result.
  */
-const secondAggRR = (data: any, state: UpsetConfig) => {
+const secondAggRR = (data: CoreUpsetData, state: UpsetConfig) => {
   const renderRows = firstAggRR(data, state);
 
   if (areRowsAggregates(renderRows)) {
@@ -137,10 +129,12 @@ export function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows
  * @param ignoreQuery - Whether to ignore the query when sorting the data. Set this to true to get the sorted rows as if there was no query.
  * @returns The sorted rows based on the RR and the provided sorting options.
  */
-const sortByRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
+const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) => {
   if (!data || typeof data !== 'object' || !Object.hasOwn(data, 'sets')) return { order: [], values: {} };
 
-  const vSets: Sets = Object.fromEntries(Object.entries(data.sets as Sets).filter(([name, _set]) => state.visibleSets.includes(name)));
+  const vSets: Sets = Object.fromEntries(
+    Object.entries(data.sets as Sets).filter(([name]) => state.visibleSets.includes(name)),
+  );
 
   let renderRows: Rows;
 
@@ -162,7 +156,7 @@ const sortByRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
  * @param ignoreQuery - Whether to ignore the query when filtering the data. Set this to true to get the filtered rows as if there was no query.
  * @returns The filtered rows based on the RR algorithm and the provided filters.
  */
-const filterRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
+const filterRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) => {
   const renderRows = sortByRR(data, state, ignoreQuery);
 
   return filterRows(renderRows, state.filters);
@@ -175,7 +169,8 @@ const filterRR = (data: any, state: UpsetConfig, ignoreQuery = false) => {
  * @param ignoreQuery - Whether to ignore the query when filtering the data. Set this to true to get the filtered rows as if there was no query.
  * @returns The filtered rows of data.
  */
-export const getRows = (data: any, state: UpsetConfig, ignoreQuery = false) => filterRR(data, state, ignoreQuery);
+export const getRows = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) =>
+  filterRR(data, state, ignoreQuery);
 
 /**
  * Flattens the rows of data based on the provided state configuration.
@@ -184,7 +179,7 @@ export const getRows = (data: any, state: UpsetConfig, ignoreQuery = false) => f
  * @param state - The state configuration for flattening the data.
  * @returns The flattened rows of data.
  */
-export const flattenedRows = (data: any, state: UpsetConfig) => {
+export const flattenedRows = (data: CoreUpsetData, state: UpsetConfig) => {
   const rows = getRows(data, state);
 
   return flattenRows(rows);
@@ -198,7 +193,7 @@ export const flattenedRows = (data: any, state: UpsetConfig) => {
  * @param state - The UpsetConfig state.
  * @returns An object containing only the rows.
  */
-export function flattenedOnlyRows(data: any, state: UpsetConfig): RowMap {
+export function flattenedOnlyRows(data: CoreUpsetData, state: UpsetConfig): RowMap {
   const rows = flattenedRows(data, state);
   const onlyRows: { [key: string]: Row } = {};
 

@@ -1,15 +1,19 @@
-import { getRows, Item, Rows } from "@visdesignlab/upset2-core";
-import { selector, selectorFamily } from "recoil";
-import { dataSelector } from "./dataAtom";
-import { configAtom } from "./configAtoms";
+import { getRows, Item, Rows } from '@visdesignlab/upset2-core';
+import { selector, selectorFamily } from 'recoil';
+import { dataSelector } from './dataAtom';
+import { configAtom } from './configAtoms';
 
 /**
  * Gets all rows in the plot
  */
 export const rowsSelector = selector<Rows>({
   key: 'plot-rows',
-  get: ({ get }) => getRows(get(dataSelector), get(configAtom)),
-})
+  get: ({ get }) => {
+    const data = get(dataSelector);
+    if (data) return getRows(data, get(configAtom));
+    else return { values: {}, order: [] };
+  },
+});
 
 /**
  * Gets all items from the CoreUpsetData
@@ -17,7 +21,7 @@ export const rowsSelector = selector<Rows>({
 export const itemsSelector = selector<Item[]>({
   key: 'data-items',
   get: ({ get }) => Object.values(get(dataSelector)?.items ?? {}),
-})
+});
 
 /**
  * Counts the number of items that have a given attribute.
@@ -27,11 +31,10 @@ export const itemsSelector = selector<Item[]>({
  */
 export const attributeValuesCount = selectorFamily<number, string>({
   key: 'attribute-count',
-  get: (att: string) => ({ get }) => Object.values(
-    get(itemsSelector),
-  ).filter(
-    (item) => !!item[att],
-  ).length,
+  get:
+    (att: string) =>
+    ({ get }) =>
+      Object.values(get(itemsSelector)).filter((item) => !!item[att]).length,
 });
 
 /**
@@ -41,11 +44,13 @@ export const attributeValuesCount = selectorFamily<number, string>({
  */
 export const countValuesForAttributes = selectorFamily<Record<string, number>, string[]>({
   key: 'multi-att-count',
-  get: (atts: string[]) => ({ get }) => {
-    const counts: Record<string, number> = {};
-    atts.forEach((att) => {
-      counts[att] = get(attributeValuesCount(att));
-    });
-    return counts;
-  },
+  get:
+    (atts: string[]) =>
+    ({ get }) => {
+      const counts: Record<string, number> = {};
+      atts.forEach((att) => {
+        counts[att] = get(attributeValuesCount(att));
+      });
+      return counts;
+    },
 });

@@ -6,5 +6,6 @@
   "Evil": "boolean",
   "Male": "boolean",
   "Power Plant": "boolean",
-  "Age": "number"
+  "Age": "number",
+  "Generation": "category"
 }

@@ -19,12 +19,7 @@ import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemoval
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
-import {
-  getActions,
-  initializeProvenanceTracking,
-  UpsetActions,
-  UpsetProvenance,
-} from '../provenance';
+import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
@@ -114,25 +109,33 @@ export const Root: FC<Props> = ({
 
   // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    const provenance = extProvenance?.provenance ?? initializeProvenanceTracking(config, setState);
+    const provenance: UpsetProvenance & { _getState?: typeof provenance.getState } =
+      extProvenance?.provenance ??
+      initializeProvenanceTracking(
+        // Populate config defaults if not already set (this is only done if extProvenance is not provided)
+        populateConfigDefaults(config, data, visualizeUpsetAttributes ?? true, visibleDatasetAttributes),
+        setState,
+      );
     const actions = extProvenance?.actions ?? getActions(provenance);
 
     // This syncs all linked atoms with the provenance state
     provenance.currentChange(() => {
       // Old provenance nodes may be using a different config version, so convert it if need be
-      const converted = populateConfigDefaults(
-        convertConfig(provenance.getState()),
-        data,
-        visualizeUpsetAttributes ?? false,
-        visibleDatasetAttributes,
-      );
+      const converted = convertConfig(provenance.getState());
       setState(converted);
     });
+
+    // Ensure that the provenance state is always in the correct format
+    const originalGetState = provenance.getState.bind(provenance);
+    provenance.getState = () => convertConfig(originalGetState());
 
     provenance.done();
     return { provenance, actions };
   }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
 
+  /**
+   * We don't want to populate the config defaults if the provenance is already set externally
+   */
   useEffect(() => {
     if (!extProvenance) {
       setState(
@@ -143,25 +146,8 @@ export const Root: FC<Props> = ({
           visibleDatasetAttributes,
         ),
       );
-    } else {
-      setState(
-        populateConfigDefaults(
-          convertConfig(provenance.getState()),
-          data,
-          visualizeUpsetAttributes ?? false,
-          visibleDatasetAttributes,
-        ),
-      );
-    }
-  }, [
-    config,
-    data,
-    setState,
-    visibleDatasetAttributes,
-    visualizeUpsetAttributes,
-    extProvenance,
-    provenance,
-  ]);
+    } else setState(convertConfig(provenance.getState()));
+  }, [config, data, setState, visibleDatasetAttributes, visualizeUpsetAttributes, extProvenance, provenance]);
 
   // This hook is for atoms that are not directly linked to the provenance state
   useEffect(() => {
@@ -228,8 +214,8 @@ export const Root: FC<Props> = ({
           border: 0;
         `}
       >
-        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively
-        working on this and apologize for any inconvenience.
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and
+        apologize for any inconvenience.
       </h2>
       <div
         css={css`
@@ -251,11 +237,7 @@ export const Root: FC<Props> = ({
       )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {altTextSidebar && generateAltText && (
-        <AltTextSidebar
-          open={altTextSidebar.open}
-          close={altTextSidebar.close}
-          generateAltText={generateAltText}
-        />
+        <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />
       )}
     </ProvenanceContext.Provider>
   );
