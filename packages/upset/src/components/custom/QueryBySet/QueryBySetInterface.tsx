@@ -27,6 +27,7 @@ import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms
 import { UpsetActions, UpsetProvenance } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
 import { currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
+import { upsetConfigAtom } from '../../../atoms/config/upsetConfigAtoms';
 
 // edit icon size
 const EDIT_ICON_SIZE = 14;
@@ -39,18 +40,15 @@ const CHECK_ICON_SIZE = 16;
  * @returns {JSX.Element} The rendered QueryBySets component.
  */
 export const QueryBySetInterface = () => {
-  const { provenance, actions }: { provenance: UpsetProvenance; actions: UpsetActions } =
-    useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
+  const state = useRecoilValue(upsetConfigAtom);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQueryInterface = useSetRecoilState(queryBySetsInterfaceAtom);
   const [queryName, setQueryName] = useState('Intersection Query');
   const [membership, setMembership] = useState<SetQueryMembership>({});
-  const rows = useMemo(
-    () => getRows(data, provenance.getState(), true),
-    [data, provenance],
-  );
+  const rows = useMemo(() => getRows(data, state, true), [data, state]);
   const setColumnSelect = useSetRecoilState(columnSelectAtom);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
 
