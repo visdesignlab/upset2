@@ -125,15 +125,9 @@ export const Root: FC<Props> = ({
       setState(converted);
     });
 
-    provenance._getState = provenance.getState;
-    provenance.getState = () =>
-      convertConfig(
-        provenance._getState
-          ? provenance._getState()
-          : () => {
-              throw new Error('_getState should exist and you should not be here!');
-            },
-      );
+    // Ensure that the provenance state is always in the correct format
+    const originalGetState = provenance.getState.bind(provenance);
+    provenance.getState = () => convertConfig(originalGetState());
 
     provenance.done();
     return { provenance, actions };
