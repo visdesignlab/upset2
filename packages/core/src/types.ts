@@ -122,7 +122,7 @@ export type Attributes = AttributeList & {
 
 /**
  * Template for a row/intersection which can be a subset or an aggregate
- * @private typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
+ * @private typechecked by isBaseRow in typecheck.ts; changes here must be reflected there
  */
 export type BaseRow = {
   /**

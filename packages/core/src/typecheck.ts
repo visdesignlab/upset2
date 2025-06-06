@@ -24,6 +24,7 @@ import {
   SetQuery,
   SetMembershipStatus,
   TableRow,
+  Item,
 } from './types';
 import { deepCopy } from './utils';
 
@@ -59,7 +60,7 @@ export function isRowType(t: unknown): t is RowType {
  * @param r variable to check
  * @returns {boolean}
  */
-export function isBaseElement(r: unknown): r is BaseRow {
+export function isBaseRow(r: unknown): r is BaseRow {
   return (
     isObject(r) &&
     Object.hasOwn(r, 'id') &&
@@ -67,14 +68,14 @@ export function isBaseElement(r: unknown): r is BaseRow {
     Object.hasOwn(r, 'size') &&
     Object.hasOwn(r, 'type') &&
     Object.hasOwn(r, 'attributes') &&
-    Object.hasOwn(r, 'items') &&
     typeof (r as BaseRow).id === 'string' &&
     typeof (r as BaseRow).elementName === 'string' &&
     typeof (r as BaseRow).size === 'number' &&
     typeof (r as BaseRow).attributes === 'object' &&
     isRowType((r as BaseRow).type) &&
-    Array.isArray((r as BaseRow).items) &&
-    (r as BaseRow).items.every((i: unknown) => typeof i === 'string')
+    (!Object.hasOwn(r, 'items') ||
+      (Array.isArray((r as { items: Item[] }).items) &&
+        (r as { items: Item[] }).items.every((i: unknown) => typeof i === 'string')))
   );
 }
 
@@ -86,7 +87,7 @@ export function isBaseElement(r: unknown): r is BaseRow {
 export function isBaseIntersection(i: unknown): i is BaseIntersection {
   return (
     !!i &&
-    isBaseElement(i) &&
+    isBaseRow(i) &&
     Object.hasOwn(i, 'setMembership') &&
     typeof (i as BaseIntersection).setMembership === 'object' &&
     Object.values((i as BaseIntersection).setMembership).every(
