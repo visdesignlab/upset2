@@ -24,7 +24,7 @@ import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
 import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
-import { UpsetActions, UpsetProvenance } from '../../../provenance';
+import { UpsetActions } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
 import { currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
 import { upsetConfigAtom } from '../../../atoms/config/upsetConfigAtoms';
