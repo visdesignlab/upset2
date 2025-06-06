@@ -46,7 +46,7 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
     ({ get }) => {
       const items = get(itemsAtom);
       const values = Object.values(items)
-        .map((item) => item[attribute] as number)
+        .map((item) => item.atts[attribute] as number)
         .filter((val) => !Number.isNaN(val));
 
       return values;
@@ -68,7 +68,7 @@ const categorySizeOrderSelector = selectorFamily<string[], string>({
 
       const categories = items.reduce(
         (acc, item) => {
-          const value = item[attribute];
+          const value = item.atts[attribute];
           if (typeof value === 'string' && value) {
             acc[value] = (acc[value] || 0) + 1;
           }
@@ -109,8 +109,8 @@ export const categoricalCountSelector = selectorFamily<
       );
 
       items.forEach((item) => {
-        if (typeof item[attribute] !== 'string' || !item[attribute]) return;
-        const value = item[attribute];
+        if (typeof item.atts[attribute] !== 'string' || !item.atts[attribute]) return;
+        const value = item.atts[attribute];
         if (value in result) result[value] += 1;
         else result[value] = 1;
       });

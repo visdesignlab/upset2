@@ -57,12 +57,14 @@ export type RowType =
   | 'Seperator'
   | 'Undefined';
 
+/** An item in the dataset; referred to in the UI as an element */
 export type Item = {
   _id: string;
   _label: string;
-  [attr: string]: boolean | number | string;
+  atts: { [attr: string]: boolean | number | string };
 };
 
+/** A list of items with labels mapped to item objects */
 export type Items = { [k: string]: Item };
 
 /** Items filtered by some query into included and excluded groups */

@@ -63,7 +63,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
     const row: string[] = [];
 
     columns.forEach((col) => {
-      row.push(item[col]?.toString() || '-');
+      row.push(item.atts[col]?.toString() || '-');
     });
 
     saveText.push(row.map((r) => (r.includes(',') ? `"${r}"` : r)).join(','));
@@ -72,7 +72,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
   const blobUrl = URL.createObjectURL(blob);
 
-  const anchor: any = document.createElement('a');
+  const anchor = document.createElement('a');
   anchor.style = 'display: none';
   document.body.appendChild(anchor);
   anchor.href = blobUrl;

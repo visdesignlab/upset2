@@ -185,10 +185,10 @@ export const attValuesSelector = selectorFamily<number[], { row: Row; att: strin
 
       // We could filter the whole array before we map, but attributes should all be the same type,
       // so its sufficient and more performant to only check the first attribute
-      if (!items[0] || !items[0][att] || typeof items[0][att] !== 'number') {
+      if (!items[0] || !items[0].atts[att] || typeof items[0].atts[att] !== 'number') {
         return [];
       }
-      return items.map((item) => item[att] as number);
+      return items.map((item) => item.atts[att] as number);
     },
 });
 

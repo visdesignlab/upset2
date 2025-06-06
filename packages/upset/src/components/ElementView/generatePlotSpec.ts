@@ -58,12 +58,12 @@ export function createAddScatterplotSpec(
     },
     encoding: {
       x: {
-        field: x.attribute,
+        field: `atts.${x.attribute}`,
         type: 'quantitative',
         scale: { zero: false, type: x.logScale ? 'log' : 'linear' },
       },
       y: {
-        field: y.attribute,
+        field: `atts.${y.attribute}`,
         type: 'quantitative',
         scale: { zero: false, type: y.logScale ? 'log' : 'linear' },
       },
@@ -96,12 +96,12 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
     ],
     encoding: {
       x: {
-        field: spec.x,
+        field: `atts.${spec.x}`,
         type: 'quantitative',
         scale: { zero: false, type: spec.xScaleLog ? 'log' : 'linear' },
       },
       y: {
-        field: spec.y,
+        field: `atts.${spec.y}`,
         type: 'quantitative',
         scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
@@ -243,7 +243,7 @@ export function createAddHistogramSpec(
     encoding: {
       x: {
         bin: { maxbins: bins },
-        field: attribute,
+        field: `atts.${attribute}`,
       },
       y: { aggregate: 'count' },
     },
@@ -301,18 +301,22 @@ export function generateHistogramSpec(
         {
           // This layer shows all elements in grey
           transform: [
-            { density: hist.attribute },
+            { density: `atts.${hist.attribute}` },
             {
               // Hacky way to get the correct name for the attribute & sync with other plots
               // Otherwise, the attribute name is "value", so selections don't sync and the signal sent
               // by selecting on this plot doesn't include the name of the attribute being selected
               calculate: 'datum["value"]',
-              as: hist.attribute,
+              as: `atts.${hist.attribute}`,
             },
           ],
           mark: 'line',
           encoding: {
-            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            x: {
+              field: `atts.${hist.attribute}`,
+              type: 'quantitative',
+              title: hist.attribute,
+            },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: { value: DEFAULT_ELEMENT_COLOR },
             opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
@@ -323,12 +327,16 @@ export function generateHistogramSpec(
           params,
           transform: [
             { filter: { field: 'bookmarked', equal: true } },
-            { density: hist.attribute, groupby: ['subset', 'color'] },
-            { calculate: 'datum["value"]', as: hist.attribute },
+            { density: `atts.${hist.attribute}`, groupby: ['subset', 'color'] },
+            { calculate: 'datum["value"]', as: `atts.${hist.attribute}` },
           ],
           mark: 'line',
           encoding: {
-            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            x: {
+              field: `atts.${hist.attribute}`,
+              type: 'quantitative',
+              title: hist.attribute,
+            },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
             opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
@@ -338,12 +346,16 @@ export function generateHistogramSpec(
           // This layer displays probability density for selected elements
           transform: [
             { filter: { param: 'brush', empty: false } },
-            { density: hist.attribute },
-            { calculate: 'datum["value"]', as: hist.attribute },
+            { density: `atts.${hist.attribute}` },
+            { calculate: 'datum["value"]', as: `atts.${hist.attribute}` },
           ],
           mark: 'line',
           encoding: {
-            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            x: {
+              field: `atts.${hist.attribute}`,
+              type: 'quantitative',
+              title: hist.attribute,
+            },
             y: { field: 'density', type: 'quantitative' },
             color: { value: vegaSelectionColor },
             opacity: { value: selectionTypeRow ? 0.4 : 1 },
@@ -354,14 +366,14 @@ export function generateHistogramSpec(
               {
                 transform: [
                   { filter: { field: 'isCurrent', equal: true } },
-                  { density: hist.attribute, groupby: ['subset', 'color'] },
-                  { calculate: 'datum["value"]', as: hist.attribute },
+                  { density: `atts.${hist.attribute}`, groupby: ['subset', 'color'] },
+                  { calculate: 'datum["value"]', as: `atts.${hist.attribute}` },
                 ],
                 mark: 'line' as AnyMark, // Vega is weird about some types in destructured objects
                 encoding: {
                   // More vega weirdness
                   x: {
-                    field: hist.attribute,
+                    field: `atts.${hist.attribute}`,
                     type: 'quantitative' as StandardType,
                     title: hist.attribute,
                   },
@@ -385,7 +397,7 @@ export function generateHistogramSpec(
         params,
         mark: 'bar',
         encoding: {
-          x: { bin: { maxbins: hist.bins }, field: hist.attribute },
+          x: { bin: { maxbins: hist.bins }, field: `atts.${hist.attribute}` },
           y: { aggregate: 'count', title: 'Frequency' },
           color: COLOR,
           opacity: OPACITY,
@@ -399,7 +411,11 @@ export function generateHistogramSpec(
         ],
         mark: 'bar',
         encoding: {
-          x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+          x: {
+            field: `atts.${hist.attribute}`,
+            bin: { maxbins: hist.bins },
+            title: hist.attribute,
+          },
           y: { aggregate: 'count', title: 'Frequency' },
           color: { value: vegaSelectionColor },
           opacity: { value: 1 },
@@ -411,7 +427,7 @@ export function generateHistogramSpec(
               transform: [{ filter: { field: 'isCurrent', equal: true } }],
               mark: 'bar' as AnyMark, // Vega is weird about some types in destructured objects
               encoding: {
-                x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+                x: { field: `atts.${hist.attribute}`, bin: { maxbins: hist.bins } },
                 y: { aggregate: 'count' as Aggregate, title: 'Frequency' },
                 color: COLOR,
                 opacity: { value: 1 },
