@@ -23,8 +23,9 @@ export const queryColumnsSelector = selector<ColumnName[]>({
   get: ({ get }) => {
     const BUILTIN_COLS = ['_id', '_from', '_to', '_key', '_rev'];
     const data = get(dataAtom);
-    return data.columns.filter((col) => !data.setColumns.includes(col)
-      && !BUILTIN_COLS.includes(col));
+    return data.columns.filter(
+      (col) => !data.setColumns.includes(col) && !BUILTIN_COLS.includes(col),
+    );
   },
 });
 

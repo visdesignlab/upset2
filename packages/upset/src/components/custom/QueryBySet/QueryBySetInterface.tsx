@@ -2,19 +2,21 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
 import { SvgIcon, Tooltip } from '@mui/material';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import {
-  useCallback,
-  useContext, useEffect, useMemo, useState,
-} from 'react';
-import {
-  getRows, getQueryResult,
+  getRows,
+  getQueryResult,
   SetQueryMembership,
   isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
 import translate from '../../../utils/transform';
 import {
-  mousePointer, DEFAULT_ROW_BACKGROUND_COLOR, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH, DEFAULT_ROW_BACKGROUND_OPACITY,
+  mousePointer,
+  DEFAULT_ROW_BACKGROUND_COLOR,
+  ROW_BORDER_STROKE_COLOR,
+  ROW_BORDER_STROKE_WIDTH,
+  DEFAULT_ROW_BACKGROUND_OPACITY,
 } from '../../../utils/styles';
 import { SetMembershipRow } from './SetMembershipRow';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
@@ -22,7 +24,7 @@ import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
 import { ProvenanceContext } from '../../Root';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
-import { UpsetActions, UpsetProvenance } from '../../../provenance';
+import { UpsetActions } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
 import { currentIntersectionSelector } from '../../../atoms/config/selectionAtoms';
 import { upsetConfigAtom } from '../../../atoms/config/upsetConfigAtoms';
@@ -64,7 +66,7 @@ export const QueryBySetInterface = () => {
 
   function handleEditQueryTitle() {
     // There is likely a better way to do this, but for now alert works fine.
-    // eslint-disable-next-line no-alert
+
     setQueryName(prompt('Edit Query Title', queryName) || 'Query');
   }
 
@@ -178,7 +180,15 @@ export const QueryBySetInterface = () => {
     actions.addSetQuery(query, queryResultString);
     setColumnSelect([]); // Column select doesn't clear itself for some reason
     setQueryInterface(false);
-  }, [queryName, membership, queryResultString, actions, currentIntersection, setColumnSelect, setQueryInterface]);
+  }, [
+    queryName,
+    membership,
+    queryResultString,
+    actions,
+    currentIntersection,
+    setColumnSelect,
+    setQueryInterface,
+  ]);
 
   return (
     <g
@@ -208,14 +218,12 @@ export const QueryBySetInterface = () => {
           stroke={ROW_BORDER_STROKE_COLOR}
           strokeWidth={ROW_BORDER_STROKE_WIDTH}
         />
-        <g
-          transform={translate(20, 0)}
-        >
+        <g transform={translate(20, 0)}>
           <text
             css={css`
-                font-size: 14px;
-                font-weight: 450;
-              `}
+              font-size: 14px;
+              font-weight: 450;
+            `}
             dominantBaseline="middle"
             transform={translate(5, dimensions.body.rowHeight / 2)}
           >
@@ -227,15 +235,8 @@ export const QueryBySetInterface = () => {
             transform={translate(-EDIT_ICON_SIZE, EDIT_ICON_SIZE / 4)}
             onClick={handleEditQueryTitle}
           >
-            <rect
-              height={EDIT_ICON_SIZE}
-              width={EDIT_ICON_SIZE}
-              fill="transparent"
-            />
-            <SvgIcon
-              height={EDIT_ICON_SIZE}
-              width={EDIT_ICON_SIZE}
-            >
+            <rect height={EDIT_ICON_SIZE} width={EDIT_ICON_SIZE} fill="transparent" />
+            <SvgIcon height={EDIT_ICON_SIZE} width={EDIT_ICON_SIZE}>
               <Edit />
             </SvgIcon>
           </g>
@@ -243,9 +244,7 @@ export const QueryBySetInterface = () => {
       </g>
       {/* Query matrix */}
       <g transform={translate(dimensions.set.width / 2, 0)}>
-        <g
-          transform={translate(dimensions.xOffset, dimensions.body.rowHeight - 10)}
-        >
+        <g transform={translate(dimensions.xOffset, dimensions.body.rowHeight - 10)}>
           <g transform={translate(0, dimensions.body.rowHeight - 3)}>
             <SetMembershipRow combined members={membership} setMembers={setMembership} />
             <line
@@ -260,20 +259,34 @@ export const QueryBySetInterface = () => {
             />
           </g>
           <g transform={translate(0, dimensions.body.rowHeight * 2)}>
-            <SetMembershipRow membershipType="No" members={membership} setMembers={setMembership} />
+            <SetMembershipRow
+              membershipType="No"
+              members={membership}
+              setMembers={setMembership}
+            />
           </g>
           <g transform={translate(0, dimensions.body.rowHeight * 3)}>
-            <SetMembershipRow membershipType="May" members={membership} setMembers={setMembership} />
+            <SetMembershipRow
+              membershipType="May"
+              members={membership}
+              setMembers={setMembership}
+            />
           </g>
           <g transform={translate(0, dimensions.body.rowHeight * 4)}>
-            <SetMembershipRow membershipType="Yes" members={membership} setMembers={setMembership} />
+            <SetMembershipRow
+              membershipType="Yes"
+              members={membership}
+              setMembers={setMembership}
+            />
           </g>
         </g>
       </g>
       {/* Add query button */}
       <g
-        transform={translate(dimensions.matrixColumn.width +
-          dimensions.bookmarkStar.gap, dimensions.body.rowHeight + CHECK_ICON_SIZE / 4)}
+        transform={translate(
+          dimensions.matrixColumn.width + dimensions.bookmarkStar.gap,
+          dimensions.body.rowHeight + CHECK_ICON_SIZE / 4,
+        )}
       >
         <Tooltip title="Add Query">
           <g>
@@ -297,9 +310,9 @@ export const QueryBySetInterface = () => {
       <g
         transform={translate(
           dimensions.matrixColumn.width +
-          dimensions.bookmarkStar.gap +
-          dimensions.bookmarkStar.width +
-          dimensions.bookmarkStar.gap,
+            dimensions.bookmarkStar.gap +
+            dimensions.bookmarkStar.width +
+            dimensions.bookmarkStar.gap,
           dimensions.body.rowHeight * 2.5,
         )}
       >
@@ -307,14 +320,18 @@ export const QueryBySetInterface = () => {
           width={
             dimensions.setQuery.width -
             (dimensions.matrixColumn.width + // gap from side to sizebar
-            dimensions.bookmarkStar.gap +
-            dimensions.bookmarkStar.width +
-            dimensions.bookmarkStar.gap)
+              dimensions.bookmarkStar.gap +
+              dimensions.bookmarkStar.width +
+              dimensions.bookmarkStar.gap)
           }
           height={dimensions.setQuery.height - dimensions.body.rowHeight * 2.5}
         >
           <p
-            css={css`text-wrap: normal; margin: 0; padding: 0;`}
+            css={css`
+              text-wrap: normal;
+              margin: 0;
+              padding: 0;
+            `}
           >
             {queryResultString}
           </p>

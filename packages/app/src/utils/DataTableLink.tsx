@@ -29,7 +29,10 @@ async function dispatchState(
     localforage.setItem('data', data),
     localforage.setItem('rows', getAccessibleData(rows, true)),
     localforage.setItem('visibleSets', visibleSets),
-    localforage.setItem('hiddenSets', hiddenSets.map((set: Column) => set.name)),
+    localforage.setItem(
+      'hiddenSets',
+      hiddenSets.map((set: Column) => set.name),
+    ),
   ]);
 
   saveQueryParam();
@@ -47,7 +50,7 @@ type Props = {
   hiddenSets: Column[];
   /** Tab index of the <Link> component */
   tabIndex?: number;
-}
+};
 
 /**
  * A link to the data table,
@@ -55,7 +58,12 @@ type Props = {
  * @returns
  */
 export const DataTableLink: FC<PropsWithChildren<Props>> = ({
-  data, rows, visibleSets, hiddenSets, tabIndex, children,
+  data,
+  rows,
+  visibleSets,
+  hiddenSets,
+  tabIndex,
+  children,
 }) => {
   const [loading, setLoading] = useRecoilState(loadingAtom);
   return loading ? (

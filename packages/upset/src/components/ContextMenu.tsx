@@ -33,11 +33,7 @@ export const ContextMenu = () => {
         `}
       >
         {contextMenu.items.map((item) => (
-          <MenuItem
-            key={item.label}
-            onClick={item.onClick}
-            disabled={!!item.disabled}
-          >
+          <MenuItem key={item.label} onClick={item.onClick} disabled={!!item.disabled}>
             {item.label}
           </MenuItem>
         ))}

@@ -1,11 +1,12 @@
 import { Subset, Aggregate } from '@visdesignlab/upset2-core';
-import {
-  FC, useMemo,
-} from 'react';
+import { FC, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
-import { isRowBookmarkedOrSelected, bookmarkColorSelector } from '../../../../atoms/config/selectionAtoms';
+import {
+  isRowBookmarkedOrSelected,
+  bookmarkColorSelector,
+} from '../../../../atoms/config/selectionAtoms';
 import { ATTRIBUTE_DEFAULT_COLOR } from '../../../../utils/styles';
 import { MemoizedDensityVega } from './MemoizedDensityVega';
 
@@ -33,9 +34,7 @@ type Props = {
  * @param attribute - The attribute for which the density plot is displayed.
  * @param row - The row for which the density plot is displayed.
  */
-export const DensityPlot: FC<Props> = ({
-  values, attribute, row,
-}) => {
+export const DensityPlot: FC<Props> = ({ values, attribute, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
@@ -46,20 +45,17 @@ export const DensityPlot: FC<Props> = ({
    * Logic for determining the selection/bookmark status of the row.
    * @returns {string} The fill color for the density plot.
    */
-  const fillColor = useMemo(
-    () => {
-      if (bookmarkedOrSelected) return color;
-      return ATTRIBUTE_DEFAULT_COLOR;
-    },
-    [bookmarkedOrSelected, color],
-  );
+  const fillColor = useMemo(() => {
+    if (bookmarkedOrSelected) return color;
+    return ATTRIBUTE_DEFAULT_COLOR;
+  }, [bookmarkedOrSelected, color]);
 
   return (
-    <g
-      id="Density"
-      transform={`translate(0, ${-dimensions.attribute.plotHeight / 1.5})`}
-    >
-      <foreignObject width={dimensions.attribute.width} height={dimensions.attribute.plotHeight}>
+    <g id="Density" transform={`translate(0, ${-dimensions.attribute.plotHeight / 1.5})`}>
+      <foreignObject
+        width={dimensions.attribute.width}
+        height={dimensions.attribute.plotHeight}
+      >
         <MemoizedDensityVega
           values={values}
           fillColor={fillColor}

@@ -1,11 +1,10 @@
 import DownloadIcon from '@mui/icons-material/Download';
+import { Alert, Box, IconButton, Tooltip, Typography } from '@mui/material';
 import {
-  Alert,
-  Box,
-  IconButton, Tooltip,
-  Typography,
-} from '@mui/material';
-import { Item, querySelectionToString, vegaSelectionToString } from '@visdesignlab/upset2-core';
+  Item,
+  querySelectionToString,
+  vegaSelectionToString,
+} from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
 
 import { useCallback, useMemo, useState } from 'react';
@@ -21,7 +20,11 @@ import { ElementTable } from './ElementTable';
 import { ElementVisualization } from './ElementVisualization';
 import { QueryInterface } from './QueryInterface';
 import {
-  bookmarkSelector, currentIntersectionSelector, currentQuerySelection, currentSelectionType, currentVegaSelection,
+  bookmarkSelector,
+  currentIntersectionSelector,
+  currentQuerySelection,
+  currentSelectionType,
+  currentVegaSelection,
 } from '../../atoms/config/selectionAtoms';
 import { Sidebar } from '../custom/Sidebar';
 import { UpsetHeading } from '../custom/theme/heading';
@@ -35,10 +38,10 @@ import { dataAttributeSelector } from '../../atoms/attributeAtom';
  */
 type Props = {
   /** Whether the sidebar is open */
-  open: boolean,
+  open: boolean;
   /** Function to close the sidebar */
-  close: () => void
-}
+  close: () => void;
+};
 
 /** Default vertical margin between elements */
 const DEFAULT_SPACING = '0.5em';
@@ -138,7 +141,12 @@ export const ElementSidebar = ({ open, close }: Props) => {
             </IconButton>
           </Tooltip>
           <Tooltip title={`${queryOpen ? 'Hide' : 'Show'} element query`}>
-            <IconButton onClick={() => { setQueryOpen(!queryOpen); }} disabled={!haveAtts}>
+            <IconButton
+              onClick={() => {
+                setQueryOpen(!queryOpen);
+              }}
+              disabled={!haveAtts}
+            >
               <ManageSearchIcon />
             </IconButton>
           </Tooltip>
@@ -148,7 +156,10 @@ export const ElementSidebar = ({ open, close }: Props) => {
       <Box
         height={queryOpen ? 140 : 0}
         overflow="hidden"
-        style={{ transition: 'height 0.2s ease-in-out', marginBottom: queryOpen ? DEFAULT_SPACING : 0 }}
+        style={{
+          transition: 'height 0.2s ease-in-out',
+          marginBottom: queryOpen ? DEFAULT_SPACING : 0,
+        }}
       >
         <QueryInterface />
       </Box>
@@ -168,15 +179,15 @@ export const ElementSidebar = ({ open, close }: Props) => {
         </Typography>
         {/* Size 21 causes the icon to visually match the size of the download icon.
             Additionally, margin & padding move the whole row, so relative positioning is necessary */}
-        <HelpCircle text={tableHelpText} style={{ float: 'right', position: 'relative', bottom: '1px' }} size={21} />
+        <HelpCircle
+          text={tableHelpText}
+          style={{ float: 'right', position: 'relative', bottom: '1px' }}
+          size={21}
+        />
         <Tooltip title={`Download ${itemCount} elements`}>
           <IconButton
             onClick={() => {
-              downloadElementsAsCSV(
-                selectedItems,
-                columns,
-                'upset_elements',
-              );
+              downloadElementsAsCSV(selectedItems, columns, 'upset_elements');
             }}
             // This needs to stay shorter than the h2 text or the divider spacing gets off
             style={{ height: '1.2em', float: 'right' }}

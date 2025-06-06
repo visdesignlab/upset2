@@ -1,15 +1,16 @@
 import { Row } from '@visdesignlab/upset2-core';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import {
-  FC, MouseEvent, useContext, useMemo,
-} from 'react';
+import { FC, MouseEvent, useContext, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import {
-  bookmarkColorSelector, currentIntersectionSelector, currentSelectionType, isRowBookmarkedSelector,
+  bookmarkColorSelector,
+  currentIntersectionSelector,
+  currentSelectionType,
+  isRowBookmarkedSelector,
   nextColorIndexSelector,
 } from '../../atoms/config/selectionAtoms';
 import { UpsetActions } from '../../provenance';
@@ -43,7 +44,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
   const selected = useRecoilValue(currentIntersectionSelector)?.id === row.id;
   const selectionType = useRecoilValue(currentSelectionType);
   const nextColorIndex = useRecoilValue(nextColorIndexSelector);
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
   const rowDisplayName = row.elementName.replaceAll('~&~', ' & ') || '';
 
@@ -109,7 +110,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
         width={dimensions.set.width}
         fill="transparent"
       />
-      {bookmarked ?
+      {bookmarked ? (
         <BookmarkIcon
           height={dimensions.body.rowHeight}
           width={dimensions.set.width}
@@ -119,7 +120,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
             fillOpacity: opacity,
           }}
         />
-        :
+      ) : (
         <BookmarkBorderIcon
           height={dimensions.body.rowHeight}
           width={dimensions.set.width}
@@ -128,7 +129,8 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
             color,
             fillOpacity: opacity,
           }}
-        />}
+        />
+      )}
     </g>
   );
 };

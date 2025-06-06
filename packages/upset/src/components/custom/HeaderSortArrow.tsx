@@ -9,7 +9,7 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 type Props = {
   translateX?: number;
   translateY?: number;
-}
+};
 
 export const HeaderSortArrow: FC<Props> = ({ translateX, translateY }) => {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
@@ -28,9 +28,7 @@ export const HeaderSortArrow: FC<Props> = ({ translateX, translateY }) => {
   }
 
   return (
-    <g
-      transform={`${translate(translateX, translateY)}`}
-    >
+    <g transform={`${translate(translateX, translateY)}`}>
       <SvgIcon
         height={`${height}px`}
         width={`${width}px`}

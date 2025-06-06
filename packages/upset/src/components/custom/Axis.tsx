@@ -67,15 +67,9 @@ export const Axis = ({
       case 'top':
         return translate(Math.max(...scale.range()) / 2, -(margin - 3));
       case 'left':
-        return `${translate(
-          -(margin - 3),
-          Math.max(...scale.range()) / 2,
-        )}rotate(270)`;
+        return `${translate(-(margin - 3), Math.max(...scale.range()) / 2)}rotate(270)`;
       case 'right':
-        return `${translate(
-          margin - 3,
-          Math.max(...scale.range()) / 2,
-        )}rotate(90)`;
+        return `${translate(margin - 3, Math.max(...scale.range()) / 2)}rotate(90)`;
       default:
         return translate(0, 0);
     }

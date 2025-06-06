@@ -19,7 +19,12 @@ import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemoval
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
-import { getActions, initializeProvenanceTracking, UpsetActions, UpsetProvenance } from '../provenance';
+import {
+  getActions,
+  initializeProvenanceTracking,
+  UpsetActions,
+  UpsetProvenance,
+} from '../provenance';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
@@ -104,7 +109,8 @@ export const Root: FC<Props> = ({
 
   // Set the initial state of canEditPlotInformation
   useEffect(() => {
-    if (canEditPlotInformation !== undefined) setCanEditPlotInformation(canEditPlotInformation);
+    if (canEditPlotInformation !== undefined)
+      setCanEditPlotInformation(canEditPlotInformation);
   }, [canEditPlotInformation, setCanEditPlotInformation]);
 
   // Initialize provenance & config state & set up listeners
@@ -113,7 +119,12 @@ export const Root: FC<Props> = ({
       extProvenance?.provenance ??
       initializeProvenanceTracking(
         // Populate config defaults if not already set (this is only done if extProvenance is not provided)
-        populateConfigDefaults(config, data, visualizeUpsetAttributes ?? true, visibleDatasetAttributes),
+        populateConfigDefaults(
+          config,
+          data,
+          visualizeUpsetAttributes ?? true,
+          visibleDatasetAttributes,
+        ),
         setState,
       );
     const actions = extProvenance?.actions ?? getActions(provenance);
@@ -131,7 +142,14 @@ export const Root: FC<Props> = ({
 
     provenance.done();
     return { provenance, actions };
-  }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
+  }, [
+    config,
+    extProvenance,
+    setState,
+    data,
+    visibleDatasetAttributes,
+    visualizeUpsetAttributes,
+  ]);
 
   /**
    * We don't want to populate the config defaults if the provenance is already set externally
@@ -147,7 +165,15 @@ export const Root: FC<Props> = ({
         ),
       );
     } else setState(convertConfig(provenance.getState()));
-  }, [config, data, setState, visibleDatasetAttributes, visualizeUpsetAttributes, extProvenance, provenance]);
+  }, [
+    config,
+    data,
+    setState,
+    visibleDatasetAttributes,
+    visualizeUpsetAttributes,
+    extProvenance,
+    provenance,
+  ]);
 
   // This hook is for atoms that are not directly linked to the provenance state
   useEffect(() => {
@@ -157,7 +183,9 @@ export const Root: FC<Props> = ({
     setAllColumns(data.columns);
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
-    setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
+    setAllowAttributeRemoval(
+      allowAttributeRemoval !== undefined ? allowAttributeRemoval : true,
+    );
   }, [
     data,
     allowAttributeRemoval,
@@ -214,8 +242,8 @@ export const Root: FC<Props> = ({
           border: 0;
         `}
       >
-        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively working on this and
-        apologize for any inconvenience.
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are
+        actively working on this and apologize for any inconvenience.
       </h2>
       <div
         css={css`
@@ -237,7 +265,11 @@ export const Root: FC<Props> = ({
       )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {altTextSidebar && generateAltText && (
-        <AltTextSidebar open={altTextSidebar.open} close={altTextSidebar.close} generateAltText={generateAltText} />
+        <AltTextSidebar
+          open={altTextSidebar.open}
+          close={altTextSidebar.close}
+          generateAltText={generateAltText}
+        />
       )}
     </ProvenanceContext.Provider>
   );

@@ -52,11 +52,7 @@ export function getItems(row: Row) {
 function updateAggValues(aggs: Aggregates, items: Items, attributeColumns: string[]) {
   aggs.order.forEach((aggId) => {
     aggs.values[aggId].attributes = {
-      ...getSixNumberSummary(
-        items,
-        getItems(aggs.values[aggId]),
-        attributeColumns,
-      ),
+      ...getSixNumberSummary(items, getItems(aggs.values[aggId]), attributeColumns),
       deviation: aggs.values[aggId].attributes.deviation,
     };
   });
@@ -234,9 +230,7 @@ function aggregateBySets(
   subsets.order.forEach((subsetId) => {
     let subset = subsets.values[subsetId];
 
-    const belongingSets = getBelongingSetsFromSetMembership(
-      subset.setMembership,
-    );
+    const belongingSets = getBelongingSetsFromSetMembership(subset.setMembership);
 
     if (belongingSets.length === 0) {
       const relevantAggregate = aggs.values[setMap[UNINCLUDED]];
@@ -372,7 +366,7 @@ function aggregateByOverlaps(
   level: number,
   items: Items,
   attributeColumns: string[],
-  parentPrefix : string,
+  parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
 
@@ -434,9 +428,7 @@ function aggregateByOverlaps(
 
   subsets.order.forEach((subsetId) => {
     let subset = subsets.values[subsetId];
-    const belongingSets = getBelongingSetsFromSetMembership(
-      subset.setMembership,
-    );
+    const belongingSets = getBelongingSetsFromSetMembership(subset.setMembership);
     const overlaps: string[] = combinationsFromArray(belongingSets, degree).map(
       (combo: string[]) => combo.sort().join(','),
     );
@@ -479,11 +471,14 @@ function aggregateSubsets(
   items: Items,
   attributeColumns: string[],
   level: number = 1,
-  parentPrefix : string = '',
+  parentPrefix: string = '',
 ) {
-  if (aggregateBy === 'Degree') return aggregateByDegree(subsets, level, items, attributeColumns, parentPrefix);
-  if (aggregateBy === 'Sets') return aggregateBySets(subsets, sets, level, items, attributeColumns, parentPrefix);
-  if (aggregateBy === 'Deviations') return aggregateByDeviation(subsets, level, items, attributeColumns, parentPrefix);
+  if (aggregateBy === 'Degree')
+    return aggregateByDegree(subsets, level, items, attributeColumns, parentPrefix);
+  if (aggregateBy === 'Sets')
+    return aggregateBySets(subsets, sets, level, items, attributeColumns, parentPrefix);
+  if (aggregateBy === 'Deviations')
+    return aggregateByDeviation(subsets, level, items, attributeColumns, parentPrefix);
   if (aggregateBy === 'Overlaps') {
     return aggregateByOverlaps(
       subsets,

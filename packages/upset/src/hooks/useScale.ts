@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
 import { scaleLinear } from 'd3-scale';
+import { useMemo } from 'react';
 
 /**
  * Given a domain and range, returns a function that maps values from the domain to the range on a linear scale.
@@ -8,8 +8,5 @@ import { scaleLinear } from 'd3-scale';
  * @returns A function that takes a number in the domain and returns a number in the range
  */
 export function useScale(domain: [number, number], range: [number, number]) {
-  return useMemo(
-    () => scaleLinear().domain(domain).range(range),
-    [domain, range],
-  );
+  return useMemo(() => scaleLinear().domain(domain).range(range), [domain, range]);
 }

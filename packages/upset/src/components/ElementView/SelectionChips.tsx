@@ -3,7 +3,11 @@ import { Chip, Stack } from '@mui/material';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
-import { Bookmark, querySelectionToString, vegaSelectionToString } from '@visdesignlab/upset2-core';
+import {
+  Bookmark,
+  querySelectionToString,
+  vegaSelectionToString,
+} from '@visdesignlab/upset2-core';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
 import CodeIcon from '@mui/icons-material/Code';
@@ -55,7 +59,8 @@ export const SelectionChips = () => {
   function chipClicked(bookmark: Bookmark) {
     if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
       actions.setRowSelection(null);
-    } else if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
+    } else if (currentIntersection?.id !== bookmark.id)
+      actions.setRowSelection(rows[bookmark.id]);
   }
 
   return (
@@ -106,46 +111,47 @@ export const SelectionChips = () => {
         />
       ))}
       {/* Chip for the currently selected intersection */}
-      {currentIntersection && !bookmarked.find((b) => b.id === currentIntersection.id) && (
-        <Chip
-          sx={(theme) => ({
-            margin: theme.spacing(0.5),
-            '.MuiChip-icon': {
-              color: nextColor,
-            },
-            backgroundColor: selectionType === 'row' ? SELECTED_BACKGROUND : 'default',
-          })}
-          icon={
-            <BookmarkBorderIcon
-              fontSize={CHIP_ICON_FONT_SIZE}
-              onClick={(e) => {
+      {currentIntersection &&
+        !bookmarked.find((b) => b.id === currentIntersection.id) && (
+          <Chip
+            sx={(theme) => ({
+              margin: theme.spacing(0.5),
+              '.MuiChip-icon': {
+                color: nextColor,
+              },
+              backgroundColor: selectionType === 'row' ? SELECTED_BACKGROUND : 'default',
+            })}
+            icon={
+              <BookmarkBorderIcon
+                fontSize={CHIP_ICON_FONT_SIZE}
+                onClick={(e) => {
+                  actions.addBookmark({
+                    id: currentIntersection.id,
+                    label: currentIntersectionDisplayName,
+                    size: currentIntersection.size,
+                    colorIndex: nextColorIndex,
+                  });
+                  e.stopPropagation(); // Prevents the onclick on the chip from firing
+                }}
+              />
+            }
+            aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
                 actions.addBookmark({
                   id: currentIntersection.id,
                   label: currentIntersectionDisplayName,
                   size: currentIntersection.size,
                   colorIndex: nextColorIndex,
                 });
-                e.stopPropagation(); // Prevents the onclick on the chip from firing
-              }}
-            />
-          }
-          aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              actions.addBookmark({
-                id: currentIntersection.id,
-                label: currentIntersectionDisplayName,
-                size: currentIntersection.size,
-                colorIndex: nextColorIndex,
-              });
-            }
-          }}
-          onClick={() => {
-            if (selectionType === 'row') actions.setRowSelection(null);
-          }}
-          label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
-        />
-      )}
+              }
+            }}
+            onClick={() => {
+              if (selectionType === 'row') actions.setRowSelection(null);
+            }}
+            label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
+          />
+        )}
       {/* Chip for the current vega selection */}
       {vegaSelection && (
         <Chip

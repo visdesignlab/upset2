@@ -1,6 +1,4 @@
-import {
-  max, mean, median, min, quantile,
-} from 'd3-array';
+import { max, mean, median, min, quantile } from 'd3-array';
 
 import {
   AttributeList,
@@ -50,8 +48,7 @@ function calculateDeviation(
     })
     .reduce((acc, val) => acc * val, 1);
 
-  const dev =
-    intersectionSize / totalItems - containedProduct * nonContainedProduct;
+  const dev = intersectionSize / totalItems - containedProduct * nonContainedProduct;
 
   return dev * 100;
 }
@@ -223,11 +220,7 @@ function getSets(
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
       attributes: {
-        ...getSixNumberSummary(
-          items,
-          setMembership[col],
-          attributeColumns,
-        ),
+        ...getSixNumberSummary(items, setMembership[col], attributeColumns),
         deviation: 0,
       },
     };
@@ -246,9 +239,7 @@ function getSets(
  * @returns The core upset data object.
  */
 export function process(data: TableRow[], columns: ColumnTypes): CoreUpsetData {
-  const {
-    items, setMembership, labelColumn, setColumns, attributeColumns,
-  } =
+  const { items, setMembership, labelColumn, setColumns, attributeColumns } =
     processRawData(data, columns);
   const sets = getSets(setMembership, setColumns, items, attributeColumns);
 
@@ -301,16 +292,19 @@ export function getSubsets(
   for (let b = 0; b <= comboCount; ++b) {
     const combo = b.toString(2).padStart(vSets.length, '0');
     setIntersectionMembership[combo] = [];
-    const name = vSetNames
-      .filter((_, i) => combo[i] === '1')
-      .join('~&~');
+    const name = vSetNames.filter((_, i) => combo[i] === '1').join('~&~');
     intersectionName[combo] = name || 'Unincluded';
   }
 
   items.forEach((item) => {
-    const itemMembership = vSetNames.map(
-      (v) => (((typeof item[v] === 'number' && !Number.isNaN(item[v])) || typeof item[v] === 'boolean') ? item[v] : 0),
-    ).join('');
+    const itemMembership = vSetNames
+      .map((v) =>
+        (typeof item[v] === 'number' && !Number.isNaN(item[v])) ||
+        typeof item[v] === 'boolean'
+          ? item[v]
+          : 0,
+      )
+      .join('');
     setIntersectionMembership[itemMembership].push(item['_id']);
   });
 
@@ -341,7 +335,10 @@ export function getSubsets(
       setMembershipStatus[set] = combo[idx];
     });
 
-    const subsetAttributes = { ...getSixNumberSummary(dataItems, itm, attributeColumns), deviation: subsetDeviation };
+    const subsetAttributes = {
+      ...getSixNumberSummary(dataItems, itm, attributeColumns),
+      deviation: subsetDeviation,
+    };
 
     const subset: Subset = {
       id: getId('Subset', intersectionName[comboBinary]),

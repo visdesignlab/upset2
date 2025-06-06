@@ -48,13 +48,13 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
 
   const setColumnHover = useSetRecoilState(columnHoverAtom);
 
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   /**
-  * Closes the context menu.
-  */
+   * Closes the context menu.
+   */
   const handleContextMenuClose = () => {
     setContextMenu(null);
   };
@@ -63,7 +63,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
    * Returns an array of menu items for a given set name.
    * @param setName - The name of the set.
    * @returns An array of menu items.
-  */
+   */
   const getMenuItems = (setName: string) => [
     {
       // Label should look like "Remove Set: Drama" rather than "Remove Set_Drama"
@@ -150,7 +150,9 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
             e.stopPropagation();
             openContextMenu(e, set.setName);
           }}
-          css={css`cursor: context-menu;`}
+          css={css`
+            cursor: context-menu;
+          `}
           onMouseEnter={() => setColumnHover([set.setName])}
           onMouseLeave={() => setColumnHover([])}
           onClick={(e) => {

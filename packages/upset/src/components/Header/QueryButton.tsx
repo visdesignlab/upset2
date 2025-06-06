@@ -16,16 +16,21 @@ const iconSize = 16;
  */
 export const QueryButton = () => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const [queryBySetsInterface, setQueryBySetsInterface] = useRecoilState(queryBySetsInterfaceAtom);
+  const [queryBySetsInterface, setQueryBySetsInterface] = useRecoilState(
+    queryBySetsInterfaceAtom,
+  );
 
   /**
    * Toggles the query by set interface.
    */
-  const toggleQueryBySetsInterface = useCallback((e: React.MouseEvent<SVGElement, MouseEvent>) => {
-    // Stop SvgBase handler from clearing current intersection
-    e.stopPropagation();
-    setQueryBySetsInterface((prev) => !prev);
-  }, [setQueryBySetsInterface]);
+  const toggleQueryBySetsInterface = useCallback(
+    (e: React.MouseEvent<SVGElement, MouseEvent>) => {
+      // Stop SvgBase handler from clearing current intersection
+      e.stopPropagation();
+      setQueryBySetsInterface((prev) => !prev);
+    },
+    [setQueryBySetsInterface],
+  );
 
   // for whatever reason this needed to be memoized for the icon to update...
   // some weird recoil thing I expect
@@ -37,16 +42,22 @@ export const QueryButton = () => {
   }, [queryBySetsInterface]);
 
   return (
-    <Group tx={dimensions.header.buttonXOffset} ty={dimensions.header.totalHeight - iconSize}>
+    <Group
+      tx={dimensions.header.buttonXOffset}
+      ty={dimensions.header.totalHeight - iconSize}
+    >
       <Tooltip title="Query By Sets">
         <g>
           {/* OnClick needs to be in both places here to avoid some missed clicks */}
-          <rect height={iconSize} width={iconSize} css={mousePointer} onClick={toggleQueryBySetsInterface} opacity={0} />
+          <rect
+            height={iconSize}
+            width={iconSize}
+            css={mousePointer}
+            onClick={toggleQueryBySetsInterface}
+            opacity={0}
+          />
           <g css={mousePointer} onClick={toggleQueryBySetsInterface}>
-            <SvgIcon
-              height={iconSize}
-              width={iconSize}
-            >
+            <SvgIcon height={iconSize} width={iconSize}>
               {QueryIcon}
             </SvgIcon>
           </g>

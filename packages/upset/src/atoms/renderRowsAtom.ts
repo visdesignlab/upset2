@@ -1,5 +1,6 @@
 import {
-  flattenedOnlyRows, flattenedRows,
+  flattenedOnlyRows,
+  flattenedRows,
   isRowAggregate,
   RowMap,
 } from '@visdesignlab/upset2-core';
@@ -50,16 +51,19 @@ export const displayedRowCountSelector = selector({
 });
 
 /**
-* Counts the number of aggregate rows with types defined in dimensions.ts/TALL_ROW_TYPES.
-* @param rows - The rows to count aggregate rows from.
-*  (these are aggregate rows with types defined in dimensions.ts/TALL_ROW_TYPES).
-*/
+ * Counts the number of aggregate rows with types defined in dimensions.ts/TALL_ROW_TYPES.
+ * @param rows - The rows to count aggregate rows from.
+ *  (these are aggregate rows with types defined in dimensions.ts/TALL_ROW_TYPES).
+ */
 export const tallRowCountSelector = selector({
   key: 'tall-row-count',
   get: ({ get }) => {
     let count = 0;
     get(flattenedRowsSelector).forEach((renderRow) => {
-      if (isRowAggregate(renderRow.row) && TALL_ROW_TYPES.includes(renderRow.row.aggregateBy)) {
+      if (
+        isRowAggregate(renderRow.row) &&
+        TALL_ROW_TYPES.includes(renderRow.row.aggregateBy)
+      ) {
         count++;
       }
     });

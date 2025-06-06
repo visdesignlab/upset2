@@ -1,5 +1,8 @@
 import {
-  Aggregate, Attributes, Subset, getDegreeFromSetMembership,
+  Aggregate,
+  Attributes,
+  Subset,
+  getDegreeFromSetMembership,
 } from '@visdesignlab/upset2-core';
 import { FC, memo } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -40,27 +43,43 @@ export const AttributeBars: FC<Props> = memo(
     const attributeXOffset = dimensions.attribute.width + dimensions.attribute.vGap;
 
     /**
-   * Returns the column to render based on the given attribute.
-   *
-   * @param attribute - The attribute to determine the column for.
-   * @returns The column component to render.
-   */
+     * Returns the column to render based on the given attribute.
+     *
+     * @param attribute - The attribute to determine the column for.
+     * @returns The column component to render.
+     */
     function getColToRender(attribute: string) {
-      if (attribute === 'Degree') return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
-      if (attribute === 'Deviation') return <DeviationBar deviation={row.attributes.deviation} />;
-      if (colTypes[attribute] === 'category') return <CategoricalAttBar attribute={attribute} row={row} key={`${row}:${attribute}`} />;
-      return <AttributeBar summary={attributes[attribute]} attribute={attribute} row={row} key={`${row}:${attribute}`} />;
+      if (attribute === 'Degree')
+        return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
+      if (attribute === 'Deviation')
+        return <DeviationBar deviation={row.attributes.deviation} />;
+      if (colTypes[attribute] === 'category')
+        return (
+          <CategoricalAttBar
+            attribute={attribute}
+            row={row}
+            key={`${row}:${attribute}`}
+          />
+        );
+      return (
+        <AttributeBar
+          summary={attributes[attribute]}
+          attribute={attribute}
+          row={row}
+          key={`${row}:${attribute}`}
+        />
+      );
     }
 
     return (
       <g
         transform={translate(
           dimensions.matrixColumn.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.size.width +
-        dimensions.gap,
+            dimensions.bookmarkStar.gap +
+            dimensions.bookmarkStar.width +
+            dimensions.bookmarkStar.gap +
+            dimensions.size.width +
+            dimensions.gap,
           (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
         )}
       >
@@ -68,15 +87,15 @@ export const AttributeBars: FC<Props> = memo(
           <g
             key={attribute}
             transform={translate(
-              (attribute === 'Degree' ?
-                0 :
-                visibleAttributes.includes('Degree') ?
-                  ((idx - 1) * attributeXOffset) + degreeXOffset : // Degree should always be first, and has a smaller offset than a normal attribute
-                  idx * attributeXOffset),
+              attribute === 'Degree'
+                ? 0
+                : visibleAttributes.includes('Degree')
+                  ? (idx - 1) * attributeXOffset + degreeXOffset // Degree should always be first, and has a smaller offset than a normal attribute
+                  : idx * attributeXOffset,
               0,
             )}
           >
-            { getColToRender(attribute) }
+            {getColToRender(attribute)}
           </g>
         ))}
       </g>
@@ -84,8 +103,10 @@ export const AttributeBars: FC<Props> = memo(
   },
   // Only re-render if the row or visible attributes change
   // Not checking the other attributes of the row object as they are not used in this component
-  (prevProps, nextProps) => prevProps.row.id === nextProps.row.id
-  && Object.entries(prevProps.attributes).every(
-    ([k, v]) => Object.keys(nextProps.attributes).includes(k) && nextProps.attributes[k] === v,
-  ),
+  (prevProps, nextProps) =>
+    prevProps.row.id === nextProps.row.id &&
+    Object.entries(prevProps.attributes).every(
+      ([k, v]) =>
+        Object.keys(nextProps.attributes).includes(k) && nextProps.attributes[k] === v,
+    ),
 );

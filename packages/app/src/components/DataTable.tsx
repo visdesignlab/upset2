@@ -1,5 +1,10 @@
 import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
-import { AccessibleDataEntry, CoreUpsetData, Item, SixNumberSummary } from '@visdesignlab/upset2-core';
+import {
+  AccessibleDataEntry,
+  CoreUpsetData,
+  Item,
+  SixNumberSummary,
+} from '@visdesignlab/upset2-core';
 import { useEffect, useMemo, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { getAccessibleData } from '@visdesignlab/upset2-react';
@@ -186,7 +191,12 @@ export const DataTable = () => {
       localforage.getItem('hiddenSets'),
     ])
       .then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
-        if (storedData === null || storedRows === null || storedVisibleSets === null || storedHiddenSets === null) {
+        if (
+          storedData === null ||
+          storedRows === null ||
+          storedVisibleSets === null ||
+          storedHiddenSets === null
+        ) {
           console.error('Data not found in local storage');
           setError('Error: Data not found in local storage');
         } else {
@@ -374,7 +384,13 @@ export const DataTable = () => {
             <div style={headerCSS}>
               <h2>Visible Sets</h2>
               <DownloadButton
-                onClick={() => downloadElementsAsCSV(visibleSetRows, ['setName', 'size'], 'upset2_visiblesets_table')}
+                onClick={() =>
+                  downloadElementsAsCSV(
+                    visibleSetRows,
+                    ['setName', 'size'],
+                    'upset2_visiblesets_table',
+                  )
+                }
               />
             </div>
             <DataGrid
@@ -397,7 +413,13 @@ export const DataTable = () => {
             <div style={headerCSS}>
               <h2>Hidden Sets</h2>
               <DownloadButton
-                onClick={() => downloadElementsAsCSV(hiddenSetRows, ['setName', 'size'], 'upset2_hiddensets_table')}
+                onClick={() =>
+                  downloadElementsAsCSV(
+                    hiddenSetRows,
+                    ['setName', 'size'],
+                    'upset2_hiddensets_table',
+                  )
+                }
               />
             </div>
             <DataGrid

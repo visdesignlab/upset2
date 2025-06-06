@@ -4,10 +4,12 @@ import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
 import stylisticJS from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
+import jsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
 import { defineConfig } from 'eslint/config';
 
 export default defineConfig([
+  // Configs further down the array will override rules from earlier configs
   importPlugin.flatConfigs.recommended,
   tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
@@ -16,14 +18,12 @@ export default defineConfig([
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     plugins: { js },
     extends: ['js/recommended'],
-  },
-  {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     languageOptions: { globals: globals.browser },
   },
   {
     plugins: {
       react: pluginReact,
+      'jsx-a11y': jsxA11y,
       '@stylistic': stylisticJS,
       'eslint-plugin-react': pluginReact,
     },
@@ -34,7 +34,7 @@ export default defineConfig([
           endOfLine: 'auto',
           singleQuote: true,
           trailingComma: 'all',
-          printWidth: 120,
+          printWidth: 90,
           semi: true,
           tabWidth: 2,
           useTabs: false,
@@ -71,6 +71,7 @@ export default defineConfig([
       'import/named': 'off',
       'import/no-unresolved': 'off',
       'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }],
+      'react/display-name': 'off',
     },
   },
 ]);

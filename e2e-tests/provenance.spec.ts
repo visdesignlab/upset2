@@ -19,15 +19,38 @@ test('Selection History', async ({ page }) => {
   // Testing history for a subset selection & deselection
   await page.locator('g > circle').first().click();
   await page.locator('g > circle').first().click();
-  await expect(page.locator('div').filter({ hasText: /^Select intersection "School & Male"$/ }).nth(2)).toBeVisible();
-  await expect(page.locator('div').filter({ hasText: /^Deselect intersection$/ }).nth(2)).toBeVisible();
+  await expect(
+    page
+      .locator('div')
+      .filter({ hasText: /^Select intersection "School & Male"$/ })
+      .nth(2),
+  ).toBeVisible();
+  await expect(
+    page
+      .locator('div')
+      .filter({ hasText: /^Deselect intersection$/ })
+      .nth(2),
+  ).toBeVisible();
 
   // Testing history for an aggregate row selection & deselection
   await page.getByRole('radio', { name: 'Degree' }).check();
-  await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').nth(0)
+  await page
+    .locator('g')
+    .filter({ hasText: /^Degree 3Degree 3$/ })
+    .locator('rect')
+    .nth(0)
     .click();
-  await expect(page.locator('div').filter({ hasText: /^Select intersection "Degree 3"$/ }).nth(2)).toBeVisible();
-  await page.locator('g').filter({ hasText: /^Degree 3Degree 3$/ }).locator('rect').nth(0)
+  await expect(
+    page
+      .locator('div')
+      .filter({ hasText: /^Select intersection "Degree 3"$/ })
+      .nth(2),
+  ).toBeVisible();
+  await page
+    .locator('g')
+    .filter({ hasText: /^Degree 3Degree 3$/ })
+    .locator('rect')
+    .nth(0)
     .click();
   await expect(page.getByText('Deselect intersection').nth(1)).toBeVisible();
 
@@ -84,8 +107,11 @@ test('Overlap History', async ({ page }) => {
   // Switch to second aggregation by overlap
   await page.getByRole('radio', { name: 'Deviations' }).check();
   await page.getByRole('button', { name: 'Second Aggregation' }).click();
-  await page.locator('div').filter({ hasText: /^Second AggregationDegreeSetsOverlapsNone$/ })
-    .getByLabel('Overlaps', { exact: true }).check();
+  await page
+    .locator('div')
+    .filter({ hasText: /^Second AggregationDegreeSetsOverlapsNone$/ })
+    .getByLabel('Overlaps', { exact: true })
+    .check();
   await page.getByRole('spinbutton', { name: 'Degree' }).click();
 
   // Ensure no duplicate action for decreasing 2nd degree
