@@ -200,11 +200,11 @@ export const ElementVisualization = () => {
                 data={data}
                 actions={false}
                 signalListeners={{
-                  [BRUSH_NAME]: (_, val) => brushHandler(plot, val),
+                  [BRUSH_NAME]: (_: unknown, val: unknown) => brushHandler(plot, val),
                 }}
                 // Making room for the close button
                 style={{ marginLeft: '5px' }}
-                onNewView={(view) => {
+                onNewView={(view: View) => {
                   views.push({ view, plot });
                   setViews([...views]);
                   view.addEventListener('mouseover', () => {
