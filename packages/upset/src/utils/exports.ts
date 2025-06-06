@@ -37,7 +37,7 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
     }
 
     if (isRowAggregate(r)) {
-      data['values'][r['id']]['items'] = getAccessibleData(r['items'], includeId).values;
+      data['values'][r['id']]['items'] = getAccessibleData(r['rows'], includeId).values;
     } else {
       data['values'][r['id']]['setMembership'] = r['setMembership'];
     }
