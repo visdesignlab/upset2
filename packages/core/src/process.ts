@@ -224,9 +224,9 @@ function getSets(
       type: 'Set',
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
-      attributes: {
-        ...getSixNumberSummary(items, setMembership[col], attributeColumns),
-        deviation: 0,
+      atts: {
+        dataset: getSixNumberSummary(items, setMembership[col], attributeColumns),
+        derived: { deviation: 0 },
       },
     };
 
@@ -340,11 +340,6 @@ export function getSubsets(
       setMembershipStatus[set] = combo[idx];
     });
 
-    const subsetAttributes = {
-      ...getSixNumberSummary(dataItems, itm, attributeColumns),
-      deviation: subsetDeviation,
-    };
-
     const subset: Subset = {
       id: getId('Subset', intersectionName[comboBinary]),
       elementName: intersectionName[comboBinary],
@@ -352,7 +347,10 @@ export function getSubsets(
       size: itm.length,
       type: 'Subset',
       setMembership: setMembershipStatus,
-      attributes: subsetAttributes,
+      atts: {
+        derived: { deviation: subsetDeviation },
+        dataset: getSixNumberSummary(dataItems, itm, attributeColumns),
+      },
     };
 
     subsets.values[subset.id] = subset;

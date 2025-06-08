@@ -28,7 +28,11 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
       elementName: r['elementName'],
       type: r['type'],
       size: r['size'],
-      attributes: r['attributes'],
+      attributes: {
+        ...r.atts.dataset,
+        ...(r.atts.derived.degree && { degree: r.atts.derived.degree }),
+        deviation: r.atts.derived.deviation,
+      },
       degree,
     };
 
@@ -37,7 +41,7 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
     }
 
     if (isRowAggregate(r)) {
-      data['values'][r['id']]['items'] = getAccessibleData(r['rows'], includeId).values;
+      data['values'][r['id']]['rows'] = getAccessibleData(r['rows'], includeId).values;
     } else {
       data['values'][r['id']]['setMembership'] = r['setMembership'];
     }

@@ -100,30 +100,30 @@ export type SixNumberSummary = {
   third?: number;
 };
 
-/**
- * Represents a list of attributes and their corresponding values.
- * The keys are attribute names and the values can be either a `SixNumberSummary` object or a number (deviation).
- */
-export type AttributeList = {
-  [attribute: string]: SixNumberSummary | number;
-};
+/** A list of attributes on a row; maps att names to summaries of the numerical props of the att */
+export type AttributeList = Record<string, SixNumberSummary>;
 
 /**
  * List of attributes for a subset ([attr1, attr2, deviation, degree, etc])
  */
-export type Attributes = AttributeList & {
-  /**
-   * The deviation of the subset.
-   */
-  deviation: number;
-  /**
-   * The degree of the subset.
-   */
-  degree?: number;
+export type Attributes = {
+  /** Atts computed by Upset */
+  derived: {
+    /**
+     * The deviation of the subset.
+     */
+    deviation: number;
+    /**
+     * The degree of the subset.
+     */
+    degree?: number;
+  };
+  /** Atts defined as table columns in the dataset */
+  dataset: AttributeList;
 };
 
 /**
- * Template for a row/intersection which can be a subset or an aggregate
+ * Template for a row/intersection which can be a subset or an aggregat e
  * @private typechecked by isBaseRow in typecheck.ts; changes here must be reflected there
  */
 export type BaseRow = {
@@ -151,7 +151,7 @@ export type BaseRow = {
   /**
    * The attributes of the element.
    */
-  attributes: Attributes;
+  atts: Attributes;
   /**
    * The parent element ID, if any.
    */
@@ -532,13 +532,18 @@ export type AccessibleDataEntry = {
   elementName: string;
   type: RowType;
   size: number;
-  attributes: Attributes;
+  /**
+   * Attributes of the data entry.
+   * @private Currently needs to be flat and named 'Attributes' to be compatible with the Upset text generator
+   */
+  attributes: Record<string, SixNumberSummary | number>;
   degree: number;
   id?: string;
   setMembership?: {
     [set: string]: SetMembershipStatus;
   };
-  items?: {
+  /** If this is an aggregate row, represents sub-rows */
+  rows?: {
     [row: string]: AccessibleDataEntry;
   };
 };

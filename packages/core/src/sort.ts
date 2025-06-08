@@ -105,8 +105,8 @@ function sortByDegree(
 function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   order.sort((a, b) => {
-    const devA = values[a].attributes.deviation;
-    const devB = values[b].attributes.deviation;
+    const devA = values[a].atts.deviation;
+    const devB = values[b].atts.deviation;
     return sortByOrder === 'Ascending' ? devA - devB : devB - devA;
   });
 
@@ -179,8 +179,8 @@ function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: Sort
   const { values, order } = rows;
 
   order.sort((a, b) => {
-    const meanA = (values[a].attributes[sortBy] as SixNumberSummary).mean;
-    const meanB = (values[b].attributes[sortBy] as SixNumberSummary).mean;
+    const meanA = (values[a].atts[sortBy] as SixNumberSummary).mean;
+    const meanB = (values[b].atts[sortBy] as SixNumberSummary).mean;
 
     // If one of the values is undefined (empty subset), sort it to the bottom
     if (!meanA) {

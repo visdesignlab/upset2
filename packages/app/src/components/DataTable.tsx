@@ -1,12 +1,7 @@
 import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
-import {
-  AccessibleDataEntry,
-  CoreUpsetData,
-  Item,
-  SixNumberSummary,
-} from '@visdesignlab/upset2-core';
+import { AccessibleDataEntry, CoreUpsetData } from '@visdesignlab/upset2-core';
 import { useEffect, useMemo, useState } from 'react';
-import { DataGrid, GridColDef } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import { getAccessibleData } from '@visdesignlab/upset2-react';
 import DownloadIcon from '@mui/icons-material/Download';
 import localforage from 'localforage';
@@ -52,27 +47,38 @@ const setColumns: GridColDef[] = [
 ];
 
 /**
+ * Data for a row in the data table.
+ * @private to show up correctly in the DataGrid component, this must be a flat
+ */
+type RowData = {
+  id: string;
+  elementName: string;
+  size: number;
+} & Record<string, string | number | undefined>;
+
+/**
  * Converts an AccessibleDataEntry object into a row data object.
  * @param row - The AccessibleDataEntry object to convert.
+ * @param precision - The number of decimal places to round numeric values to (default is 2).
  * @returns The converted row data object.
  */
-function getRowData(row: AccessibleDataEntry): Item {
+function getRowData(row: AccessibleDataEntry, precision: number = 2): RowData {
   const name = `${row.type === 'Aggregate' ? 'Aggregate: ' : ''}${row.elementName.replaceAll('~&~', ' & ')}`;
-  const retVal: Record<string, string | number | undefined> = {
-    id: row.id,
-    _id: row.id,
-    _label: name,
+  const retVal = {
+    ...Object.fromEntries(
+      Object.entries(row.attributes).map(([key, value]) => [
+        key,
+        typeof value === 'number'
+          ? value.toFixed(precision)
+          : (value.mean?.toFixed(precision) ?? 0),
+      ]),
+    ),
+    id: row.id ?? name,
     elementName: name,
     size: row.size,
-    deviation: row.attributes?.deviation.toFixed(2),
   };
 
-  for (const key in row.attributes) {
-    if (key === 'deviation' || key === 'degree') continue;
-    retVal[key] = (row.attributes[key] as SixNumberSummary).mean?.toFixed(2);
-  }
-
-  return retVal as Item; // TOOD: This needs to be fixed when item typing is fixed
+  return retVal;
 }
 
 /**
@@ -80,11 +86,11 @@ function getRowData(row: AccessibleDataEntry): Item {
  * @param row - The row of accessible data.
  * @returns An array of aggregated row data.
  */
-const getAggRows = (row: AccessibleDataEntry) => {
-  const retVal: ReturnType<typeof getRowData>[] = [];
-  if (row.items === undefined) return retVal;
+function getAggRows(row: AccessibleDataEntry): RowData[] {
+  const retVal: RowData[] = [];
+  if (row.rows === undefined) return retVal;
 
-  Object.values(row.items).forEach((r: AccessibleDataEntry) => {
+  Object.values(row.rows).forEach((r: AccessibleDataEntry) => {
     retVal.push(getRowData(r));
 
     if (r.type === 'Aggregate') {
@@ -93,7 +99,7 @@ const getAggRows = (row: AccessibleDataEntry) => {
   });
 
   return retVal;
-};
+}
 
 /**
  * Generates a CSV file and downloads it.
@@ -102,7 +108,7 @@ const getAggRows = (row: AccessibleDataEntry) => {
  * @param columns - The array of column names.
  * @param name - The name of the CSV file.
  */
-function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
+function downloadElementsAsCSV(items: GridRowsProp, columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
   const saveText: string[] = [];
@@ -111,11 +117,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
 
   items.forEach((item) => {
     const row: string[] = [];
-
-    columns.forEach((col) => {
-      row.push(item[col]?.toString() || '-');
-    });
-
+    columns.forEach((col) => row.push(item[col]?.toString() || '-'));
     saveText.push(row.map((r) => (r.includes(',') ? `"${r}"` : r)).join(','));
   });
 
@@ -275,12 +277,12 @@ export const DataTable = () => {
    * @param rows - The data rows to generate the table rows from.
    * @returns An array of table rows.
    */
-  const tableRows: ReturnType<typeof getRowData>[] = useMemo(() => {
+  const tableRows: RowData[] = useMemo(() => {
     if (rows === null) {
       return [];
     }
 
-    const retVal: ReturnType<typeof getRowData>[] = [];
+    const retVal: RowData[] = [];
 
     Object.values(rows.values).forEach((r: AccessibleDataEntry) => {
       retVal.push(getRowData(r));
@@ -293,6 +295,8 @@ export const DataTable = () => {
     return retVal;
   }, [rows]);
 
+  console.log('tableRows', tableRows);
+
   /**
    * Retrieves an array of objects containing information about the sets.
    * Each object includes the set name and its corresponding size.
@@ -301,14 +305,16 @@ export const DataTable = () => {
    * @param data - An object containing the data for the sets.
    * @returns An array of objects with the set name and size.
    */
-  function getSetRows(sets: string[], data: CoreUpsetData): Item[] {
-    const retVal: Item[] = [];
-    retVal.push(
-      ...sets.map((s: string) => {
-        const name = s.replace('Set_', '');
-        return { id: s, setName: name, size: data.sets[s].size, _id: s, _label: name };
-      }),
-    );
+  function getSetRows(sets: string[], data: CoreUpsetData): GridRowsProp {
+    const retVal = sets.map((s: string) => {
+      const name = s.replace('Set_', '');
+      return {
+        id: s,
+        setName: name,
+        size: data.sets[s].size,
+        elementName: name,
+      };
+    });
 
     return retVal;
   }
@@ -320,7 +326,7 @@ export const DataTable = () => {
    * @param data - The data used to generate the set rows.
    * @returns An array of objects representing the visible set rows.
    */
-  const visibleSetRows = useMemo(() => {
+  const visibleSetRows: GridRowsProp = useMemo(() => {
     if (visibleSets === null || data === null) {
       return [];
     }
@@ -334,7 +340,7 @@ export const DataTable = () => {
    * @param data - The data.
    * @returns An array of objects containing the set name and size.
    */
-  const hiddenSetRows = useMemo(() => {
+  const hiddenSetRows: GridRowsProp = useMemo(() => {
     if (hiddenSets === null || data === null) {
       return [];
     }

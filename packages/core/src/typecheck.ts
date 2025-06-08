@@ -71,7 +71,7 @@ export function isBaseRow(r: unknown): r is BaseRow {
     typeof (r as BaseRow).id === 'string' &&
     typeof (r as BaseRow).elementName === 'string' &&
     typeof (r as BaseRow).size === 'number' &&
-    typeof (r as BaseRow).attributes === 'object' &&
+    typeof (r as BaseRow).atts === 'object' &&
     isRowType((r as BaseRow).type) &&
     (!Object.hasOwn(r, 'items') ||
       (Array.isArray((r as { items: Item[] }).items) &&
