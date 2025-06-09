@@ -4,7 +4,7 @@ import {
   Subset,
   isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC, useMemo } from 'react';
+import React, { FC, useCallback, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
@@ -107,12 +107,12 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   /**
    * Round a number to 3 decimal places
    */
-  function round3(num: number | undefined): number {
+  const round3 = useCallback((num: number | undefined): number => {
     if (num === undefined) {
       return NaN;
     }
     return Math.round(num * 1000) / 1000;
-  }
+  }, []);
 
   if (
     typeof summary !== 'number' &&

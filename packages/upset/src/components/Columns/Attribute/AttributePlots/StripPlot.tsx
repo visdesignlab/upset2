@@ -59,17 +59,17 @@ export const StripPlot: FC<Props> = ({ scale, values, attribute, isAggregate, ro
       />
       {values.map((value, idx) => (
         // vertical line for x position, go top to bottom
-        <line
+        // <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={0} r={dimensions.attribute.dotSize} fill="black" opacity="0.2" />
+        <rect
           // There is no unique identifier for the attribute values other than index, so it is used as key
 
           key={`${row.id} + ${idx}`}
-          x1={scale(value)}
-          x2={scale(value)}
-          y1={-(dimensions.attribute.plotHeight / 2)}
-          y2={dimensions.attribute.plotHeight / 2}
-          stroke="#474242"
+          x={scale(value)}
+          y={-(dimensions.attribute.plotHeight / 2)}
+          width={dimensions.attribute.dotSize / 3}
+          height={dimensions.attribute.plotHeight}
+          fill="#474242"
           opacity={0.3}
-          strokeWidth={dimensions.attribute.dotSize / 3}
         />
       ))}
     </g>
