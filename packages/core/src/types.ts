@@ -556,6 +556,6 @@ export type AccessibleData = {
 
 export type AltTextConfig = UpsetConfig & {
   rawData?: CoreUpsetData;
-  processedData?: Rows;
+  processedData?: AccessibleData;
   accessibleProcessedData?: AccessibleData;
 };

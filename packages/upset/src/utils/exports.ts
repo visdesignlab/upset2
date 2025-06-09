@@ -125,7 +125,7 @@ export const getAltTextConfig = (
   dataObj = {
     ...dataObj,
     rawData: data,
-    processedData: updatedRows,
+    processedData: getAccessibleData(updatedRows),
     accessibleProcessedData: getAccessibleData(updatedRows),
   };
 
