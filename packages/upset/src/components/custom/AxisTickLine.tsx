@@ -9,19 +9,24 @@ const shadow = css`
 export type AxisType = 'left' | 'right' | 'top' | 'bottom';
 
 type Props = {
-    type: AxisType;
-    value: string | number;
-    fontSize: number;
-    tickLength: number;
-    tickFontHeight: number;
-    hideLine: boolean;
-}
+  type: AxisType;
+  value: string | number;
+  fontSize: number;
+  tickLength: number;
+  tickFontHeight: number;
+  hideLine: boolean;
+};
 
 /**
  * The tick line on an attribute scale axis, with a label on top of the line.
  */
 export const TickLine: FC<Props> = ({
-  type, value, fontSize, tickLength, tickFontHeight, hideLine,
+  type,
+  value,
+  fontSize,
+  tickLength,
+  tickFontHeight,
+  hideLine,
 }) => {
   const textTransform = useMemo(() => {
     switch (type) {
@@ -70,17 +75,18 @@ export const TickLine: FC<Props> = ({
 
   return (
     <>
-      { !hideLine &&
-      <line
-        stroke="currentColor"
-        y2={type === 'bottom' || type === 'top' ? tickLength : undefined}
-        x1={type === 'left' || type === 'right' ? tickLength : undefined}
-        transform={lineTransform}
-      />}
+      {!hideLine && (
+        <line
+          stroke="currentColor"
+          y2={type === 'bottom' || type === 'top' ? tickLength : undefined}
+          x1={type === 'left' || type === 'right' ? tickLength : undefined}
+          transform={lineTransform}
+        />
+      )}
       <text
         css={css`
-                ${shadow}
-              `}
+          ${shadow}
+        `}
         dominantBaseline="middle"
         fontSize={`${fontSize}rem`}
         textAnchor={textAnchor}

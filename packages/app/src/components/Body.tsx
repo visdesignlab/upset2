@@ -1,12 +1,14 @@
 import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
 import { CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import {
-  useCallback, useContext, useEffect, useState,
-} from 'react';
+import { useCallback, useContext, useEffect, useState } from 'react';
 import { Backdrop, CircularProgress } from '@mui/material';
 import { encodedDataAtom } from '../atoms/dataAtom';
-import { doesHaveSavedQueryParam, queryParamAtom, saveQueryParam } from '../atoms/queryParamAtom';
+import {
+  doesHaveSavedQueryParam,
+  queryParamAtom,
+  saveQueryParam,
+} from '../atoms/queryParamAtom';
 import { ErrorModal } from './ErrorModal';
 import { provenanceVisAtom } from '../atoms/provenanceVisAtom';
 import { elementSidebarAtom } from '../atoms/elementSidebarAtom';
@@ -29,29 +31,41 @@ export const Body = ({ data, config }: Props) => {
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
   const [isProvVisOpen, setIsProvVisOpen] = useRecoilState(provenanceVisAtom);
-  const [isElementSidebarOpen, setIsElementSidebarOpen] = useRecoilState(elementSidebarAtom);
-  const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] = useRecoilState(altTextSidebarAtom);
+  const [isElementSidebarOpen, setIsElementSidebarOpen] =
+    useRecoilState(elementSidebarAtom);
+  const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] =
+    useRecoilState(altTextSidebarAtom);
   const loading = useRecoilValue(loadingAtom);
   const rows = useRecoilValue(rowsSelector);
 
   const provVis = {
     open: isProvVisOpen,
-    close: () => { setIsProvVisOpen(false); },
+    close: () => {
+      setIsProvVisOpen(false);
+    },
   };
 
   const elementSidebar = {
     open: isElementSidebarOpen,
-    close: () => { setIsElementSidebarOpen(false); },
+    close: () => {
+      setIsElementSidebarOpen(false);
+    },
   };
 
   const altTextSidebar = {
     open: isAltTextSidebarOpen,
-    close: () => { setIsAltTextSidebarOpen(false); },
+    close: () => {
+      setIsAltTextSidebarOpen(false);
+    },
   };
 
   useEffect(() => {
     provObject?.provenance.currentChange(() => {
-      updateMultinetSession(workspace || '', sessionId || '', provObject.provenance.exportObject());
+      updateMultinetSession(
+        workspace || '',
+        sessionId || '',
+        provObject.provenance.exportObject(),
+      );
     });
   }, [provObject?.provenance, sessionId, workspace]);
 
@@ -63,8 +77,10 @@ export const Body = ({ data, config }: Props) => {
       try {
         const r = await api.getCurrentUserWorkspacePermissions(workspace || '');
         // https://api.multinet.app/swagger/?format=openapi#/definitions/PermissionsReturn for possible permissions returns
-        setPermissions(r.permission_label === 'owner' || r.permission_label === 'maintainer');
-      } catch (e) {
+        setPermissions(
+          r.permission_label === 'owner' || r.permission_label === 'maintainer',
+        );
+      } catch {
         setPermissions(false);
       }
     };
@@ -87,11 +103,15 @@ export const Body = ({ data, config }: Props) => {
     const ATConfig = getAltTextConfig(state, data, deepCopy(rows));
 
     if (ATConfig.firstAggregateBy !== 'None') {
-      throw new Error("Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.");
+      throw new Error(
+        "Alt text generation is not yet supported for aggregated plots. To generate an alt text, set aggregation to 'None' in the left sidebar.",
+      );
     }
 
     if (!['Size', 'Degree', 'Deviation'].includes(ATConfig.sortBy)) {
-      throw new Error(`Alt text generation is not yet supported for ${ATConfig.sortBy.includes('Set_') ? 'set' : 'attribute'} sorting. To generate an alt text, sort by Size, Degree, or Deviation.`);
+      throw new Error(
+        `Alt text generation is not yet supported for ${ATConfig.sortBy.includes('Set_') ? 'set' : 'attribute'} sorting. To generate an alt text, sort by Size, Degree, or Deviation.`,
+      );
     }
 
     let response;
@@ -99,11 +119,17 @@ export const Body = ({ data, config }: Props) => {
       response = await generateAltText(ATConfig);
     } catch (e: any) {
       if (e.response.status === 500) {
-        throw Error('Server error while generating alt text. Please try again later. If the issue persists, please contact an UpSet developer at vdl-faculty@sci.utah.edu.');
+        throw Error(
+          'Server error while generating alt text. Please try again later. If the issue persists, please contact an UpSet developer at vdl-faculty@sci.utah.edu.',
+        );
       } else if (e.response.status === 400) {
-        throw Error('Error generating alt text. Contact an upset developer at vdl-faculty@sci.utah.edu.');
+        throw Error(
+          'Error generating alt text. Contact an upset developer at vdl-faculty@sci.utah.edu.',
+        );
       } else {
-        throw Error(`Unknown error while generating alt text: ${e.response.statusText}. Please contact an UpSet developer at vdl-faculty@sci.utah.edu.`);
+        throw Error(
+          `Unknown error while generating alt text: ${e.response.statusText}. Please contact an UpSet developer at vdl-faculty@sci.utah.edu.`,
+        );
       }
     }
     return response.alttxt;
@@ -112,7 +138,10 @@ export const Body = ({ data, config }: Props) => {
   if (data === null) return null;
 
   // if no data has been loaded or if the error/one-hot modal has been closed by the user
-  if (((!workspace || !table) && !doesHaveSavedQueryParam()) || (encodedData !== null && data.setColumns.length === 0)) {
+  if (
+    ((!workspace || !table) && !doesHaveSavedQueryParam()) ||
+    (encodedData !== null && data.setColumns.length === 0)
+  ) {
     return <div>Please click Load Data button to go to data interface.</div>;
   }
 
@@ -122,8 +151,9 @@ export const Body = ({ data, config }: Props) => {
 
   return (
     <div style={{ maxWidth: '100vw' }}>
-      { data.setColumns.length === 0 ?
-        <ErrorModal /> :
+      {data.setColumns.length === 0 ? (
+        <ErrorModal />
+      ) : (
         <div>
           <Backdrop open={loading} style={{ zIndex: 1000 }}>
             <CircularProgress color="inherit" />
@@ -141,7 +171,8 @@ export const Body = ({ data, config }: Props) => {
             visualizeUpsetAttributes
             allowAttributeRemoval
           />
-        </div>}
+        </div>
+      )}
     </div>
   );
 };

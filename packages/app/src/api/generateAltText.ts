@@ -1,5 +1,5 @@
-import { UpsetConfig } from "@visdesignlab/upset2-core";
-import { api } from "./api";
+import { UpsetConfig } from '@visdesignlab/upset2-core';
+import { api } from './api';
 
 /**
  * Generates alternative text based on the provided configuration.

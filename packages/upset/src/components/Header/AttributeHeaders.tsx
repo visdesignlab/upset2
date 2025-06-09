@@ -38,11 +38,11 @@ export const AttributeHeaders = () => {
     <g
       transform={translate(
         dimensions.matrixColumn.width +
-        dimensions.gap +
-        dimensions.size.width +
-        dimensions.bookmarkStar.gap +
-        dimensions.bookmarkStar.width +
-        dimensions.bookmarkStar.gap,
+          dimensions.gap +
+          dimensions.size.width +
+          dimensions.bookmarkStar.gap +
+          dimensions.bookmarkStar.width +
+          dimensions.bookmarkStar.gap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >
@@ -50,15 +50,15 @@ export const AttributeHeaders = () => {
         <g
           key={attribute}
           transform={translate(
-            (attribute === 'Degree' ?
-              0 :
-              visibleAttributes.includes('Degree') ?
-                ((idx - 1) * attributeXOffset) + degreeXOffset : // Degree should always be first, and has a smaller offset than a normal attribute
-                idx * attributeXOffset),
+            attribute === 'Degree'
+              ? 0
+              : visibleAttributes.includes('Degree')
+                ? (idx - 1) * attributeXOffset + degreeXOffset // Degree should always be first, and has a smaller offset than a normal attribute
+                : idx * attributeXOffset,
             0,
           )}
         >
-          { getHeaderToRender(attribute) }
+          {getHeaderToRender(attribute)}
         </g>
       ))}
     </g>

@@ -5,7 +5,7 @@ export const highlight = css`
   stroke: #feca82;
   stroke-width: 2;
   stroke-opacity: 0.8;
-  fill-opacity: 1.0;
+  fill-opacity: 1;
 `;
 
 export const columnHighlight = css`
@@ -20,7 +20,7 @@ export const hoverHighlight = css`
 
 // transparent default
 export const defaultBackground = css`
-  fill-opacity: 0.0;
+  fill-opacity: 0;
 `;
 
 /** Colors for selected & bookmarked intersections */
@@ -34,6 +34,23 @@ export const queryColorPalette = [
   '#bcbd22',
   '#17becf',
 ];
+
+/**
+ * Colors for stacked categorical bar charts
+ * This is a rough rainbow, scrambled to provide more contrast
+ */
+export const categoryColorPalette = [
+  '#FFBD42',
+  '#F50F63',
+  '#B91830',
+  '#7A5095',
+  '#003F5C',
+  '#21837F',
+  '#73D2DE',
+];
+
+/** 2 colors to alternate when the category total overflows the categoryColorPalette */
+export const extraCategoryColors = ['#555', '#bbb'];
 
 /** Color to use for selected & bookmarked intersections when the query color palette runs out */
 export const extraQueryColor = '#000';
@@ -49,7 +66,9 @@ export const mousePointer = css`
 `;
 
 export const arrowIconCSS = {
-  height: '16px', width: '16px', marginLeft: '6px',
+  height: '16px',
+  width: '16px',
+  marginLeft: '6px',
 };
 
 // Stroke color and width for queryBySets Interface and query rows

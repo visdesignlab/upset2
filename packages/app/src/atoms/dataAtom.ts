@@ -14,13 +14,13 @@ export const dataSelector = selector<CoreUpsetData | null>({
     let rows;
     try {
       rows = await getTable(workspace, table);
-    } catch (e) {
+    } catch {
       return null;
     }
 
     const annotations = await getColumnTypes(workspace, table);
 
-    return process(rows, { columns: annotations } as any);
+    return process(rows, annotations);
   },
 });
 

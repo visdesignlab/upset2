@@ -7,7 +7,11 @@ import {
   SortByOrder,
   SixNumberSummary,
 } from './types';
-import { areRowsSubsets, getBelongingSetsFromSetMembership, getDegreeFromSetMembership } from './typeutils';
+import {
+  areRowsSubsets,
+  getBelongingSetsFromSetMembership,
+  getDegreeFromSetMembership,
+} from './typeutils';
 import { deepCopy } from './utils';
 
 /**
@@ -23,7 +27,7 @@ function sortBySize(rows: Intersections, sortOrder?: SortByOrder) {
   order.sort((b, a) => {
     const valA = values[a].size;
     const valB = values[b].size;
-    return (sortOrder === 'Descending') ? valA - valB : valB - valA;
+    return sortOrder === 'Descending' ? valA - valB : valB - valA;
   });
 
   return { values, order };
@@ -48,7 +52,7 @@ function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVi
     .map(([key, _value]) => visibleSets[key].size)
     .reduce((accumulator, currentValue) => accumulator + currentValue, 0);
 
-  return (vSetSortBy === 'Ascending') ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
+  return vSetSortBy === 'Ascending' ? aUnionSize - bUnionSize : bUnionSize - aUnionSize;
 }
 
 /**
@@ -60,30 +64,33 @@ function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVi
  * @param {SortByOrder} sortByOrder - The order in which to sort the intersections.
  * @returns The sorted intersections.
  */
-function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: SortByOrder) {
+function sortByDegree(
+  rows: Intersections,
+  vSetSortBy: SortVisibleBy,
+  visibleSets: Sets,
+  sortByOrder?: SortByOrder,
+) {
   const { values, order } = rows;
-  order.sort(
-    (a, b) => {
-      const degreeA = getDegreeFromSetMembership(values[a].setMembership);
-      const degreeB = getDegreeFromSetMembership(values[b].setMembership);
-      const diff = (sortByOrder === 'Ascending') ? degreeA - degreeB : degreeB - degreeA;
+  order.sort((a, b) => {
+    const degreeA = getDegreeFromSetMembership(values[a].setMembership);
+    const degreeB = getDegreeFromSetMembership(values[b].setMembership);
+    const diff = sortByOrder === 'Ascending' ? degreeA - degreeB : degreeB - degreeA;
 
-      if (diff !== 0) {
-        return diff;
-      }
+    if (diff !== 0) {
+      return diff;
+    }
 
-      switch (vSetSortBy) {
-        case 'Alphabetical':
-          return values[a].elementName.localeCompare(values[b].elementName);
-        case 'Ascending':
-          return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
-        case 'Descending':
-          return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
-        default:
-          return 0;
-      }
-    },
-  );
+    switch (vSetSortBy) {
+      case 'Alphabetical':
+        return values[a].elementName.localeCompare(values[b].elementName);
+      case 'Ascending':
+        return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
+      case 'Descending':
+        return compareUnionSizes(values[a], values[b], visibleSets, vSetSortBy);
+      default:
+        return 0;
+    }
+  });
 
   return { values, order };
 }
@@ -97,13 +104,11 @@ function sortByDegree(rows: Intersections, vSetSortBy: SortVisibleBy, visibleSet
  */
 function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
-  order.sort(
-    (a, b) => {
-      const devA = values[a].attributes.deviation;
-      const devB = values[b].attributes.deviation;
-      return (sortByOrder === 'Ascending') ? devA - devB : devB - devA;
-    },
-  );
+  order.sort((a, b) => {
+    const devA = values[a].attributes.deviation;
+    const devB = values[b].attributes.deviation;
+    return sortByOrder === 'Ascending' ? devA - devB : devB - devA;
+  });
 
   return { values, order };
 }
@@ -117,12 +122,19 @@ function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
  * @param visibleSets - The visible sets.
  * @returns The sorted rows.
  */
-function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleBy, visibleSets: Sets) {
+function sortBySet(
+  rows: Intersections,
+  sortBy: string,
+  vSetSortBy: SortVisibleBy,
+  visibleSets: Sets,
+) {
   // create the subset of rows which contain sortBy in their set list
   const setMembers: Intersections = { values: {}, order: [] };
 
   // setMembers needs to be a filtered list of values that contain the set membership, as well as order which corresponds
-  const setMemberEntries = Object.entries(rows.values).filter(([, value]) => getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy));
+  const setMemberEntries = Object.entries(rows.values).filter(([, value]) =>
+    getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy),
+  );
   setMemberEntries.forEach(([key, value]) => {
     setMembers.values[key] = value;
     setMembers.order.push(key);
@@ -132,7 +144,10 @@ function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleB
   const nonSetMembers: Intersections = { values: {}, order: [] };
 
   // filter the list for entries which do not have the selected set as members
-  const nonSetMemberEntries = Object.entries(rows.values).filter(([, value]) => !getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy));
+  const nonSetMemberEntries = Object.entries(rows.values).filter(
+    ([, value]) =>
+      !getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy),
+  );
   nonSetMemberEntries.forEach(([key, value]) => {
     nonSetMembers.values[key] = value;
     nonSetMembers.order.push(key);
@@ -140,7 +155,12 @@ function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleB
 
   // sort each of the two by degree (Ascending)
   const sortedSetMembers = sortByDegree(setMembers, vSetSortBy, visibleSets, 'Ascending');
-  const sortedNonSetMembers = sortByDegree(nonSetMembers, vSetSortBy, visibleSets, 'Ascending');
+  const sortedNonSetMembers = sortByDegree(
+    nonSetMembers,
+    vSetSortBy,
+    visibleSets,
+    'Ascending',
+  );
 
   // combine the two sorted row lists
   const sortedOrder = [...sortedSetMembers.order, ...sortedNonSetMembers.order];
@@ -158,22 +178,20 @@ function sortBySet(rows: Intersections, sortBy: string, vSetSortBy: SortVisibleB
 function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
 
-  order.sort(
-    (a, b) => {
-      const meanA = (values[a].attributes[sortBy] as SixNumberSummary).mean;
-      const meanB = (values[b].attributes[sortBy] as SixNumberSummary).mean;
+  order.sort((a, b) => {
+    const meanA = (values[a].attributes[sortBy] as SixNumberSummary).mean;
+    const meanB = (values[b].attributes[sortBy] as SixNumberSummary).mean;
 
-      // If one of the values is undefined (empty subset), sort it to the bottom
-      if (!meanA) {
-        return 1;
-      }
-      if (!meanB) {
-        return -1;
-      }
+    // If one of the values is undefined (empty subset), sort it to the bottom
+    if (!meanA) {
+      return 1;
+    }
+    if (!meanB) {
+      return -1;
+    }
 
-      return (sortByOrder === 'Ascending') ? meanA - meanB : meanB - meanA;
-    },
-  );
+    return sortByOrder === 'Ascending' ? meanA - meanB : meanB - meanA;
+  });
 
   return { values, order };
 }
@@ -222,14 +240,26 @@ function sortIntersections<T extends Intersections>(
  * @param {SortByOrder} sortByOrder - The sort order.
  * @returns The sorted rows.
  */
-export function sortRows(baseRows: Rows, sortBy: string, vSetSortBy: SortVisibleBy, visibleSets: Sets, sortByOrder?: SortByOrder): Rows {
+export function sortRows(
+  baseRows: Rows,
+  sortBy: string,
+  vSetSortBy: SortVisibleBy,
+  visibleSets: Sets,
+  sortByOrder?: SortByOrder,
+): Rows {
   const rows = deepCopy(baseRows);
 
   if (areRowsSubsets(rows)) {
     return sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   }
 
-  const aggs: Aggregates = sortIntersections(rows as any, sortBy, vSetSortBy, visibleSets, sortByOrder) as any;
+  const aggs: Aggregates = sortIntersections(
+    rows as any,
+    sortBy,
+    vSetSortBy,
+    visibleSets,
+    sortByOrder,
+  ) as any;
 
   aggs.order.forEach((aggId) => {
     const { items } = aggs.values[aggId];

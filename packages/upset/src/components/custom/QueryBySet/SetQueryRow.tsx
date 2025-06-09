@@ -13,7 +13,10 @@ import { setQuerySelector } from '../../../atoms/config/queryBySetsAtoms';
 import { ProvenanceContext } from '../../Root';
 import { SizeBar } from '../../Columns/SizeBar';
 import {
-  DEFAULT_ROW_BACKGROUND_COLOR, DEFAULT_ROW_BACKGROUND_OPACITY, ROW_BORDER_STROKE_COLOR, ROW_BORDER_STROKE_WIDTH,
+  DEFAULT_ROW_BACKGROUND_COLOR,
+  DEFAULT_ROW_BACKGROUND_OPACITY,
+  ROW_BORDER_STROKE_COLOR,
+  ROW_BORDER_STROKE_WIDTH,
 } from '../../../utils/styles';
 import { setQuerySizeSelector } from '../../../atoms/setQuerySizeSelector';
 import { UpsetActions } from '../../../provenance';
@@ -31,7 +34,7 @@ const REMOVE_ICON_SIZE = 16;
  * @returns {JSX.Element} The rendered SetQueryRow component.
  */
 export const SetQueryRow: FC = () => {
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
   const setQuery = useRecoilValue(setQuerySelector);
@@ -75,7 +78,10 @@ export const SetQueryRow: FC = () => {
           {/* Remove query button */}
           <Tooltip title="Remove query">
             <g
-              transform={translate(REMOVE_ICON_SIZE / 4, dimensions.body.rowHeight / 2 - (REMOVE_ICON_SIZE / 2))}
+              transform={translate(
+                REMOVE_ICON_SIZE / 4,
+                dimensions.body.rowHeight / 2 - REMOVE_ICON_SIZE / 2,
+              )}
               css={css`
                 cursor: pointer;
               `}
@@ -104,10 +110,18 @@ export const SetQueryRow: FC = () => {
             <title>{setQuery?.name}</title>
             {setQuery?.name}
           </text>
-          <g transform={translate(dimensions.xOffset + dimensions.set.width / 2, dimensions.body.rowHeight + (dimensions.set.width - 10))}>
+          <g
+            transform={translate(
+              dimensions.xOffset + dimensions.set.width / 2,
+              dimensions.body.rowHeight + (dimensions.set.width - 10),
+            )}
+          >
             {visibleSets.map((set, index) => (
               <MemberShipCircle
-                transform={translate(((dimensions.set.width / 2) + dimensions.gap / 2) * index, 0)}
+                transform={translate(
+                  (dimensions.set.width / 2 + dimensions.gap / 2) * index,
+                  0,
+                )}
                 membershipStatus={getMembershipStatusFromQuery(set)}
                 showoutline
               />

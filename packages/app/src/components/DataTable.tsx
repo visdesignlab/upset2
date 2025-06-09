@@ -1,7 +1,10 @@
+import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
 import {
-  Backdrop, Box, Button, CircularProgress,
-} from '@mui/material';
-import { AccessibleDataEntry, CoreUpsetData, SixNumberSummary } from '@visdesignlab/upset2-core';
+  AccessibleDataEntry,
+  CoreUpsetData,
+  Item,
+  SixNumberSummary,
+} from '@visdesignlab/upset2-core';
 import { useEffect, useMemo, useState } from 'react';
 import { DataGrid, GridColDef } from '@mui/x-data-grid';
 import { getAccessibleData } from '@visdesignlab/upset2-react';
@@ -53,10 +56,13 @@ const setColumns: GridColDef[] = [
  * @param row - The AccessibleDataEntry object to convert.
  * @returns The converted row data object.
  */
-const getRowData = (row: AccessibleDataEntry) => {
-  const retVal: { [key: string]: any } = {
+function getRowData(row: AccessibleDataEntry): Item {
+  const name = `${row.type === 'Aggregate' ? 'Aggregate: ' : ''}${row.elementName.replaceAll('~&~', ' & ')}`;
+  const retVal: Record<string, string | number | undefined> = {
     id: row.id,
-    elementName: `${(row.type === 'Aggregate') ? 'Aggregate: ' : ''}${row.elementName.replaceAll('~&~', ' & ')}`,
+    _id: row.id,
+    _label: name,
+    elementName: name,
     size: row.size,
     deviation: row.attributes?.deviation.toFixed(2),
   };
@@ -66,8 +72,8 @@ const getRowData = (row: AccessibleDataEntry) => {
     retVal[key] = (row.attributes[key] as SixNumberSummary).mean?.toFixed(2);
   }
 
-  return retVal;
-};
+  return retVal as Item; // TOOD: This needs to be fixed when item typing is fixed
+}
 
 /**
  * Retrieves the aggregated rows from the given row of accessible data.
@@ -96,7 +102,7 @@ const getAggRows = (row: AccessibleDataEntry) => {
  * @param columns - The array of column names.
  * @param name - The name of the CSV file.
  */
-function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
+function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
   if (items.length < 1 || columns.length < 1) return;
 
   const saveText: string[] = [];
@@ -116,7 +122,7 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
   const blob = new Blob([saveText.join('\n')], { type: 'text/csv' });
   const blobUrl = URL.createObjectURL(blob);
 
-  const anchor: any = document.createElement('a');
+  const anchor = document.createElement('a');
   anchor.style = 'display: none';
   document.body.appendChild(anchor);
   anchor.href = blobUrl;
@@ -131,7 +137,7 @@ function downloadElementsAsCSV(items: any[], columns: string[], name: string) {
 type DownloadButtonProps = {
   // The click event handler function for the button.
   onClick: () => void;
-}
+};
 
 /**
  * DownloadButton component.
@@ -183,18 +189,25 @@ export const DataTable = () => {
       localforage.getItem('rows'),
       localforage.getItem('visibleSets'),
       localforage.getItem('hiddenSets'),
-    ]).then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
-      if (storedData === null || storedRows === null || storedVisibleSets === null || storedHiddenSets === null) {
-        console.error('Data not found in local storage');
-        setError('Error: Data not found in local storage');
-      } else {
-        setData(storedData as CoreUpsetData);
-        setVisibleSets(storedVisibleSets as string[]);
-        setHiddenSets(storedHiddenSets as string[]);
-      }
-    }).catch((e) => {
-      setError(`Error: ${e}`);
-    });
+    ])
+      .then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
+        if (
+          storedData === null ||
+          storedRows === null ||
+          storedVisibleSets === null ||
+          storedHiddenSets === null
+        ) {
+          console.error('Data not found in local storage');
+          setError('Error: Data not found in local storage');
+        } else {
+          setData(storedData as CoreUpsetData);
+          setVisibleSets(storedVisibleSets as string[]);
+          setHiddenSets(storedHiddenSets as string[]);
+        }
+      })
+      .catch((e) => {
+        setError(`Error: ${e}`);
+      });
     setLoading(false);
   }, []);
 
@@ -288,12 +301,17 @@ export const DataTable = () => {
    * @param data - An object containing the data for the sets.
    * @returns An array of objects with the set name and size.
    */
-  const getSetRows = (sets: string[], data: CoreUpsetData) => {
-    const retVal: { setName: string, size: number }[] = [];
-    retVal.push(...sets.map((s: string) => ({ id: s, setName: s.replace('Set_', ''), size: data.sets[s].size })));
+  function getSetRows(sets: string[], data: CoreUpsetData): Item[] {
+    const retVal: Item[] = [];
+    retVal.push(
+      ...sets.map((s: string) => {
+        const name = s.replace('Set_', '');
+        return { id: s, setName: name, size: data.sets[s].size, _id: s, _label: name };
+      }),
+    );
 
     return retVal;
-  };
+  }
 
   /**
    * Returns an array of visible set rows.
@@ -302,7 +320,7 @@ export const DataTable = () => {
    * @param data - The data used to generate the set rows.
    * @returns An array of objects representing the visible set rows.
    */
-  const visibleSetRows: {setName: string, size: number}[] = useMemo(() => {
+  const visibleSetRows = useMemo(() => {
     if (visibleSets === null || data === null) {
       return [];
     }
@@ -316,7 +334,7 @@ export const DataTable = () => {
    * @param data - The data.
    * @returns An array of objects containing the set name and size.
    */
-  const hiddenSetRows: {setName: string, size: number}[] = useMemo(() => {
+  const hiddenSetRows = useMemo(() => {
     if (hiddenSets === null || data === null) {
       return [];
     }
@@ -326,8 +344,9 @@ export const DataTable = () => {
 
   return (
     <>
-      { error ?
-        <h1>{error}</h1> :
+      {error ? (
+        <h1>{error}</h1>
+      ) : (
         <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <Backdrop open={loading} style={{ zIndex: 1000 }}>
             <CircularProgress color="inherit" />
@@ -335,7 +354,15 @@ export const DataTable = () => {
           <Box sx={{ width: '50%', margin: '20px' }}>
             <div style={headerCSS}>
               <h2>Intersection Data</h2>
-              <DownloadButton onClick={() => downloadElementsAsCSV(tableRows, dataColumns.map((m) => m.field), 'upset2_intersection_data')} />
+              <DownloadButton
+                onClick={() =>
+                  downloadElementsAsCSV(
+                    tableRows,
+                    dataColumns.map((m) => m.field),
+                    'upset2_intersection_data',
+                  )
+                }
+              />
             </div>
             <DataGrid
               columns={dataColumns}
@@ -344,6 +371,7 @@ export const DataTable = () => {
               disableSelectionOnClick
               initialState={{
                 pagination: {
+                  // @ts-expect-error page is necessary, not sure why it's not in the type
                   page: 0,
                   pageSize: 10,
                 },
@@ -355,7 +383,15 @@ export const DataTable = () => {
           <Box sx={{ width: '25%', margin: '20px' }}>
             <div style={headerCSS}>
               <h2>Visible Sets</h2>
-              <DownloadButton onClick={() => downloadElementsAsCSV(visibleSetRows, ['setName', 'size'], 'upset2_visiblesets_table')} />
+              <DownloadButton
+                onClick={() =>
+                  downloadElementsAsCSV(
+                    visibleSetRows,
+                    ['setName', 'size'],
+                    'upset2_visiblesets_table',
+                  )
+                }
+              />
             </div>
             <DataGrid
               columns={setColumns}
@@ -364,6 +400,7 @@ export const DataTable = () => {
               disableSelectionOnClick
               initialState={{
                 pagination: {
+                  // @ts-expect-error page is necessary, not sure why it's not in the type
                   page: 0,
                   pageSize: 10,
                 },
@@ -375,7 +412,15 @@ export const DataTable = () => {
           <Box sx={{ width: '25%', margin: '20px' }}>
             <div style={headerCSS}>
               <h2>Hidden Sets</h2>
-              <DownloadButton onClick={() => downloadElementsAsCSV(hiddenSetRows, ['setName', 'size'], 'upset2_hiddensets_table')} />
+              <DownloadButton
+                onClick={() =>
+                  downloadElementsAsCSV(
+                    hiddenSetRows,
+                    ['setName', 'size'],
+                    'upset2_hiddensets_table',
+                  )
+                }
+              />
             </div>
             <DataGrid
               columns={setColumns}
@@ -384,6 +429,7 @@ export const DataTable = () => {
               disableSelectionOnClick
               initialState={{
                 pagination: {
+                  // @ts-expect-error page is necessary, not sure why it's not in the type
                   page: 0,
                   pageSize: 10,
                 },
@@ -392,7 +438,8 @@ export const DataTable = () => {
               rowsPerPageOptions={[5, 10, 20]}
             />
           </Box>
-        </Box>}
+        </Box>
+      )}
     </>
   );
 };

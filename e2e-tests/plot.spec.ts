@@ -21,7 +21,10 @@ async function toggleAdvancedScale(page) {
  * @param setName name of set
  */
 async function removeSetByName(page, setName: string) {
-  await page.locator('p').filter({ hasText: new RegExp(`^${setName}$`) }).click({ button: 'right' });
+  await page
+    .locator('p')
+    .filter({ hasText: new RegExp(`^${setName}$`) })
+    .click({ button: 'right' });
   await page.getByRole('menuitem', { name: `Remove Set: ${setName}` }).click();
 }
 
@@ -43,8 +46,7 @@ async function addSetByName(page, setName: string) {
  * @param max max value to assert
  */
 async function assertSizeScaleMax(page, max: number) {
-  await expect(page.locator('g.details-scale > g > g:last-child > text').first())
-    .toHaveText(new RegExp(`^${max}$`));
+  await expect(page.locator('g.details-scale > g > g:last-child > text').first()).toHaveText(new RegExp(`^${max}$`));
 }
 
 /**
@@ -68,8 +70,7 @@ test('Size header', async ({ page }) => {
 
   // Ensure that dragging the advanced slider works
   await toggleAdvancedScale(page);
-  await page.locator('g.sliding-scale > g.slider-knob').locator('rect')
-    .dragTo(page.getByText('15'), { force: true });
+  await page.locator('g.sliding-scale > g.slider-knob').locator('rect').dragTo(page.getByText('15'), { force: true });
 
   await assertSizeScaleMax(page, 15);
 

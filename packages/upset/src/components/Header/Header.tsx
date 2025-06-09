@@ -12,12 +12,13 @@ export const Header = () => {
 
   return (
     <>
-      {!isPopulatedSetQuery(setQuery) &&
-      <g>
-        <QueryButton />
-        {/* Collapse All should be hidden while there is an active query, as this removes any aggregation */}
-        <CollapseAllButton />
-      </g>}
+      {!isPopulatedSetQuery(setQuery) && (
+        <g>
+          <QueryButton />
+          {/* Collapse All should be hidden while there is an active query, as this removes any aggregation */}
+          <CollapseAllButton />
+        </g>
+      )}
       <MatrixHeader />
       <SizeHeader />
       <AttributeHeaders />

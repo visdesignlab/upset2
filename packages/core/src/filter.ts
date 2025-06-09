@@ -1,7 +1,5 @@
 import { getAggSize } from './aggregate';
-import {
-  Aggregates, Intersections, Rows,
-} from './types';
+import { Aggregates, Intersections, Rows } from './types';
 import { areRowsSubsets, getDegreeFromSetMembership } from './typeutils';
 import { deepCopy } from './utils';
 
@@ -19,7 +17,12 @@ import { deepCopy } from './utils';
  */
 function filterIntersections<T extends Intersections>(
   rows: T,
-  filters: { maxVisible: number; minVisible: number; hideEmpty: boolean, hideNoSet: boolean },
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  },
 ) {
   const { values, order } = rows;
 
@@ -28,7 +31,10 @@ function filterIntersections<T extends Intersections>(
     const degree = getDegreeFromSetMembership(subset.setMembership);
 
     // determine if the subset is within the filter range and meets the hide conditions
-    if ((degree >= filters.minVisible && degree <= filters.maxVisible) || subset.type === 'Aggregate') {
+    if (
+      (degree >= filters.minVisible && degree <= filters.maxVisible) ||
+      subset.type === 'Aggregate'
+    ) {
       if (degree === 0 && filters.hideNoSet) {
         return false;
       }
@@ -60,7 +66,12 @@ function filterIntersections<T extends Intersections>(
  */
 export function filterRows(
   baseRows: Rows,
-  filters: { maxVisible: number; minVisible: number; hideEmpty: boolean, hideNoSet: boolean },
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  },
 ): Rows {
   const rows = deepCopy(baseRows);
 

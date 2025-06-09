@@ -28,7 +28,12 @@ test('Attribute Dropdown', async ({ page }) => {
   // Reselect and assert that it's added back to the plot
   await toggleAttribute(page, 'Age', true);
   // This doesn't make sense but it works to find the Age column header
-  await expect(page.locator('g').filter({ hasText: /^Age20406080$/ }).locator('rect')).toBeVisible();
+  await expect(
+    page
+      .locator('g')
+      .filter({ hasText: /^Age20406080$/ })
+      .locator('rect'),
+  ).toBeVisible();
 
   /// /////////////////
   // Degree
@@ -51,4 +56,14 @@ test('Attribute Dropdown', async ({ page }) => {
   // Reselect and assert that it's added back to the plot
   await toggleAttribute(page, 'Deviation', true);
   await expect(page.getByText('Deviation', { exact: true })).toBeDefined();
+
+  // Check that categorical attributes exist
+  await toggleAttribute(page, 'Generation', true);
+  await expect(page.getByText('Generation', { exact: true })).toBeDefined();
+  // Check for stacked bars
+  await expect(page.getByLabel('Child — 3')).toBeDefined();
+  await expect(page.locator('#Subset_Unincluded').getByLabel('Adult —')).toBeDefined();
+  await expect(page.locator('#Subset_Male').getByLabel('Elder —')).toBeDefined();
+  await expect(page.locator('#Subset_School').getByLabel('Child —')).toBeDefined();
+  await expect(page.locator('#Subset_Blue_Hair').getByLabel('Elder —')).toBeDefined();
 });

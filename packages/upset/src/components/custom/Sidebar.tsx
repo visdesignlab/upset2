@@ -1,17 +1,13 @@
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import CloseIcon from '@mui/icons-material/Close';
-import {
-  Box, Divider, Drawer, IconButton, Tooltip,
-} from '@mui/material';
-import React, {
-  FC, PropsWithChildren, useCallback, useState,
-} from 'react';
+import { Box, Divider, Drawer, IconButton, Tooltip } from '@mui/material';
+import React, { FC, PropsWithChildren, useCallback, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 import { footerHeightAtom } from '../../atoms/dimensionsAtom';
 import { UpsetHeading } from './theme/heading';
 
-type Props= {
+type Props = {
   /** Whether the sidebar is open */
   open: boolean;
   /** Function to close the sidebar */
@@ -24,7 +20,7 @@ type Props= {
   title: string;
   /** Buttons to display at the top of the sidebar, left of the close & expand */
   buttons?: React.ReactNode;
-}
+};
 
 /** Dimension for the square button wrappers */
 const BUTTON_DIMS = { height: '40px', width: '40px' };
@@ -33,7 +29,13 @@ const BUTTON_DIMS = { height: '40px', width: '40px' };
  * A collapsible, right-sidebar for the plot
  */
 export const Sidebar: FC<PropsWithChildren<Props>> = ({
-  open, close, closeButtonTabIndex, children, label, title, buttons,
+  open,
+  close,
+  closeButtonTabIndex,
+  children,
+  label,
+  title,
+  buttons,
 }) => {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
@@ -51,15 +53,18 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
   /**
    * Only fires when the user drags the side of the sidebar; resizes the sidebar
    */
-  const handleMouseMove = useCallback((e: MouseEvent) => {
-    e.stopPropagation();
-    e.preventDefault();
-    const newWidth = document.body.clientWidth - e.clientX;
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      e.stopPropagation();
+      e.preventDefault();
+      const newWidth = document.body.clientWidth - e.clientX;
 
-    if (newWidth > MIN_DRAWER_WIDTH) {
-      setDrawerWidth(newWidth);
-    }
-  }, [setDrawerWidth]);
+      if (newWidth > MIN_DRAWER_WIDTH) {
+        setDrawerWidth(newWidth);
+      }
+    },
+    [setDrawerWidth],
+  );
 
   /**
    * Unattaches itself and handleMouseMove from document when the user stops dragging the sidebar
@@ -86,12 +91,12 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
     <Drawer
       aria-hidden={!open}
       sx={{
-        width: open ? fullWidth ? '100%' : drawerWidth : 0,
+        width: open ? (fullWidth ? '100%' : drawerWidth) : 0,
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           padding: '1em',
           marginTop: '2em',
-          width: open ? fullWidth ? '100%' : drawerWidth : 0,
+          width: open ? (fullWidth ? '100%' : drawerWidth) : 0,
           boxSizing: 'border-box',
           zIndex: 1,
           // Allow the inner div to handle scroll and right padding (so scrollbar isn't padded out from the edge)
@@ -125,33 +130,53 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         }}
         onMouseDown={(e) => handleMouseDown(e)}
       />
-      <div style={{
-        // Padding necessary to match the rest of the drawer
-        height: '100%', overflowY: 'auto', overflowX: 'hidden', paddingRight: '1em',
-      }}
+      <div
+        style={{
+          // Padding necessary to match the rest of the drawer
+          height: '100%',
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          paddingRight: '1em',
+        }}
       >
         <Box display="flex" flexWrap="nowrap" flexDirection="row">
-          <div style={{
-            minWidth: 0, alignSelf: 'center', flexGrow: 1, flexShrink: 1, width: '100%', display: 'flex', alignItems: 'center',
-          }}
+          <div
+            style={{
+              minWidth: 0,
+              alignSelf: 'center',
+              flexGrow: 1,
+              flexShrink: 1,
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+            }}
           >
             <UpsetHeading
               level="h1"
               hideDivider
               divStyle={{ marginBottom: 0, width: '100%' }}
               headingStyle={{
-                marginBottom: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', width: '100%',
+                marginBottom: 0,
+                whiteSpace: 'nowrap',
+                textOverflow: 'ellipsis',
+                overflow: 'hidden',
+                width: '100%',
               }}
             >
               {title}
             </UpsetHeading>
           </div>
-          <div style={{
-            display: 'flex', justifyContent: 'end', flexGrow: 0, flexShrink: 0, alignSelf: 'end',
-          }}
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'end',
+              flexGrow: 0,
+              flexShrink: 0,
+              alignSelf: 'end',
+            }}
           >
             {buttons}
-            { !fullWidth ?
+            {!fullWidth ? (
               <Tooltip title="Expand to full screen">
                 <IconButton
                   style={BUTTON_DIMS} // Necessary so that the shadow remains square even when we change the font size
@@ -165,7 +190,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
                   <OpenInFullIcon style={{ fontSize: '18.67px' }} />
                 </IconButton>
               </Tooltip>
-              :
+            ) : (
               <Tooltip title="Reduce to normal size">
                 <IconButton
                   style={BUTTON_DIMS} // Not actually necessary (it's 40*40 by default) but it's here for consistency
@@ -178,7 +203,8 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
                 >
                   <CloseFullscreen />
                 </IconButton>
-              </Tooltip>}
+              </Tooltip>
+            )}
             <Tooltip title="Close">
               <IconButton
                 onClick={() => {
@@ -192,7 +218,10 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
             </Tooltip>
           </div>
         </Box>
-        <Divider style={{ width: '100%', margin: '0 auto', marginBottom: '1em' }} aria-hidden />
+        <Divider
+          style={{ width: '100%', margin: '0 auto', marginBottom: '1em' }}
+          aria-hidden
+        />
         {children}
         <Box minHeight={footerHeight} />
       </div>

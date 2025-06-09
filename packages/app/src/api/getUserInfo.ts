@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from './api';
 
 /**
  * Retrieves user information from the API.
@@ -15,4 +15,4 @@ export const getUserInfo = async () => {
     }
     throw new Error(e);
   }
-}
+};

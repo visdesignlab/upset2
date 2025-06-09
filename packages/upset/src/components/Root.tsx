@@ -109,30 +109,51 @@ export const Root: FC<Props> = ({
 
   // Set the initial state of canEditPlotInformation
   useEffect(() => {
-    if (canEditPlotInformation !== undefined) setCanEditPlotInformation(canEditPlotInformation);
+    if (canEditPlotInformation !== undefined)
+      setCanEditPlotInformation(canEditPlotInformation);
   }, [canEditPlotInformation, setCanEditPlotInformation]);
 
   // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    const provenance = extProvenance?.provenance ?? initializeProvenanceTracking(config, setState);
+    const provenance: UpsetProvenance & { _getState?: typeof provenance.getState } =
+      extProvenance?.provenance ??
+      initializeProvenanceTracking(
+        // Populate config defaults if not already set (this is only done if extProvenance is not provided)
+        populateConfigDefaults(
+          config,
+          data,
+          visualizeUpsetAttributes ?? true,
+          visibleDatasetAttributes,
+        ),
+        setState,
+      );
     const actions = extProvenance?.actions ?? getActions(provenance);
 
     // This syncs all linked atoms with the provenance state
     provenance.currentChange(() => {
       // Old provenance nodes may be using a different config version, so convert it if need be
-      const converted = populateConfigDefaults(
-        convertConfig(provenance.getState()),
-        data,
-        visualizeUpsetAttributes ?? false,
-        visibleDatasetAttributes,
-      );
+      const converted = convertConfig(provenance.getState());
       setState(converted);
     });
 
+    // Ensure that the provenance state is always in the correct format
+    const originalGetState = provenance.getState.bind(provenance);
+    provenance.getState = () => convertConfig(originalGetState());
+
     provenance.done();
     return { provenance, actions };
-  }, [config, extProvenance, setState, data, visibleDatasetAttributes, visualizeUpsetAttributes]);
+  }, [
+    config,
+    extProvenance,
+    setState,
+    data,
+    visibleDatasetAttributes,
+    visualizeUpsetAttributes,
+  ]);
 
+  /**
+   * We don't want to populate the config defaults if the provenance is already set externally
+   */
   useEffect(() => {
     if (!extProvenance) {
       setState(
@@ -143,16 +164,7 @@ export const Root: FC<Props> = ({
           visibleDatasetAttributes,
         ),
       );
-    } else {
-      setState(
-        populateConfigDefaults(
-          convertConfig(provenance.getState()),
-          data,
-          visualizeUpsetAttributes ?? false,
-          visibleDatasetAttributes,
-        ),
-      );
-    }
+    } else setState(convertConfig(provenance.getState()));
   }, [
     config,
     data,
@@ -171,7 +183,9 @@ export const Root: FC<Props> = ({
     setAllColumns(data.columns);
     setData(data);
     // if it is defined, pass through the provided value, else, default to true
-    setAllowAttributeRemoval(allowAttributeRemoval !== undefined ? allowAttributeRemoval : true);
+    setAllowAttributeRemoval(
+      allowAttributeRemoval !== undefined ? allowAttributeRemoval : true,
+    );
   }, [
     data,
     allowAttributeRemoval,
@@ -228,8 +242,8 @@ export const Root: FC<Props> = ({
           border: 0;
         `}
       >
-        The UpSet 2 interactive plot is currently not screen reader accessible. We are actively
-        working on this and apologize for any inconvenience.
+        The UpSet 2 interactive plot is currently not screen reader accessible. We are
+        actively working on this and apologize for any inconvenience.
       </h2>
       <div
         css={css`

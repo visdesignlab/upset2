@@ -12,13 +12,13 @@ import { UpsetActions } from '../provenance';
 
 export const SvgBase: FC = ({ children }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
-  const { actions }: {actions: UpsetActions} = useContext(ProvenanceContext);
+  const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
   const queryBySetsInterfaceOpen = useRecoilValue(queryBySetsInterfaceAtom);
 
   let { height } = dimensions;
 
-  if ((dimensions as ReturnType<typeof calculateDimensions>)) {
+  if (dimensions as ReturnType<typeof calculateDimensions>) {
     if (queryBySetsInterfaceOpen) {
       height += dimensions.setQuery.height + dimensions.setQuery.spacer;
     }
@@ -35,7 +35,15 @@ export const SvgBase: FC = ({ children }) => {
         if (selectedIntersection !== null) actions.setRowSelection(null);
       }}
     >
-      <svg id="upset-svg" height={height + 50 * dimensions.margin} width={dimensions.width + 2 * dimensions.margin} xmlns="http://www.w3.org/2000/svg" version="1.1" baseProfile="full" fontFamily="Roboto, Arial">
+      <svg
+        id="upset-svg"
+        height={height + 50 * dimensions.margin}
+        width={dimensions.width + 2 * dimensions.margin}
+        xmlns="http://www.w3.org/2000/svg"
+        version="1.1"
+        baseProfile="full"
+        fontFamily="Roboto, Arial"
+      >
         <g transform={translate(dimensions.margin)}>
           <rect
             height={height}

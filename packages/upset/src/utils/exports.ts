@@ -1,5 +1,13 @@
 import {
-  AccessibleData, Aggregate, AltTextConfig, CoreUpsetData, Row, Rows, UpsetConfig, getDegreeFromSetMembership, isRowAggregate,
+  AccessibleData,
+  Aggregate,
+  AltTextConfig,
+  CoreUpsetData,
+  Row,
+  Rows,
+  UpsetConfig,
+  getDegreeFromSetMembership,
+  isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { UpsetProvenance } from '../provenance';
 
@@ -101,7 +109,11 @@ const generateElementName = (rows: Rows): Rows => {
  * @param rows - The Rows object.
  * @returns The AltTextConfig object.
  */
-export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: Rows): AltTextConfig => {
+export const getAltTextConfig = (
+  state: UpsetConfig,
+  data: CoreUpsetData,
+  rows: Rows,
+): AltTextConfig => {
   let dataObj = state as AltTextConfig;
 
   const updatedRows = generateElementName(rows);
@@ -122,14 +134,25 @@ export const getAltTextConfig = (state: UpsetConfig, data: CoreUpsetData, rows: 
  * @param data - Optional. The CoreUpsetData data of the Upset component. (Raw Data)
  * @param rows - Optional. The rows data of the Upset component. (Processed Data)
  */
-export const exportState = (provenance: UpsetProvenance, data?: CoreUpsetData, rows?: Rows): void => {
+export const exportState = (
+  provenance: UpsetProvenance,
+  data?: CoreUpsetData,
+  rows?: Rows,
+): void => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
-  let dataObj = provenance.getState() as UpsetConfig & { rawData?: CoreUpsetData; processedData?: Rows; accessibleProcessedData?: AccessibleData };
+  let dataObj = provenance.getState() as UpsetConfig & {
+    rawData?: CoreUpsetData;
+    processedData?: Rows;
+    accessibleProcessedData?: AccessibleData;
+  };
 
   if (data && rows) {
     const updatedRows = generateElementName(rows);
     dataObj = {
-      ...dataObj, rawData: data, processedData: updatedRows, accessibleProcessedData: getAccessibleData(updatedRows),
+      ...dataObj,
+      rawData: data,
+      processedData: updatedRows,
+      accessibleProcessedData: getAccessibleData(updatedRows),
     };
     filename = `upset_state_data_${new Date().toJSON().slice(0, 10)}`;
   } else if (data) {
@@ -159,7 +182,7 @@ export const exportRawData = (data: CoreUpsetData): void => {
  */
 export const exportProcessedData = (rows: Rows, accessible?: boolean): void => {
   const filename = `upset_data_${new Date().toJSON().slice(0, 10)}`;
-  const data: Rows | AccessibleData = (accessible) ? getAccessibleData(rows) : rows;
+  const data: Rows | AccessibleData = accessible ? getAccessibleData(rows) : rows;
 
   const json = JSON.stringify(data, null, 2);
 
