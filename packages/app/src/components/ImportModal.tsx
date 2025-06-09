@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -18,6 +18,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
   });
   const { actions, provenance } = useContext(ProvenanceContext);
   const setImportError = useSetRecoilState(importErrorAtom);
+  const fileInput = useRef<HTMLInputElement>(null);
 
   function isMissingFields(newState: Record<string, never>): boolean {
     const state = provenance.getState();
@@ -60,18 +61,14 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
     <Dialog open={props.open} onClose={props.close}>
       <DialogTitle>Upload Upset State (.json)</DialogTitle>
       <DialogContent>
-        <input type="file" id="state-upload-file" />
+        <input type="file" id="state-upload-file" ref={fileInput} />
         <Button
           variant="contained"
           size="small"
           aria-errormessage="import-error"
           onClick={() => {
-            const input: HTMLInputElement | null = document.getElementById(
-              'state-upload-file',
-            ) as HTMLInputElement;
-
-            if (input !== null && input.files !== null)
-              readFile(input.files[0]).catch((e) => {
+            if (fileInput.current !== null && fileInput.current.files !== null)
+              readFile(fileInput.current.files[0]).catch((e) => {
                 setIsError({
                   isOpen: true,
                   message: e.message,
