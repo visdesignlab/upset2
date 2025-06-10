@@ -52,8 +52,10 @@ export function getItems(row: Row): string[] {
 function updateAggValues(aggs: Aggregates, items: Items, attributeColumns: string[]) {
   aggs.order.forEach((aggId) => {
     aggs.values[aggId].atts = {
-      ...getSixNumberSummary(items, getItems(aggs.values[aggId]), attributeColumns),
-      deviation: aggs.values[aggId].atts.deviation,
+      dataset: {
+        ...getSixNumberSummary(items, getItems(aggs.values[aggId]), attributeColumns),
+      },
+      derived: { deviation: aggs.values[aggId].atts.derived.deviation },
     };
   });
 }
@@ -122,7 +124,8 @@ function aggregateByDegree(
       level,
       description: i === 0 ? 'in no set' : `${i} set intersection`,
       atts: {
-        deviation: 0,
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -146,7 +149,7 @@ function aggregateByDegree(
     relevantAggregate.rows.values[subsetId] = subset;
     relevantAggregate.rows.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.atts.deviation += subset.atts.deviation;
+    relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
   });
 
   updateAggValues(aggs, items, attributeColumns);
@@ -214,7 +217,8 @@ function aggregateBySets(
       level,
       description: elementName,
       atts: {
-        deviation: 0,
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -240,7 +244,7 @@ function aggregateBySets(
       relevantAggregate.rows.values[subsetId] = subset;
       relevantAggregate.rows.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.atts.deviation += subset.atts.deviation;
+      relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
     }
 
     belongingSets.forEach((set) => {
@@ -251,7 +255,7 @@ function aggregateBySets(
       relevantAggregate.rows.values[subsetId] = subset;
       relevantAggregate.rows.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.atts.deviation += subset.atts.deviation;
+      relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
     });
   });
 
@@ -315,7 +319,8 @@ function aggregateByDeviation(
       aggregateBy: 'Deviations',
       level,
       atts: {
-        deviation: 0,
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -330,7 +335,7 @@ function aggregateByDeviation(
 
   subsets.order.forEach((subsetId) => {
     let subset = subsets.values[subsetId];
-    const deviationType = subset.atts.deviation >= 0 ? 'pos' : 'neg';
+    const deviationType = subset.atts.derived.deviation >= 0 ? 'pos' : 'neg';
 
     const relevantAggregate = aggs.values[deviationMap[deviationType]];
 
@@ -339,7 +344,7 @@ function aggregateByDeviation(
     relevantAggregate.rows.values[subsetId] = subset;
     relevantAggregate.rows.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.atts.deviation += subset.atts.deviation;
+    relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
   });
 
   updateAggValues(aggs, items, attributeColumns);
@@ -413,7 +418,8 @@ function aggregateByOverlaps(
       level,
       description: setNames.join(' - '),
       atts: {
-        deviation: 0,
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -441,7 +447,7 @@ function aggregateByOverlaps(
       relevantAggregate.rows.values[subsetId] = subset;
       relevantAggregate.rows.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.atts.deviation += subset.atts.deviation;
+      relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
     });
   });
 
