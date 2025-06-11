@@ -79,7 +79,7 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
 
   items.forEach((item) => {
     let add = false;
-    if (Object.hasOwn(item, att)) {
+    if (Object.hasOwn(item.atts, att)) {
       switch (type) {
         case ElementQueryType.CONTAINS:
           add = `${item.atts[att]}`.includes(query);
