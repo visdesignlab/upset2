@@ -9,6 +9,7 @@ import {
   filterByVega,
   filterByQuery,
   SelectionType,
+  VegaItem,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -62,7 +63,7 @@ export const rowItemsSelector = selectorFamily<Item[], string | null | undefined
  * @private These properties are deliberately only added to bookmarked items, as the current vega spec requires
  *   For example, this defaults all items in unbookmarked rows to the next color instead of DEFAULT_ELEMENT_COLOR.
  */
-export const bookmarkedItemsSelector = selector<Item[]>({
+export const bookmarkedItemsSelector = selector<VegaItem[]>({
   key: 'bookmarked-items',
   get: ({ get }) => {
     const bookmarkIDs = ([] as string[]).concat(get(bookmarkSelector).map((b) => b.id));
@@ -72,7 +73,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
 
     const selectionType = get(currentSelectionType);
     const intersections = get(rowsSelector);
-    const result: Item[] = [];
+    const result: VegaItem[] = [];
 
     bookmarkIDs.forEach((id) => {
       const row = intersections[id];
@@ -81,7 +82,7 @@ export const bookmarkedItemsSelector = selector<Item[]>({
       const memberElements = get(rowItemsSelector(id));
       result.push(
         ...memberElements.map((el) => ({
-          ...el,
+          ...el.atts,
           subset: id,
           subsetName: row.elementName,
           color: get(bookmarkColorSelector(id)),
@@ -102,23 +103,22 @@ export const bookmarkedItemsSelector = selector<Item[]>({
  * All items are given color, isCurrentSelected, isCurrent, and bookmarked properties.
  * Only bookmarked items are given the subset and subsetName properties.
  */
-export const processedItemsSelector = selector<Item[]>({
+export const processedItemsSelector = selector<VegaItem[]>({
   key: 'processed-items',
   get: ({ get }) => {
     const rows = get(rowsSelector);
-    const items = get(itemsAtom);
     const bookmarkedIDs = get(bookmarkSelector).map((b) => b.id);
     const currentIntersection = get(currentIntersectionSelector);
     const selectionType = get(currentSelectionType);
     // A wild assignment, but the array returned by Recoil is readonly and we need to add to it
-    const result: Item[] = ([] as Item[]).concat(get(bookmarkedItemsSelector));
+    const result: VegaItem[] = ([] as VegaItem[]).concat(get(bookmarkedItemsSelector));
 
     Object.values(rows).forEach((row) => {
       if (!bookmarkedIDs.includes(row.id) && row.id !== currentIntersection?.id) {
-        const memberElements = getItems(row);
+        const memberElements = get(rowItemsSelector(row.id));
         result.push(
           ...memberElements.map((el) => ({
-            ...items[el],
+            ...el.atts,
             color: DEFAULT_ELEMENT_COLOR,
             isCurrentSelected: !!currentIntersection,
             isCurrent: false,
@@ -128,6 +128,19 @@ export const processedItemsSelector = selector<Item[]>({
         );
       }
     });
+    return result;
+  },
+});
+
+/** Gets all items in visible intersections */
+export const visibleItemsSelector = selector<Item[]>({
+  key: 'visible-items',
+  get: ({ get }) => {
+    const rows = get(rowsSelector);
+    const result: Item[] = [];
+    Object.values(rows).forEach((row) =>
+      get(rowItemsSelector(row.id)).forEach((item) => result.push(item)),
+    );
     return result;
   },
 });
@@ -145,13 +158,13 @@ const filteredItems = selector<FilteredItems>({
     const type = get(currentSelectionType);
     if (type === 'vega') {
       const selection = get(currentVegaSelection);
-      if (selection) return filterByVega(get(processedItemsSelector), selection);
+      if (selection) return filterByVega(get(visibleItemsSelector), selection);
     }
     if (type === 'query') {
       const selection = get(currentQuerySelection);
-      if (selection) return filterByQuery(get(processedItemsSelector), selection);
+      if (selection) return filterByQuery(get(visibleItemsSelector), selection);
     }
-    return { included: [], excluded: get(processedItemsSelector) };
+    return { included: [], excluded: get(visibleItemsSelector) };
   },
 });
 
@@ -167,7 +180,7 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
     if (type === 'vega' || type === 'query') return get(filteredItems).included;
     if (type === 'row')
       return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
-    return get(processedItemsSelector);
+    return get(visibleItemsSelector);
   },
 });
 
