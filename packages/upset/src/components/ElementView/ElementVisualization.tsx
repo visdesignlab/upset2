@@ -11,7 +11,7 @@ import {
   VegaSelection,
 } from '@visdesignlab/upset2-core';
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
-import { processedItemsSelector } from '../../atoms/elementsSelectors';
+import { vegaItemsSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -62,7 +62,7 @@ export const ElementVisualization = () => {
    */
   const scatterplots = useRecoilValue(scatterplotsSelector);
   const histograms = useRecoilValue(histogramSelector);
-  const items = useRecoilValue(processedItemsSelector);
+  const items = useRecoilValue(vegaItemsSelector);
   const selection = useRecoilValue(currentVegaSelection);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const selectionType = useRecoilValue(currentSelectionType);

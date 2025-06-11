@@ -9,7 +9,6 @@ import {
   filterByVega,
   filterByQuery,
   SelectionType,
-  VegaItem,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -25,6 +24,8 @@ import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
+import { VegaItem } from '../types';
+import { itemToVega } from '../typeutils';
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
@@ -51,59 +52,11 @@ export const rowItemsSelector = selectorFamily<Item[], string | null | undefined
 });
 
 /**
- * Gets all elements in the bookmarked intersections and the currently selected intersection,
- * with coloring and selection properties as well as a 'true' bookmarked property.
- * @returns The elements in the bookmarked/selected intersections with the following props added:
- * - subset: The ID of the row the item is in
- * - subsetName: The name of the row the item is in
- * - color: The color of the row the item is in
- * - isCurrentSelected: Whether the current intersection is selected
- * - isCurrent: Whether the item is in the current intersection
- * - bookmarked: Whether the item is in a bookmarked row (true)
- * @private These properties are deliberately only added to bookmarked items, as the current vega spec requires
- *   For example, this defaults all items in unbookmarked rows to the next color instead of DEFAULT_ELEMENT_COLOR.
- */
-export const bookmarkedItemsSelector = selector<VegaItem[]>({
-  key: 'bookmarked-items',
-  get: ({ get }) => {
-    const bookmarkIDs = ([] as string[]).concat(get(bookmarkSelector).map((b) => b.id));
-    const currentIntersection = get(currentIntersectionSelector);
-    if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id))
-      bookmarkIDs.push(currentIntersection?.id);
-
-    const selectionType = get(currentSelectionType);
-    const intersections = get(rowsSelector);
-    const result: VegaItem[] = [];
-
-    bookmarkIDs.forEach((id) => {
-      const row = intersections[id];
-      if (!row) return;
-
-      const memberElements = get(rowItemsSelector(id));
-      result.push(
-        ...memberElements.map((el) => ({
-          ...el.atts,
-          subset: id,
-          subsetName: row.elementName,
-          color: get(bookmarkColorSelector(id)),
-          isCurrentSelected: !!currentIntersection,
-          isCurrent: !!(currentIntersection?.id === id),
-          bookmarked: true,
-          ...(selectionType ? { selectionType } : {}),
-        })),
-      );
-    });
-
-    return result;
-  },
-});
-
-/**
- * Gets all of the items in visible rows.
+ * Gets all of the items in visible rows, processed into VegaItems for use in Vega plots in the element view.
  * All items are given color, isCurrentSelected, isCurrent, and bookmarked properties.
  * Only bookmarked items are given the subset and subsetName properties.
  */
-export const processedItemsSelector = selector<VegaItem[]>({
+export const vegaItemsSelector = selector<VegaItem[]>({
   key: 'processed-items',
   get: ({ get }) => {
     const rows = get(rowsSelector);
@@ -111,28 +64,31 @@ export const processedItemsSelector = selector<VegaItem[]>({
     const currentIntersection = get(currentIntersectionSelector);
     const selectionType = get(currentSelectionType);
     // A wild assignment, but the array returned by Recoil is readonly and we need to add to it
-    const result: VegaItem[] = ([] as VegaItem[]).concat(get(bookmarkedItemsSelector));
+    const result: VegaItem[] = [];
 
     Object.values(rows).forEach((row) => {
-      if (!bookmarkedIDs.includes(row.id) && row.id !== currentIntersection?.id) {
-        const memberElements = get(rowItemsSelector(row.id));
-        result.push(
-          ...memberElements.map((el) => ({
-            ...el.atts,
-            color: DEFAULT_ELEMENT_COLOR,
-            isCurrentSelected: !!currentIntersection,
-            isCurrent: false,
-            bookmarked: false,
-            ...(selectionType ? { selectionType } : {}),
-          })),
-        );
-      }
+      const items = get(rowItemsSelector(row.id));
+      result.push(
+        ...items.map((item) =>
+          itemToVega(
+            item,
+            currentIntersection,
+            selectionType,
+            DEFAULT_ELEMENT_COLOR,
+            (bookmarkedIDs.includes(row.id) || row.id === currentIntersection?.id) && {
+              rowID: row.id,
+              rowName: row.elementName,
+              color: get(bookmarkColorSelector(row.id)),
+            },
+          ),
+        ),
+      );
     });
     return result;
   },
 });
 
-/** Gets all items in visible intersections */
+/** Gets all items in visible rows */
 export const visibleItemsSelector = selector<Item[]>({
   key: 'visible-items',
   get: ({ get }) => {

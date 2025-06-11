@@ -64,23 +64,6 @@ export type Item = {
   atts: { [attr: string]: boolean | number | string };
 };
 
-/**
- * An item from the dataset which has been processed for a Vega plot in the element view.
- * All fields mapped from the record type should be numbers;
- * unfortunately there does not appear to be a way to enforce this in TypeScript.
- * @private This is separate from the Item type because atts need to be flattened and certain other properties
- * are necessary for compatibility with the Vega spec in generatePlotSpec.ts
- */
-export type VegaItem = {
-  subset?: string;
-  subsetName?: string;
-  color: string;
-  isCurrentSelected: boolean;
-  isCurrent: boolean;
-  bookmarked: boolean;
-  selectionType?: Omit<SelectionType, 'null'>;
-} & Record<string, string | number | boolean>;
-
 /** A list of items with labels mapped to item objects */
 export type Items = { [k: string]: Item };
 
