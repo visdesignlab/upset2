@@ -102,7 +102,7 @@ export const SizeHeader: FC = () => {
     },
   ];
 
-  const openContextMenu = (e: MouseEvent) => {
+  const openContextMenu = (e: React.MouseEvent<SVGGElement, MouseEvent>) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -165,6 +165,8 @@ export const SizeHeader: FC = () => {
         setSliding(false);
       });
 
+    // I truly hate to disable no-explicit-any here. If you want to try dealing with d3-drag types, good luck!
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     select(current).call(dragBehavior as any);
 
     return () => {
@@ -256,7 +258,7 @@ export const SizeHeader: FC = () => {
             }
           `}
           transform={translate(0, dimensions.size.scaleHeight + dimensions.size.gap)}
-          onContextMenu={(e: any) => {
+          onContextMenu={(e) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e);
