@@ -67,7 +67,7 @@ export function isBaseRow(r: unknown): r is BaseRow {
     Object.hasOwn(r, 'elementName') &&
     Object.hasOwn(r, 'size') &&
     Object.hasOwn(r, 'type') &&
-    Object.hasOwn(r, 'attributes') &&
+    Object.hasOwn(r, 'atts') &&
     typeof (r as BaseRow).id === 'string' &&
     typeof (r as BaseRow).elementName === 'string' &&
     typeof (r as BaseRow).size === 'number' &&
@@ -641,7 +641,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 
   // selected
   if (!(rowSelection === null || isRow(rowSelection))) {
-    console.warn('Upset config error: Selected is not a row');
+    console.warn('Upset config error: rowSelection is not a row');
     return false;
   }
 
@@ -655,7 +655,7 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   }
 
   // version
-  if (version !== '0.1.4') {
+  if (version !== '0.1.5') {
     console.warn('Upset config error: Invalid version');
     return false;
   }

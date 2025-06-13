@@ -508,7 +508,7 @@ export type UpsetConfig = {
    * (values are stored in rowSelection, vegaSelection, and querySelection above)
    */
   selectionType: 'row' | 'vega' | 'query' | null;
-  version: '0.1.4';
+  version: '0.1.5';
   userAltText: AltText | null;
   /**
    * Whether to display numerical size labels on the intersection size bars.

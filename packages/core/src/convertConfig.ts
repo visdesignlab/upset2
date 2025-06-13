@@ -17,6 +17,7 @@ import {
   SetQuery,
   QuerySelection,
   VegaSelection,
+  SixNumberSummary,
 } from './types';
 import { isUpsetConfig } from './typecheck';
 import { DefaultConfig } from './defaultConfig';
@@ -236,6 +237,89 @@ type Version0_1_3 = {
   setQuery: SetQuery | null;
 };
 
+type Row0_1_4 = {
+  id: string;
+  elementName: string;
+  items: string[];
+  type:
+    | 'Set'
+    | 'Subset'
+    | 'Group'
+    | 'Aggregate'
+    | 'Query Group'
+    | 'Seperator'
+    | 'Undefined';
+  size: number;
+  attributes: Record<string, SixNumberSummary | number>;
+  parent?: string;
+};
+
+type Version0_1_4 = {
+  plotInformation: PlotInformation;
+  horizontal: boolean;
+  firstAggregateBy: AggregateBy;
+  firstOverlapDegree: number;
+  secondAggregateBy: AggregateBy;
+  secondOverlapDegree: number;
+  sortVisibleBy: SortVisibleBy;
+  sortBy: string;
+  sortByOrder: SortByOrder;
+  filters: {
+    maxVisible: number;
+    minVisible: number;
+    hideEmpty: boolean;
+    hideNoSet: boolean;
+  };
+  visibleSets: ColumnName[];
+  visibleAttributes: ColumnName[];
+  attributePlots: AttributePlots;
+  /**
+   * Bookmarked selections, can be intersections or element selections.
+   */
+  bookmarks: Bookmark[];
+  collapsed: string[];
+  plots: {
+    scatterplots: Scatterplot[];
+    histograms: Histogram[];
+  };
+  allSets: Column[];
+  /**
+   * The selected row in the plot
+   */
+  rowSelection: Row0_1_4 | null;
+  /**
+   * Selected elements (data points) from Vega plots in the element view
+   */
+  vegaSelection: VegaSelection | null;
+  /**
+   * Selected elements from the query interface in the element view
+   */
+  querySelection: QuerySelection | null;
+  /**
+   * Which of the 3 selection methods is currently active in the element view
+   * (values are stored in rowSelection, vegaSelection, and querySelection above)
+   */
+  selectionType: 'row' | 'vega' | 'query' | null;
+  version: '0.1.4';
+  userAltText: AltText | null;
+  /**
+   * Whether to display numerical size labels on the intersection size bars.
+   */
+  intersectionSizeLabels: boolean;
+  /**
+   * Whether to display numerical size labels on the set size bars.
+   */
+  setSizeLabels: boolean;
+  /**
+   * Whether to display the hidden sets & their sizes above the plot
+   */
+  showHiddenSets: boolean;
+  /**
+   * Query by set query
+   */
+  setQuery: SetQuery | null;
+};
+
 /**
  * Config type before versioning was implemented.
  */
@@ -322,34 +406,57 @@ function convert0_1_2(config: Version0_1_2): Version0_1_3 {
  * Converts a configuration object from version 0.1.3 to version 0.1.4.
  */
 
-function convert0_1_3(config: Version0_1_3): UpsetConfig {
-  (config as unknown as UpsetConfig).version = '0.1.4';
-  (config as unknown as UpsetConfig).rowSelection = config.selected;
+function convert0_1_3(config: Version0_1_3): Version0_1_4 {
+  (config as unknown as Version0_1_4).version = '0.1.4';
+  // Necessary to cast to any as the subtypes for row have been updated
+  (config as unknown as any).rowSelection = config.selected;
 
   if (config.elementSelection?.type === 'numerical') {
-    (config as unknown as UpsetConfig).querySelection = null;
-    (config as unknown as UpsetConfig).vegaSelection = config.elementSelection.query;
+    (config as unknown as Version0_1_4).querySelection = null;
+    (config as unknown as Version0_1_4).vegaSelection = config.elementSelection.query;
     if (config.elementSelection.active)
-      (config as unknown as UpsetConfig).selectionType = 'vega';
+      (config as unknown as Version0_1_4).selectionType = 'vega';
     else
-      (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
+      (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
   } else if (config.elementSelection?.type === 'element') {
-    (config as unknown as UpsetConfig).vegaSelection = null;
-    (config as unknown as UpsetConfig).querySelection = config.elementSelection.query;
+    (config as unknown as Version0_1_4).vegaSelection = null;
+    (config as unknown as Version0_1_4).querySelection = config.elementSelection.query;
     if (config.elementSelection.active)
-      (config as unknown as UpsetConfig).selectionType = 'query';
+      (config as unknown as Version0_1_4).selectionType = 'query';
     else
-      (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
+      (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
   } else {
-    (config as unknown as UpsetConfig).vegaSelection = null;
-    (config as unknown as UpsetConfig).querySelection = null;
-    (config as unknown as UpsetConfig).selectionType = config.selected ? 'row' : null;
+    (config as unknown as Version0_1_4).vegaSelection = null;
+    (config as unknown as Version0_1_4).querySelection = null;
+    (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
   }
 
   config.bookmarks = config.bookmarks.map((b, i) => ({ ...b, colorIndex: i }));
 
   delete (config as any).elementSelection;
   delete (config as any).selected;
+  return config as unknown as Version0_1_4;
+}
+
+function convert0_1_4(config: Version0_1_4): UpsetConfig {
+  (config as unknown as UpsetConfig).version = '0.1.5';
+  if (config.rowSelection) {
+    (config.rowSelection as unknown as Row).atts = {
+      derived: {
+        deviation: Number.parseFloat(config.rowSelection.attributes.deviation.toString()),
+        degree:
+          typeof config.rowSelection.attributes.degree === 'number'
+            ? config.rowSelection.attributes.degree
+            : undefined,
+      },
+      dataset: Object.fromEntries(
+        Object.entries(config.rowSelection.attributes).filter(
+          ([key, value]) =>
+            key !== 'deviation' && key !== 'degree' && typeof value !== 'number',
+        ) as [string, SixNumberSummary][], // Safe cast as we filter out non-SixNumberSummary attributes
+      ),
+    };
+  }
   return config as unknown as UpsetConfig;
 }
 
@@ -401,6 +508,9 @@ export function convertConfig(config: unknown): UpsetConfig {
     // @ts-expect-error: Fallthrough is intended behavior.
     case '0.1.3':
       convert0_1_3(config as Version0_1_3);
+    // @ts-expect-error: Fallthrough is intended behavior.
+    case '0.1.4':
+      convert0_1_4(config as Version0_1_4);
     default:
       void 0;
     /* eslint-enable no-fallthrough */
