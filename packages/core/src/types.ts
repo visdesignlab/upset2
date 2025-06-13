@@ -559,3 +559,9 @@ export type AltTextConfig = UpsetConfig & {
   processedData?: AccessibleData;
   accessibleProcessedData?: AccessibleData;
 };
+
+export type JSONExport = UpsetConfig & {
+  rawData?: CoreUpsetData;
+  processedData?: Rows;
+  accessibleProcessedData?: AccessibleData;
+};

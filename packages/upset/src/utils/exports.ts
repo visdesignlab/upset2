@@ -2,6 +2,7 @@ import {
   AccessibleData,
   AltTextConfig,
   CoreUpsetData,
+  JSONExport,
   Row,
   Rows,
   UpsetConfig,
@@ -142,11 +143,8 @@ export const exportState = (
   rows?: Rows,
 ): void => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
-  let dataObj = provenance.getState() as UpsetConfig & {
-    rawData?: CoreUpsetData;
-    processedData?: Rows;
-    accessibleProcessedData?: AccessibleData;
-  };
+  // Make a new type for the state download
+  let dataObj = provenance.getState() as JSONExport;
 
   if (data && rows) {
     const updatedRows = generateElementName(rows);
