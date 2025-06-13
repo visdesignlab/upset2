@@ -97,11 +97,13 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
     encoding: {
       x: {
         field: spec.x,
+        title: spec.x,
         type: 'quantitative',
         scale: { zero: false, type: spec.xScaleLog ? 'log' : 'linear' },
       },
       y: {
         field: spec.y,
+        title: spec.y,
         type: 'quantitative',
         scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
@@ -312,7 +314,11 @@ export function generateHistogramSpec(
           ],
           mark: 'line',
           encoding: {
-            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            x: {
+              field: hist.attribute,
+              type: 'quantitative',
+              title: hist.attribute,
+            },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: { value: DEFAULT_ELEMENT_COLOR },
             opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
@@ -328,7 +334,11 @@ export function generateHistogramSpec(
           ],
           mark: 'line',
           encoding: {
-            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            x: {
+              field: hist.attribute,
+              type: 'quantitative',
+              title: hist.attribute,
+            },
             y: { field: 'density', type: 'quantitative', title: 'Probability' },
             color: COLOR,
             opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
@@ -343,7 +353,11 @@ export function generateHistogramSpec(
           ],
           mark: 'line',
           encoding: {
-            x: { field: hist.attribute, type: 'quantitative', title: hist.attribute },
+            x: {
+              field: hist.attribute,
+              type: 'quantitative',
+              title: hist.attribute,
+            },
             y: { field: 'density', type: 'quantitative' },
             color: { value: vegaSelectionColor },
             opacity: { value: selectionTypeRow ? 0.4 : 1 },
@@ -399,7 +413,11 @@ export function generateHistogramSpec(
         ],
         mark: 'bar',
         encoding: {
-          x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+          x: {
+            field: hist.attribute,
+            bin: { maxbins: hist.bins },
+            title: hist.attribute,
+          },
           y: { aggregate: 'count', title: 'Frequency' },
           color: { value: vegaSelectionColor },
           opacity: { value: 1 },

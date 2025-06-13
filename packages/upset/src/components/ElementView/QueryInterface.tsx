@@ -83,6 +83,7 @@ export const QueryInterface = () => {
     ) {
       actions.setQuerySelection({
         att: attField,
+        // This as cast is safe because we check the typeField against ElementQueryType prior to this conditional
         type: (typeField as ElementQueryType) || ElementQueryType.EQUALS,
         query: queryField,
       });

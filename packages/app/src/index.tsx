@@ -68,7 +68,12 @@ oAuth.maybeRestoreLogin().then(() => {
     invalidateSharedLoginCookie();
   }
 
-  const container = document.getElementById('root') as HTMLElement;
+  const container = document.getElementById('root');
+  if (!container) {
+    console.error('Root container not found');
+    return;
+  }
+
   const root = createRoot(container);
   root.render(
     <React.StrictMode>

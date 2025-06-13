@@ -1,6 +1,5 @@
 import {
   Aggregate,
-  BaseIntersection,
   Item,
   Row,
   flattenedOnlyRows,
@@ -9,6 +8,7 @@ import {
   filterByVega,
   filterByQuery,
   SelectionType,
+  isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -24,6 +24,8 @@ import { dataAtom } from './dataAtom';
 import { upsetConfigAtom } from './config/upsetConfigAtoms';
 import { rowsSelector } from './renderRowsAtom';
 import { DEFAULT_ELEMENT_COLOR } from '../utils/styles';
+import { VegaItem } from '../types';
+import { itemToVega } from '../typeutils';
 
 /**
  * Gets all items in the row/intersection represented by the provided ID.
@@ -50,84 +52,51 @@ export const rowItemsSelector = selectorFamily<Item[], string | null | undefined
 });
 
 /**
- * Gets all elements in the bookmarked intersections and the currently selected intersection,
- * with coloring and selection properties as well as a 'true' bookmarked property.
- * @returns The elements in the bookmarked/selected intersections with the following props added:
- * - subset: The ID of the row the item is in
- * - subsetName: The name of the row the item is in
- * - color: The color of the row the item is in
- * - isCurrentSelected: Whether the current intersection is selected
- * - isCurrent: Whether the item is in the current intersection
- * - bookmarked: Whether the item is in a bookmarked row (true)
- * @private These properties are deliberately only added to bookmarked items, as the current vega spec requires
- *   For example, this defaults all items in unbookmarked rows to the next color instead of DEFAULT_ELEMENT_COLOR.
- */
-export const bookmarkedItemsSelector = selector<Item[]>({
-  key: 'bookmarked-items',
-  get: ({ get }) => {
-    const bookmarkIDs = ([] as string[]).concat(get(bookmarkSelector).map((b) => b.id));
-    const currentIntersection = get(currentIntersectionSelector);
-    if (currentIntersection?.id && !bookmarkIDs.includes(currentIntersection?.id))
-      bookmarkIDs.push(currentIntersection?.id);
-
-    const selectionType = get(currentSelectionType);
-    const intersections = get(rowsSelector);
-    const result: Item[] = [];
-
-    bookmarkIDs.forEach((id) => {
-      const row = intersections[id];
-      if (!row) return;
-
-      const memberElements = get(rowItemsSelector(id));
-      result.push(
-        ...memberElements.map((el) => ({
-          ...el,
-          subset: id,
-          subsetName: row.elementName,
-          color: get(bookmarkColorSelector(id)),
-          isCurrentSelected: !!currentIntersection,
-          isCurrent: !!(currentIntersection?.id === id),
-          bookmarked: true,
-          ...(selectionType ? { selectionType } : {}),
-        })),
-      );
-    });
-
-    return result;
-  },
-});
-
-/**
- * Gets all of the items in visible rows.
+ * Gets all of the items in visible rows, processed into VegaItems for use in Vega plots in the element view.
  * All items are given color, isCurrentSelected, isCurrent, and bookmarked properties.
  * Only bookmarked items are given the subset and subsetName properties.
  */
-export const processedItemsSelector = selector<Item[]>({
+export const vegaItemsSelector = selector<VegaItem[]>({
   key: 'processed-items',
   get: ({ get }) => {
     const rows = get(rowsSelector);
-    const items = get(itemsAtom);
     const bookmarkedIDs = get(bookmarkSelector).map((b) => b.id);
     const currentIntersection = get(currentIntersectionSelector);
     const selectionType = get(currentSelectionType);
     // A wild assignment, but the array returned by Recoil is readonly and we need to add to it
-    const result: Item[] = ([] as Item[]).concat(get(bookmarkedItemsSelector));
+    const result: VegaItem[] = [];
 
     Object.values(rows).forEach((row) => {
-      if (!bookmarkedIDs.includes(row.id) && row.id !== currentIntersection?.id) {
-        const memberElements = getItems(row);
-        result.push(
-          ...memberElements.map((el) => ({
-            ...items[el],
-            color: DEFAULT_ELEMENT_COLOR,
-            isCurrentSelected: !!currentIntersection,
-            isCurrent: false,
-            bookmarked: false,
-            ...(selectionType ? { selectionType } : {}),
-          })),
-        );
-      }
+      const items = get(rowItemsSelector(row.id));
+      result.push(
+        ...items.map((item) =>
+          itemToVega(
+            item,
+            currentIntersection,
+            selectionType,
+            DEFAULT_ELEMENT_COLOR,
+            (bookmarkedIDs.includes(row.id) || row.id === currentIntersection?.id) && {
+              rowID: row.id,
+              rowName: row.elementName,
+              color: get(bookmarkColorSelector(row.id)),
+            },
+          ),
+        ),
+      );
     });
+    return result;
+  },
+});
+
+/** Gets all items in visible rows */
+export const visibleItemsSelector = selector<Item[]>({
+  key: 'visible-items',
+  get: ({ get }) => {
+    const rows = get(rowsSelector);
+    const result: Item[] = [];
+    Object.values(rows).forEach((row) =>
+      get(rowItemsSelector(row.id)).forEach((item) => result.push(item)),
+    );
     return result;
   },
 });
@@ -145,13 +114,13 @@ const filteredItems = selector<FilteredItems>({
     const type = get(currentSelectionType);
     if (type === 'vega') {
       const selection = get(currentVegaSelection);
-      if (selection) return filterByVega(get(processedItemsSelector), selection);
+      if (selection) return filterByVega(get(visibleItemsSelector), selection);
     }
     if (type === 'query') {
       const selection = get(currentQuerySelection);
-      if (selection) return filterByQuery(get(processedItemsSelector), selection);
+      if (selection) return filterByQuery(get(visibleItemsSelector), selection);
     }
-    return { included: [], excluded: get(processedItemsSelector) };
+    return { included: [], excluded: get(visibleItemsSelector) };
   },
 });
 
@@ -167,7 +136,7 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
     if (type === 'vega' || type === 'query') return get(filteredItems).included;
     if (type === 'row')
       return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
-    return get(processedItemsSelector);
+    return get(visibleItemsSelector);
   },
 });
 
@@ -183,12 +152,16 @@ export const attValuesSelector = selectorFamily<number[], { row: Row; att: strin
     ({ get }) => {
       const items = get(rowItemsSelector(row.id));
 
-      // We could filter the whole array before we map, but attributes should all be the same type,
-      // so its sufficient and more performant to only check the first attribute
-      if (!items[0] || !items[0][att] || typeof items[0][att] !== 'number') {
+      // Basic check for performance reasons; we can eliminate most cases with this
+      if (!items[0] || !items[0].atts[att] || typeof items[0].atts[att] !== 'number') {
         return [];
       }
-      return items.map((item) => item[att] as number);
+      return (
+        items
+          // Safely cast the attribute to a number since we filter after
+          .map((item) => item.atts[att] as number)
+          .filter((val) => !Number.isNaN(val))
+      );
     },
 });
 
@@ -279,11 +252,9 @@ export const aggregateSelectedCount = selectorFamily<
     ({ agg, type }) =>
     ({ get }) => {
       let total = 0;
-      Object.entries(
-        agg.items.values as { [id: string]: BaseIntersection | Aggregate },
-      ).forEach(([id, value]) => {
-        total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
-          ? get(aggregateSelectedCount({ agg: value as Aggregate, type }))
+      Object.entries(agg.rows.values).forEach(([id, value]) => {
+        total += isRowAggregate(value)
+          ? get(aggregateSelectedCount({ agg: value, type }))
           : get(subsetSelectedCount({ id, type }));
       });
       return total;

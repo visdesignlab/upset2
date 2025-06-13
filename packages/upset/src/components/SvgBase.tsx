@@ -6,7 +6,6 @@ import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
 import { ProvenanceContext } from './Root';
 import { currentIntersectionSelector } from '../atoms/config/selectionAtoms';
-import { calculateDimensions } from '../dimensions';
 import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
 import { UpsetActions } from '../provenance';
 
@@ -18,7 +17,7 @@ export const SvgBase: FC = ({ children }) => {
 
   let { height } = dimensions;
 
-  if (dimensions as ReturnType<typeof calculateDimensions>) {
+  if (dimensions) {
     if (queryBySetsInterfaceOpen) {
       height += dimensions.setQuery.height + dimensions.setQuery.spacer;
     }

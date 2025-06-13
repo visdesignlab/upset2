@@ -11,7 +11,6 @@ import {
   MenuItem,
   OutlinedInput,
   Select,
-  SelectChangeEvent,
   Button,
 } from '@mui/material';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
@@ -45,7 +44,7 @@ export const ErrorModal = () => {
     needOneHot = true;
   }
 
-  const handleChange = (e: SelectChangeEvent) => {
+  const handleChange = (e: { target: { value: string[] | string } }) => {
     const {
       target: { value },
     } = e;
@@ -83,13 +82,13 @@ export const ErrorModal = () => {
                   labelId="multiple-checkbox-label"
                   id="multiple-checkbox"
                   multiple
-                  value={encodeList as any}
+                  value={encodeList}
                   onChange={handleChange}
                   input={<OutlinedInput label="Columns to encode" />}
-                  renderValue={(selected: any) => selected.join(', ')}
+                  renderValue={(selected) => selected.join(', ')}
                   MenuProps={MenuProps}
                 >
-                  {Object.entries(data.columnTypes).map(([name, type]) => (
+                  {Object.entries(data.columnTypes).map(([name]) => (
                     <MenuItem key={name} value={name}>
                       <Checkbox checked={encodeList.includes(name)} />
                       <ListItemText primary={name} />

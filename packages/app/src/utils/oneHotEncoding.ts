@@ -17,7 +17,7 @@ export const oneHotEncode = (
   //    ex: group1_a, group1_b, group2_a, group2_b, group3_c, ....
   encodeList.forEach((s) =>
     Object.entries(data.items).forEach(([_, row]) => {
-      const names = `${row[s]}`
+      const names = `${row.atts[s]}`
         .split(',')
         .filter((n) => n !== '')
         .map((val) => `${s}_${val}`);
@@ -30,7 +30,7 @@ export const oneHotEncode = (
   Object.entries(encodedData.items).forEach(([_, row]) => {
     Array.from(uniqueColNames).forEach((col) => {
       const splitCol = col.split('_');
-      row[col] = `${row[splitCol[0]]}`.includes(splitCol[1]);
+      row.atts[col] = `${row.atts[splitCol[0]]}`.includes(splitCol[1]);
     });
   });
 
@@ -43,7 +43,12 @@ export const oneHotEncode = (
 
   // Casting as the columnTypes will always be 'boolean', so
   return process(
-    Object.values(encodedData.items).map((item) => ({ _key: '', _rev: '', ...item })),
+    Object.values(encodedData.items).map((item) => ({
+      _key: '',
+      _rev: '',
+      _id: '',
+      ...item.atts,
+    })),
     annotations,
   );
 };

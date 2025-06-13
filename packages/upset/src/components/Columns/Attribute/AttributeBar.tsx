@@ -57,7 +57,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
    */
   const attPlotToRender: React.JSX.Element = useMemo(() => {
     // for every entry in attributePlotType, if the attribute matches the current attribute, return the corresponding plot
-    if (Object.keys(attributePlots).includes(attribute)) {
+    if (Object.keys(attributePlots).includes(attribute) && typeof summary !== 'number') {
       const plot = attributePlots[attribute];
 
       // render a dotplot for all rows <= 5, except for Strip Plots which encode the same information
@@ -75,7 +75,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
 
       switch (plot) {
         case 'Box Plot':
-          return <BoxPlot scale={scale} summary={summary as SixNumberSummary} />;
+          return <BoxPlot scale={scale} summary={summary} />;
         case 'Strip Plot':
           return (
             <StripPlot

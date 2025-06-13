@@ -9,6 +9,7 @@ export const getUserInfo = async () => {
   try {
     const info = await api.userInfo();
     return info;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (e: any) {
     if (e.response && e.response.status === 401) {
       return null;

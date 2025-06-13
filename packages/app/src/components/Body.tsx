@@ -1,5 +1,5 @@
-import { AltText, Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
+import { Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
+import { AltText, CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Backdrop, CircularProgress } from '@mui/material';
@@ -117,6 +117,7 @@ export const Body = ({ data, config }: Props) => {
     let response;
     try {
       response = await generateAltText(ATConfig);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (e: any) {
       if (e.response.status === 500) {
         throw Error(

@@ -92,7 +92,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
     setIsMenuOpen(false);
   };
 
-  const handleLoginOpen = (event: React.MouseEvent<any>) => {
+  const handleLoginOpen = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
     setLoginMenuOpen(true);
   };

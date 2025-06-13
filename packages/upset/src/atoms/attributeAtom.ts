@@ -46,7 +46,8 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
     ({ get }) => {
       const items = get(itemsAtom);
       const values = Object.values(items)
-        .map((item) => item[attribute] as number)
+        // Cast to number so we get the correct return type; this cast is guaranteed by the filter statement
+        .map((item) => item.atts[attribute] as number)
         .filter((val) => !Number.isNaN(val));
 
       return values;
@@ -68,7 +69,7 @@ const categorySizeOrderSelector = selectorFamily<string[], string>({
 
       const categories = items.reduce(
         (acc, item) => {
-          const value = item[attribute];
+          const value = item.atts[attribute];
           if (typeof value === 'string' && value) {
             acc[value] = (acc[value] || 0) + 1;
           }
@@ -91,7 +92,7 @@ const categorySizeOrderSelector = selectorFamily<string[], string>({
  * @returns {Object} Object with category names as keys and their counts as values
  */
 export const categoricalCountSelector = selectorFamily<
-  { [key: string]: number },
+  Record<string, number>,
   { row: string; attribute: string }
 >({
   key: 'categorical-count',
@@ -105,12 +106,12 @@ export const categoricalCountSelector = selectorFamily<
           acc[category] = 0;
           return acc;
         },
-        {} as { [key: string]: number },
+        {} as Record<string, number>,
       );
 
       items.forEach((item) => {
-        if (typeof item[attribute] !== 'string' || !item[attribute]) return;
-        const value = item[attribute];
+        if (typeof item.atts[attribute] !== 'string' || !item.atts[attribute]) return;
+        const value = item.atts[attribute];
         if (value in result) result[value] += 1;
         else result[value] = 1;
       });
@@ -148,10 +149,7 @@ export const maxCategorySizeSelector = selectorFamily<number, string>({
  * @param {number} att Attribute to return category colors for
  * @returns A map of category names to colors
  */
-export const categoricalColorSelector = selectorFamily<
-  { [category: string]: string },
-  string
->({
+export const categoricalColorSelector = selectorFamily<Record<string, string>, string>({
   key: 'categorical-color',
   get:
     (att) =>
@@ -164,7 +162,7 @@ export const categoricalColorSelector = selectorFamily<
           }
           return acc;
         },
-        {} as { [category: string]: string },
+        {} as Record<string, string>,
       );
     },
 });

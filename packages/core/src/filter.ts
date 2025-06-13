@@ -1,6 +1,11 @@
 import { getAggSize } from './aggregate';
-import { Aggregates, Intersections, Rows } from './types';
-import { areRowsSubsets, getDegreeFromSetMembership } from './typeutils';
+import { Intersections, Rows } from './types';
+import {
+  areRowsAggregates,
+  areRowsSubsets,
+  getDegreeFromSetMembership,
+  isRowAggregate,
+} from './typeutils';
 import { deepCopy } from './utils';
 
 /**
@@ -77,24 +82,23 @@ export function filterRows(
 
   if (areRowsSubsets(rows)) {
     return filterIntersections(rows, filters);
-  }
+  } else if (!areRowsAggregates(rows, true))
+    console.error('Type error: Rows are not subsets or aggregates: ', rows);
 
-  const aggs: Aggregates = filterIntersections(rows as any, filters) as any;
+  const filtered = filterIntersections(rows, filters);
 
-  aggs.order.forEach((aggId) => {
-    const { items } = aggs.values[aggId];
-
-    const newItems = filterRows(items, filters);
-
-    aggs.values[aggId].items = newItems;
-
-    aggs.values[aggId].size = getAggSize(aggs.values[aggId]);
-
-    if (aggs.values[aggId].size <= 0) {
-      delete aggs.values[aggId];
-      aggs.order = aggs.order.filter((agg) => agg !== aggId);
+  filtered.order.forEach((rowOrder) => {
+    const row = filtered.values[rowOrder];
+    if (isRowAggregate(row)) {
+      const newItems = filterRows(row.rows, filters);
+      row.rows = newItems;
+      row.size = getAggSize(filtered.values[rowOrder]);
+    }
+    if (filtered.values[rowOrder].size <= 0) {
+      delete filtered.values[rowOrder];
+      filtered.order = filtered.order.filter((agg) => agg !== rowOrder);
     }
   });
 
-  return aggs;
+  return filtered;
 }

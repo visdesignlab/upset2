@@ -113,7 +113,7 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
         vegaSelected={vegaSelected}
         querySelected={querySelected}
       />
-      <AttributeBars attributes={subset.attributes} row={subset} />
+      <AttributeBars attributes={subset.atts} row={subset} />
     </g>
   );
 };

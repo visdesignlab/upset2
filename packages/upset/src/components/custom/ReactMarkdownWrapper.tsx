@@ -4,14 +4,12 @@ import Markdown from 'react-markdown';
 // Wrapper for the Markdown component to parse and render the alt-txt json
 export default function ReactMarkdownWrapper({ text }: { text: string }) {
   const components = {
-    // eslint-disable-next-line jsx-a11y/heading-has-content
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     h1: ({ node, ...props }: { node: any }) => (
       <h3 id={node.children[0].value} {...props} />
     ),
-    // eslint-disable-next-line jsx-a11y/heading-has-content
-    p: ({ node, ...props }: { node: any }) => <Typography {...props} />,
-    // eslint-disable-next-line jsx-a11y/heading-has-content
-    ul: ({ node, ...props }: { node: any }) => (
+    p: ({ ...props }) => <Typography {...props} />,
+    ul: ({ ...props }) => (
       <ul
         {...props}
         // Matches the MUI typography style used for p elements

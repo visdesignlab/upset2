@@ -20,9 +20,9 @@ type Props = {
 const defaultTickFormatter = (d: number) => {
   if (d >= 1000000) return `${d.toString()[0]}e${d.toString().length - 1}`;
 
-  if (d >= 500000) return `${(d as number) / 100000}M`;
+  if (d >= 500000) return `${d / 100000}M`;
 
-  if (d >= 1000) return `${(d as number) / 1000}K`;
+  if (d >= 1000) return `${d / 1000}K`;
 
   return d;
 };

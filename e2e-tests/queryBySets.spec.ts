@@ -4,7 +4,9 @@ import { beforeTest } from './common';
 test.beforeEach(beforeTest);
 
 test('Query by Sets', async ({ page }) => {
-  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.goto(
+    'http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193',
+  );
 
   // open Query by sets interface
   await page.getByTestId('AddIcon').locator('path').click();

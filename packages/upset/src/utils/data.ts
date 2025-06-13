@@ -1,4 +1,4 @@
-import { process } from '@visdesignlab/upset2-core';
+import { ColumnType, process } from '@visdesignlab/upset2-core';
 import { UpsetItem } from '../types';
 
 /**
@@ -7,12 +7,29 @@ import { UpsetItem } from '../types';
  * @param data - The array of UpsetItem objects.
  * @returns An object containing attribute columns derived from the data.
  */
-function deriveAttributeColumns(data: UpsetItem[]) {
-  const attributeColumns: Record<string, any> = {};
+function deriveAttributeColumns(data: UpsetItem[]): Record<string, ColumnType> {
+  const attributeColumns: Record<string, ColumnType> = {};
 
   if (data.length > 0) {
     Object.entries(data[0]).forEach(([key, value]) => {
-      attributeColumns[key] = typeof value === 'string' ? 'label' : typeof value;
+      const type = typeof value;
+      switch (type) {
+        case 'string':
+          attributeColumns[key] = 'label';
+          break;
+        case 'bigint':
+          attributeColumns[key] = 'number';
+          break;
+        case 'symbol':
+          attributeColumns[key] = 'string';
+          break;
+        case 'undefined':
+        case 'object':
+        case 'function':
+          break; // Skip undefined, object, and function types
+        default:
+          attributeColumns[key] = type;
+      }
     });
   }
 
@@ -28,5 +45,13 @@ function deriveAttributeColumns(data: UpsetItem[]) {
 export function processRawData(data: UpsetItem[]) {
   const attributeColumns = deriveAttributeColumns(data);
 
-  return process(data as any, { columns: attributeColumns } as any);
+  return process(
+    data.map((item) => ({
+      ...item,
+      _key: item.id.toString(),
+      _id: item.id.toString(),
+      _rev: '',
+    })),
+    attributeColumns,
+  );
 }

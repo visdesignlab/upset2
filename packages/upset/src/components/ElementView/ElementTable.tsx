@@ -15,7 +15,8 @@ import { dataAttributeSelector } from '../../atoms/attributeAtom';
 function useRows(items: Item[]): GridRowsProp {
   return useMemo(() => {
     const newItems: GridRowsProp = items.map((item) => ({
-      ...item,
+      ...item.atts,
+      _label: item._label,
       id: item._id,
     }));
 

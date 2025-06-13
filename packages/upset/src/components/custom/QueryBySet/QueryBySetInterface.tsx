@@ -62,7 +62,7 @@ export const QueryBySetInterface = () => {
     });
 
     setMembership(newMembership);
-  }, [visibleSets, membership]);
+  }, [visibleSets]); // DO NOT add membership here, otherwise it will cause an infinite loop
 
   function handleEditQueryTitle() {
     // There is likely a better way to do this, but for now alert works fine.

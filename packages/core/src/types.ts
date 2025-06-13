@@ -57,12 +57,14 @@ export type RowType =
   | 'Seperator'
   | 'Undefined';
 
+/** An item in the dataset; referred to in the UI as an element */
 export type Item = {
   _id: string;
   _label: string;
-  [attr: string]: boolean | number | string;
+  atts: { [attr: string]: boolean | number | string };
 };
 
+/** A list of items with labels mapped to item objects */
 export type Items = { [k: string]: Item };
 
 /** Items filtered by some query into included and excluded groups */
@@ -98,33 +100,33 @@ export type SixNumberSummary = {
   third?: number;
 };
 
-/**
- * Represents a list of attributes and their corresponding values.
- * The keys are attribute names and the values can be either a `SixNumberSummary` object or a number (deviation).
- */
-export type AttributeList = {
-  [attribute: string]: SixNumberSummary | number;
-};
+/** A list of attributes on a row; maps att names to summaries of the numerical props of the att */
+export type AttributeList = Record<string, SixNumberSummary>;
 
 /**
  * List of attributes for a subset ([attr1, attr2, deviation, degree, etc])
  */
-export type Attributes = AttributeList & {
-  /**
-   * The deviation of the subset.
-   */
-  deviation: number;
-  /**
-   * The degree of the subset.
-   */
-  degree?: number;
+export type Attributes = {
+  /** Atts computed by Upset */
+  derived: {
+    /**
+     * The deviation of the subset.
+     */
+    deviation: number;
+    /**
+     * The degree of the subset.
+     */
+    degree?: number;
+  };
+  /** Atts defined as table columns in the dataset */
+  dataset: AttributeList;
 };
 
 /**
- * Represents a base element.
- * @private typechecked by isBaseElement in typecheck.ts; changes here must be reflected there
+ * Template for a row/intersection which can be a subset or an aggregat e
+ * @private typechecked by isBaseRow in typecheck.ts; changes here must be reflected there
  */
-export type BaseElement = {
+export type BaseRow = {
   /**
    * The ID of the element.
    */
@@ -135,8 +137,9 @@ export type BaseElement = {
   elementName: string;
   /**
    * The items associated with the element.
+   * Optional, as aggregates do not have items.
    */
-  items: string[];
+  items?: string[];
   /**
    * The type of the element.
    */
@@ -148,7 +151,7 @@ export type BaseElement = {
   /**
    * The attributes of the element.
    */
-  attributes: Attributes;
+  atts: Attributes;
   /**
    * The parent element ID, if any.
    */
@@ -163,7 +166,7 @@ export const UNINCLUDED = 'unincluded';
  * Base Intersection type for subsets and aggregates.
  * @private typechecked by isBaseIntersection in typecheck.ts; changes here must be reflected there
  */
-export type BaseIntersection = BaseElement & {
+export type BaseIntersection = BaseRow & {
   setMembership: { [key: string]: SetMembershipStatus };
 };
 
@@ -216,7 +219,7 @@ export type Aggregate = Omit<Subset, 'items'> & {
   aggregateBy: AggregateBy;
   level: number;
   description: string;
-  items:
+  rows:
     | Subsets
     | {
         values: { [agg_id: string]: Aggregate };
@@ -432,12 +435,12 @@ export type AltText = {
   /**
    * The long description for the Upset plot.
    */
-  longDescription: string | null;
+  longDescription: string;
 
   /**
    * The short description for the Upset plot.
    */
-  shortDescription: string | null;
+  shortDescription: string;
 
   /**
    * The technique description for the Upset plot.
@@ -505,7 +508,7 @@ export type UpsetConfig = {
    * (values are stored in rowSelection, vegaSelection, and querySelection above)
    */
   selectionType: 'row' | 'vega' | 'query' | null;
-  version: '0.1.4';
+  version: '0.1.5';
   userAltText: AltText | null;
   /**
    * Whether to display numerical size labels on the intersection size bars.
@@ -529,13 +532,18 @@ export type AccessibleDataEntry = {
   elementName: string;
   type: RowType;
   size: number;
-  attributes: Attributes;
+  /**
+   * Attributes of the data entry.
+   * @private Currently needs to be flat and named 'Attributes' to be compatible with the Upset text generator
+   */
+  attributes: Record<string, SixNumberSummary | number>;
   degree: number;
   id?: string;
   setMembership?: {
     [set: string]: SetMembershipStatus;
   };
-  items?: {
+  /** If this is an aggregate row, represents sub-rows */
+  rows?: {
     [row: string]: AccessibleDataEntry;
   };
 };
@@ -547,6 +555,12 @@ export type AccessibleData = {
 };
 
 export type AltTextConfig = UpsetConfig & {
+  rawData?: CoreUpsetData;
+  processedData?: AccessibleData;
+  accessibleProcessedData?: AccessibleData;
+};
+
+export type JSONExport = UpsetConfig & {
   rawData?: CoreUpsetData;
   processedData?: Rows;
   accessibleProcessedData?: AccessibleData;

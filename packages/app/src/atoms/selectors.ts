@@ -34,7 +34,7 @@ export const attributeValuesCount = selectorFamily<number, string>({
   get:
     (att: string) =>
     ({ get }) =>
-      Object.values(get(itemsSelector)).filter((item) => !!item[att]).length,
+      Object.values(get(itemsSelector)).filter((item) => !!item.atts[att]).length,
 });
 
 /**

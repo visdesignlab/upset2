@@ -197,7 +197,7 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
           vegaSelected={vegaSelected}
           querySelected={querySelected}
         />
-        <AttributeBars attributes={aggregateRow.attributes} row={aggregateRow} />
+        <AttributeBars attributes={aggregateRow.atts} row={aggregateRow} />
       </g>
     </g>
   );

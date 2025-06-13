@@ -1,16 +1,16 @@
 import {
   Intersections,
-  Aggregates,
   Rows,
   SortVisibleBy,
   Sets,
   SortByOrder,
-  SixNumberSummary,
+  BaseIntersection,
 } from './types';
 import {
   areRowsSubsets,
   getBelongingSetsFromSetMembership,
   getDegreeFromSetMembership,
+  isRowAggregate,
 } from './typeutils';
 import { deepCopy } from './utils';
 
@@ -41,7 +41,12 @@ function sortBySize(rows: Intersections, sortOrder?: SortByOrder) {
  * @param {SortVisibleBy} vSetSortBy - The sort order for visible sets.
  * @returns A number indicating the comparison result.
  */
-function compareUnionSizes(a: any, b: any, visibleSets: Sets, vSetSortBy: SortVisibleBy) {
+function compareUnionSizes(
+  a: BaseIntersection,
+  b: BaseIntersection,
+  visibleSets: Sets,
+  vSetSortBy: SortVisibleBy,
+) {
   const aUnionSize = Object.entries(a.setMembership)
     .filter(([_key, value]) => value === 'Yes')
     .map(([key, _value]) => visibleSets[key].size)
@@ -105,8 +110,8 @@ function sortByDegree(
 function sortByDeviation(rows: Intersections, sortByOrder?: SortByOrder) {
   const { values, order } = rows;
   order.sort((a, b) => {
-    const devA = values[a].attributes.deviation;
-    const devB = values[b].attributes.deviation;
+    const devA = values[a].atts.derived.deviation;
+    const devB = values[b].atts.derived.deviation;
     return sortByOrder === 'Ascending' ? devA - devB : devB - devA;
   });
 
@@ -179,8 +184,22 @@ function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: Sort
   const { values, order } = rows;
 
   order.sort((a, b) => {
-    const meanA = (values[a].attributes[sortBy] as SixNumberSummary).mean;
-    const meanB = (values[b].attributes[sortBy] as SixNumberSummary).mean;
+    let meanA: number | undefined = 0;
+    let meanB: number | undefined = 0;
+    if (sortBy === 'Degree') {
+      meanA =
+        values[a].atts.derived.degree ??
+        getDegreeFromSetMembership(values[a].setMembership);
+      meanB =
+        values[b].atts.derived.degree ??
+        getDegreeFromSetMembership(values[b].setMembership);
+    } else if (sortBy === 'Deviation') {
+      meanA = values[a].atts.derived.deviation;
+      meanB = values[b].atts.derived.deviation;
+    } else {
+      meanA = values[a].atts.dataset[sortBy].mean;
+      meanB = values[b].atts.dataset[sortBy].mean;
+    }
 
     // If one of the values is undefined (empty subset), sort it to the bottom
     if (!meanA) {
@@ -253,20 +272,14 @@ export function sortRows(
     return sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   }
 
-  const aggs: Aggregates = sortIntersections(
-    rows as any,
-    sortBy,
-    vSetSortBy,
-    visibleSets,
-    sortByOrder,
-  ) as any;
-
+  const aggs = sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   aggs.order.forEach((aggId) => {
-    const { items } = aggs.values[aggId];
+    const agg = aggs.values[aggId];
+    if (!isRowAggregate(agg)) return;
+    const { rows } = agg;
+    const newItems = sortRows(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
 
-    const newItems = sortRows(items, sortBy, vSetSortBy, visibleSets, sortByOrder);
-
-    aggs.values[aggId].items = newItems;
+    agg.rows = newItems;
   });
 
   return aggs;

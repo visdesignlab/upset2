@@ -143,7 +143,7 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
             id="x-select"
             value={x}
             label="X"
-            onChange={(event) => setX(event.target.value as string)}
+            onChange={(event) => setX(event.target.value)}
           >
             {attributeColumns.map((attr) => (
               <MenuItem key={attr} value={attr}>
@@ -162,7 +162,7 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
             id="y-select"
             value={y}
             label="Y"
-            onChange={(event) => setY(event.target.value as string)}
+            onChange={(event) => setY(event.target.value)}
           >
             {attributeColumns.map((attr) => (
               <MenuItem key={attr} value={attr}>
@@ -239,7 +239,7 @@ export const AddHistogram: FC<Props & { density: boolean }> = ({
             id="attribute-select"
             value={attribute}
             label="Attribute"
-            onChange={(event) => setAttribute(event.target.value as string)}
+            onChange={(event) => setAttribute(event.target.value)}
           >
             {attributeColumns.map((attr) => (
               <MenuItem key={attr} value={attr}>
