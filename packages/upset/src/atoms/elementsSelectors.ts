@@ -1,6 +1,5 @@
 import {
   Aggregate,
-  BaseIntersection,
   Item,
   Row,
   flattenedOnlyRows,
@@ -9,6 +8,7 @@ import {
   filterByVega,
   filterByQuery,
   SelectionType,
+  isRowAggregate,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -152,12 +152,16 @@ export const attValuesSelector = selectorFamily<number[], { row: Row; att: strin
     ({ get }) => {
       const items = get(rowItemsSelector(row.id));
 
-      // We could filter the whole array before we map, but attributes should all be the same type,
-      // so its sufficient and more performant to only check the first attribute
+      // Basic check for performance reasons; we can eliminate most cases with this
       if (!items[0] || !items[0].atts[att] || typeof items[0].atts[att] !== 'number') {
         return [];
       }
-      return items.map((item) => item.atts[att] as number);
+      return (
+        items
+          // Safely cast the attribute to a number since we filter after
+          .map((item) => item.atts[att] as number)
+          .filter((val) => !Number.isNaN(val))
+      );
     },
 });
 
@@ -248,11 +252,9 @@ export const aggregateSelectedCount = selectorFamily<
     ({ agg, type }) =>
     ({ get }) => {
       let total = 0;
-      Object.entries(
-        agg.rows.values as { [id: string]: BaseIntersection | Aggregate },
-      ).forEach(([id, value]) => {
-        total += Object.prototype.hasOwnProperty.call(value, 'aggregateBy')
-          ? get(aggregateSelectedCount({ agg: value as Aggregate, type }))
+      Object.entries(agg.rows.values).forEach(([id, value]) => {
+        total += isRowAggregate(value)
+          ? get(aggregateSelectedCount({ agg: value, type }))
           : get(subsetSelectedCount({ id, type }));
       });
       return total;

@@ -24,7 +24,7 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { AggregateBy, aggregateByList, BaseRow } from '@visdesignlab/upset2-core';
+import { aggregateByList, BaseRow, isAggregateBy } from '@visdesignlab/upset2-core';
 import React, {
   CSSProperties,
   FC,
@@ -117,6 +117,7 @@ type ToggleProps = {
   checked: boolean;
   /** The function to call when the toggle changes */
   onChange: (
+    // eslint-disable-next-line no-unused-vars
     ev: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 };
@@ -386,7 +387,13 @@ export const SettingsSidebar = () => {
               <RadioGroup
                 value={firstAggregateBy}
                 onChange={(ev) => {
-                  const newAggBy: AggregateBy = ev.target.value as AggregateBy;
+                  const newAggBy = ev.target.value;
+                  if (!isAggregateBy(newAggBy)) {
+                    console.error(
+                      `Invalid aggregate by value: ${newAggBy}. Expected one of: ${aggregateByList.join(', ')}`,
+                    );
+                    return;
+                  }
                   actions.firstAggregateBy(newAggBy);
                 }}
               >
@@ -454,7 +461,13 @@ export const SettingsSidebar = () => {
                 <RadioGroup
                   value={secondAggregateBy}
                   onChange={(ev) => {
-                    const newAggBy: AggregateBy = ev.target.value as AggregateBy;
+                    const newAggBy = ev.target.value;
+                    if (!isAggregateBy(newAggBy)) {
+                      console.error(
+                        `Invalid aggregate by value: ${ev.target.value}. Expected one of: ${aggregateByList.join(', ')}`,
+                      );
+                      return;
+                    }
                     actions.secondAggregateBy(newAggBy);
                   }}
                 >

@@ -46,6 +46,7 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
     ({ get }) => {
       const items = get(itemsAtom);
       const values = Object.values(items)
+        // Cast to number so we get the correct return type; this cast is guaranteed by the filter statement
         .map((item) => item.atts[attribute] as number)
         .filter((val) => !Number.isNaN(val));
 
@@ -91,7 +92,7 @@ const categorySizeOrderSelector = selectorFamily<string[], string>({
  * @returns {Object} Object with category names as keys and their counts as values
  */
 export const categoricalCountSelector = selectorFamily<
-  { [key: string]: number },
+  Record<string, number>,
   { row: string; attribute: string }
 >({
   key: 'categorical-count',
@@ -105,7 +106,7 @@ export const categoricalCountSelector = selectorFamily<
           acc[category] = 0;
           return acc;
         },
-        {} as { [key: string]: number },
+        {} as Record<string, number>,
       );
 
       items.forEach((item) => {
@@ -148,10 +149,7 @@ export const maxCategorySizeSelector = selectorFamily<number, string>({
  * @param {number} att Attribute to return category colors for
  * @returns A map of category names to colors
  */
-export const categoricalColorSelector = selectorFamily<
-  { [category: string]: string },
-  string
->({
+export const categoricalColorSelector = selectorFamily<Record<string, string>, string>({
   key: 'categorical-color',
   get:
     (att) =>
@@ -164,7 +162,7 @@ export const categoricalColorSelector = selectorFamily<
           }
           return acc;
         },
-        {} as { [category: string]: string },
+        {} as Record<string, string>,
       );
     },
 });

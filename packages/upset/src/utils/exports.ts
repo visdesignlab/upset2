@@ -1,6 +1,5 @@
 import {
   AccessibleData,
-  Aggregate,
   AltTextConfig,
   CoreUpsetData,
   Row,
@@ -85,10 +84,9 @@ const generateElementName = (rows: Rows): Rows => {
       let elName = splitElName.join(', ');
 
       if (splitElName.length > 1) {
-        if (r.type === 'Aggregate') {
-          const r2 = r as Aggregate;
+        if (isRowAggregate(r)) {
           // replace aggregate overlaps hyphen with " & " for better readability
-          if (r2.aggregateBy === 'Overlaps') {
+          if (r.aggregateBy === 'Overlaps') {
             elName = elName.split(' - ').join(' & ');
           }
         } else {

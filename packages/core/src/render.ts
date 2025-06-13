@@ -154,9 +154,7 @@ const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) 
     return { order: [], values: {} };
 
   const vSets: Sets = Object.fromEntries(
-    Object.entries(data.sets as Sets).filter(([name]) =>
-      state.visibleSets.includes(name),
-    ),
+    Object.entries(data.sets).filter(([name]) => state.visibleSets.includes(name)),
   );
 
   let renderRows: Rows;

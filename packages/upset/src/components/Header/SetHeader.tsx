@@ -1,10 +1,8 @@
 import { ScaleLinear } from 'd3-scale';
-import { FC, useContext } from 'react';
+import React, { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { a, useTransition } from 'react-spring';
 import { css } from '@mui/material';
-
-import { SortVisibleBy } from '@visdesignlab/upset2-core';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { SetLabel } from '../custom/SetLabel';
@@ -83,7 +81,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     {
       label: 'Sort Sets by Alphabetical',
       onClick: () => {
-        actions.sortVisibleBy('Alphabetical' as SortVisibleBy);
+        actions.sortVisibleBy('Alphabetical');
         handleContextMenuClose();
       },
       disabled: sortVisibleBy === 'Alphabetical',
@@ -91,7 +89,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     {
       label: 'Sort Sets by Size - Ascending',
       onClick: () => {
-        actions.sortVisibleBy('Ascending' as SortVisibleBy);
+        actions.sortVisibleBy('Ascending');
         handleContextMenuClose();
       },
       disabled: sortVisibleBy === 'Ascending',
@@ -99,7 +97,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
     {
       label: 'Sort Sets by Size - Descending',
       onClick: () => {
-        actions.sortVisibleBy('Descending' as SortVisibleBy);
+        actions.sortVisibleBy('Descending');
         handleContextMenuClose();
       },
       disabled: sortVisibleBy === 'Descending',
@@ -112,7 +110,10 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
    * @param e - The mouse event that triggered the context menu.
    * @param setName - The name of the set.
    */
-  const openContextMenu = (e: MouseEvent, setName: string) => {
+  const openContextMenu = (
+    e: React.MouseEvent<SVGElement, MouseEvent>,
+    setName: string,
+  ) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -145,7 +146,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
         <a.g
           key={set.setName}
           transform={transform}
-          onContextMenu={(e: any) => {
+          onContextMenu={(e) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e, set.setName);
