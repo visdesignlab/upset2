@@ -48,7 +48,8 @@ const setColumns: GridColDef[] = [
 
 /**
  * Data for a row in the data table.
- * @private to show up correctly in the DataGrid component, this must be a flat
+ * @private to show up correctly in the DataGrid component, this must be a flat array; we unfortunately cannot
+ *   put attributes in a nested object.
  */
 type RowData = {
   id: string;
