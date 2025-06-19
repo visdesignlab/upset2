@@ -1,10 +1,13 @@
-name: Publish Package to npmjs
+name: Publish Packages to npmjs
 on:
   release:
-    types: [released]
+    types: [published]
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: [core, upset]
     steps:
       - uses: actions/checkout@v4
       - name: Use Node.js
@@ -14,12 +17,22 @@ jobs:
           registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: yarn install --immutable
+      - name: Build
+        run: yarn build
       - name: Copy README
-        run: cp README.md packages/upset/README.md
+        run: cp README.md packages/${{ matrix.package }}/README.md
       - name: Extract tag name
         id: get_tag
         run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-      - name: Change directory and publish
-        run: cd packages/upset && npm publish --tag latest
+      - name: Update core dependency in upset package
+        if: matrix.package == 'upset'
+        run: |
+          cd packages/upset
+          npm pkg set dependencies.@visdesignlab/upset2-core="${{ steps.get_tag.outputs.TAG }}"
+      - name: Update package version and publish
+        run: |
+          cd packages/${{ matrix.package }}
+          npm version ${{ steps.get_tag.outputs.TAG }} --no-git-tag-version
+          npm publish --tag latest
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
