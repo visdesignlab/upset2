@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import {
+  AltText,
   convertConfig,
   CoreUpsetData,
   DefaultConfig,
@@ -33,7 +34,6 @@ import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
-import { AltText } from '../types';
 import { footerHeightAtom } from '../atoms/dimensionsAtom';
 
 // Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context

@@ -98,6 +98,7 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    * @param index Index of the bar.
    * @returns Fill color for the bar.
    */
+  // eslint-disable-next-line no-unused-vars
   const getFillColor: (index: number) => string = useCallback(
     (index) => {
       // if the row is bookmarked, highlight the bar with the bookmark color
@@ -147,6 +148,7 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    *   fullBars  Number of full bars to display.
    *   remainder Remaining size after full bars are displayed.
    */
+  // eslint-disable-next-line no-unused-vars
   const calculateBars: (rowSize: number) => { fullBars: number; remainder: number } =
     useCallback(
       (rowSize) => {
@@ -173,6 +175,7 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    * @param uniqueId Unique identifier for the elements
    * @returns SVG elements for the line and tick
    */
+  // eslint-disable-next-line no-unused-vars
   const lineAndTick: (x: number, lineColor: string, index: number) => JSX.Element =
     useCallback(
       (x, lineColor, index) => (
@@ -213,6 +216,7 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    * @param remainder Number of items remaining after full bars are calculated.
    * @returns Width of the size bar.
    */
+  // eslint-disable-next-line no-unused-vars
   const calculateWidth: (total: number, remainder: number) => number = useCallback(
     (total, remainder) => {
       let result = scale(remainder);

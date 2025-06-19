@@ -125,24 +125,29 @@ function processRawData(data: TableRow[], columns: ColumnTypes) {
     const id = row['_id'] ? row['_id'] : getId('Item', idx.toString());
 
     const item: Item = {
-      _label: labelColumn === 'id' ? id : (row[labelColumn] as string),
-      ...row,
+      _label: labelColumn === 'id' ? id : row[labelColumn].toString(),
       _id: id, // This needs to be down here so it overwrites the _id from the row object
+      atts: row,
     };
     items[id] = item;
 
     Object.entries(columns).forEach(([col, type]) => {
-      if (type === 'number') {
-        item[col] = parseFloat(item[col] as any);
+      if (type === 'number' && typeof item.atts[col] === 'string') {
+        item.atts[col] = parseFloat(item.atts[col]);
       }
 
       if (type === 'boolean') {
-        const val = item[col];
-        item[col] = typeof val === 'boolean' ? +val : parseInt(val as any, 10);
+        const val = item.atts[col];
+        item.atts[col] =
+          typeof val === 'boolean'
+            ? +val
+            : typeof val === 'string'
+              ? parseInt(val, 10)
+              : val;
 
         if (!setMembership[col]) setMembership[col] = [];
 
-        if (item[col] === 1) setMembership[col].push(item['_id']);
+        if (item.atts[col] === 1) setMembership[col].push(item['_id']);
       }
     });
   });
@@ -157,12 +162,12 @@ function processRawData(data: TableRow[], columns: ColumnTypes) {
 }
 
 /**
- * Calculates the five-number summary for each attribute in the given items.
+ * Calculates the six-number summary for each attribute in the given items.
  *
  * @param items - The items to calculate the summary for.
  * @param memberItems - The member items to consider.
  * @param attributeColumns - The attribute columns to calculate the summary for.
- * @returns An object containing the five-number summary for each attribute.
+ * @returns An object containing the six-number summary for each attribute.
  */
 export function getSixNumberSummary(
   items: Items,
@@ -173,7 +178,7 @@ export function getSixNumberSummary(
 
   attributeColumns.forEach((attribute) => {
     const values = memberItems
-      .map((d) => items[d][attribute] as number)
+      .map((d) => items[d].atts[attribute] as number)
       .filter((val) => !Number.isNaN(val));
 
     attributes[attribute] = {
@@ -219,9 +224,9 @@ function getSets(
       type: 'Set',
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
-      attributes: {
-        ...getSixNumberSummary(items, setMembership[col], attributeColumns),
-        deviation: 0,
+      atts: {
+        dataset: getSixNumberSummary(items, setMembership[col], attributeColumns),
+        derived: { deviation: 0 },
       },
     };
 
@@ -299,9 +304,9 @@ export function getSubsets(
   items.forEach((item) => {
     const itemMembership = vSetNames
       .map((v) =>
-        (typeof item[v] === 'number' && !Number.isNaN(item[v])) ||
-        typeof item[v] === 'boolean'
-          ? item[v]
+        (typeof item.atts[v] === 'number' && !Number.isNaN(item.atts[v])) ||
+        typeof item.atts[v] === 'boolean'
+          ? item.atts[v]
           : 0,
       )
       .join('');
@@ -335,11 +340,6 @@ export function getSubsets(
       setMembershipStatus[set] = combo[idx];
     });
 
-    const subsetAttributes = {
-      ...getSixNumberSummary(dataItems, itm, attributeColumns),
-      deviation: subsetDeviation,
-    };
-
     const subset: Subset = {
       id: getId('Subset', intersectionName[comboBinary]),
       elementName: intersectionName[comboBinary],
@@ -347,7 +347,10 @@ export function getSubsets(
       size: itm.length,
       type: 'Subset',
       setMembership: setMembershipStatus,
-      attributes: subsetAttributes,
+      atts: {
+        derived: { deviation: subsetDeviation },
+        dataset: getSixNumberSummary(dataItems, itm, attributeColumns),
+      },
     };
 
     subsets.values[subset.id] = subset;

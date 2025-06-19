@@ -54,31 +54,23 @@ export function querySelectionToString(selection: QuerySelection): string {
 /**
  * Checks if the given rows are aggregates.
  * @param rr The rows to check.
+ * @param allowEmpty Whether to allow an object devoid of rows (default: false).
  * @returns `true` if the rows are aggregates, `false` otherwise.
  */
-export function areRowsAggregates(rr: Rows): rr is Aggregates {
-  const { order } = rr;
-
-  if (order.length === 0) return false;
-
-  const row = rr.values[order[0]];
-
-  return row.type === 'Aggregate';
+export function areRowsAggregates(rr: Rows, allowEmpty = false): rr is Aggregates {
+  if (!allowEmpty && rr.order.length === 0) return false;
+  return rr.order.map((id) => rr.values[id].type).every((type) => type === 'Aggregate');
 }
 
 /**
  * Checks if the given rows are subsets.
  * @param rr - The rows to check.
+ * @param allowEmpty - Whether to allow an object devoid of rows (default: false).
  * @returns True if the rows are subsets, false otherwise.
  */
-export function areRowsSubsets(rr: Rows): rr is Subsets {
-  const { order } = rr;
-
-  if (order.length === 0) return false;
-
-  const row = rr.values[order[0]];
-
-  return row.type === 'Subset';
+export function areRowsSubsets(rr: Rows, allowEmpty = false): rr is Subsets {
+  if (!allowEmpty && rr.order.length === 0) return false;
+  return rr.order.map((id) => rr.values[id].type).every((type) => type === 'Subset');
 }
 
 /**

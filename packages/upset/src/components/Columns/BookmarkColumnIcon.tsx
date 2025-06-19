@@ -103,7 +103,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
       )}
       height={dimensions.body.rowHeight}
       width={dimensions.set.width}
-      onClick={(e: any) => handleClick(e)}
+      onClick={(e: never) => handleClick(e)}
     >
       <rect
         height={dimensions.body.rowHeight}
@@ -114,7 +114,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
         <BookmarkIcon
           height={dimensions.body.rowHeight}
           width={dimensions.set.width}
-          fontSize={'1em' as any}
+          fontSize={'1em' as never}
           sx={{
             color,
             fillOpacity: opacity,
@@ -124,7 +124,7 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
         <BookmarkBorderIcon
           height={dimensions.body.rowHeight}
           width={dimensions.set.width}
-          fontSize={'1em' as any}
+          fontSize={'1em' as never}
           sx={{
             color,
             fillOpacity: opacity,

@@ -52,6 +52,7 @@ export const MemoizedDensityVega: FC<Props> = memo(
         spec={spec}
         actions={false}
         height={height}
+        // @ts-expect-error react-vega does not have types for css prop
         css={{ position: 'initial !important' }}
       />
     );

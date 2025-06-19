@@ -28,14 +28,14 @@ import {
  * @param row - The row object from which to retrieve the items.
  * @returns An array of unique items from the row.
  */
-export function getItems(row: Row) {
+export function getItems(row: Row): string[] {
   if (isRowSubset(row)) {
-    return row.items;
+    return row.items ?? [];
   }
   const items: string[] = [];
 
-  row.items.order.forEach((subsetId) => {
-    const element = row.items.values[subsetId];
+  row.rows.order.forEach((subsetId) => {
+    const element = row.rows.values[subsetId];
 
     items.push(...getItems(element));
   });
@@ -51,9 +51,11 @@ export function getItems(row: Row) {
  */
 function updateAggValues(aggs: Aggregates, items: Items, attributeColumns: string[]) {
   aggs.order.forEach((aggId) => {
-    aggs.values[aggId].attributes = {
-      ...getSixNumberSummary(items, getItems(aggs.values[aggId]), attributeColumns),
-      deviation: aggs.values[aggId].attributes.deviation,
+    aggs.values[aggId].atts = {
+      dataset: {
+        ...getSixNumberSummary(items, getItems(aggs.values[aggId]), attributeColumns),
+      },
+      derived: { deviation: aggs.values[aggId].atts.derived.deviation },
     };
   });
 }
@@ -71,7 +73,7 @@ export const getAggSize = (row: Row) => {
   }
   let size = 0;
 
-  Object.values(row.items.values).forEach((r) => {
+  Object.values(row.rows.values).forEach((r) => {
     size += getAggSize(r);
   });
 
@@ -111,7 +113,7 @@ function aggregateByDegree(
     const agg: Aggregate = {
       id,
       elementName: `Degree ${i}`,
-      items: {
+      rows: {
         values: {},
         order: [],
       },
@@ -121,8 +123,9 @@ function aggregateByDegree(
       aggregateBy: 'Degree',
       level,
       description: i === 0 ? 'in no set' : `${i} set intersection`,
-      attributes: {
-        deviation: 0,
+      atts: {
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -143,10 +146,10 @@ function aggregateByDegree(
 
     subset = { ...subset, parent: relevantAggregate.id };
 
-    relevantAggregate.items.values[subsetId] = subset;
-    relevantAggregate.items.order.push(subsetId);
+    relevantAggregate.rows.values[subsetId] = subset;
+    relevantAggregate.rows.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.attributes.deviation += subset.attributes.deviation;
+    relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
   });
 
   updateAggValues(aggs, items, attributeColumns);
@@ -200,7 +203,7 @@ function aggregateBySets(
     const agg: Aggregate = {
       id,
       elementName,
-      items: {
+      rows: {
         values: {},
         order: [],
       },
@@ -213,8 +216,9 @@ function aggregateBySets(
       aggregateBy: 'Sets',
       level,
       description: elementName,
-      attributes: {
-        deviation: 0,
+      atts: {
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -237,10 +241,10 @@ function aggregateBySets(
 
       subset = { ...subset, parent: relevantAggregate.id };
 
-      relevantAggregate.items.values[subsetId] = subset;
-      relevantAggregate.items.order.push(subsetId);
+      relevantAggregate.rows.values[subsetId] = subset;
+      relevantAggregate.rows.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.attributes.deviation += subset.attributes.deviation;
+      relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
     }
 
     belongingSets.forEach((set) => {
@@ -248,10 +252,10 @@ function aggregateBySets(
 
       subset = { ...subset, parent: relevantAggregate.id };
 
-      relevantAggregate.items.values[subsetId] = subset;
-      relevantAggregate.items.order.push(subsetId);
+      relevantAggregate.rows.values[subsetId] = subset;
+      relevantAggregate.rows.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.attributes.deviation += subset.attributes.deviation;
+      relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
     });
   });
 
@@ -305,7 +309,7 @@ function aggregateByDeviation(
       id,
       elementName,
       description,
-      items: {
+      rows: {
         values: {},
         order: [],
       },
@@ -314,8 +318,9 @@ function aggregateByDeviation(
       setMembership: {},
       aggregateBy: 'Deviations',
       level,
-      attributes: {
-        deviation: 0,
+      atts: {
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -330,16 +335,16 @@ function aggregateByDeviation(
 
   subsets.order.forEach((subsetId) => {
     let subset = subsets.values[subsetId];
-    const deviationType = subset.attributes.deviation >= 0 ? 'pos' : 'neg';
+    const deviationType = subset.atts.derived.deviation >= 0 ? 'pos' : 'neg';
 
     const relevantAggregate = aggs.values[deviationMap[deviationType]];
 
     subset = { ...subset, parent: relevantAggregate.id };
 
-    relevantAggregate.items.values[subsetId] = subset;
-    relevantAggregate.items.order.push(subsetId);
+    relevantAggregate.rows.values[subsetId] = subset;
+    relevantAggregate.rows.order.push(subsetId);
     relevantAggregate.size += subset.size;
-    relevantAggregate.attributes.deviation += subset.attributes.deviation;
+    relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
   });
 
   updateAggValues(aggs, items, attributeColumns);
@@ -402,7 +407,7 @@ function aggregateByOverlaps(
     const agg: Aggregate = {
       id,
       elementName,
-      items: {
+      rows: {
         values: {},
         order: [],
       },
@@ -412,8 +417,9 @@ function aggregateByOverlaps(
       setMembership: sm,
       level,
       description: setNames.join(' - '),
-      attributes: {
-        deviation: 0,
+      atts: {
+        dataset: {},
+        derived: { deviation: 0 },
       },
     };
 
@@ -438,10 +444,10 @@ function aggregateByOverlaps(
 
       subset = { ...subset, parent: relevantAggregate.id };
 
-      relevantAggregate.items.values[subsetId] = subset;
-      relevantAggregate.items.order.push(subsetId);
+      relevantAggregate.rows.values[subsetId] = subset;
+      relevantAggregate.rows.order.push(subsetId);
       relevantAggregate.size += subset.size;
-      relevantAggregate.attributes.deviation += subset.attributes.deviation;
+      relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
     });
   });
 
@@ -548,9 +554,9 @@ export function secondAggregation(
 
   aggregates.order.forEach((aggId: string) => {
     const agg = aggregates.values[aggId];
-    if (areRowsSubsets(agg.items)) {
+    if (areRowsSubsets(agg.rows)) {
       const itms = aggregateSubsets(
-        agg.items,
+        agg.rows,
         aggregateBy,
         overlapDegree,
         sets,

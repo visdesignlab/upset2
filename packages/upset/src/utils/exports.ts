@@ -1,8 +1,8 @@
 import {
   AccessibleData,
-  Aggregate,
   AltTextConfig,
   CoreUpsetData,
+  JSONExport,
   Row,
   Rows,
   UpsetConfig,
@@ -28,7 +28,11 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
       elementName: r['elementName'],
       type: r['type'],
       size: r['size'],
-      attributes: r['attributes'],
+      attributes: {
+        ...r.atts.dataset,
+        ...(r.atts.derived.degree && { degree: r.atts.derived.degree }),
+        deviation: r.atts.derived.deviation,
+      },
       degree,
     };
 
@@ -37,7 +41,7 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
     }
 
     if (isRowAggregate(r)) {
-      data['values'][r['id']]['items'] = getAccessibleData(r['items'], includeId).values;
+      data['values'][r['id']]['rows'] = getAccessibleData(r['rows'], includeId).values;
     } else {
       data['values'][r['id']]['setMembership'] = r['setMembership'];
     }
@@ -81,10 +85,9 @@ const generateElementName = (rows: Rows): Rows => {
       let elName = splitElName.join(', ');
 
       if (splitElName.length > 1) {
-        if (r.type === 'Aggregate') {
-          const r2 = r as Aggregate;
+        if (isRowAggregate(r)) {
           // replace aggregate overlaps hyphen with " & " for better readability
-          if (r2.aggregateBy === 'Overlaps') {
+          if (r.aggregateBy === 'Overlaps') {
             elName = elName.split(' - ').join(' & ');
           }
         } else {
@@ -121,7 +124,7 @@ export const getAltTextConfig = (
   dataObj = {
     ...dataObj,
     rawData: data,
-    processedData: updatedRows,
+    processedData: getAccessibleData(updatedRows),
     accessibleProcessedData: getAccessibleData(updatedRows),
   };
 
@@ -140,11 +143,8 @@ export const exportState = (
   rows?: Rows,
 ): void => {
   let filename = `upset_state_${new Date().toJSON().slice(0, 10)}`;
-  let dataObj = provenance.getState() as UpsetConfig & {
-    rawData?: CoreUpsetData;
-    processedData?: Rows;
-    accessibleProcessedData?: AccessibleData;
-  };
+  // Make a new type for the state download
+  let dataObj = provenance.getState() as JSONExport;
 
   if (data && rows) {
     const updatedRows = generateElementName(rows);

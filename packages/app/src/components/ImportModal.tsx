@@ -1,4 +1,4 @@
-import { useContext, useState } from 'react';
+import { useContext, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -18,8 +18,9 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
   });
   const { actions, provenance } = useContext(ProvenanceContext);
   const setImportError = useSetRecoilState(importErrorAtom);
+  const fileInput = useRef<HTMLInputElement>(null);
 
-  const isMissingFields = (newState: any) => {
+  function isMissingFields(newState: Record<string, never>): boolean {
     const state = provenance.getState();
     let isMissing = false;
 
@@ -31,7 +32,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
     });
 
     return isMissing;
-  };
+  }
 
   async function readFile(file: File) {
     const data = await file.text();
@@ -39,7 +40,7 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
     let newState;
     try {
       newState = JSON.parse(data);
-    } catch (e) {
+    } catch {
       throw new Error('Invalid File Upload. Please upload a .json UpSet state file.');
     }
     const state = provenance.getState();
@@ -60,19 +61,14 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
     <Dialog open={props.open} onClose={props.close}>
       <DialogTitle>Upload Upset State (.json)</DialogTitle>
       <DialogContent>
-        <input type="file" id="state-upload-file" />
+        <input type="file" id="state-upload-file" ref={fileInput} />
         <Button
           variant="contained"
           size="small"
           aria-errormessage="import-error"
           onClick={() => {
-            const input: HTMLInputElement | null = document.getElementById(
-              'state-upload-file',
-            ) as HTMLInputElement;
-
-            input !== null &&
-              input.files !== null &&
-              readFile(input.files[0]).catch((e) => {
+            if (fileInput.current !== null && fileInput.current.files !== null)
+              readFile(fileInput.current.files[0]).catch((e) => {
                 setIsError({
                   isOpen: true,
                   message: e.message,

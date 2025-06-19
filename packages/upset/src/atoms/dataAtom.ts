@@ -4,9 +4,17 @@ import { atom, selector } from 'recoil';
 /**
  * Atom to store the data for the Upset plot
  */
-export const dataAtom = atom<CoreUpsetData | Record<string, never>>({
+export const dataAtom = atom<CoreUpsetData>({
   key: 'data',
-  default: {},
+  default: {
+    label: '',
+    setColumns: [],
+    attributeColumns: [],
+    columns: [],
+    columnTypes: {},
+    items: {},
+    sets: {},
+  },
 });
 
 export const totalItemsSelector = selector<number>({

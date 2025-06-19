@@ -52,7 +52,7 @@ export const AttributeBars: FC<Props> = memo(
       if (attribute === 'Degree')
         return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
       if (attribute === 'Deviation')
-        return <DeviationBar deviation={row.attributes.deviation} />;
+        return <DeviationBar deviation={row.atts.derived.deviation} />;
       if (colTypes[attribute] === 'category')
         return (
           <CategoricalAttBar
@@ -63,7 +63,7 @@ export const AttributeBars: FC<Props> = memo(
         );
       return (
         <AttributeBar
-          summary={attributes[attribute]}
+          summary={attributes.dataset[attribute]}
           attribute={attribute}
           row={row}
           key={`${row}:${attribute}`}
@@ -105,8 +105,11 @@ export const AttributeBars: FC<Props> = memo(
   // Not checking the other attributes of the row object as they are not used in this component
   (prevProps, nextProps) =>
     prevProps.row.id === nextProps.row.id &&
-    Object.entries(prevProps.attributes).every(
+    prevProps.attributes.derived.deviation === nextProps.attributes.derived.deviation &&
+    prevProps.attributes.derived.degree === nextProps.attributes.derived.degree &&
+    Object.entries(prevProps.attributes.dataset).every(
       ([k, v]) =>
-        Object.keys(nextProps.attributes).includes(k) && nextProps.attributes[k] === v,
+        Object.keys(nextProps.attributes.dataset).includes(k) &&
+        nextProps.attributes.dataset[k] === v,
     ),
 );

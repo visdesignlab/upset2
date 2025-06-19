@@ -52,9 +52,9 @@ export function filterByVega(items: Item[], filter: VegaSelection): FilteredItem
     if (
       Object.entries(filter).every(
         ([key, value]) =>
-          typeof item[key] === 'number' &&
-          (item[key] as number) >= value[0] &&
-          (item[key] as number) <= value[1],
+          typeof item.atts[key] === 'number' &&
+          (item.atts[key] as number) >= value[0] &&
+          (item.atts[key] as number) <= value[1],
       )
     )
       included.push(item);
@@ -79,57 +79,57 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
 
   items.forEach((item) => {
     let add = false;
-    if (Object.hasOwn(item, att)) {
+    if (Object.hasOwn(item.atts, att)) {
       switch (type) {
         case ElementQueryType.CONTAINS:
-          add = `${item[att]}`.includes(query);
+          add = `${item.atts[att]}`.includes(query);
           break;
         case ElementQueryType.EQUALS:
-          switch (typeof item[att]) {
+          switch (typeof item.atts[att]) {
             case 'number':
-              add = Math.abs((item[att] as number) - Number(query)) < 0.0001;
+              add = Math.abs((item.atts[att] as number) - Number(query)) < 0.0001;
               break;
             case 'string':
-              add = `${item[att]}` === query;
+              add = `${item.atts[att]}` === query;
               break;
             default:
-              add = `${item[att]}` === query;
+              add = `${item.atts[att]}` === query;
           }
           break;
         case ElementQueryType.LENGTH:
-          add = `${item[att]}`.length === Number(query);
+          add = `${item.atts[att]}`.length === Number(query);
           break;
         case ElementQueryType.REGEX:
-          add = new RegExp(query).test(`${item[att]}`);
+          add = new RegExp(query).test(`${item.atts[att]}`);
           break;
         case ElementQueryType.GREATER_THAN:
-          switch (typeof item[att]) {
+          switch (typeof item.atts[att]) {
             case 'number':
-              add = Number(item[att]) > Number(query);
+              add = Number(item.atts[att]) > Number(query);
               break;
             case 'string':
               add =
-                `${item[att]}`.localeCompare(query, undefined, {
-                  numeric: typeof item[att] === 'number',
+                `${item.atts[att]}`.localeCompare(query, undefined, {
+                  numeric: typeof item.atts[att] === 'number',
                 }) > 0;
               break;
             default:
-              add = `${item[att]}` < `${query}`;
+              add = `${item.atts[att]}` < `${query}`;
           }
           break;
         case ElementQueryType.LESS_THAN:
-          switch (typeof item[att]) {
+          switch (typeof item.atts[att]) {
             case 'number':
-              add = Number(item[att]) < Number(query);
+              add = Number(item.atts[att]) < Number(query);
               break;
             case 'string':
               add =
-                `${item[att]}`.localeCompare(query, undefined, {
-                  numeric: typeof item[att] === 'number',
+                `${item.atts[att]}`.localeCompare(query, undefined, {
+                  numeric: typeof item.atts[att] === 'number',
                 }) < 0;
               break;
             default:
-              add = `${item[att]}` > `${query}`;
+              add = `${item.atts[att]}` > `${query}`;
           }
           break;
         default:
