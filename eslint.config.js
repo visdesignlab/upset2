@@ -2,7 +2,6 @@ import js from '@eslint/js';
 import globals from 'globals';
 import tseslint from 'typescript-eslint';
 import pluginReact from 'eslint-plugin-react';
-import stylisticJS from '@stylistic/eslint-plugin';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
@@ -24,7 +23,6 @@ export default defineConfig([
     plugins: {
       react: pluginReact,
       'jsx-a11y': jsxA11y,
-      '@stylistic': stylisticJS,
       'eslint-plugin-react': pluginReact,
     },
     rules: {
