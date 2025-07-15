@@ -5,6 +5,7 @@ import {
   UpsetActions,
   getActions,
   initializeProvenanceTracking,
+  Upset,
 } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
@@ -24,6 +25,7 @@ import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
 import { ProvenanceContext } from './provenance';
+import { Home } from './components/Home';
 
 /** @jsxImportSource @emotion/react */
 
@@ -117,6 +119,10 @@ function App() {
                     config={conf}
                   />
                 }
+              />
+              <Route
+                path="/embed"
+                element={data ? <Upset data={data} config={conf} /> : <Home />}
               />
               <Route
                 path="/"
