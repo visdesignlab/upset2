@@ -1,5 +1,9 @@
 import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
-import { AccessibleDataEntry, CoreUpsetData } from '@visdesignlab/upset2-core';
+import {
+  AccessibleDataEntry,
+  CoreUpsetData,
+  UPSET_ATTS,
+} from '@visdesignlab/upset2-core';
 import { useEffect, useMemo, useState } from 'react';
 import { DataGrid, GridColDef, GridRowsProp } from '@mui/x-data-grid';
 import { getAccessibleData } from '@visdesignlab/upset2-react';
@@ -252,8 +256,8 @@ export const DataTable = () => {
       Object.values(rows.values).forEach((r: AccessibleDataEntry) => {
         for (const key in r.attributes) {
           if (!cols.find((m) => m.field === key)) {
-            // skip deviation and degree. Deviation is added above and degree is not needed in the table
-            if (key === 'deviation' || key === 'degree') continue;
+            // skip derived atts. Deviation is added above and degree is not needed in the table
+            if (UPSET_ATTS.includes(key)) continue;
             cols.push({
               field: key,
               headerName: key,
