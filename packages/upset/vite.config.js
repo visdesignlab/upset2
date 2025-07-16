@@ -24,8 +24,6 @@ export default defineConfig({
       entry: 'src/index.tsx',
       fileName: 'index',
 
-      // Change this to the formats you want to support.
-      // Don't forgot to update your package.json as well.
       formats: ['es', 'cjs'],
     },
     rollupOptions: {
@@ -33,20 +31,21 @@ export default defineConfig({
       external: [
         'react',
         'react-dom',
-        '@trrack/vis-react',
-        '@trrack/core',
-        'd3-scale',
-        'd3-array',
-        'd3-drag',
-        'd3-selection',
-        'd3-dsv',
-        '@mui/icons-material',
+        'react/jsx-runtime',
+        '@emotion/react',
+        '@emotion/styled',
         '@mui/material',
         '@mui/system',
+        '@mui/icons-material',
         '@mui/x-data-grid',
-        '@emotion/react',
-        'react-markdown',
+        'recoil',
+        '@trrack/core',
+        '@trrack/vis-react',
+        'vega',
+        'vega-lite',
+        'react-vega'
       ],
+      treeshake: true,
     },
   },
 });
