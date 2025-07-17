@@ -34,6 +34,7 @@ import { rowsSelector } from '../../atoms/selectors';
 import { DataTableLink } from '../../utils/DataTableLink';
 // @ts-expect-error ts doesn't know about SVG imports
 import vdlFlask from '../../assets/vdl_flask.svg';
+import { EmbedModal } from './EmbedModal';
 
 /**
  * Header component; displays above the plot
@@ -54,6 +55,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [loginMenuOpen, setLoginMenuOpen] = useState(false);
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>();
+  const [embedModalOpen, setEmbedModalOpen] = useState(false);
 
   const { visibleSets } = provenance.getState();
   const hiddenSets = provenance
@@ -321,6 +323,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
             >
               Export State + Data
             </MenuItem>
+            <MenuItem onClick={() => setEmbedModalOpen(true)}>Embed</MenuItem>
           </Menu>
           <IconButton
             color="inherit"
@@ -366,6 +369,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
           </Menu>
         </Box>
         <ImportModal open={showImportModal} close={handleImportModalClose} />
+        <EmbedModal open={embedModalOpen} onClose={() => setEmbedModalOpen(false)} />
       </Toolbar>
     </AppBar>
   );
