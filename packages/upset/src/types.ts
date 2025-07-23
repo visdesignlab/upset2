@@ -159,7 +159,7 @@ export interface UpsetProps {
 
   /**
    * Sidebar options for the element sidebar component.
-   * This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
+   * This sidebar is used for element queries, element selection datatable, and supplemental plot generation.
    */
   elementSidebar?: SidebarProps;
 
