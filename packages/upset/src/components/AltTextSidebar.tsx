@@ -4,6 +4,7 @@ import {
   CircularProgress,
   Icon,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -206,12 +207,23 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           editing={plotInfoEditing}
           setEditing={setPlotInfoEditing}
         />
-      ) : // only show "Add Plot Information" if the user has edit permissions
-      canEditPlotInformation ? (
-        <Button onClick={() => setPlotInfoEditing(true)} tabIndex={PLOT_INFO_TAB_INDEX}>
-          Add Plot Information
-        </Button>
-      ) : null}
+      ) : (
+        <Tooltip
+          title={
+            canEditPlotInformation
+              ? 'Add Plot Information'
+              : 'You do not have permission to edit the plot information'
+          }
+        >
+          <Button
+            onClick={() => setPlotInfoEditing(true)}
+            tabIndex={PLOT_INFO_TAB_INDEX}
+            disabled={!canEditPlotInformation}
+          >
+            Add Plot Information
+          </Button>
+        </Tooltip>
+      )}
       {displayPlotInfo && (
         <UpsetHeading level="h2" divStyle={{ marginTop: '10px' }}>
           Text Description
@@ -276,8 +288,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               }}
               tabIndex={3}
             >
-              {canEditPlotInformation && (
-                // Only show the edit button if the user has edit permissions
+              <Tooltip
+                title={
+                  canEditPlotInformation
+                    ? 'Edit Text Description'
+                    : 'You do not have permission to edit the text description'
+                }
+              >
                 <Button
                   style={{
                     display: 'inline-block',
@@ -288,12 +305,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   onClick={enableTextEditing}
                   tabIndex={5}
                   aria-label="Alt Text Description Editor"
+                  disabled={!canEditPlotInformation}
                 >
                   <Icon style={{ overflow: 'visible' }}>
                     <EditIcon />
                   </Icon>
                 </Button>
-              )}
+              </Tooltip>
               <ReactMarkdownWrapper text={displayAltText} />
               <Button
                 onClick={() => setUseLong(!useLong)}
