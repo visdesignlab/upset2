@@ -48,6 +48,9 @@ export const EmbedModal = ({ open, onClose }: Props) => {
   const [sidebar, setSidebar] = useState<RightSidebarType>(RightSidebar.NONE);
   const copySuccessTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // CAUTION: Using embedLink directly in a hook dependency array can lead to issues with HMR (Hot Module Replacement),
+  // since the embedLink is derived from window.location and can update outside of react's state management.
+  // To avoid this, hooks that don't need the value of embedLink should depend on [showSettings, sidebar] instead
   const embedLink = useMemo(() => {
     return (
       window.location.href.split('?')[0] +
@@ -64,7 +67,7 @@ export const EmbedModal = ({ open, onClose }: Props) => {
       clearTimeout(copySuccessTimeout.current);
       copySuccessTimeout.current = null;
     }
-  }, [embedLink]);
+  }, [showSettings, sidebar]); // Instead of embedLink, we use showSettings and sidebar to avoid HMR issues
 
   const copyEmbedLink = useCallback(() => {
     navigator.clipboard
@@ -84,7 +87,7 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           COPY_ICON_REVERT_TIMEOUT,
         );
       });
-  }, [embedLink, copySuccessTimeout]);
+  }, [embedLink]);
 
   return (
     <Dialog open={open} onClose={onClose}>
