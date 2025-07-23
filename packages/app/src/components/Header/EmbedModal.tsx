@@ -16,7 +16,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   LEFT_SETTINGS_URL_PARAM,
   RIGHT_SIDEBAR_URL_PARAM,
@@ -49,16 +49,22 @@ export const EmbedModal = ({ open, onClose }: Props) => {
   const copySuccessTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const embedLink = useMemo(() => {
-    // Reset copy success state when the embed link changes
-    setCopySuccess(null);
-    if (copySuccessTimeout.current) copySuccessTimeout.current = null;
     return (
       window.location.href.split('?')[0] +
       'embed' +
       window.location.search +
       `&${LEFT_SETTINGS_URL_PARAM}=${showSettings ? 1 : 0}&${RIGHT_SIDEBAR_URL_PARAM}=${sidebar}`
     );
-  }, [showSettings, sidebar, copySuccessTimeout, setCopySuccess]);
+  }, [showSettings, sidebar]);
+
+  // Reset copy success state when the embed link changes
+  useEffect(() => {
+    setCopySuccess(null);
+    if (copySuccessTimeout.current) {
+      clearTimeout(copySuccessTimeout.current);
+      copySuccessTimeout.current = null;
+    }
+  }, [embedLink]);
 
   const copyEmbedLink = useCallback(() => {
     navigator.clipboard
