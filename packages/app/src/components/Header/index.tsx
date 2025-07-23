@@ -323,7 +323,7 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
             >
               Export State + Data
             </MenuItem>
-            <MenuItem onClick={() => setEmbedModalOpen(true)}>Embed</MenuItem>
+            <MenuItem onClick={() => setEmbedModalOpen(true)}>Get Embed Link</MenuItem>
           </Menu>
           <IconButton
             color="inherit"

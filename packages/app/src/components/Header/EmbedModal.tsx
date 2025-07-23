@@ -1,9 +1,28 @@
-import { Dialog, DialogTitle, IconButton, Tooltip, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  Divider,
+  FormControl,
+  FormControlLabel,
+  FormGroup,
+  IconButton,
+  Radio,
+  RadioGroup,
+  Switch,
+  Tooltip,
+  Typography,
+} from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import DoneIcon from '@mui/icons-material/Done';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { useCallback, useMemo, useState } from 'react';
+import {
+  LEFT_SETTINGS_URL_PARAM,
+  RIGHT_SIDEBAR_URL_PARAM,
+  RightSidebar,
+  RightSidebarType,
+} from '@visdesignlab/upset2-core';
 
 type Props = {
   open: boolean;
@@ -12,11 +31,27 @@ type Props = {
 
 const COPY_ICON_REVERT_TIMEOUT = 3000;
 
+const FORM_CONTROL_STYLE = {
+  marginLeft: 0,
+  width: '100%',
+  justifyContent: 'space-between',
+};
+
 export const EmbedModal = ({ open, onClose }: Props) => {
   const [copySuccess, setCopySuccess] = useState<boolean | null>(null);
+  // Whether to show left sidebar settings in the embedded plot
+  const [showSettings, setShowSettings] = useState(false);
+  // Sidebar to show in the embedded plot: TD is Text Descriptions Sidebar, EV is Element View Sidebar
+  const [sidebar, setSidebar] = useState<RightSidebarType>(RightSidebar.NONE);
+
   const embedLink = useMemo(() => {
-    return window.location.href.split('?')[0] + 'embed' + window.location.search;
-  }, []);
+    return (
+      window.location.href.split('?')[0] +
+      'embed' +
+      window.location.search +
+      `&${LEFT_SETTINGS_URL_PARAM}=${showSettings ? 1 : 0}&${RIGHT_SIDEBAR_URL_PARAM}=${sidebar}`
+    );
+  }, [showSettings, sidebar]);
 
   const copyEmbedLink = useCallback(() => {
     navigator.clipboard
@@ -69,13 +104,56 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
+      <FormGroup style={{ padding: '0 32px' }}>
+        <FormControlLabel
+          style={FORM_CONTROL_STYLE}
+          label="Show Left Settings Sidebar"
+          control={
+            <Switch
+              checked={showSettings}
+              onChange={() => setShowSettings(!showSettings)}
+            />
+          }
+          labelPlacement="start"
+        />
+        <FormControl>
+          <RadioGroup
+            value={sidebar}
+            onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
+          >
+            <FormControlLabel
+              style={FORM_CONTROL_STYLE}
+              value="TD"
+              control={<Radio size="small" />}
+              label="Show Text Descriptions Sidebar"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              style={FORM_CONTROL_STYLE}
+              value="EV"
+              control={<Radio size="small" />}
+              label="Show Element View Sidebar"
+              labelPlacement="start"
+            />
+            <FormControlLabel
+              style={FORM_CONTROL_STYLE}
+              value={RightSidebar.NONE}
+              control={<Radio size="small" />}
+              label="No Right Sidebar"
+              labelPlacement="start"
+            />
+          </RadioGroup>
+        </FormControl>
+      </FormGroup>
+      <Divider style={{ margin: '0 auto', width: '90%' }} />
       <Typography
         onClick={copyEmbedLink}
         variant="body1"
         style={{
-          padding: '2em',
-          cursor: 'pointer',
-          paddingTop: 0,
+          padding: '32px',
+          cursor: 'copy',
+          paddingTop: '16px',
+          wordBreak: 'break-all',
         }}
       >
         <code>{embedLink}</code>

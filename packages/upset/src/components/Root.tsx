@@ -4,7 +4,9 @@ import {
   convertConfig,
   CoreUpsetData,
   DefaultConfig,
+  LEFT_SETTINGS_URL_PARAM,
   populateConfigDefaults,
+  ShowSettings,
   UPSET_ATTS,
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
@@ -106,6 +108,8 @@ export const Root: FC<Props> = ({
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
   const setFooterHeight = useSetRecoilState(footerHeightAtom);
+  // This might not work on Edge or iOS Safari, oh well!
+  const urlParams = new URLSearchParams(window.location.search);
 
   // Set the initial state of canEditPlotInformation
   useEffect(() => {
@@ -226,7 +230,9 @@ export const Root: FC<Props> = ({
             ${baseStyle};
           `}
         >
-          <SettingsSidebar />
+          {urlParams.get(LEFT_SETTINGS_URL_PARAM) !== ShowSettings.FALSE && (
+            <SettingsSidebar />
+          )}
         </div>
       )}
       <h2
