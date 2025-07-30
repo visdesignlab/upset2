@@ -45,6 +45,10 @@ export const About = ({ open, close }: Props) => {
               rel="noreferrer"
             >
               UpSet: Visualization of Intersecting Sets (2014)
+            </Link>{' '}
+            and the original{' '} 
+            <Link href="https://upset.app" target="_blank" rel="noreferrer">
+              UpSet web application
             </Link>
             .
             <br />
@@ -70,7 +74,15 @@ export const About = ({ open, close }: Props) => {
             .
           </p>
           <p>
-            Development of UpSet is supported by the{' '}
+            Upset 2 is developed by{' '}
+            <Link href="https://www.linkedin.com/in/jake-wagoner-92123522b/" target="_blank" rel="noreferrer">
+            Jake Wagoner
+            </Link>{' '}
+            and{' '}
+            <Link href="https://www.linkedin.com/in/nate-lanza-0227a5297/" target="_blank" rel="noreferrer">
+            Nate Lanza
+            </Link>{' '}
+            and supported by the{' '}
             <Link
               href="https://vdl.sci.utah.edu/projects/2022-czi-upset/"
               target="_blank"
