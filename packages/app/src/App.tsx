@@ -155,12 +155,12 @@ function App() {
                       config={conf}
                       altTextSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ALTTEXT
-                          ? { open: sidebarOpen, close: () => setSidebarOpen(false) }
+                          ? { open: sidebarOpen, close: () => setSidebarOpen(false), embedded: true }
                           : undefined
                       }
                       elementSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ELEMENT
-                          ? { open: sidebarOpen, close: () => setSidebarOpen(false) }
+                          ? { open: sidebarOpen, close: () => setSidebarOpen(false), embedded: true }
                           : undefined
                       }
                       generateAltText={

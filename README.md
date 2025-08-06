@@ -379,6 +379,12 @@ interface SidebarProps {
    * Callback function to close the sidebar.
    */
   close: () => void;
+
+  /**
+   * True if the sidebar is in an embedded application.
+   * Disables closing the sidebar & removes top margin.
+   */
+  embedded?: boolean;
 }
 ```
 

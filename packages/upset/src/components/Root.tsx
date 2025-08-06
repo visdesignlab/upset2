@@ -37,6 +37,7 @@ import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { footerHeightAtom } from '../atoms/dimensionsAtom';
+import { SidebarProps } from '../types';
 
 // Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context
 const defaultProvenance = initializeProvenanceTracking(DefaultConfig, () => {
@@ -70,14 +71,8 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  elementSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
-  altTextSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
+  elementSidebar?: SidebarProps;
+  altTextSidebar?: SidebarProps;
   footerHeight?: number;
   generateAltText?: () => Promise<AltText>;
 };
@@ -267,13 +262,14 @@ export const Root: FC<Props> = ({
       </div>
       <ContextMenu />
       {elementSidebar && elementSidebar.open && (
-        <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />
+        <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} embedded={elementSidebar.embedded} />
       )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {altTextSidebar && generateAltText && (
         <AltTextSidebar
           open={altTextSidebar.open}
           close={altTextSidebar.close}
+          embedded={altTextSidebar.embedded}
           generateAltText={generateAltText}
         />
       )}

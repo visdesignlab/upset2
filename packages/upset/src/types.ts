@@ -19,6 +19,11 @@ export interface SidebarProps {
    * Callback function to close the sidebar.
    */
   close: () => void;
+
+  /**
+   * Whether the app/sidebar is embedded, which disables closing and removes top margin.
+   */
+  embedded?: boolean;
 }
 
 export type ContextMenuItem = {
