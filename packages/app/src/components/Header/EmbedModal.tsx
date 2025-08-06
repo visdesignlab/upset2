@@ -6,8 +6,9 @@ import {
   FormControlLabel,
   FormGroup,
   IconButton,
-  Radio,
-  RadioGroup,
+  InputLabel,
+  MenuItem,
+  Select,
   Switch,
   Tooltip,
   Typography,
@@ -30,13 +31,6 @@ type Props = {
 };
 
 const COPY_ICON_REVERT_TIMEOUT = 5000;
-
-const FORM_CONTROL_STYLE = {
-  marginLeft: 0,
-  width: '100%',
-  justifyContent: 'space-between',
-};
-
 /**
  * The modal displayed when the user clicks "Get Embed Link" in the hamburger menu.
  */
@@ -127,8 +121,22 @@ export const EmbedModal = ({ open, onClose }: Props) => {
         </IconButton>
       </DialogTitle>
       <FormGroup style={{ padding: '0 32px' }}>
+        <FormControl>
+          <InputLabel id="sidebar-picker-label">Right Sidebar</InputLabel>
+          <Select
+            labelId="sidebar-picker-label"
+            id="sidebar-picker-select"
+            value={sidebar}
+            label="Right Sidebar"
+            onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
+          >
+            <MenuItem value="TD">Text Descriptions</MenuItem>
+            <MenuItem value="EV">Element View Sidebar</MenuItem>
+            <MenuItem value={RightSidebar.NONE}>None</MenuItem>
+          </Select>
+        </FormControl>
         <FormControlLabel
-          style={FORM_CONTROL_STYLE}
+          style={{ marginLeft: 0, width: '100%', justifyContent: 'space-between' }}
           label="Show Left Settings Sidebar"
           control={
             <Switch
@@ -138,34 +146,6 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           }
           labelPlacement="start"
         />
-        <FormControl>
-          <RadioGroup
-            value={sidebar}
-            onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
-          >
-            <FormControlLabel
-              style={FORM_CONTROL_STYLE}
-              value="TD"
-              control={<Radio size="small" />}
-              label="Show Text Descriptions Sidebar"
-              labelPlacement="start"
-            />
-            <FormControlLabel
-              style={FORM_CONTROL_STYLE}
-              value="EV"
-              control={<Radio size="small" />}
-              label="Show Element View Sidebar"
-              labelPlacement="start"
-            />
-            <FormControlLabel
-              style={FORM_CONTROL_STYLE}
-              value={RightSidebar.NONE}
-              control={<Radio size="small" />}
-              label="No Right Sidebar"
-              labelPlacement="start"
-            />
-          </RadioGroup>
-        </FormControl>
       </FormGroup>
       <Divider style={{ margin: '0 auto', width: '90%' }} />
       <Typography
