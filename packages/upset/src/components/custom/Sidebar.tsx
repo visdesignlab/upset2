@@ -215,6 +215,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
                 }}
                 tabIndex={closeButtonTabIndex}
                 aria-label="Close the sidebar"
+                disabled={embedded}
               >
                 <CloseIcon />
               </IconButton>
