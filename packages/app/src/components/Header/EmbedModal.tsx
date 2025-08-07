@@ -130,8 +130,8 @@ export const EmbedModal = ({ open, onClose }: Props) => {
             label="Right Sidebar"
             onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
           >
-            <MenuItem value="TD">Text Descriptions</MenuItem>
-            <MenuItem value="EV">Element View Sidebar</MenuItem>
+            <MenuItem value={RightSidebar.ALTTEXT}>Text Descriptions</MenuItem>
+            <MenuItem value={RightSidebar.ELEMENT}>Element View Sidebar</MenuItem>
             <MenuItem value={RightSidebar.NONE}>None</MenuItem>
           </Select>
         </FormControl>
