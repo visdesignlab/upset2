@@ -85,30 +85,8 @@ export const EmbedModal = ({ open, onClose }: Props) => {
 
   return (
     <Dialog open={open} onClose={onClose}>
-      <DialogTitle>
+      <DialogTitle style={{ minWidth: '500px' }}>
         Embed Link
-        <Tooltip
-          title={
-            copySuccess === null
-              ? 'Copy embed link'
-              : copySuccess
-                ? 'Copied to clipboard'
-                : 'Failed to copy'
-          }
-        >
-          <IconButton
-            style={{ position: 'absolute', right: 40, top: 8 }}
-            onClick={copyEmbedLink}
-          >
-            {copySuccess === null ? (
-              <ContentCopyIcon />
-            ) : copySuccess ? (
-              <DoneIcon color="success" />
-            ) : (
-              <ErrorOutlineIcon color="error" />
-            )}
-          </IconButton>
-        </Tooltip>
         <IconButton
           sx={{
             position: 'absolute',
@@ -158,7 +136,28 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           wordBreak: 'break-all',
         }}
       >
-        <code>{embedLink}</code>
+        <code style={{ display: 'inline-block' }}>
+          <Tooltip
+            title={
+              copySuccess === null
+                ? 'Copy embed link'
+                : copySuccess
+                  ? 'Copied to clipboard'
+                  : 'Failed to copy'
+            }
+          >
+            <IconButton style={{ float: 'right', paddingTop: 4 }} onClick={copyEmbedLink}>
+              {copySuccess === null ? (
+                <ContentCopyIcon />
+              ) : copySuccess ? (
+                <DoneIcon color="success" />
+              ) : (
+                <ErrorOutlineIcon color="error" />
+              )}
+            </IconButton>
+          </Tooltip>
+          {embedLink}
+        </code>
       </Typography>
     </Dialog>
   );
