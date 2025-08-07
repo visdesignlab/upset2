@@ -51,16 +51,6 @@ export const About = ({ open, close }: Props) => {
               UpSet web application
             </Link>
             .
-            <br />
-            For more information on UpSet 2, see{' '}
-            <Link
-              href="https://vdl.sci.utah.edu/publications/2019_infovis_upset/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              UpSet 2: From Prototype to Tool (2019)
-            </Link>
-            .
           </p>
           <p>
             To make contributions and/or report a bug, please visit our{' '}
@@ -74,15 +64,22 @@ export const About = ({ open, close }: Props) => {
             .
           </p>
           <p>
-            Upset 2 is developed by{' '}
-            <Link href="https://www.linkedin.com/in/jake-wagoner-92123522b/" target="_blank" rel="noreferrer">
+            Upset 2 was initially developed by{' '}
+            <Link href="https://github.com/kirangadhave" target="_blank" rel="noreferrer">
+            Kiran Gadhave
+            </Link>,{' '}
+            with ongoing development by{' '}
+            <Link href="https://github.com/JakeWags" target="_blank" rel="noreferrer">
             Jake Wagoner
-            </Link>{' '}
-            and{' '}
-            <Link href="https://www.linkedin.com/in/nate-lanza-0227a5297/" target="_blank" rel="noreferrer">
+            </Link>,{' '}
+            <Link href="https://github.com/NateLanza" target="_blank" rel="noreferrer">
             Nate Lanza
+            </Link>,{' '}
+            and{' '}
+            <Link href="https://github.com/JackWilb" target="_blank" rel="noreferrer">
+            Jack Wilburn
             </Link>{' '}
-            and supported by the{' '}
+            based on the work and ideas of Alex Lex and supported by the{' '}
             <Link
               href="https://vdl.sci.utah.edu/projects/2022-czi-upset/"
               target="_blank"
