@@ -3,6 +3,7 @@ import {
   Button,
   CircularProgress,
   Icon,
+  IconButton,
   TextField,
   Tooltip,
   Typography,
@@ -184,12 +185,35 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     [currState.plotInformation, plotInfoEditing],
   );
 
+  const editPlotInfoTooltip: string = useMemo(
+    () =>
+      canEditPlotInformation
+        ? 'Edit Plot Information'
+        : 'You do not have permission to edit the plot information',
+    [canEditPlotInformation],
+  );
+
   return (
     <Sidebar
       open={open}
       close={close}
       closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
       label="Alt Text and Plot Information Sidebar"
+      buttons={
+        <Tooltip title={editPlotInfoTooltip}>
+          <IconButton
+            aria-label="Plot Information Editor"
+            style={{
+              cursor: 'pointer',
+            }}
+            tabIndex={PLOT_INFO_TAB_INDEX + 1}
+            onClick={() => setTextEditing(true)}
+            disabled={!canEditPlotInformation}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+      }
       title={
         displayPlotInfo
           ? (plotInfo.title ?? 'Editing Plot Information')
@@ -208,17 +232,12 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           setEditing={setPlotInfoEditing}
         />
       ) : (
-        <Tooltip
-          title={
-            canEditPlotInformation
-              ? 'Add Plot Information'
-              : 'You do not have permission to edit the plot information'
-          }
-        >
+        <Tooltip title={editPlotInfoTooltip}>
           <Button
             onClick={() => setPlotInfoEditing(true)}
             tabIndex={PLOT_INFO_TAB_INDEX}
             disabled={!canEditPlotInformation}
+            style={{ width: '100%', textAlign: 'center' }}
           >
             Add Plot Information
           </Button>
