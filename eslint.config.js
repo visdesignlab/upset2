@@ -15,8 +15,8 @@ export default [
   eslintPluginPrettierRecommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    languageOptions: { 
-      globals: globals.browser 
+    languageOptions: {
+      globals: globals.browser,
     },
   },
   {
