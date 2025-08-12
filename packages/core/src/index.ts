@@ -9,3 +9,4 @@ export * from './convertConfig';
 export * from './typecheck';
 export * from './typeutils';
 export * from './utils';
+export * from './const';
