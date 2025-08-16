@@ -4,7 +4,8 @@ import { beforeTest } from './common';
 const alttxt = {
   upsetIntroduction:
     'This is an UpSet plot that visualizes set intersection. To learn about UpSet plots, visit https://upset.app.',
-  datasetProperties: 'The dataset contains 6 sets and 44 elements, of which 6 sets are shown in the plot.',
+  datasetProperties:
+    'The dataset contains 6 sets and 44 elements, of which 6 sets are shown in the plot.',
   setProperties:
     'The set sizes are diverging a lot, ranging from 3 to 18. The largest set is Male with 18 elements, followed by School with 6, Duff Fan with 6, Evil with 6, Power Plant with 5, and Blue Hair with 3.',
   intersectionProperties:
@@ -18,9 +19,13 @@ const alttxt = {
 test.beforeEach(beforeTest);
 
 test('Alt Text', async ({ page }) => {
-  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.goto(
+    'http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193',
+  );
 
-  const altTextSidebar = await page.getByLabel('Alt Text and Plot Information Sidebar', { exact: true });
+  const altTextSidebar = await page.getByLabel('Alt Text and Plot Information Sidebar', {
+    exact: true,
+  });
   await expect(altTextSidebar).toBeVisible();
 
   const altTextHeading = await page.getByRole('heading', { name: 'Text Description' });
@@ -60,7 +65,10 @@ test('Alt Text', async ({ page }) => {
   // Plot Information
   /// /////////////////
   // Editing
-  const editPlotInformationButton = await page.getByRole('button', { name: 'Add Plot Information' });
+  const editPlotInformationButton = await page.getByRole('button', {
+    name: 'Edit Plot Information',
+  });
+
   await expect(editPlotInformationButton).toBeVisible();
   await editPlotInformationButton.click();
 
@@ -84,13 +92,17 @@ test('Alt Text', async ({ page }) => {
   await datasetDescriptionInput.click();
   await datasetDescriptionInput.fill('Test dataset description');
 
-  const setsInput = await page.getByPlaceholder('name for the sets in this data, eg: "movie genres');
+  const setsInput = await page.getByPlaceholder(
+    'name for the sets in this data, eg: "movie genres',
+  );
   await expect(setsInput).toBeVisible();
   await expect(setsInput).toBeEditable();
   await setsInput.click();
   await setsInput.fill('Test sets value');
 
-  const itemsInput = await page.getByPlaceholder('name for the items in this data, eg: "movies"');
+  const itemsInput = await page.getByPlaceholder(
+    'name for the items in this data, eg: "movies"',
+  );
   await expect(itemsInput).toBeVisible();
   await expect(itemsInput).toBeEditable();
   await itemsInput.click();
@@ -108,8 +120,12 @@ test('Alt Text', async ({ page }) => {
   await page.getByRole('button', { name: 'Save' }).click();
 
   // Display
-  await expect(page.getByLabel('Alt Text and Plot Information Sidebar')).toContainText('upset plot');
-  await expect(page.getByLabel('Alt Text and Plot Information Sidebar')).toContainText('upset plot caption');
+  await expect(page.getByLabel('Alt Text and Plot Information Sidebar')).toContainText(
+    'upset plot',
+  );
+  await expect(page.getByLabel('Alt Text and Plot Information Sidebar')).toContainText(
+    'upset plot caption',
+  );
   await expect(page.getByLabel('Alt Text and Plot Information Sidebar')).toContainText(
     'This UpSet plot shows Test dataset description. The sets are Test sets value. The items are Test items value.',
   );
@@ -212,7 +228,9 @@ test('Alt Text', async ({ page }) => {
   await page.getByLabel('Alt Text Description Editor').click();
   await page.getByRole('button', { name: 'Reset Descriptions' }).click();
   await page.getByRole('button', { name: 'Save' }).click();
-  await expect(page.locator('[id="Intersection\\ Properties"]')).toContainText('Intersection Properties');
+  await expect(page.locator('[id="Intersection\\ Properties"]')).toContainText(
+    'Intersection Properties',
+  );
   await page.getByRole('button', { name: 'Show Less' }).click();
   await expect(page.getByLabel('Alt Text and Plot Information Sidebar')).toContainText(
     'This is an UpSet plot which shows set intersection of 6 sets out of 6 sets and the largest intersection is School, and Male (3). The plot is sorted by size and 12 non-empty intersections are shown.',
