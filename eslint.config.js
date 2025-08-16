@@ -5,25 +5,23 @@ import pluginReact from 'eslint-plugin-react';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import { defineConfig } from 'eslint/config';
 
-export default defineConfig([
+export default [
   // Configs further down the array will override rules from earlier configs
-  importPlugin.flatConfigs.recommended,
-  tseslint.configs.recommended,
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
   pluginReact.configs.flat.recommended,
+  importPlugin.flatConfigs.recommended,
   eslintPluginPrettierRecommended,
   {
     files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
+    languageOptions: {
+      globals: globals.browser,
+    },
   },
   {
     plugins: {
-      react: pluginReact,
       'jsx-a11y': jsxA11y,
-      'eslint-plugin-react': pluginReact,
     },
     rules: {
       'prettier/prettier': [
@@ -81,4 +79,4 @@ export default defineConfig([
       'react/display-name': 'off',
     },
   },
-]);
+];
