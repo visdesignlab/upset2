@@ -1,4 +1,4 @@
-import { Page } from '@playwright/test';
+import type { Page } from '@playwright/test';
 import mockData from '../playwright/mock-data/simpsons/simpsons_data.json' with { type: 'json' };
 import mockAnnotations from '../playwright/mock-data/simpsons/simpsons_annotations.json' with { type: 'json' };
 import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json' with { type: 'json' };
