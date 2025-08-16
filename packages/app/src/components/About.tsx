@@ -45,16 +45,10 @@ export const About = ({ open, close }: Props) => {
               rel="noreferrer"
             >
               UpSet: Visualization of Intersecting Sets (2014)
-            </Link>
-            .
-            <br />
-            For more information on UpSet 2, see{' '}
-            <Link
-              href="https://vdl.sci.utah.edu/publications/2019_infovis_upset/"
-              target="_blank"
-              rel="noreferrer"
-            >
-              UpSet 2: From Prototype to Tool (2019)
+            </Link>{' '}
+            and the original{' '} 
+            <Link href="https://upset.app" target="_blank" rel="noreferrer">
+              UpSet web application
             </Link>
             .
           </p>
@@ -70,7 +64,22 @@ export const About = ({ open, close }: Props) => {
             .
           </p>
           <p>
-            Development of UpSet is supported by the{' '}
+            Upset 2 was initially developed by{' '}
+            <Link href="https://github.com/kirangadhave" target="_blank" rel="noreferrer">
+            Kiran Gadhave
+            </Link>,{' '}
+            with ongoing development by{' '}
+            <Link href="https://github.com/JakeWags" target="_blank" rel="noreferrer">
+            Jake Wagoner
+            </Link>,{' '}
+            <Link href="https://github.com/NateLanza" target="_blank" rel="noreferrer">
+            Nate Lanza
+            </Link>,{' '}
+            and{' '}
+            <Link href="https://github.com/JackWilb" target="_blank" rel="noreferrer">
+            Jack Wilburn
+            </Link>{' '}
+            based on the work and ideas of Alex Lex and supported by the{' '}
             <Link
               href="https://vdl.sci.utah.edu/projects/2022-czi-upset/"
               target="_blank"
