@@ -1,5 +1,7 @@
 import {
   Alert,
+  Button,
+  CircularProgress,
   Dialog,
   DialogTitle,
   Divider,
@@ -26,7 +28,11 @@ import {
   RightSidebarType,
 } from '@visdesignlab/upset2-core';
 import { useRecoilValue } from 'recoil';
-import { isPublicWorkspaceAtom } from '../../atoms/sessionAtoms';
+import { MAINTAINER_PERMISSION_LEVEL } from '../../utils/const';
+import { queryParamAtom } from '../../atoms/queryParamAtom';
+import { getUserPermissions } from '../../api/getUserInfo';
+import { SingleUserWorkspacePermissionSpec } from 'multinet';
+import { setWorkspacePrivacy } from '../../api/session';
 
 type Props = {
   open: boolean;
@@ -44,7 +50,12 @@ export const EmbedModal = ({ open, onClose }: Props) => {
   // Sidebar to show in the embedded plot: TD is Text Descriptions Sidebar, EV is Element View Sidebar
   const [sidebar, setSidebar] = useState<RightSidebarType>(RightSidebar.NONE);
   const copySuccessTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const isPublic = useRecoilValue(isPublicWorkspaceAtom);
+  const { workspace } = useRecoilValue(queryParamAtom);
+  const [userPerms, setUserPerms] = useState<SingleUserWorkspacePermissionSpec | null>(
+    null,
+  );
+  /** Boolean toggle that's used to force a re-check of the user permissions */
+  const [recheckUserPerms, setRecheckUserPerms] = useState(false);
 
   // CAUTION: Using embedLink directly in a hook dependency array can lead to issues with HMR (Hot Module Replacement),
   // since the embedLink is derived from window.location and can update outside of react's state management.
@@ -58,6 +69,11 @@ export const EmbedModal = ({ open, onClose }: Props) => {
     );
   }, [showSettings, sidebar]);
 
+  /** User permissions for the current workspace */
+  useEffect(() => {
+    getUserPermissions(workspace ?? '').then((r) => setUserPerms(r));
+  }, [workspace, recheckUserPerms]);
+
   // Reset copy success state when the embed link changes
   useEffect(() => {
     setCopySuccess(null);
@@ -67,6 +83,7 @@ export const EmbedModal = ({ open, onClose }: Props) => {
     }
   }, [showSettings, sidebar]); // Instead of embedLink, we use showSettings and sidebar to avoid HMR issues
 
+  /** Copies the current version of the embed link to clipboard and updates the copy button to a success icon */
   const copyEmbedLink = useCallback(() => {
     navigator.clipboard
       .writeText(embedLink)
@@ -87,6 +104,15 @@ export const EmbedModal = ({ open, onClose }: Props) => {
       });
   }, [embedLink]);
 
+  /** Makes the current workspace public */
+  const makePublic = useCallback(() => {
+    if (workspace)
+      setWorkspacePrivacy(workspace, true).then((success) => {
+        if (!success) console.error('Unable to make workspace public!');
+        else setRecheckUserPerms(!recheckUserPerms); // Force re-check of user permissions
+      });
+  }, [workspace]);
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle style={{ minWidth: '500px' }}>
@@ -102,48 +128,62 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      {isPublic ? (
-        <><FormGroup style={{ padding: '0 32px' }}>
-          <FormControl>
-            <InputLabel id="sidebar-picker-label">Right Sidebar</InputLabel>
-            <Select
-              labelId="sidebar-picker-label"
-              id="sidebar-picker-select"
-              value={sidebar}
-              label="Right Sidebar"
-              onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
-            >
-              <MenuItem value={RightSidebar.ALTTEXT}>Text Descriptions</MenuItem>
-              <MenuItem value={RightSidebar.ELEMENT}>Element View Sidebar</MenuItem>
-              <MenuItem value={RightSidebar.NONE}>None</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControlLabel
-            style={{ marginLeft: 0, width: '100%', justifyContent: 'space-between' }}
-            label="Show Left Settings Sidebar"
-            control={<Switch
-              checked={showSettings}
-              onChange={() => setShowSettings(!showSettings)} />}
-            labelPlacement="start" />
-        </FormGroup><Divider style={{ margin: '0 auto', width: '90%' }} /><Typography
-          onClick={copyEmbedLink}
-          variant="body1"
-          style={{
-            padding: '32px',
-            cursor: 'copy',
-            paddingTop: '16px',
-            wordBreak: 'break-all',
-          }}
-        >
+      {userPerms === null ? (
+        <CircularProgress />
+      ) : userPerms.public ? (
+        <>
+          <FormGroup style={{ padding: '0 32px' }}>
+            <FormControl>
+              <InputLabel id="sidebar-picker-label">Right Sidebar</InputLabel>
+              <Select
+                labelId="sidebar-picker-label"
+                id="sidebar-picker-select"
+                value={sidebar}
+                label="Right Sidebar"
+                onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
+              >
+                <MenuItem value={RightSidebar.ALTTEXT}>Text Descriptions</MenuItem>
+                <MenuItem value={RightSidebar.ELEMENT}>Element View Sidebar</MenuItem>
+                <MenuItem value={RightSidebar.NONE}>None</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControlLabel
+              style={{ marginLeft: 0, width: '100%', justifyContent: 'space-between' }}
+              label="Show Left Settings Sidebar"
+              control={
+                <Switch
+                  checked={showSettings}
+                  onChange={() => setShowSettings(!showSettings)}
+                />
+              }
+              labelPlacement="start"
+            />
+          </FormGroup>
+          <Divider style={{ margin: '0 auto', width: '90%' }} />
+          <Typography
+            onClick={copyEmbedLink}
+            variant="body1"
+            style={{
+              padding: '32px',
+              cursor: 'copy',
+              paddingTop: '16px',
+              wordBreak: 'break-all',
+            }}
+          >
             <code style={{ display: 'inline-block' }}>
               <Tooltip
-                title={copySuccess === null
-                  ? 'Copy embed link'
-                  : copySuccess
-                    ? 'Copied to clipboard'
-                    : 'Failed to copy'}
+                title={
+                  copySuccess === null
+                    ? 'Copy embed link'
+                    : copySuccess
+                      ? 'Copied to clipboard'
+                      : 'Failed to copy'
+                }
               >
-                <IconButton style={{ float: 'right', paddingTop: 4 }} onClick={copyEmbedLink}>
+                <IconButton
+                  style={{ float: 'right', paddingTop: 4 }}
+                  onClick={copyEmbedLink}
+                >
                   {copySuccess === null ? (
                     <ContentCopyIcon />
                   ) : copySuccess ? (
@@ -155,11 +195,19 @@ export const EmbedModal = ({ open, onClose }: Props) => {
               </Tooltip>
               {embedLink}
             </code>
-          </Typography></>
+          </Typography>
+        </>
       ) : (
-        <Alert severity="error">Only public workspaces can be embedded</Alert>
+        <>
+          <Alert severity="error">Only public workspaces can be embedded</Alert>
+          {userPerms.permission &&
+            userPerms.permission >= MAINTAINER_PERMISSION_LEVEL && (
+              <Button variant="contained" color="warning" onClick={makePublic}>
+                Make Workspace Public
+              </Button>
+            )}
+        </>
       )}
-      
     </Dialog>
   );
 };
