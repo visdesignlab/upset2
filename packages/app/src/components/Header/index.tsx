@@ -275,7 +275,18 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
                 }
               }}
             >
-              Load Data
+              Manage Project/Data
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                if (window) {
+                  window.location.href = getMultinetDataUrl(workspace, {
+                    permissions: 'true',
+                  });
+                }
+              }}
+            >
+              Manage Permissions
             </MenuItem>
             <DataTableLink
               data={data}

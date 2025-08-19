@@ -6,6 +6,7 @@ import {
   Row,
   Rows,
   UpsetConfig,
+  deepCopy,
   getDegreeFromSetMembership,
   isRowAggregate,
 } from '@visdesignlab/upset2-core';
@@ -79,8 +80,8 @@ const generateElementName = (rows: Rows): Rows => {
   const newRows = { ...rows };
 
   Object.values(newRows.values).forEach((r: Row) => {
-    if (r['elementName'] !== 'Unincluded') {
-      const splitElName = r['elementName'].split('~&~');
+    if (r.elementName !== 'Unincluded') {
+      const splitElName = r.elementName.split('~&~');
 
       let elName = splitElName.join(', ');
 
@@ -98,7 +99,7 @@ const generateElementName = (rows: Rows): Rows => {
         elName = `Just ${elName}`;
       }
 
-      r['elementName'] = elName;
+      r.elementName = elName;
     }
   });
 
@@ -147,7 +148,8 @@ export const exportState = (
   let dataObj = provenance.getState() as JSONExport;
 
   if (data && rows) {
-    const updatedRows = generateElementName(rows);
+    // For some reason, rows can be readonly, so we need to deep copy it
+    const updatedRows = generateElementName(deepCopy(rows));
     dataObj = {
       ...dataObj,
       rawData: data,
