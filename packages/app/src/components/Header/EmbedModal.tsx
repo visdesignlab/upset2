@@ -202,7 +202,12 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           <Alert severity="error">Only public workspaces can be embedded</Alert>
           {userPerms.permission &&
             userPerms.permission >= MAINTAINER_PERMISSION_LEVEL && (
-              <Button variant="contained" color="warning" onClick={makePublic}>
+              <Button
+                style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
+                variant="contained"
+                color="warning"
+                onClick={makePublic}
+              >
                 Make Workspace Public
               </Button>
             )}
