@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dialog,
   DialogTitle,
   Divider,
@@ -24,6 +25,8 @@ import {
   RightSidebar,
   RightSidebarType,
 } from '@visdesignlab/upset2-core';
+import { useRecoilValue } from 'recoil';
+import { isPublicWorkspaceAtom } from '../../atoms/sessionAtoms';
 
 type Props = {
   open: boolean;
@@ -41,6 +44,7 @@ export const EmbedModal = ({ open, onClose }: Props) => {
   // Sidebar to show in the embedded plot: TD is Text Descriptions Sidebar, EV is Element View Sidebar
   const [sidebar, setSidebar] = useState<RightSidebarType>(RightSidebar.NONE);
   const copySuccessTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isPublic = useRecoilValue(isPublicWorkspaceAtom);
 
   // CAUTION: Using embedLink directly in a hook dependency array can lead to issues with HMR (Hot Module Replacement),
   // since the embedLink is derived from window.location and can update outside of react's state management.
@@ -98,67 +102,64 @@ export const EmbedModal = ({ open, onClose }: Props) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <FormGroup style={{ padding: '0 32px' }}>
-        <FormControl>
-          <InputLabel id="sidebar-picker-label">Right Sidebar</InputLabel>
-          <Select
-            labelId="sidebar-picker-label"
-            id="sidebar-picker-select"
-            value={sidebar}
-            label="Right Sidebar"
-            onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
-          >
-            <MenuItem value={RightSidebar.ALTTEXT}>Text Descriptions</MenuItem>
-            <MenuItem value={RightSidebar.ELEMENT}>Element View Sidebar</MenuItem>
-            <MenuItem value={RightSidebar.NONE}>None</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControlLabel
-          style={{ marginLeft: 0, width: '100%', justifyContent: 'space-between' }}
-          label="Show Left Settings Sidebar"
-          control={
-            <Switch
+      {isPublic ? (
+        <><FormGroup style={{ padding: '0 32px' }}>
+          <FormControl>
+            <InputLabel id="sidebar-picker-label">Right Sidebar</InputLabel>
+            <Select
+              labelId="sidebar-picker-label"
+              id="sidebar-picker-select"
+              value={sidebar}
+              label="Right Sidebar"
+              onChange={(e) => setSidebar(e.target.value as RightSidebarType)}
+            >
+              <MenuItem value={RightSidebar.ALTTEXT}>Text Descriptions</MenuItem>
+              <MenuItem value={RightSidebar.ELEMENT}>Element View Sidebar</MenuItem>
+              <MenuItem value={RightSidebar.NONE}>None</MenuItem>
+            </Select>
+          </FormControl>
+          <FormControlLabel
+            style={{ marginLeft: 0, width: '100%', justifyContent: 'space-between' }}
+            label="Show Left Settings Sidebar"
+            control={<Switch
               checked={showSettings}
-              onChange={() => setShowSettings(!showSettings)}
-            />
-          }
-          labelPlacement="start"
-        />
-      </FormGroup>
-      <Divider style={{ margin: '0 auto', width: '90%' }} />
-      <Typography
-        onClick={copyEmbedLink}
-        variant="body1"
-        style={{
-          padding: '32px',
-          cursor: 'copy',
-          paddingTop: '16px',
-          wordBreak: 'break-all',
-        }}
-      >
-        <code style={{ display: 'inline-block' }}>
-          <Tooltip
-            title={
-              copySuccess === null
-                ? 'Copy embed link'
-                : copySuccess
-                  ? 'Copied to clipboard'
-                  : 'Failed to copy'
-            }
-          >
-            <IconButton style={{ float: 'right', paddingTop: 4 }} onClick={copyEmbedLink}>
-              {copySuccess === null ? (
-                <ContentCopyIcon />
-              ) : copySuccess ? (
-                <DoneIcon color="success" />
-              ) : (
-                <ErrorOutlineIcon color="error" />
-              )}
-            </IconButton>
-          </Tooltip>
-          {embedLink}
-        </code>
-      </Typography>
+              onChange={() => setShowSettings(!showSettings)} />}
+            labelPlacement="start" />
+        </FormGroup><Divider style={{ margin: '0 auto', width: '90%' }} /><Typography
+          onClick={copyEmbedLink}
+          variant="body1"
+          style={{
+            padding: '32px',
+            cursor: 'copy',
+            paddingTop: '16px',
+            wordBreak: 'break-all',
+          }}
+        >
+            <code style={{ display: 'inline-block' }}>
+              <Tooltip
+                title={copySuccess === null
+                  ? 'Copy embed link'
+                  : copySuccess
+                    ? 'Copied to clipboard'
+                    : 'Failed to copy'}
+              >
+                <IconButton style={{ float: 'right', paddingTop: 4 }} onClick={copyEmbedLink}>
+                  {copySuccess === null ? (
+                    <ContentCopyIcon />
+                  ) : copySuccess ? (
+                    <DoneIcon color="success" />
+                  ) : (
+                    <ErrorOutlineIcon color="error" />
+                  )}
+                </IconButton>
+              </Tooltip>
+              {embedLink}
+            </code>
+          </Typography></>
+      ) : (
+        <Alert severity="error">Only public workspaces can be embedded</Alert>
+      )}
+      
     </Dialog>
   );
 };

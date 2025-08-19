@@ -32,6 +32,8 @@ import { getMultinetSession } from './api/session';
 import { ProvenanceContext } from './provenance';
 import { Home } from './components/Home';
 import { generateAltText } from './api/generateAltText';
+import { isPublicWorkspaceAtom } from './atoms/sessionAtoms';
+import { getUserPermissions } from './api/getUserInfo';
 
 /** @jsxImportSource @emotion/react */
 
@@ -52,6 +54,7 @@ function App() {
   // This might not work on Edge or iOS Safari, oh well!
   const urlParams = new URLSearchParams(window.location.search);
   const [sidebarOpen, setSidebarOpen] = useState(true); // Only for embed mode
+  const setPublic = useSetRecoilState(isPublicWorkspaceAtom);
 
   const conf = useMemo(() => {
     if (data !== null) return populateConfigDefaults({ ...DefaultConfig }, data, true);
@@ -113,6 +116,7 @@ function App() {
       }
     }
     update();
+    getUserPermissions(workspace ?? '').then((r) => setPublic(r?.public ?? false));
   }, [sessionId, workspace]);
 
   const provContext = useMemo(() => ({ provenance, actions }), [provenance, actions]);
@@ -155,12 +159,20 @@ function App() {
                       config={conf}
                       altTextSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ALTTEXT
-                          ? { open: sidebarOpen, close: () => setSidebarOpen(false), embedded: true }
+                          ? {
+                              open: sidebarOpen,
+                              close: () => setSidebarOpen(false),
+                              embedded: true,
+                            }
                           : undefined
                       }
                       elementSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ELEMENT
-                          ? { open: sidebarOpen, close: () => setSidebarOpen(false), embedded: true }
+                          ? {
+                              open: sidebarOpen,
+                              close: () => setSidebarOpen(false),
+                              embedded: true,
+                            }
                           : undefined
                       }
                       generateAltText={
