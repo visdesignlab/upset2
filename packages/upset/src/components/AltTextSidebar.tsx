@@ -3,7 +3,9 @@ import {
   Button,
   CircularProgress,
   Icon,
+  IconButton,
   TextField,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -183,12 +185,35 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
     [currState.plotInformation, plotInfoEditing],
   );
 
+  const editPlotInfoTooltip: string = useMemo(
+    () =>
+      canEditPlotInformation
+        ? 'Edit Plot Information'
+        : 'You do not have permission to edit the plot information',
+    [canEditPlotInformation],
+  );
+
   return (
     <Sidebar
       open={open}
       close={close}
       closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
       label="Alt Text and Plot Information Sidebar"
+      buttons={
+        <Tooltip title={editPlotInfoTooltip}>
+          <IconButton
+            aria-label="Plot Information Editor"
+            style={{
+              cursor: 'pointer',
+            }}
+            tabIndex={PLOT_INFO_TAB_INDEX + 1}
+            onClick={() => setTextEditing(true)}
+            disabled={!canEditPlotInformation}
+          >
+            <EditIcon />
+          </IconButton>
+        </Tooltip>
+      }
       title={
         displayPlotInfo
           ? (plotInfo.title ?? 'Editing Plot Information')
@@ -206,12 +231,18 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
           editing={plotInfoEditing}
           setEditing={setPlotInfoEditing}
         />
-      ) : // only show "Add Plot Information" if the user has edit permissions
-      canEditPlotInformation ? (
-        <Button onClick={() => setPlotInfoEditing(true)} tabIndex={PLOT_INFO_TAB_INDEX}>
-          Add Plot Information
-        </Button>
-      ) : null}
+      ) : (
+        <Tooltip title={editPlotInfoTooltip}>
+          <Button
+            onClick={() => setPlotInfoEditing(true)}
+            tabIndex={PLOT_INFO_TAB_INDEX}
+            disabled={!canEditPlotInformation}
+            style={{ width: '100%', textAlign: 'center' }}
+          >
+            Add Plot Information
+          </Button>
+        </Tooltip>
+      )}
       {displayPlotInfo && (
         <UpsetHeading level="h2" divStyle={{ marginTop: '10px' }}>
           Text Description
@@ -276,8 +307,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
               }}
               tabIndex={3}
             >
-              {canEditPlotInformation && (
-                // Only show the edit button if the user has edit permissions
+              <Tooltip
+                title={
+                  canEditPlotInformation
+                    ? 'Edit Text Description'
+                    : 'You do not have permission to edit the text description'
+                }
+              >
                 <Button
                   style={{
                     display: 'inline-block',
@@ -288,12 +324,13 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
                   onClick={enableTextEditing}
                   tabIndex={5}
                   aria-label="Alt Text Description Editor"
+                  disabled={!canEditPlotInformation}
                 >
                   <Icon style={{ overflow: 'visible' }}>
                     <EditIcon />
                   </Icon>
                 </Button>
-              )}
+              </Tooltip>
               <ReactMarkdownWrapper text={displayAltText} />
               <Button
                 onClick={() => setUseLong(!useLong)}
