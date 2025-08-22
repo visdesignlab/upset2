@@ -350,7 +350,11 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
               alt="User login status icon"
               variant="circular"
             >
-              {userInfo !== null ? (
+              {userInfo !== null &&
+              userInfo.first_name &&
+              userInfo.last_name &&
+              userInfo.first_name.length > 0 &&
+              userInfo.last_name.length > 0 ? (
                 `${userInfo.first_name.charAt(0)}${userInfo.last_name.charAt(0)}`
               ) : (
                 <AccountCircle sx={{ height: '90%', width: '90%' }} color="inherit" />
