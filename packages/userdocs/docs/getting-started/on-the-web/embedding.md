@@ -8,7 +8,7 @@ At the bottom of the dropdown menu on the right side of the header is an option 
 
 ![Embed link location](./img/embed/menu-item.png)
 
-Clicking on this opens a dialog box allowing you to customize an embed link. This embed link can be placed into the `src` attribute of an `<iframe>` element anywhere on the web to embed your upset plot in another page. Note that even while embedded, Upset plots save and show edits made to them by authorized users, regardless of whether these changes are made in the embedded version or from the Multinet app. Viewers of your embedded plot who do not have permissions to edit it can make temporary local changes, but these are not saved and do not persist when the page is refreshed.
+Clicking on this opens a dialog box allowing you to customize an embed link. This embed link can be placed into the `src` attribute of an `<iframe>` element anywhere on the web to embed your upset plot in another page. Note that while embedded, plots show the last state that they had in a Multinet session. However, edits made to a plot while it is embedded are temporary and local: they are not saved to Multinet and disappear when the page is refreshed.
 
 ![Embed Modal](./img/embed/modal.png)
 
