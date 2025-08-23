@@ -90,6 +90,9 @@ function App() {
     return { provenance: prov, actions: act };
   }, [conf, setState, sessionState]);
 
+  /** State used by the embedded plot */
+  const embedState = useMemo(() => provenance?.getState() ?? conf, [conf, provenance]);
+
   /*
    * Effects
    */
@@ -152,7 +155,7 @@ function App() {
                   data ? (
                     <Upset
                       data={data}
-                      config={conf}
+                      config={embedState}
                       altTextSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ALTTEXT
                           ? {
