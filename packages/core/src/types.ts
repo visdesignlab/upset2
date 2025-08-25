@@ -1,4 +1,26 @@
 /* eslint-disable no-unused-vars */ // Eslint apparently has never heard of enums...
+/**
+ * Values of URL param showSettings.
+ * Left settings sidebar should only be hidden if this is FALSE.
+ * */
+export enum ShowSettings {
+  TRUE = '1',
+  FALSE = '0',
+}
+
+/**
+ * Values of the sidebar URL param.
+ * This is used to determine which sidebar to show in the embedded plot.
+ * TD is Text Descriptions Sidebar, EV is Element View Sidebar, NONE is no sidebar.
+ */
+export enum RightSidebar {
+  ALTTEXT = 'TD',
+  ELEMENT = 'EV',
+  NONE = 'NONE',
+}
+
+export type RightSidebarType = `${RightSidebar}`;
+
 export type ColumnName = string;
 
 /**
@@ -557,7 +579,7 @@ export type AccessibleData = {
 export type AltTextConfig = UpsetConfig & {
   rawData?: CoreUpsetData;
   processedData?: AccessibleData;
-  accessibleProcessedData?: AccessibleData;
+  accessibleProcessedData: AccessibleData;
 };
 
 export type JSONExport = UpsetConfig & {

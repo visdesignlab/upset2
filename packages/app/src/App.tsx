@@ -1,18 +1,24 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
   UpsetProvenance,
   UpsetActions,
   getActions,
   initializeProvenanceTracking,
+  Upset,
+  getAltTextConfig,
 } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import {
+  AltText,
   convertConfig,
   deepCopy,
   DefaultConfig,
+  getRows,
   populateConfigDefaults,
+  RIGHT_SIDEBAR_URL_PARAM,
+  RightSidebar,
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
@@ -24,10 +30,14 @@ import { configAtom } from './atoms/configAtoms';
 import { queryParamAtom } from './atoms/queryParamAtom';
 import { getMultinetSession } from './api/session';
 import { ProvenanceContext } from './provenance';
+import { Home } from './components/Home';
+import { generateAltText } from './api/generateAltText';
 
 /** @jsxImportSource @emotion/react */
 
 type SessionState = ProvenanceGraph<UpsetConfig, string> | null | 'not found';
+
+const ALTTEXT_EMBED_ERR = 'Error generating alt text';
 
 function App() {
   const multinetData = useRecoilValue(dataSelector);
@@ -39,11 +49,29 @@ function App() {
   );
   const { workspace, sessionId } = useRecoilValue(queryParamAtom);
   const [sessionState, setSessionState] = useState<SessionState>(null); // null is not tried to load, undefined is tried and no state to load, and value is loaded value
+  // This might not work on Edge or iOS Safari, oh well!
+  const urlParams = new URLSearchParams(window.location.search);
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Only for embed mode
 
   const conf = useMemo(() => {
     if (data !== null) return populateConfigDefaults({ ...DefaultConfig }, data, true);
     return undefined;
   }, [data]);
+
+  const rows = useMemo(() => {
+    return data ? getRows(data, conf ?? DefaultConfig) : null;
+  }, [data, conf]);
+
+  const generateAltTextFunc: () => Promise<AltText> = useCallback(
+    () =>
+      data && rows && conf
+        ? generateAltText(getAltTextConfig(conf, data, rows)).then((text) => text.alttxt)
+        : Promise.resolve({
+            longDescription: ALTTEXT_EMBED_ERR,
+            shortDescription: ALTTEXT_EMBED_ERR,
+          }),
+    [conf, data, rows],
+  );
 
   // Initialize Provenance and pass it setter to connect
   const { provenance, actions } = useMemo(() => {
@@ -61,6 +89,9 @@ function App() {
 
     return { provenance: prov, actions: act };
   }, [conf, setState, sessionState]);
+
+  /** State used by the embedded plot */
+  const embedState = useMemo(() => provenance?.getState() ?? conf, [conf, provenance]);
 
   /*
    * Effects
@@ -116,6 +147,42 @@ function App() {
                     data={null}
                     config={conf}
                   />
+                }
+              />
+              <Route
+                path="/embed"
+                element={
+                  data ? (
+                    <Upset
+                      data={data}
+                      config={embedState}
+                      altTextSidebar={
+                        urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ALTTEXT
+                          ? {
+                              open: sidebarOpen,
+                              close: () => setSidebarOpen(false),
+                              embedded: true,
+                            }
+                          : undefined
+                      }
+                      elementSidebar={
+                        urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ELEMENT
+                          ? {
+                              open: sidebarOpen,
+                              close: () => setSidebarOpen(false),
+                              embedded: true,
+                            }
+                          : undefined
+                      }
+                      generateAltText={
+                        urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ALTTEXT
+                          ? generateAltTextFunc
+                          : undefined
+                      }
+                    />
+                  ) : (
+                    <Home />
+                  )
                 }
               />
               <Route

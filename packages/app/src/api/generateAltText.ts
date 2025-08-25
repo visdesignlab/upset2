@@ -1,4 +1,4 @@
-import { AltText, isAltText, isObject, UpsetConfig } from '@visdesignlab/upset2-core';
+import { AltText, AltTextConfig, isAltText, isObject } from '@visdesignlab/upset2-core';
 import { api } from './api';
 
 /**
@@ -14,7 +14,7 @@ export type AltTextResponse = {
  * @param {UpsetConfig}config - The configuration object for generating alternative text.
  * @returns A promise that resolves to the generated alternative text.
  */
-export async function generateAltText(config: UpsetConfig): Promise<AltTextResponse> {
+export async function generateAltText(config: AltTextConfig): Promise<AltTextResponse> {
   const response = await api.generateAltText(true, config);
   if (
     !isObject(response) ||

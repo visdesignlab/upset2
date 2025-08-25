@@ -21,21 +21,12 @@ import { plotInformationSelector } from '../atoms/config/plotInformationAtom';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import { Sidebar } from './custom/Sidebar';
 import { UpsetHeading } from './custom/theme/heading';
+import { SidebarProps } from '../types';
 
 /**
  * Props for the AltTextSidebar component.
  */
-type Props = {
-  /**
-   * Indicates whether the sidebar is open or closed.
-   */
-  open: boolean;
-
-  /**
-   * Callback to close the sidebar.
-   */
-  close: () => void;
-
+type Props = SidebarProps & {
   /**
    * Asynchronous function to generate the text description.
    * @returns A promise that resolves to an `AltText` object.
@@ -54,7 +45,7 @@ type Props = {
  * @param {() => Promise<AltText>} props.generateAltText - Callback function to generate alternative text for the plot.
  * @returns {JSX.Element} The AltTextSidebar component.
  */
-export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
+export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedded }) => {
   /**
    * State
    */
@@ -199,6 +190,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText }) => {
       close={close}
       closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
       label="Alt Text and Plot Information Sidebar"
+      embedded={embedded}
       buttons={
         <Tooltip title={editPlotInfoTooltip}>
           <IconButton
