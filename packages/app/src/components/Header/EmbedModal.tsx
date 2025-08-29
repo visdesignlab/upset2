@@ -69,6 +69,15 @@ export const EmbedModal = ({ open, onClose }: Props) => {
     );
   }, [showSettings, sidebar]);
 
+  /** Whether the user has permissions to publish this workspace */
+  const canPublish = useMemo(
+    () =>
+      userPerms &&
+      userPerms.permission &&
+      userPerms.permission >= MAINTAINER_PERMISSION_LEVEL,
+    [userPerms],
+  );
+
   /** User permissions for the current workspace */
   useEffect(() => {
     getUserPermissions(workspace ?? '').then((r) => setUserPerms(r));
@@ -106,12 +115,12 @@ export const EmbedModal = ({ open, onClose }: Props) => {
 
   /** Makes the current workspace public */
   const makePublic = useCallback(() => {
-    if (workspace)
+    if (workspace && canPublish)
       setWorkspacePrivacy(workspace, true).then((success) => {
         if (!success) console.error('Unable to make workspace public!');
         else setRecheckUserPerms(!recheckUserPerms); // Force re-check of user permissions
       });
-  }, [workspace]);
+  }, [workspace, canPublish, recheckUserPerms]);
 
   return (
     <Dialog open={open} onClose={onClose}>
@@ -199,18 +208,33 @@ export const EmbedModal = ({ open, onClose }: Props) => {
         </>
       ) : (
         <>
-          <Alert severity="error">Only public workspaces can be embedded</Alert>
-          {userPerms.permission &&
-            userPerms.permission >= MAINTAINER_PERMISSION_LEVEL && (
-              <Button
-                style={{ borderTopLeftRadius: 0, borderTopRightRadius: 0 }}
-                variant="contained"
-                color="warning"
-                onClick={makePublic}
-              >
-                Make Workspace Public
-              </Button>
-            )}
+          <Alert severity="error">
+            Unable to generate embed link: Only public workspaces can be embedded.
+          </Alert>
+          <Alert severity="warning">
+            Caution: Publishing this workspace allows anyone on the internet to access
+            your data.
+          </Alert>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '8px',
+              padding: '16px',
+            }}
+          >
+            <Button variant="outlined" color="info" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button
+              variant="outlined"
+              color="warning"
+              onClick={makePublic}
+              disabled={!canPublish}
+            >
+              Make Workspace Public
+            </Button>
+          </div>
         </>
       )}
     </Dialog>
