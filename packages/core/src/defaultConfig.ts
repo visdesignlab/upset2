@@ -43,7 +43,7 @@ export const DefaultConfig: UpsetConfig = {
   querySelection: null,
   selectionType: null,
   userAltText: null,
-  version: '0.1.4',
+  version: '0.1.5',
   intersectionSizeLabels: true,
   setSizeLabels: true,
   showHiddenSets: true,

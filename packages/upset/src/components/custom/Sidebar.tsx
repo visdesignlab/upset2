@@ -20,6 +20,8 @@ type Props = {
   title: string;
   /** Buttons to display at the top of the sidebar, left of the close & expand */
   buttons?: React.ReactNode;
+  /** Whether the app is embedded, which disables closing and removes top margin */
+  embedded?: boolean;
 };
 
 /** Dimension for the square button wrappers */
@@ -36,6 +38,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
   label,
   title,
   buttons,
+  embedded = false, // Default to false for non-embed mode
 }) => {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
@@ -95,7 +98,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
         flexShrink: 0,
         '& .MuiDrawer-paper': {
           padding: '1em',
-          marginTop: '2em',
+          marginTop: embedded ? 0 : '2em',
           width: open ? (fullWidth ? '100%' : drawerWidth) : 0,
           boxSizing: 'border-box',
           zIndex: 1,
@@ -212,6 +215,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
                 }}
                 tabIndex={closeButtonTabIndex}
                 aria-label="Close the sidebar"
+                disabled={embedded}
               >
                 <CloseIcon />
               </IconButton>

@@ -1,3 +1,4 @@
+import { SingleUserWorkspacePermissionSpec } from 'multinet';
 import { api } from './api';
 
 /**
@@ -17,3 +18,18 @@ export const getUserInfo = async () => {
     throw new Error(e);
   }
 };
+
+/**
+ * Gets permissions for the current user from the Multinet API
+ * @param workspace The current workspace name
+ * @returns An object containing the user's permissions, or null if an error occurs
+ */
+export async function getUserPermissions(
+  workspace: string,
+): Promise<SingleUserWorkspacePermissionSpec | null> {
+  try {
+    return await api.getCurrentUserWorkspacePermissions(workspace);
+  } catch {
+    return null;
+  }
+}
