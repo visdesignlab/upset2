@@ -74,6 +74,7 @@ export const ElementVisualization = () => {
    */
 
   const draftSelection = useRef(selection);
+  const cancelNextSelection = useRef(false);
   const preventSignal = useRef(false);
   const [views, setViews] = useState<{ view: View; plot: Plot }[]>([]);
   const currentClick = useRef<Plot | null>(null);
@@ -127,21 +128,29 @@ export const ElementVisualization = () => {
   /**
    * Saves the current selection to the state.
    */
-  const saveSelection = useCallback(() => {
-    if (
-      draftSelection.current &&
-      Object.keys(draftSelection.current).length > 0 &&
-      !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
-    ) {
-      actions.setVegaSelection(draftSelection.current);
+  const saveSelection = useCallback(
+    (cancelNext: boolean = false) => {
+      if (cancelNextSelection.current) {
+        cancelNextSelection.current = cancelNext;
+        return;
+      }
+      if (
+        draftSelection.current &&
+        Object.keys(draftSelection.current).length > 0 &&
+        !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
+      ) {
+        actions.setVegaSelection(draftSelection.current);
 
-      // reset the column selection highlight state because the selection has changed
-      setColumnSelection([]);
-    } else if (selection) {
-      actions.setVegaSelection(null);
-    }
-    draftSelection.current = null;
-  }, [selection, actions, setColumnSelection]);
+        // reset the column selection highlight state because the selection has changed
+        setColumnSelection([]);
+      } else if (selection) {
+        actions.setVegaSelection(null);
+      }
+      draftSelection.current = null;
+      if (cancelNext) cancelNextSelection.current = true;
+    },
+    [selection, actions, setColumnSelection],
+  );
 
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
@@ -158,7 +167,8 @@ export const ElementVisualization = () => {
   return (
     <Box
       // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
-      onClick={saveSelection}
+      onClick={() => saveSelection()}
+      onMouseLeave={() => saveSelection(true)}
     >
       <Box
         sx={{
