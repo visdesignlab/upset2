@@ -78,6 +78,7 @@ export const ElementVisualization = () => {
   const preventSignal = useRef(false);
   const [views, setViews] = useState<{ view: View; plot: Plot }[]>([]);
   const currentClick = useRef<Plot | null>(null);
+  const mouseDown = useRef(false);
   const data = useMemo(
     () => ({
       elements: Object.values(deepCopy(items)),
@@ -115,7 +116,10 @@ export const ElementVisualization = () => {
         preventSignal.current
       )
         return;
+
+      mouseDown.current = true; // We don't get onMouseDown events bubbling from VegaLite; this is a working proxy
       draftSelection.current = value;
+
       views
         .filter(({ plot }) => plot.id !== signaled.id)
         .forEach(({ view }) => {
@@ -130,20 +134,27 @@ export const ElementVisualization = () => {
    */
   const saveSelection = useCallback(
     (cancelNext: boolean = false) => {
+      // Cancel the next selection, and cancel the one after if this selection indicates so
       if (cancelNextSelection.current) {
         cancelNextSelection.current = cancelNext;
         return;
       }
+
+      // Don't save if the mouse ain't down silly
+      if (!mouseDown.current) return;
+
       if (
         draftSelection.current &&
         Object.keys(draftSelection.current).length > 0 &&
         !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
       ) {
+        console.log('saving selection', draftSelection.current);
         actions.setVegaSelection(draftSelection.current);
 
         // reset the column selection highlight state because the selection has changed
         setColumnSelection([]);
       } else if (selection) {
+        console.log('clearing selection');
         actions.setVegaSelection(null);
       }
       draftSelection.current = null;
@@ -167,8 +178,15 @@ export const ElementVisualization = () => {
   return (
     <Box
       // Since onClick fires onMouseUp, this is a great time to save (onMouseUp doesn't bubble from vegaLite)
-      onClick={() => saveSelection()}
+      onClick={() => {
+        saveSelection();
+        // Since onClick fires after onMouseUp
+        mouseDown.current = false;
+      }}
+      // Save selection and cancel the onClick selection (which will now fire with null value)
       onMouseLeave={() => saveSelection(true)}
+      // Make sure that we don't cancel the onClick selection if the mouse re-enters the box
+      onMouseEnter={() => (cancelNextSelection.current = false)}
     >
       <Box
         sx={{
