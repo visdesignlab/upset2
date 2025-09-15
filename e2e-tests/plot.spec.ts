@@ -47,7 +47,6 @@ async function addSetByName(page: Page, setName: string) {
  * @param max max value to assert
  */
 async function assertSizeScaleMax(page: Page, max: number) {
-  console.log('asserting', max);
   await expect(
     page.locator('g.details-scale > g > g:last-child > text').first(),
   ).toHaveText(new RegExp(`^${max}$`));
