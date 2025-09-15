@@ -148,15 +148,11 @@ export const ElementVisualization = () => {
         Object.keys(draftSelection.current).length > 0 &&
         !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
       ) {
-        console.log('saving selection', draftSelection.current);
         actions.setVegaSelection(draftSelection.current);
-
         // reset the column selection highlight state because the selection has changed
         setColumnSelection([]);
-      } else if (selection) {
-        console.log('clearing selection');
-        actions.setVegaSelection(null);
-      }
+      } else if (selection) actions.setVegaSelection(null);
+
       draftSelection.current = null;
       if (cancelNext) cancelNextSelection.current = true;
     },
