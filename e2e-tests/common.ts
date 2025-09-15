@@ -6,7 +6,8 @@ import mockAltText from '../playwright/mock-data/simpsons/simpsons_alttxt.json' 
 export const alttxt = {
   upsetIntroduction:
     'This is an UpSet plot that visualizes set intersection. To learn about UpSet plots, visit https://upset.app.',
-  datasetProperties: 'The dataset contains 6 sets and 44 elements, of which 6 sets are shown in the plot.',
+  datasetProperties:
+    'The dataset contains 6 sets and 44 elements, of which 6 sets are shown in the plot.',
   setProperties:
     'The set sizes are diverging a lot, ranging from 3 to 18. The largest set is Male with 18 elements, followed by School with 6, Duff Fan with 6, Evil with 6, Power Plant with 5, and Blue Hair with 3.',
   intersectionProperties:
@@ -28,10 +29,16 @@ export async function beforeTest({ page }: { page: Page }) {
     let json;
 
     if (url) {
-      if (url.includes('workspaces/Upset%20Examples/tables/simpsons/rows/?limit=9007199254740991')) {
+      if (
+        url.includes(
+          'workspaces/Upset%20Examples/tables/simpsons/rows/?limit=9007199254740991',
+        )
+      ) {
         json = mockData;
         await route.fulfill({ json });
-      } else if (url.includes('workspaces/Upset%20Examples/tables/simpsons/annotations/')) {
+      } else if (
+        url.includes('workspaces/Upset%20Examples/tables/simpsons/annotations/')
+      ) {
         json = mockAnnotations;
         await route.fulfill({ json });
       } else if (url.includes('alttxt')) {
@@ -40,8 +47,29 @@ export async function beforeTest({ page }: { page: Page }) {
       } else if (url.includes('workspaces/Upset%20Examples/sessions/table/193/')) {
         await route.fulfill({ status: 200 });
       } else if (url.includes('workspaces/Upset%20Examples/permissions/me')) {
-        // User has owner permissions, this will allow plot information editing
-        await route.fulfill({ status: 200, json: { permission_label: 'owner' } });
+        // User has maintainer permissions, this will allow plot information editing
+        await route.fulfill({
+          status: 200,
+          json: {
+            permission: 3,
+            permission_label: 'maintainer',
+            public: true,
+            username: 'test',
+            workspace: 'Upset Examples',
+          },
+        });
+      } else if (url.includes('api/users/me')) {
+        // Mock user authentication
+        await route.fulfill({
+          status: 200,
+          json: {
+            username: 'test',
+            workspace: 'Upset Examples',
+            permission: 3,
+            permission_label: 'maintainer',
+            public: true,
+          },
+        });
       } else {
         await route.continue();
       }

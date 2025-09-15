@@ -1,6 +1,7 @@
 import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { api } from './api';
+import { WorkspacePermissionsSpec } from 'multinet';
 
 /**
  * Updates a Multinet session.
@@ -17,6 +18,17 @@ export function updateMultinetSession(
   api.updateSession(workspace, parseInt(sessionId), 'table', provObject);
 }
 
+export function updateWorkspacePrivacy(
+  workspace: string,
+  workspacePerms: WorkspacePermissionsSpec,
+  privacy: boolean,
+) {
+  api.setWorkspacePermissions(workspace, {
+    ...workspacePerms,
+    public: privacy,
+  });
+}
+
 /**
  * Retrieves a Multinet session from the Multinet API.
  *
@@ -30,4 +42,29 @@ export async function getMultinetSession(workspace: string, sessionId: string) {
   } catch {
     return null;
   }
+}
+
+/**
+ * Set the public visibility of a workspace.
+ * @param workspace Name of the workspace
+ * @param isPublic Whether the workspace should be public
+ * @returns True if successful, false if the operation fails (due to insufficient permissions or otherwise)
+ */
+export async function setWorkspacePrivacy(
+  workspace: string,
+  isPublic: boolean,
+): Promise<boolean> {
+  try {
+    const perms = await api.getWorkspacePermissions(workspace);
+    if (perms) {
+      await api.setWorkspacePermissions(workspace, {
+        ...perms,
+        public: isPublic,
+      });
+      return true;
+    }
+  } catch {
+    return false;
+  }
+  return false;
 }

@@ -32,16 +32,7 @@ import { AddPlotDialog } from './AddPlotDialog';
 import { totalItemsSelector } from '../../atoms/dataAtom';
 import { HelpCircle } from '../custom/HelpCircle';
 import { dataAttributeSelector } from '../../atoms/attributeAtom';
-
-/**
- * Props for the ElementSidebar component
- */
-type Props = {
-  /** Whether the sidebar is open */
-  open: boolean;
-  /** Function to close the sidebar */
-  close: () => void;
-};
+import { SidebarProps } from '../../types';
 
 /** Default vertical margin between elements */
 const DEFAULT_SPACING = '0.5em';
@@ -86,7 +77,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  * @param open Whether the sidebar is open
  * @param close Function to close the sidebar
  */
-export const ElementSidebar = ({ open, close }: Props) => {
+export const ElementSidebar = ({ open, close, embedded }: SidebarProps) => {
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
@@ -133,6 +124,7 @@ export const ElementSidebar = ({ open, close }: Props) => {
       close={close}
       label="Element View Sidebar"
       title="Element View"
+      embedded={embedded}
       buttons={
         <>
           <Tooltip title="Add plot">
