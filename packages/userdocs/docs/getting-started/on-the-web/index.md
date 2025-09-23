@@ -56,9 +56,9 @@ After clicking next, the table upload interface will change into column type sel
 
 In the above screenshot, the movies dataset contains a few different important fields to note.
 
-Annotated red, the "name" column indicates the name of the data entry. This column type should always be set to `label`. This field is used internally for categorization and in the [element view table](../upset2-features/element-view/element-table.md).
+Annotated red, the "name" column indicates the name of the data entry. This column type should always be set to `label`. This field is used internally for categorization and in the [element view table](../../upset2-features/element-view/element-table.md).
 
-Annotated blue, the "ReleaseDate" column indicates a [dataset attribute](../upset2-features/attributes/dataset.md). This specific attribute is a date, so the column type is set to `Date`. These are also commonly `Number` type (ex: Average Rating).
+Annotated blue, the "ReleaseDate" column indicates a [dataset attribute](../../upset2-features/attributes/dataset.md). This specific attribute is a date, so the column type is set to `Date`. These are also commonly `Number` type (ex: Average Rating).
 
 Annotated green, the "Documentary" column shows as `category` type. Since this column is actually a boolean column, this appears to be mislabelled. It is important to adjust the type to `boolean` so that the data is properly processed during the upload.
 

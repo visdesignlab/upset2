@@ -154,7 +154,8 @@ const annotations = {
 The example below details a simple usecase of the process function.
 
 ```JSX
-import { Upset, process } from '@visdesignlab/upset2-react';
+import { Upset } from '@visdesignlab/upset2-react';
+import { process } from '@visdesignlab/upset2-core';
 
 const main = () => {
   const rawData = [

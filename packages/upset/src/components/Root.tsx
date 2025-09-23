@@ -3,6 +3,7 @@ import {
   AltText,
   convertConfig,
   CoreUpsetData,
+  deepCopy,
   DefaultConfig,
   LEFT_SETTINGS_URL_PARAM,
   populateConfigDefaults,
@@ -157,7 +158,7 @@ export const Root: FC<Props> = ({
     if (!extProvenance) {
       setState(
         populateConfigDefaults(
-          convertConfig(config),
+          Object.entries(config).length > 0 ? deepCopy(convertConfig(config)) : {},
           data,
           visualizeUpsetAttributes ?? false,
           visibleDatasetAttributes,
