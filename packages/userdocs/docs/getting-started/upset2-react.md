@@ -31,6 +31,7 @@ This data example shows only two characters from the Simpsons.
 ```js
 const rawData = [
    {
+    "id": 0,
     "Name": "Homer",
     "School": false,
     "Blue Hair": false,
@@ -41,6 +42,7 @@ const rawData = [
     "Age": 40
   },
   {
+    "id": 1,
     "Name": "Marge",
     "School": false,
     "Blue Hair": true,
@@ -67,6 +69,7 @@ The example below is a simple usecase for loading raw data into UpSet 2.0.
 const main = () => {
   const rawData = [
     {
+      "id": 0,
       "Name": "Homer",
       "School": false,
       "Blue Hair": false,
@@ -77,6 +80,7 @@ const main = () => {
       "Age": 40
     },
     {
+      "id": 1,
       "Name": "Marge",
       "School": false,
       "Blue Hair": true,
@@ -127,6 +131,7 @@ import { Upset, process } from '@visdesignlab/upset2-react';
 const main = () => {
   const rawData = [
     {
+      "id": 0,
       "Name": "Homer",
       "School": false,
       "Blue Hair": false,
@@ -137,6 +142,7 @@ const main = () => {
       "Age": 40
     },
     {
+      "id": 1,
       "Name": "Marge",
       "School": false,
       "Blue Hair": true,
