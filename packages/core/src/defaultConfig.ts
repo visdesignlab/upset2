@@ -79,7 +79,8 @@ export function populateConfigDefaults(
   visibleDataAttributes: string[] | undefined = undefined,
 ): UpsetConfig {
   const newConf = {
-    ...DefaultConfig,
+    // This deepycopy is required to avoid readonly issues for nested objects
+    ...deepCopy(DefaultConfig),
     // This deepcopy is necessary to avoid mutating the original config object
     ...(Object.entries(config).length > 0 ? deepCopy(convertConfig(config)) : {}),
   };
