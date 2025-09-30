@@ -101,7 +101,7 @@ function getSetColumns(columns: ColumnTypes): ColumnName[] {
  */
 function getAttributeColumns(columns: ColumnTypes): ColumnName[] {
   return Object.entries(columns)
-    .filter(([_, type]) => type === 'number' || type === 'category')
+    .filter(([_, type]) => type === 'number' || type === 'category' || type === 'date')
     .map(([name, _]) => name);
 }
 
