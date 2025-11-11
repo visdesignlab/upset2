@@ -16,7 +16,7 @@ const defaultTickFormatter = (d: number) => {
 
   if (d >= 500000) return `${d / 100000}M`;
 
-  if (d >= 1000) return `${d / 1000}K`;
+  if (d >= 10000) return `${d / 1000}K`;
 
   return d;
 };
