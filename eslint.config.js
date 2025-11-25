@@ -1,29 +1,56 @@
 import js from '@eslint/js';
 import globals from 'globals';
-import tseslint from 'typescript-eslint';
+import tsParser from '@typescript-eslint/parser';
+import tsPlugin from '@typescript-eslint/eslint-plugin';
 import pluginReact from 'eslint-plugin-react';
 import importPlugin from 'eslint-plugin-import';
 import jsxA11y from 'eslint-plugin-jsx-a11y';
 import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
-import { defineConfig } from 'eslint/config';
 
-export default defineConfig([
+export default [
   // Configs further down the array will override rules from earlier configs
-  importPlugin.flatConfigs.recommended,
-  tseslint.configs.recommended,
+  js.configs.recommended,
+  {
+    files: ['**/*.{ts,tsx}'],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        ecmaFeatures: {
+          jsx: true,
+        },
+        project: ['./tsconfig.json', './packages/*/tsconfig.json'],
+      },
+      globals: globals.browser,
+    },
+    plugins: {
+      '@typescript-eslint': tsPlugin,
+    },
+    rules: {
+      ...tsPlugin.configs.recommended.rules,
+      '@typescript-eslint/no-unused-vars': [
+        'warn', // or "error"
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+          caughtErrorsIgnorePattern: '^_',
+        },
+      ],
+    },
+  },
   pluginReact.configs.flat.recommended,
+  importPlugin.flatConfigs.recommended,
   eslintPluginPrettierRecommended,
   {
-    files: ['**/*.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    plugins: { js },
-    extends: ['js/recommended'],
-    languageOptions: { globals: globals.browser },
+    files: ['**/*.{js,mjs,cjs,jsx}'],
+    languageOptions: {
+      globals: globals.browser,
+    },
   },
   {
     plugins: {
-      react: pluginReact,
       'jsx-a11y': jsxA11y,
-      'eslint-plugin-react': pluginReact,
     },
     rules: {
       'prettier/prettier': [
@@ -49,14 +76,6 @@ export default defineConfig([
       'react/react-in-jsx-scope': 'off',
       'react/no-unknown-property': ['error', { ignore: ['css'] }],
       'operator-linebreak': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'warn', // or "error"
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
       // needs to be duplicated because we have this rule in 2 plugins (=
       'no-unused-vars': [
         'warn', // or "error"
@@ -81,4 +100,4 @@ export default defineConfig([
       'react/display-name': 'off',
     },
   },
-]);
+];

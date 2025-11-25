@@ -43,7 +43,7 @@ export const DefaultConfig: UpsetConfig = {
   querySelection: null,
   selectionType: null,
   userAltText: null,
-  version: '0.1.4',
+  version: '0.1.5',
   intersectionSizeLabels: true,
   setSizeLabels: true,
   showHiddenSets: true,
@@ -79,7 +79,8 @@ export function populateConfigDefaults(
   visibleDataAttributes: string[] | undefined = undefined,
 ): UpsetConfig {
   const newConf = {
-    ...DefaultConfig,
+    // This deepycopy is required to avoid readonly issues for nested objects
+    ...deepCopy(DefaultConfig),
     // This deepcopy is necessary to avoid mutating the original config object
     ...(Object.entries(config).length > 0 ? deepCopy(convertConfig(config)) : {}),
   };

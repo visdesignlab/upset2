@@ -24,7 +24,12 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
-import { aggregateByList, BaseRow, isAggregateBy } from '@visdesignlab/upset2-core';
+import {
+  aggregateByList,
+  BaseRow,
+  isAggregateBy,
+  UPSET_ATTS,
+} from '@visdesignlab/upset2-core';
 import React, {
   CSSProperties,
   FC,
@@ -230,10 +235,8 @@ export const SettingsSidebar = () => {
       // Ensures that the order is always Degree, Deviation, then the rest;
       // this keeps the plot consistent & prevents graphical bugs
       newAtts.sort((a, b) => {
-        if (a === 'Degree') return -1;
-        if (b === 'Degree') return 1;
-        if (a === 'Deviation') return -1;
-        if (b === 'Deviation') return 1;
+        if (UPSET_ATTS.includes(a)) return -1;
+        if (UPSET_ATTS.includes(b)) return 1;
         return 0;
       });
       // This simply sets the config visibleAtts to all newAtts, so it removes atts as well

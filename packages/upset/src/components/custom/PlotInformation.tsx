@@ -1,9 +1,7 @@
-import { Alert, Box, Button, Icon, TextField, Typography } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
+import { Alert, Box, Button, TextField, Typography } from '@mui/material';
 import { useRecoilValue } from 'recoil';
 import { useContext, useState, useCallback } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
-import { canEditPlotInformationAtom } from '../../atoms/config/canEditPlotInformationAtom';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
 
@@ -76,7 +74,6 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
    */
 
   const plotInformationState = useRecoilValue(plotInformationSelector);
-  const canEditPlotInformation = useRecoilValue(canEditPlotInformationAtom);
   const [plotInformation, setPlotInformation] = useState(plotInformationState);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
@@ -135,24 +132,6 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
       }}
     >
       <div style={{ minHeight: '1.6em' }}>
-        {canEditPlotInformation && (
-          // Hide the edit button if the user does not have permissions
-          <Button
-            aria-label="Plot Information Editor"
-            style={{
-              float: 'right',
-              position: 'relative',
-              bottom: '10px',
-              cursor: 'pointer',
-            }}
-            tabIndex={tabIndex + 1}
-            onClick={() => setEditing(true)}
-          >
-            <Icon style={{ overflow: 'visible' }}>
-              <EditIcon />
-            </Icon>
-          </Button>
-        )}
         <Typography>{plotInformation.caption}</Typography>
       </div>
       <br />
