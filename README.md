@@ -34,10 +34,10 @@ IEEE Transactions on Visualization and Computer Graphics (InfoVis), 20(12): 1983
 
 ## UpSet 2.0 as a React Component
 
-UpSet 2.0 can be imported as a React component using:
+UpSet 2.0 can be imported (along with all peer dependencies) as a React component using:
 
 ```console
-npm install @visdesignlab/upset2-react
+npm install @visdesignlab/upset2-react @mui/material @mui/icons-material @mui/x-data-grid @emotion/react @emotion/styled recoil @trrack/core @trrack/vis-react vega vega-lite react-vega
 ```
 
 Note that UpSet 2.0 requires a react version of 18.0 or higher.

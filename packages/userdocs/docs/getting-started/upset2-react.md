@@ -9,7 +9,7 @@ UpSet 2.0 is available as a modular React component. Using component configurati
 ## Installation
 
 ```console
-npm install @visdesignlab/upset2-react
+npm install @visdesignlab/upset2-react @mui/material @mui/icons-material @mui/x-data-grid @emotion/react @emotion/styled recoil @trrack/core @trrack/vis-react vega vega-lite react-vega
 ```
 
 Note that UpSet 2.0 requires a react version of 18.0 or higher.
