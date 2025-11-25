@@ -6,7 +6,7 @@ VUE_APP_OAUTH_CLIENT_ID = "FKSbPC4GNN31E3a6s6f4Uo96gfNfKcGGcEH3K4vq"
 VITE_MULTINET_HOST = "https://api.multinet.app"
 VITE_OAUTH_API_ROOT = "https://api.multinet.app/oauth/"
 VITE_OAUTH_CLIENT_ID = "FKSbPC4GNN31E3a6s6f4Uo96gfNfKcGGcEH3K4vq"
-VITE_UPLOAD_URL = "https://multinet.app/#/workspaces/Upset%20Examples/"
+VITE_UPLOAD_URL = "https://multinet.app/"
 
 [context.deploy-preview.environment]
 VUE_APP_MULTINET_HOST = "https://api.multinet.app"
@@ -16,7 +16,7 @@ VUE_APP_OAUTH_CLIENT_ID = "FKSbPC4GNN31E3a6s6f4Uo96gfNfKcGGcEH3K4vq"
 VITE_MULTINET_HOST = "https://api.multinet.app"
 VITE_OAUTH_API_ROOT = "https://api.multinet.app/oauth/"
 VITE_OAUTH_CLIENT_ID = "FKSbPC4GNN31E3a6s6f4Uo96gfNfKcGGcEH3K4vq"
-VITE_UPLOAD_URL = "https://multinet.app/#/workspaces/Upset%20Examples/"
+VITE_UPLOAD_URL = "https://multinet.app/"
 
 [[redirects]]
 

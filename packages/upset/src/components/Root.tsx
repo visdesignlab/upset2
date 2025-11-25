@@ -3,8 +3,11 @@ import {
   AltText,
   convertConfig,
   CoreUpsetData,
+  deepCopy,
   DefaultConfig,
+  LEFT_SETTINGS_URL_PARAM,
   populateConfigDefaults,
+  ShowSettings,
   UPSET_ATTS,
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
@@ -35,6 +38,7 @@ import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { footerHeightAtom } from '../atoms/dimensionsAtom';
+import { SidebarProps } from '../types';
 
 // Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context
 const defaultProvenance = initializeProvenanceTracking(DefaultConfig, () => {
@@ -68,14 +72,8 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  elementSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
-  altTextSidebar?: {
-    open: boolean;
-    close: () => void;
-  };
+  elementSidebar?: SidebarProps;
+  altTextSidebar?: SidebarProps;
   footerHeight?: number;
   generateAltText?: () => Promise<AltText>;
 };
@@ -106,6 +104,8 @@ export const Root: FC<Props> = ({
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
   const setFooterHeight = useSetRecoilState(footerHeightAtom);
+  // This might not work on Edge or iOS Safari, oh well!
+  const urlParams = new URLSearchParams(window.location.search);
 
   // Set the initial state of canEditPlotInformation
   useEffect(() => {
@@ -158,7 +158,7 @@ export const Root: FC<Props> = ({
     if (!extProvenance) {
       setState(
         populateConfigDefaults(
-          convertConfig(config),
+          Object.entries(config).length > 0 ? deepCopy(convertConfig(config)) : {},
           data,
           visualizeUpsetAttributes ?? false,
           visibleDatasetAttributes,
@@ -226,7 +226,9 @@ export const Root: FC<Props> = ({
             ${baseStyle};
           `}
         >
-          <SettingsSidebar />
+          {urlParams.get(LEFT_SETTINGS_URL_PARAM) !== ShowSettings.FALSE && (
+            <SettingsSidebar />
+          )}
         </div>
       )}
       <h2
@@ -261,13 +263,14 @@ export const Root: FC<Props> = ({
       </div>
       <ContextMenu />
       {elementSidebar && elementSidebar.open && (
-        <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} />
+        <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} embedded={elementSidebar.embedded} />
       )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {altTextSidebar && generateAltText && (
         <AltTextSidebar
           open={altTextSidebar.open}
           close={altTextSidebar.close}
+          embedded={altTextSidebar.embedded}
           generateAltText={generateAltText}
         />
       )}

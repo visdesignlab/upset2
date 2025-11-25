@@ -300,8 +300,6 @@ export const DataTable = () => {
     return retVal;
   }, [rows]);
 
-  console.log('tableRows', tableRows);
-
   /**
    * Retrieves an array of objects containing information about the sets.
    * Each object includes the set name and its corresponding size.

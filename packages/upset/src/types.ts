@@ -19,6 +19,11 @@ export interface SidebarProps {
    * Callback function to close the sidebar.
    */
   close: () => void;
+
+  /**
+   * Whether the app/sidebar is embedded, which disables closing and removes top margin.
+   */
+  embedded?: boolean;
 }
 
 export type ContextMenuItem = {
@@ -159,7 +164,7 @@ export interface UpsetProps {
 
   /**
    * Sidebar options for the element sidebar component.
-   * This sidebar is used for element queries, element selection datatable, and supplimental plot generation.
+   * This sidebar is used for element queries, element selection datatable, and supplemental plot generation.
    */
   elementSidebar?: SidebarProps;
 

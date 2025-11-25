@@ -20,7 +20,7 @@ export default [
         ecmaFeatures: {
           jsx: true,
         },
-        project: ['./packages/*/tsconfig.json'],
+        project: ['./tsconfig.json', './packages/*/tsconfig.json'],
       },
       globals: globals.browser,
     },
