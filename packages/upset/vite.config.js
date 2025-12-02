@@ -11,7 +11,9 @@ export default defineConfig({
       // Faster builds by skipping tests. Set this to false to enable type checking.
       skipDiagnostics: true,
     }),
-    react(),
+    react({
+      jsxImportSource: '@emotion/react',
+    }),
   ],
   server: { hmr: process.env.NODE_TESTING !== 'true' },
   // Configuration for building your library.

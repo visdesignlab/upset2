@@ -7,7 +7,9 @@ export default defineConfig(() => {
       outDir: 'build',
     },
     plugins: [
-        react(),
+      react({
+        jsxImportSource: '@emotion/react',
+      }),
     ],
     optimizeDeps: { exclude: [] },
     server: { hmr: process.env.NODE_TESTING !== 'true' },
