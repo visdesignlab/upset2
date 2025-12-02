@@ -1,5 +1,5 @@
 import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 
 export default defineConfig(() => {
   return {
@@ -7,7 +7,9 @@ export default defineConfig(() => {
       outDir: 'build',
     },
     plugins: [
-        react(),
+      react({
+        jsxImportSource: '@emotion/react',
+      }),
     ],
     optimizeDeps: { exclude: [] },
     server: { hmr: process.env.NODE_TESTING !== 'true' },

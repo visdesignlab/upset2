@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import { join } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
@@ -11,7 +11,9 @@ export default defineConfig({
       // Faster builds by skipping tests. Set this to false to enable type checking.
       skipDiagnostics: true,
     }),
-    react(),
+    react({
+      jsxImportSource: '@emotion/react',
+    }),
   ],
   server: { hmr: process.env.NODE_TESTING !== 'true' },
   // Configuration for building your library.

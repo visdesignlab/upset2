@@ -56,7 +56,7 @@
     ]
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.4",
+    "@vitejs/plugin-react-swc": "^4.2.2",
     "@welldone-software/why-did-you-render": "^10.0.1",
     "eslint-plugin-react-hooks": "^5.2.0",
     "prettier": "^3.5.3",
