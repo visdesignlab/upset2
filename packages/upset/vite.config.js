@@ -1,4 +1,4 @@
-import react from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react-swc';
 import { join } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
