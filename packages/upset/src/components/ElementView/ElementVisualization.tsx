@@ -159,8 +159,10 @@ export const ElementVisualization = () => {
     [selection, actions, setColumnSelection],
   );
 
-  // Syncs the default value of the plots on load to the current numerical query
-  useEffect(() => {
+  /**
+   * Syncs all plots to the saved selection state
+   */
+  const syncSelection = useCallback(() => {
     preventSignal.current = true;
     const promises: Promise<void>[] = [];
     views.forEach(({ view }) => {
@@ -169,6 +171,11 @@ export const ElementVisualization = () => {
     Promise.allSettled(promises).then(() => {
       preventSignal.current = false;
     });
+  }, [views, selection]);
+
+  // Syncs the default value of the plots on load to the current numerical query
+  useEffect(() => {
+    syncSelection();
   }, [views, selection]);
 
   return (
@@ -202,6 +209,11 @@ export const ElementVisualization = () => {
               onContextMenu={(e) => {
                 e.preventDefault();
                 e.stopPropagation();
+                // Vega clears plots on a right click, which we don't want. However, I haven't been able to get the Vega
+                // config to ignore right clicks (despite following the docs; try it yourself (: ) so instead we just
+                // re-sync the plots to the saved state after Vega clears them
+                // We delay the sync slightly to guarantee it happens after Vega's event handlers
+                setTimeout(syncSelection, 5);
                 setContextMenu({
                   mouseX: e.clientX,
                   mouseY: e.clientY,
