@@ -30,7 +30,6 @@ export const visibleSetSelector = selector<string[]>({
         }
         break;
     }
-    console.log('Visible Sets:', visibleSetList);
     return visibleSetList;
   },
 });
@@ -69,4 +68,10 @@ export const hiddenSetSelector = selector<string[]>({
 
     return setList.filter((set) => !visibleSets.includes(set));
   },
+});
+
+// Atom to control visibility of custom order modal
+export const customOrderModalAtom = atom<boolean>({
+  key: 'custom-order-modal',
+  default: false,
 });
