@@ -231,7 +231,7 @@ export type AggregateBy = (typeof aggregateByList)[number];
 export type SortByOrder = 'Ascending' | 'Descending';
 
 export const sortVisibleByList = ['Alphabetical', 'Ascending', 'Descending'] as const;
-export type SortVisibleBy = (typeof sortVisibleByList)[number];
+export type SortVisibleBy = (typeof sortVisibleByList)[number] | string;
 
 /**
  * An aggregate row in the plot
