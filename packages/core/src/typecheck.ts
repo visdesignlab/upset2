@@ -501,7 +501,8 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
     !(
       sortVisibleBy === 'Alphabetical' ||
       sortVisibleBy === 'Ascending' ||
-      sortVisibleBy === 'Descending'
+      sortVisibleBy === 'Descending' ||
+      typeof sortVisibleBy === 'string'
     )
   ) {
     console.warn('Upset config error: Invalid sort visible by');

@@ -9,7 +9,10 @@ import { SetLabel } from '../custom/SetLabel';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { ProvenanceContext } from '../Root';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
-import { visibleSortSelector } from '../../atoms/config/visibleSetsAtoms';
+import {
+  customOrderModalAtom,
+  visibleSortSelector,
+} from '../../atoms/config/visibleSetsAtoms';
 import translate from '../../utils/transform';
 import { columnHoverAtom } from '../../atoms/highlightAtom';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
@@ -49,6 +52,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
   const setContextMenu = useSetRecoilState(contextMenuAtom);
+  const setCustomOrderModal = useSetRecoilState(customOrderModalAtom);
 
   /**
    * Closes the context menu.
@@ -101,6 +105,13 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
         handleContextMenuClose();
       },
       disabled: sortVisibleBy === 'Descending',
+    },
+    {
+      label: 'Sort Sets by Manual Definition',
+      onClick: () => {
+        setCustomOrderModal(true);
+        handleContextMenuClose();
+      },
     },
   ];
 

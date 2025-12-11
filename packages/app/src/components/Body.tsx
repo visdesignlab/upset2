@@ -114,6 +114,12 @@ export const Body = ({ data, config }: Props) => {
       );
     }
 
+    if (!['Descending', 'Ascending', 'Alphabetical'].includes(ATConfig.sortVisibleBy)) {
+      throw new Error(
+        'Alt text generation is not yet supported for custom visible set orders. To generate an alt text, set visible set sorting to Alphabetical, Size - Ascending, or Size - Descending.',
+      );
+    }
+
     let response;
     try {
       response = await generateAltText(ATConfig);

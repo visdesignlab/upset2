@@ -22,6 +22,7 @@ import { dataAtom } from '../atoms/dataAtom';
 import { allowAttributeRemovalAtom } from '../atoms/config/allowAttributeRemovalAtom';
 import { contextMenuAtom } from '../atoms/contextMenuAtom';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
+import { footerHeightAtom } from '../atoms/dimensionsAtom';
 import { canEditPlotInformationAtom } from '../atoms/config/canEditPlotInformationAtom';
 import {
   getActions,
@@ -37,7 +38,7 @@ import { SvgBase } from './SvgBase';
 import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
-import { footerHeightAtom } from '../atoms/dimensionsAtom';
+import { CustomOrderModal } from './CustomOrderModal';
 import { SidebarProps } from '../types';
 
 // Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context
@@ -104,7 +105,8 @@ export const Root: FC<Props> = ({
   const setContextMenu = useSetRecoilState(contextMenuAtom);
   const setAllowAttributeRemoval = useSetRecoilState(allowAttributeRemovalAtom);
   const setFooterHeight = useSetRecoilState(footerHeightAtom);
-  // This might not work on Edge or iOS Safari, oh well!
+
+  // This might not work on Edge or iOS Safari
   const urlParams = new URLSearchParams(window.location.search);
 
   // Set the initial state of canEditPlotInformation
@@ -247,6 +249,7 @@ export const Root: FC<Props> = ({
         The UpSet 2 interactive plot is currently not screen reader accessible. We are
         actively working on this and apologize for any inconvenience.
       </h2>
+      <CustomOrderModal />
       <div
         css={css`
           flex: 1 1 auto;
@@ -263,7 +266,11 @@ export const Root: FC<Props> = ({
       </div>
       <ContextMenu />
       {elementSidebar && elementSidebar.open && (
-        <ElementSidebar open={elementSidebar.open} close={elementSidebar.close} embedded={elementSidebar.embedded} />
+        <ElementSidebar
+          open={elementSidebar.open}
+          close={elementSidebar.close}
+          embedded={elementSidebar.embedded}
+        />
       )}
       {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
       {altTextSidebar && generateAltText && (
