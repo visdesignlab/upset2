@@ -10,7 +10,7 @@ export const visibleSetSelector = selector<string[]>({
     const sets = get(setsAtom);
     const { visibleSets } = get(upsetConfigAtom);
     const { sortVisibleBy } = get(upsetConfigAtom);
-    const visibleSetList = [...visibleSets];
+    let visibleSetList = [...visibleSets];
 
     switch (sortVisibleBy) {
       case 'Alphabetical':
@@ -23,6 +23,10 @@ export const visibleSetSelector = selector<string[]>({
         visibleSetList.sort((a, b) => sets[b].size - sets[a].size);
         break;
       default:
+        if (typeof sortVisibleBy === 'string') {
+          visibleSetList = (sortVisibleBy as string)
+            .split(',');
+        }
         break;
     }
     return visibleSetList;
@@ -63,4 +67,10 @@ export const hiddenSetSelector = selector<string[]>({
 
     return setList.filter((set) => !visibleSets.includes(set));
   },
+});
+
+// Atom to control visibility of custom order modal
+export const customOrderModalAtom = atom<boolean>({
+  key: 'custom-order-modal',
+  default: false,
 });
