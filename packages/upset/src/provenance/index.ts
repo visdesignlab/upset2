@@ -119,6 +119,11 @@ const addToVisibleAction = register<ColumnName>(
   (state: UpsetConfig, newSet) => {
     const newSets = new Set([...state.visibleSets, newSet]);
     state.visibleSets = Array.from(newSets);
+
+    // If the sortVisibleBy is a custom order, append the new set to the end of it
+    if (!['Alphabetical', 'Ascending', 'Descending'].includes(state.sortVisibleBy)) {
+      state.sortVisibleBy = state.sortVisibleBy + ',' + newSet;
+    }
     return state;
   },
 );
@@ -127,6 +132,16 @@ const removeFromVisibleAction = register<ColumnName>(
   'remove-from-visible',
   (state: UpsetConfig, newSet) => {
     state.visibleSets = state.visibleSets.filter((v) => v !== newSet);
+
+    // If the sortVisibleBy is a custom order, remove the set from it
+    if (!['Alphabetical', 'Ascending', 'Descending'].includes(state.sortVisibleBy)) {
+      const updatedOrder = state.sortVisibleBy
+        .split(',')
+        .filter((s) => s !== newSet)
+        .join(',');
+      state.sortVisibleBy = updatedOrder;
+    }
+
     return state;
   },
 );

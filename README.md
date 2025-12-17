@@ -260,6 +260,7 @@ The configuration options are documented below:
   - `"Alphabetical"`: Sort from A - Z. *Note* Only A - Z sorting is supported.
   - `"Ascending"`: Sort based on size, low to high.
   - `"Descending"`: Sort based on size, high to low.
+  - `"Set_{Set Name1},Set_{Set Name2}...`: Sort based on a custom, comma separated list of set names. Ensure that `Set_` is added to each set name. *Note* All visible sets MUST be present in this list.
 - `sortBy` (string): Describes the sorting of the subset intersections. Defaults to `"Size"`. Possible values:
   - `"Size"`: Sorts the plot by the subset size (cardinality) intersections.
   - `"Degree"`: Sorts the plot by the degree (set membership) of the intersections.

@@ -66,7 +66,7 @@ In addition to the degree slider, the "Filter Intersections" section of the left
 
 ## Set Sorting
 
-By right clicking on the visible or hidden sets within the plot, it is possible to sort ONLY the relevant sets by Alphabetical, Ascending (size), or Descending (size). This generally does not affect the order of the intersections, but when the intersections are sorted by degree or by a set, the order of the visible sets can change the ordering of the intersections.
+By right clicking on the visible or hidden sets within the plot, it is possible to sort ONLY the relevant sets by Alphabetical, Ascending (size), Descending (size), or a custom comma-separated list of set names. This generally does not affect the order of the intersections, but when the intersections are sorted by degree or by a set, the order of the visible sets can change the ordering of the intersections.
 
 Example plot of Movies where visible sets are sorted by size ascending, and hidden sets are sorted by size descending:
 
