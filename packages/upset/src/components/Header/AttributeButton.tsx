@@ -121,7 +121,9 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
       );
     }
 
-    if (!UPSET_ATTS.includes(label)) {
+    // Only add plot type options for non-categorical, non-UPSET attributes
+    // Categorical attributes only have one visualization type (stacked bar) and cannot be changed
+    if (!UPSET_ATTS.includes(label) && !isCategorical) {
       // for every possible value of the type AttributePlotType (from core), add a menu item
       Object.values(AttributePlotType).forEach((plot) => {
         items.push({
