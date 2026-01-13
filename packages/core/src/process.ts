@@ -162,21 +162,29 @@ function processRawData(data: TableRow[], columns: ColumnTypes) {
 }
 
 /**
- * Calculates the six-number summary for each attribute in the given items.
+ * Calculates the six-number summary for each numerical attribute in the given items.
+ * Categorical attributes are automatically filtered out.
  *
  * @param items - The items to calculate the summary for.
  * @param memberItems - The member items to consider.
  * @param attributeColumns - The attribute columns to calculate the summary for.
- * @returns An object containing the six-number summary for each attribute.
+ * @param columnTypes - The column type definitions to filter numerical attributes.
+ * @returns An object containing the six-number summary for each numerical attribute.
  */
 export function getSixNumberSummary(
   items: Items,
   memberItems: string[],
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
 ): AttributeList {
   const attributes: AttributeList = {};
 
-  attributeColumns.forEach((attribute) => {
+  // Only process numerical attributes; categorical attributes don't have meaningful numerical statistics
+  const numericalAttributes = attributeColumns.filter(
+    (attr) => columnTypes[attr] === 'number',
+  );
+
+  numericalAttributes.forEach((attribute) => {
     const values = memberItems
       .map((d) => items[d].atts[attribute] as number)
       .filter((val) => !Number.isNaN(val));
@@ -201,6 +209,7 @@ export function getSixNumberSummary(
  * @param setColumns - The array of column names representing the set columns.
  * @param items - The items object containing the data items.
  * @param attributeColumns - The array of column names representing the attribute columns.
+ * @param columnTypes - The column type definitions.
  * @returns The sets object containing the retrieved sets.
  */
 function getSets(
@@ -208,6 +217,7 @@ function getSets(
   setColumns: ColumnName[],
   items: Items,
   attributeColumns: ColumnName[],
+  columnTypes: ColumnTypes,
 ) {
   const setMembershipStatus: { [col: string]: SetMembershipStatus } = {};
 
@@ -225,7 +235,12 @@ function getSets(
       size: setMembership[col].length,
       setMembership: { ...setMembershipStatus, [col]: 'Yes' },
       atts: {
-        dataset: getSixNumberSummary(items, setMembership[col], attributeColumns),
+        dataset: getSixNumberSummary(
+          items,
+          setMembership[col],
+          attributeColumns,
+          columnTypes,
+        ),
         derived: { deviation: 0 },
       },
     };
@@ -246,7 +261,7 @@ function getSets(
 export function process(data: TableRow[], columns: ColumnTypes): CoreUpsetData {
   const { items, setMembership, labelColumn, setColumns, attributeColumns } =
     processRawData(data, columns);
-  const sets = getSets(setMembership, setColumns, items, attributeColumns);
+  const sets = getSets(setMembership, setColumns, items, attributeColumns, columns);
 
   return {
     label: labelColumn,
@@ -265,6 +280,7 @@ export function process(data: TableRow[], columns: ColumnTypes): CoreUpsetData {
  * @param sets - The sets used to calculate subsets.
  * @param vSets - The vSets used to calculate subsets.
  * @param attributeColumns - The attribute columns used to calculate subsets.
+ * @param columnTypes - The column type definitions.
  * @returns The calculated subsets.
  */
 export function getSubsets(
@@ -272,6 +288,7 @@ export function getSubsets(
   sets: Sets,
   vSets: string[],
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
 ): Subsets {
   if (vSets.length === 0) {
     return {
@@ -349,7 +366,7 @@ export function getSubsets(
       setMembership: setMembershipStatus,
       atts: {
         derived: { deviation: subsetDeviation },
-        dataset: getSixNumberSummary(dataItems, itm, attributeColumns),
+        dataset: getSixNumberSummary(dataItems, itm, attributeColumns, columnTypes),
       },
     };
 

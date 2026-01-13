@@ -94,8 +94,10 @@ export function calculateDimensions(
       bookmarkStar.gap +
       size.width + // Size
       gap + // Gap for size labels
-      (degree ? degreeColumn.width + // Degree Column
-      degreeColumn.gap : 0) + // Add margin
+      (degree
+        ? degreeColumn.width + // Degree Column
+          degreeColumn.gap
+        : 0) + // Add margin
       (attribute.width + attribute.vGap) * nAttributes, // Attributes
     totalHeight: set.size.height + set.label.height,
     buttonXOffset: 5,
@@ -108,7 +110,9 @@ export function calculateDimensions(
     rowWidth: header.totalWidth,
     aggregateOffset: 15,
     get height() {
-      return (nIntersections - nTallRows) * this.rowHeight + nTallRows * this.aggRowHeight;
+      return (
+        (nIntersections - nTallRows) * this.rowHeight + nTallRows * this.aggRowHeight
+      );
     },
   };
 
