@@ -235,10 +235,17 @@ export const SettingsSidebar = () => {
       // Ensures that the order is always Degree, Deviation, then the rest;
       // this keeps the plot consistent & prevents graphical bugs
       newAtts.sort((a, b) => {
+        if (UPSET_ATTS.includes(a) && UPSET_ATTS.includes(b)) {
+          // always return 'degree' first
+          if (a === 'Degree') return -1;
+          if (b === 'Degree') return 1;
+          return 0;
+        }
         if (UPSET_ATTS.includes(a)) return -1;
         if (UPSET_ATTS.includes(b)) return 1;
         return 0;
       });
+
       // This simply sets the config visibleAtts to all newAtts, so it removes atts as well
       actions.addMultipleAttributes(newAtts);
     },
