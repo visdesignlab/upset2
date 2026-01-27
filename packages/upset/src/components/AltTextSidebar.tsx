@@ -136,8 +136,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
     }
 
     setAltText(null);
-    if (open) generate();
-  }, [currState, generateAltText, open]);
+    generate();
+  }, [currState, generateAltText]);
 
   /**
    * Constants

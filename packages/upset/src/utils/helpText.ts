@@ -13,13 +13,18 @@ export const helpText = {
     Overlaps: 'Aggregate all subsets by a minimum number of set overlaps',
   },
   filter: {
-    HideEmptySets: 'Show/Hide all subsets that contain no elements. Warning: this may add many intersections',
-    HideNoSet: 'Show/Hide the intersection that contains the elements that are in no set.',
-    Degree: 'Show only intersections that have a degree higher than the "Min Degree" and lower than the "Max Degree" value.',
+    HideEmptySets:
+      'Show/Hide all subsets that contain no elements. Warning: this may add many intersections',
+    HideNoSet:
+      'Show/Hide the intersection that contains the elements that are in no set.',
+    Degree:
+      'Show only intersections that have a degree higher than the "Min Degree" and lower than the "Max Degree" value.',
   },
   general: {
-    IntersectionSizeLabels: 'Show numbers denoting the size of the intersections next to the size bars',
-    SetSizeLabels: 'Show numbers denoting the size of the sets in their size bars at the top of the visualization',
+    IntersectionSizeLabels:
+      'Show numbers denoting the size of the intersections next to the size bars',
+    SetSizeLabels:
+      'Show numbers denoting the size of the sets in their size bars at the top of the visualization',
     HiddenSets: 'Show the hidden sets & their sizes at the top of the visualization',
   },
 };

@@ -24,8 +24,7 @@ export const visibleSetSelector = selector<string[]>({
         break;
       default:
         if (typeof sortVisibleBy === 'string') {
-          visibleSetList = (sortVisibleBy as string)
-            .split(',');
+          visibleSetList = (sortVisibleBy as string).split(',');
         }
         break;
     }
