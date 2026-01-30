@@ -118,11 +118,18 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
         // which is NOT contained in a collapsed parent aggregate
         if (
           isRowAggregate(prevRow) &&
-          !(prevRow.parent && collapsedIds.includes(prevRow.parent)) &&
           TALL_ROW_TYPES.includes(prevRow.aggregateBy)
         ) {
           yTransform += dimensions.body.aggRowHeight;
-        } else yTransform += dimensions.body.rowHeight;
+        } else if (
+          !isRowAggregate(prevRow)
+          && prevRow.parent
+          && collapsedIds.includes(prevRow.parent)
+        ) {
+          yTransform += dimensions.body.aggRowHeight;
+        } else {
+          yTransform += dimensions.body.rowHeight;
+        }
       }
 
       return {
