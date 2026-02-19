@@ -59,6 +59,11 @@
     "vega": "^5.32.0",
     "vega-lite": "^5.2.0"
   },
+  "peerDependenciesMeta": {
+    "@trrack/vis-react": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@babel/core": "^7.16.7",
     "@babel/preset-react": "^7.16.7",

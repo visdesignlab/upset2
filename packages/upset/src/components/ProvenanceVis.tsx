@@ -1,5 +1,5 @@
 import { useContext, useState, useEffect, useMemo } from 'react';
-import { ProvVis } from '@trrack/vis-react';
+import type { ProvVis as ProvVisType } from '@trrack/vis-react';
 import { ProvenanceContext } from './Root';
 import { Sidebar } from './custom/Sidebar';
 
@@ -10,17 +10,31 @@ type Props = {
 
 /**
  * Sidebar containing the Trrack provenance visualization.
+ * Requires @trrack/vis-react to be installed; renders nothing if unavailable.
  */
 export const ProvenanceVis = ({ open, close }: Props) => {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
+  const [ProvVis, setProvVis] = useState<typeof ProvVisType | null>(null);
+
+  useEffect(() => {
+    import('@trrack/vis-react')
+      .then((mod) => setProvVis(() => mod.ProvVis))
+      .catch((err) => {
+        if (err?.code !== 'MODULE_NOT_FOUND') {
+          // eslint-disable-next-line no-console
+          console.error('Failed to load @trrack/vis-react:', err);
+        }
+        setProvVis(null);
+      });
+  }, []);
 
   useEffect(() => {
     provenance.currentChange(() => setCurrentNodeId(provenance.current.id));
   }, [provenance]);
 
   const provVis = useMemo(() => {
-    if (Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
+    if (ProvVis && Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
       return (
         <ProvVis
           root={provenance.root.id}
@@ -33,7 +47,7 @@ export const ProvenanceVis = ({ open, close }: Props) => {
       );
     }
     return null;
-  }, [provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
+  }, [ProvVis, provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
 
   return (
     <Sidebar
