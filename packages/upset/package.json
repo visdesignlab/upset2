@@ -62,6 +62,9 @@
   "peerDependenciesMeta": {
     "@trrack/vis-react": {
       "optional": true
+    },
+    "@mui/x-data-grid": {
+      "optional": true
     }
   },
   "devDependencies": {

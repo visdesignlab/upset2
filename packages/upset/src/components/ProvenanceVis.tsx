@@ -1,5 +1,4 @@
 import { useContext, useState, useEffect, useMemo } from 'react';
-import type { ProvVis as ProvVisType } from '@trrack/vis-react';
 import { ProvenanceContext } from './Root';
 import { Sidebar } from './custom/Sidebar';
 
@@ -8,6 +7,10 @@ type Props = {
   close: () => void;
 };
 
+// Use a loose type so we don't reference @trrack/vis-react at compile time
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ProvVisComponent = React.ComponentType<any>;
+
 /**
  * Sidebar containing the Trrack provenance visualization.
  * Requires @trrack/vis-react to be installed; renders nothing if unavailable.
@@ -15,24 +18,25 @@ type Props = {
 export const ProvenanceVis = ({ open, close }: Props) => {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
-  const [ProvVis, setProvVis] = useState<typeof ProvVisType | null>(null);
+  // null = loading, false = unavailable, Component = ready
+  const [ProvVis, setProvVis] = useState<ProvVisComponent | null | false>(null);
 
   useEffect(() => {
     let isMounted = true;
 
-    import('@trrack/vis-react')
-      .then((mod) => {
-        if (!isMounted) return;
-        setProvVis(() => mod.ProvVis);
-      })
-      .catch((err) => {
-        if (!isMounted) return;
-        if (err?.code !== 'MODULE_NOT_FOUND') {
-          // eslint-disable-next-line no-console
-          console.error('Failed to load @trrack/vis-react:', err);
-        }
-        setProvVis(null);
-      });
+    // Wrap in a try/catch as well for environments where dynamic import errors aren't promise-based
+    try {
+      import(/* @vite-ignore */ '@trrack/vis-react')
+        .then((mod) => {
+          if (!isMounted) return;
+          setProvVis(() => mod.ProvVis ?? false);
+        })
+        .catch(() => {
+          if (isMounted) setProvVis(false);
+        });
+    } catch {
+      setProvVis(false);
+    }
 
     return () => {
       isMounted = false;
@@ -44,12 +48,19 @@ export const ProvenanceVis = ({ open, close }: Props) => {
   }, [provenance]);
 
   const provVis = useMemo(() => {
+    if (ProvVis === false) {
+      return (
+        <p style={{ padding: '1rem', color: 'gray' }}>
+          Install <code>@trrack/vis-react</code> to view the provenance history.
+        </p>
+      );
+    }
     if (ProvVis && Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
       return (
         <ProvVis
           root={provenance.root.id}
           config={{
-            changeCurrent: (node) => provenance.to(node),
+            changeCurrent: (node: string) => provenance.to(node),
           }}
           nodeMap={provenance.graph.backend.nodes}
           currentNode={currentNodeId}
