@@ -2,6 +2,11 @@
   "name": "@visdesignlab/upset2-core",
   "version": "1.0.0",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/visdesignlab/upset2.git",
+    "directory": "packages/core"
+  },
   "type": "module",
   "main": "dist/index.cjs",
   "typings": "dist/index.d.ts",
