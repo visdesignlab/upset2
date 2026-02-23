@@ -18,15 +18,25 @@ export const ProvenanceVis = ({ open, close }: Props) => {
   const [ProvVis, setProvVis] = useState<typeof ProvVisType | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     import('@trrack/vis-react')
-      .then((mod) => setProvVis(() => mod.ProvVis))
+      .then((mod) => {
+        if (!isMounted) return;
+        setProvVis(() => mod.ProvVis);
+      })
       .catch((err) => {
+        if (!isMounted) return;
         if (err?.code !== 'MODULE_NOT_FOUND') {
           // eslint-disable-next-line no-console
           console.error('Failed to load @trrack/vis-react:', err);
         }
         setProvVis(null);
       });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
