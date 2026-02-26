@@ -4,6 +4,7 @@ import {
   Aggregate,
   AggregateBy,
   Aggregates,
+  ColumnTypes,
   Items,
   Row,
   Rows,
@@ -48,12 +49,23 @@ export function getItems(row: Row): string[] {
  * @param aggs - The aggregates object containing the order and values of the aggregates.
  * @param items - The items object containing the data items.
  * @param attributeColumns - The array of attribute columns to calculate the attributes from.
+ * @param columnTypes - The column type definitions.
  */
-function updateAggValues(aggs: Aggregates, items: Items, attributeColumns: string[]) {
+function updateAggValues(
+  aggs: Aggregates,
+  items: Items,
+  attributeColumns: string[],
+  columnTypes: ColumnTypes,
+) {
   aggs.order.forEach((aggId) => {
     aggs.values[aggId].atts = {
       dataset: {
-        ...getSixNumberSummary(items, getItems(aggs.values[aggId]), attributeColumns),
+        ...getSixNumberSummary(
+          items,
+          getItems(aggs.values[aggId]),
+          attributeColumns,
+          columnTypes,
+        ),
       },
       derived: { deviation: aggs.values[aggId].atts.derived.deviation },
     };
@@ -87,6 +99,7 @@ export const getAggSize = (row: Row) => {
  * @param level - The level of the aggregation.
  * @param items - The items to be aggregated.
  * @param attributeColumns - The attribute columns to be considered in the aggregation.
+ * @param columnTypes - The column type definitions.
  * @param parentPrefix - The parent prefix for the aggregated subsets.
  * @returns The aggregated subsets.
  */
@@ -95,6 +108,7 @@ function aggregateByDegree(
   level: number,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
   parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
@@ -152,7 +166,7 @@ function aggregateByDegree(
     relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
   });
 
-  updateAggValues(aggs, items, attributeColumns);
+  updateAggValues(aggs, items, attributeColumns, columnTypes);
 
   return aggs;
 }
@@ -165,6 +179,7 @@ function aggregateByDegree(
  * @param level - The level of aggregation.
  * @param items - The items to be aggregated.
  * @param attributeColumns - The attribute columns used for aggregation.
+ * @param columnTypes - The column type definitions.
  * @param parentPrefix - The parent prefix used for aggregation.
  * @returns The aggregated subsets.
  */
@@ -174,6 +189,7 @@ function aggregateBySets(
   level: number,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
   parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
@@ -259,7 +275,7 @@ function aggregateBySets(
     });
   });
 
-  updateAggValues(aggs, items, attributeColumns);
+  updateAggValues(aggs, items, attributeColumns, columnTypes);
 
   return aggs;
 }
@@ -271,6 +287,7 @@ function aggregateBySets(
  * @param level - The level of the aggregation.
  * @param items - The items to be aggregated.
  * @param attributeColumns - The attribute columns to be considered.
+ * @param columnTypes - The column type definitions.
  * @param parentPrefix - The parent prefix for the aggregation.
  * @returns The aggregated subsets.
  */
@@ -279,6 +296,7 @@ function aggregateByDeviation(
   level: number,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
   parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
@@ -347,7 +365,7 @@ function aggregateByDeviation(
     relevantAggregate.atts.derived.deviation += subset.atts.derived.deviation;
   });
 
-  updateAggValues(aggs, items, attributeColumns);
+  updateAggValues(aggs, items, attributeColumns, columnTypes);
 
   return aggs;
 }
@@ -361,6 +379,7 @@ function aggregateByDeviation(
  * @param level - The level of the aggregation.
  * @param items - The items associated with the subsets.
  * @param attributeColumns - The attribute columns to be considered for aggregation.
+ * @param columnTypes - The column type definitions.
  * @param parentPrefix - The prefix for the parent identifier.
  * @returns The aggregated subsets.
  */
@@ -371,6 +390,7 @@ function aggregateByOverlaps(
   level: number,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
   parentPrefix: string,
 ) {
   if (subsets.order.length === 0) return subsets;
@@ -451,7 +471,7 @@ function aggregateByOverlaps(
     });
   });
 
-  updateAggValues(aggs, items, attributeColumns);
+  updateAggValues(aggs, items, attributeColumns, columnTypes);
 
   return aggs;
 }
@@ -465,6 +485,7 @@ function aggregateByOverlaps(
  * @param sets - The sets associated with the subsets.
  * @param items - The items associated with the subsets.
  * @param attributeColumns - The attribute columns to consider when aggregating by deviations.
+ * @param columnTypes - The column type definitions.
  * @param level - The level of aggregation (default: 1).
  * @param parentPrefix - The parent prefix for the aggregated subsets (default: '').
  * @returns The aggregated subsets.
@@ -476,15 +497,38 @@ function aggregateSubsets(
   sets: Sets,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
   level: number = 1,
   parentPrefix: string = '',
 ) {
   if (aggregateBy === 'Degree')
-    return aggregateByDegree(subsets, level, items, attributeColumns, parentPrefix);
+    return aggregateByDegree(
+      subsets,
+      level,
+      items,
+      attributeColumns,
+      columnTypes,
+      parentPrefix,
+    );
   if (aggregateBy === 'Sets')
-    return aggregateBySets(subsets, sets, level, items, attributeColumns, parentPrefix);
+    return aggregateBySets(
+      subsets,
+      sets,
+      level,
+      items,
+      attributeColumns,
+      columnTypes,
+      parentPrefix,
+    );
   if (aggregateBy === 'Deviations')
-    return aggregateByDeviation(subsets, level, items, attributeColumns, parentPrefix);
+    return aggregateByDeviation(
+      subsets,
+      level,
+      items,
+      attributeColumns,
+      columnTypes,
+      parentPrefix,
+    );
   if (aggregateBy === 'Overlaps') {
     return aggregateByOverlaps(
       subsets,
@@ -493,6 +537,7 @@ function aggregateSubsets(
       level,
       items,
       attributeColumns,
+      columnTypes,
       parentPrefix,
     );
   }
@@ -508,6 +553,7 @@ function aggregateSubsets(
  * @param sets - The sets associated with the subsets.
  * @param items - The items associated with the subsets.
  * @param attributeColumns - The attribute columns to be considered during aggregation.
+ * @param columnTypes - The column type definitions.
  * @returns The aggregated rows.
  */
 export function firstAggregation(
@@ -517,6 +563,7 @@ export function firstAggregation(
   sets: Sets,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
 ): Rows {
   return aggregateSubsets(
     subsets,
@@ -525,6 +572,7 @@ export function firstAggregation(
     sets,
     items,
     attributeColumns,
+    columnTypes,
   );
 }
 
@@ -537,6 +585,7 @@ export function firstAggregation(
  * @param sets - The sets data.
  * @param items - The items data.
  * @param attributeColumns - The attribute columns to consider.
+ * @param columnTypes - The column type definitions.
  * @returns The aggregated result.
  */
 export function secondAggregation(
@@ -546,6 +595,7 @@ export function secondAggregation(
   sets: Sets,
   items: Items,
   attributeColumns: string[],
+  columnTypes: ColumnTypes,
 ) {
   const aggs: Aggregates = {
     values: {},
@@ -562,6 +612,7 @@ export function secondAggregation(
         sets,
         items,
         attributeColumns,
+        columnTypes,
         2,
         `${agg.id}-`,
       );
