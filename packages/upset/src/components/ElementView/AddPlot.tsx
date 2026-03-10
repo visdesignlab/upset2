@@ -9,8 +9,9 @@ import {
   Switch,
   TextField,
 } from '@mui/material';
+import { Items } from '@visdesignlab/upset2-core';
 import Grid from '@mui/material/GridLegacy';
-import { FC, useContext, useState } from 'react';
+import { FC, useContext, useMemo, useState } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dataAttributeSelector } from '../../atoms/attributeAtom';
@@ -19,6 +20,7 @@ import { ProvenanceContext } from '../Root';
 import { HistogramPlot } from './HistogramPlot';
 import { ScatterplotPlot } from './Scatterplot';
 import { UpsetActions } from '../../provenance';
+import { VegaNamedData } from '../VegaLiteChart';
 
 type Props = {
   handleClose: () => void;
@@ -121,6 +123,15 @@ const AddButton: FC<ButtonProps> = ({
 };
 
 const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: 'center' };
+
+function createPreviewData(items: Items): VegaNamedData {
+  return {
+    elements: Object.values(items).map((item) => ({
+      ...item.atts,
+    })),
+  };
+}
+
 /**
  * UI for adding a scatterplot to the element view
  * @param param0 @see Props
@@ -128,6 +139,7 @@ const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: '
 export const AddScatterplot: FC<Props> = ({ handleClose }) => {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const items = useRecoilValue(itemsAtom);
+  const previewData = useMemo(() => createPreviewData(items), [items]);
   const [x, setX] = useState<string>(attributeColumns[0]);
   const [y, setY] = useState<string>(attributeColumns[1]);
   const [xScaleLog, setXLogScale] = useState(false);
@@ -197,9 +209,7 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
               xScaleLog,
               yScaleLog,
             }}
-            data={{
-              elements: Object.values(JSON.parse(JSON.stringify(items))),
-            }}
+            data={previewData}
           />
         </Box>
       )}
@@ -226,6 +236,7 @@ export const AddHistogram: FC<Props & { density: boolean }> = ({
 }) => {
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(dataAttributeSelector);
+  const previewData = useMemo(() => createPreviewData(items), [items]);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
   const [bins, setBins] = useState(20);
 
@@ -277,9 +288,7 @@ export const AddHistogram: FC<Props & { density: boolean }> = ({
                 bins,
                 frequency: density,
               }}
-              data={{
-                elements: Object.values(JSON.parse(JSON.stringify(items))),
-              }}
+              data={previewData}
             />
           </Box>
         )}
