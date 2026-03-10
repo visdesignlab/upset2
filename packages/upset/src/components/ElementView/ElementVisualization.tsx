@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { VegaLite, View } from 'react-vega';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { View } from 'vega';
 
 import {
   vegaSelectionsEqual,
@@ -21,6 +21,7 @@ import {
   currentVegaSelection,
 } from '../../atoms/config/selectionAtoms';
 import { columnSelectAtom } from '../../atoms/highlightAtom';
+import { VegaLiteChart } from '../VegaLiteChart';
 
 const BRUSH_NAME = 'brush';
 
@@ -223,7 +224,11 @@ export const ElementVisualization = () => {
                       label: 'Remove Plot',
                       onClick: () => {
                         actions.removePlot(plot);
-                        setViews(views.filter(({ plot: p }) => p.id !== plot.id));
+                        setViews((currentViews) =>
+                          currentViews.filter(
+                            ({ plot: currentPlot }) => currentPlot.id !== plot.id,
+                          ),
+                        );
                         setContextMenu(null);
                       },
                     },
@@ -231,7 +236,7 @@ export const ElementVisualization = () => {
                 });
               }}
             >
-              <VegaLite
+              <VegaLiteChart
                 spec={spec}
                 data={data}
                 actions={false}
@@ -241,8 +246,12 @@ export const ElementVisualization = () => {
                 // Making room for the close button
                 style={{ marginLeft: '5px' }}
                 onNewView={(view: View) => {
-                  views.push({ view, plot });
-                  setViews([...views]);
+                  setViews((currentViews) => [
+                    ...currentViews.filter(
+                      ({ plot: currentPlot }) => currentPlot.id !== plot.id,
+                    ),
+                    { view, plot },
+                  ]);
                   view.addEventListener('mouseover', () => {
                     currentClick.current = plot;
                   });
