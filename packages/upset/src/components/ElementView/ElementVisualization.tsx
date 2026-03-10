@@ -77,6 +77,7 @@ export const ElementVisualization = () => {
   const draftSelection = useRef(selection);
   const cancelNextSelection = useRef(false);
   const preventSignal = useRef(false);
+  const initializedViews = useRef(new WeakSet<View>());
   const [views, setViews] = useState<{ view: View; plot: Plot }[]>([]);
   const currentClick = useRef<Plot | null>(null);
   const mouseDown = useRef(false);
@@ -174,10 +175,33 @@ export const ElementVisualization = () => {
     });
   }, [views, selection]);
 
+  const registerView = useCallback((plot: Plot, view: View) => {
+    setViews((currentViews) => {
+      const existing = currentViews.find(
+        ({ plot: currentPlot }) => currentPlot.id === plot.id,
+      );
+      if (existing?.view === view) return currentViews;
+      return [
+        ...currentViews.filter(({ plot: currentPlot }) => currentPlot.id !== plot.id),
+        { view, plot },
+      ];
+    });
+
+    if (initializedViews.current.has(view)) return;
+    initializedViews.current.add(view);
+
+    view.addEventListener('mouseover', () => {
+      currentClick.current = plot;
+    });
+    view.addEventListener('mouseout', () => {
+      if (currentClick.current?.id === plot.id) currentClick.current = null;
+    });
+  }, []);
+
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
     syncSelection();
-  }, [views, selection]);
+  }, [syncSelection]);
 
   return (
     <Box
@@ -207,7 +231,11 @@ export const ElementVisualization = () => {
           specs.map(({ plot, spec }) => (
             // Relative position is necessary so this serves as a positioning container for the close button
             <Box
-              style={{ display: 'inline-block', position: 'relative', overflow: 'visible' }}
+              style={{
+                display: 'inline-block',
+                position: 'relative',
+                overflow: 'visible',
+              }}
               key={plot.id}
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -247,20 +275,7 @@ export const ElementVisualization = () => {
                 }}
                 // Making room for the close button
                 style={{ marginLeft: '5px', overflow: 'visible' }}
-                onNewView={(view: View) => {
-                  setViews((currentViews) => [
-                    ...currentViews.filter(
-                      ({ plot: currentPlot }) => currentPlot.id !== plot.id,
-                    ),
-                    { view, plot },
-                  ]);
-                  view.addEventListener('mouseover', () => {
-                    currentClick.current = plot;
-                  });
-                  view.addEventListener('mouseout', () => {
-                    currentClick.current = null;
-                  });
-                }}
+                onNewView={(view: View) => registerView(plot, view)}
               />
             </Box>
           ))}

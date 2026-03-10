@@ -36,6 +36,7 @@ export const VegaLiteChart = ({
   ...divProps
 }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
+  const onNewViewRef = useRef(onNewView);
   const options = useMemo<EmbedOptions>(
     () => ({
       mode: 'vega-lite',
@@ -52,10 +53,14 @@ export const VegaLiteChart = ({
   });
 
   useEffect(() => {
+    onNewViewRef.current = onNewView;
+  }, [onNewView]);
+
+  useEffect(() => {
     if (!embed) return;
 
-    onNewView?.(embed.view);
-  }, [embed, onNewView]);
+    onNewViewRef.current?.(embed.view);
+  }, [embed]);
 
   useEffect(() => {
     if (!embed || !data) return;
