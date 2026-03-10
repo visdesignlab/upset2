@@ -150,10 +150,13 @@ export const attValuesSelector = selectorFamily<number[], { row: Row; att: strin
   get:
     ({ row, att }) =>
     ({ get }) => {
-      const items = get(rowItemsSelector(row.id));
+      const allItems = get(itemsAtom);
+      const items = getItems(row)
+        .map((itemId) => allItems[itemId])
+        .filter((item): item is Item => item !== undefined);
 
       // Basic check for performance reasons; we can eliminate most cases with this
-      if (!items[0] || !items[0].atts[att] || typeof items[0].atts[att] !== 'number') {
+      if (!items[0] || typeof items[0].atts[att] !== 'number') {
         return [];
       }
       return (
