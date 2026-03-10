@@ -199,13 +199,15 @@ export const ElementVisualization = () => {
           flexDirection: 'row',
           flexWrap: 'wrap',
           justifyContent: 'space-around',
+          gap: 1,
+          padding: '4px 8px 8px 12px',
         }}
       >
         {plots.length > 0 &&
           specs.map(({ plot, spec }) => (
             // Relative position is necessary so this serves as a positioning container for the close button
             <Box
-              style={{ display: 'inline-block', position: 'relative' }}
+              style={{ display: 'inline-block', position: 'relative', overflow: 'visible' }}
               key={plot.id}
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -244,7 +246,7 @@ export const ElementVisualization = () => {
                   [BRUSH_NAME]: (_: unknown, val: unknown) => brushHandler(plot, val),
                 }}
                 // Making room for the close button
-                style={{ marginLeft: '5px' }}
+                style={{ marginLeft: '5px', overflow: 'visible' }}
                 onNewView={(view: View) => {
                   setViews((currentViews) => [
                     ...currentViews.filter(
