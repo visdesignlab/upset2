@@ -35,6 +35,16 @@ export const VegaLiteChart = ({
   css,
   ...divProps
 }: Props) => {
+  const clipBufferCss = useMemo(
+    () => emotionCss`
+      & .vega-embed svg {
+        width: calc(100% + 10px);
+        max-width: none;
+      }
+    `,
+    [],
+  );
+
   const ref = useRef<HTMLDivElement>(null);
   const onNewViewRef = useRef(onNewView);
   const options = useMemo<EmbedOptions>(
@@ -113,9 +123,9 @@ export const VegaLiteChart = ({
   );
 
   const resolvedCss = useMemo(() => {
-    if (typeof css === 'string') return emotionCss`${css}`;
-    return css;
-  }, [css]);
+    const userCss = typeof css === 'string' ? emotionCss`${css}` : css;
+    return [clipBufferCss, userCss];
+  }, [clipBufferCss, css]);
 
   return <div ref={ref} css={resolvedCss} style={resolvedStyle} {...divProps} />;
 };
