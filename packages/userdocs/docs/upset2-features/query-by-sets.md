@@ -50,6 +50,8 @@ Once a query has been made and "Add Query" has been selected, the UpSet plot wil
 
 The header row of the plot will now show the query title ([set previously](#renaming-the-query)), the query parameter matrix, the total size of the query, and a delete icon.
 
-The new populated intersections *only* show the set intersections which match the parameters defined in the [set matrix selection](#set-matrix-selection). In this above example, there are only three subsets of Drama & War movies: Just Drama & War; Action, Drama, & War; and Comedy, Drama, & War.
+The query section first shows intersections that match the parameters defined in the [set matrix selection](#set-matrix-selection). In this above example, there are only three matching subsets of Drama & War movies: Just Drama & War; Action, Drama, & War; and Comedy, Drama, & War.
 
 Note that all intersections match the query parameter that they *must* contain Drama and War.
+
+The section below the matching query intersections shows non-matching intersections.

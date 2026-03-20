@@ -1,7 +1,9 @@
 import {
+  getBelongingSetsFromSetMembership,
   isRowAggregate,
   Row,
   RenderRow,
+  SetQueryMembership,
   isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
@@ -63,6 +65,20 @@ const shouldRender = (row: Row, collapsedIds: string[]) => {
   return true;
 };
 
+const rowMatchesSetQuery = (row: Row, membership: SetQueryMembership) => {
+  const belongingSets = getBelongingSetsFromSetMembership(row.setMembership);
+
+  return Object.entries(membership).every(([set, status]) => {
+    if (status === 'Yes') {
+      return belongingSets.includes(set);
+    }
+    if (status === 'No') {
+      return !belongingSets.includes(set);
+    }
+    return true;
+  });
+};
+
 /**
  * Component that renders matrix rows with transitions.
  *
@@ -107,11 +123,28 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     return 0;
   }, [queryBySetsInterface, dimensions, setQuery]);
 
+  const queryMembership =
+    setQuery && isPopulatedSetQuery(setQuery) ? setQuery.query : null;
+
   let nextY = 0;
+  let restOfDatasetSectionY: number | undefined;
+  let insertedRestOfDatasetSection = false;
 
   const positionedRows = rows.map(({ row, id }) => {
     const rendered = shouldRender(row, collapsedIds);
-    const y = nextY + transformShift;
+    let y = nextY + transformShift;
+
+    if (
+      rendered &&
+      queryMembership &&
+      !rowMatchesSetQuery(row, queryMembership) &&
+      !insertedRestOfDatasetSection
+    ) {
+      restOfDatasetSectionY = y + dimensions.body.rowHeight / 1.5;
+      nextY += dimensions.body.rowHeight * 1.5;
+      y += dimensions.body.rowHeight * 1.5;
+      insertedRestOfDatasetSection = true;
+    }
 
     if (rendered) {
       const rowHeight =
@@ -133,6 +166,19 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
   return (
     <g id="matrixRows" onClick={(e) => e.stopPropagation()}>
       {isPopulatedSetQuery(setQuery) && <g id="setQuery" />}
+      {restOfDatasetSectionY !== undefined && (
+        <g transform={translate(0, restOfDatasetSectionY)}>
+          <line
+            x1={0}
+            y1={0}
+            x2={dimensions.body.rowWidth}
+            y2={0}
+            strokeWidth={4}
+            stroke="currentColor"
+            opacity={0.35}
+          />
+        </g>
+      )}
       {rowTransitions(
         ({ transform }, item) =>
           shouldRender(item.row, collapsedIds) && (
