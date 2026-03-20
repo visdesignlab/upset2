@@ -1,5 +1,4 @@
 import { useContext, useState, useEffect, useMemo } from 'react';
-import { ProvVis } from '@trrack/vis-react';
 import { ProvenanceContext } from './Root';
 import { Sidebar } from './custom/Sidebar';
 
@@ -8,24 +7,60 @@ type Props = {
   close: () => void;
 };
 
+// Use a loose type so we don't reference @trrack/vis-react at compile time
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ProvVisComponent = React.ComponentType<any>;
+
 /**
  * Sidebar containing the Trrack provenance visualization.
+ * Requires @trrack/vis-react to be installed; renders nothing if unavailable.
  */
 export const ProvenanceVis = ({ open, close }: Props) => {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
+  // null = loading, false = unavailable, Component = ready
+  const [ProvVis, setProvVis] = useState<ProvVisComponent | null | false>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    // Wrap in a try/catch as well for environments where dynamic import errors aren't promise-based
+    try {
+      import(/* @vite-ignore */ '@trrack/vis-react')
+        .then((mod) => {
+          if (!isMounted) return;
+          setProvVis(() => mod.ProvVis ?? false);
+        })
+        .catch(() => {
+          if (isMounted) setProvVis(false);
+        });
+    } catch {
+      setProvVis(false);
+    }
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   useEffect(() => {
     provenance.currentChange(() => setCurrentNodeId(provenance.current.id));
   }, [provenance]);
 
   const provVis = useMemo(() => {
-    if (Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
+    if (ProvVis === false) {
+      return (
+        <p style={{ padding: '1rem', color: 'gray' }}>
+          Install <code>@trrack/vis-react</code> to view the provenance history.
+        </p>
+      );
+    }
+    if (ProvVis && Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
       return (
         <ProvVis
           root={provenance.root.id}
           config={{
-            changeCurrent: (node) => provenance.to(node),
+            changeCurrent: (node: string) => provenance.to(node),
           }}
           nodeMap={provenance.graph.backend.nodes}
           currentNode={currentNodeId}
@@ -33,7 +68,7 @@ export const ProvenanceVis = ({ open, close }: Props) => {
       );
     }
     return null;
-  }, [provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
+  }, [ProvVis, provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
 
   return (
     <Sidebar
