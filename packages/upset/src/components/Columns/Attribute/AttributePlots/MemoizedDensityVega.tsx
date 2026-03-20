@@ -1,7 +1,8 @@
 import { FC, memo, useMemo } from 'react';
+import { css as emotionCss } from '@emotion/react';
 import { AttributePlotType } from '@visdesignlab/upset2-core';
-import { VegaLite } from 'react-vega';
 import { generateAttributePlotSpec } from './generateAttributePlotSpec';
+import { VegaLiteChart } from '../../../VegaLiteChart';
 
 type Props = {
   /**
@@ -47,13 +48,14 @@ export const MemoizedDensityVega: FC<Props> = memo(
       // This fix does NOT affect the layout in other browsers, and is necessary to prevent the layout from breaking in safari.
       // Part of the reason this is necessary is because we are required to use !important to override the position property set by react-vega;
       // However, react does NOT support !important in inline styles, so we have to use the css prop to apply the style.
-      <VegaLite
+      <VegaLiteChart
         renderer="svg"
         spec={spec}
         actions={false}
         height={height}
-        // @ts-expect-error react-vega does not have types for css prop
-        css={{ position: 'initial !important' }}
+        css={emotionCss`
+          position: initial !important;
+        `}
       />
     );
   },

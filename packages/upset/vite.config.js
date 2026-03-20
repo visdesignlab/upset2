@@ -44,6 +44,7 @@ export default defineConfig({
         '@trrack/core',
         '@trrack/vis-react',
         'vega',
+        'vega-embed',
         'vega-lite',
         'react-vega'
       ],
