@@ -6,13 +6,13 @@ import {
   Scatterplot,
   SelectionType,
 } from '@visdesignlab/upset2-core';
-import { VisualizationSpec } from 'react-vega';
 import { SelectionParameter } from 'vega-lite/build/src/selection';
 import { Predicate } from 'vega-lite/build/src/predicate';
 import { LogicalComposition } from 'vega-lite/build/src/logical';
 import { AnyMark } from 'vega-lite/build/src/mark';
 import { Aggregate } from 'vega-lite/build/src/aggregate';
 import { StandardType } from 'vega-lite/build/src/type';
+import { VisualizationSpec } from 'vega-embed/build/embed';
 import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
 
 /**

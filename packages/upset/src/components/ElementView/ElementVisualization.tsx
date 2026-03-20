@@ -1,7 +1,7 @@
 import { Box } from '@mui/system';
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { VegaLite, View } from 'react-vega';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { View } from 'vega';
 
 import {
   vegaSelectionsEqual,
@@ -21,6 +21,7 @@ import {
   currentVegaSelection,
 } from '../../atoms/config/selectionAtoms';
 import { columnSelectAtom } from '../../atoms/highlightAtom';
+import { VegaLiteChart } from '../VegaLiteChart';
 
 const BRUSH_NAME = 'brush';
 
@@ -76,6 +77,7 @@ export const ElementVisualization = () => {
   const draftSelection = useRef(selection);
   const cancelNextSelection = useRef(false);
   const preventSignal = useRef(false);
+  const initializedViews = useRef(new WeakSet<View>());
   const [views, setViews] = useState<{ view: View; plot: Plot }[]>([]);
   const currentClick = useRef<Plot | null>(null);
   const mouseDown = useRef(false);
@@ -173,10 +175,33 @@ export const ElementVisualization = () => {
     });
   }, [views, selection]);
 
+  const registerView = useCallback((plot: Plot, view: View) => {
+    setViews((currentViews) => {
+      const existing = currentViews.find(
+        ({ plot: currentPlot }) => currentPlot.id === plot.id,
+      );
+      if (existing?.view === view) return currentViews;
+      return [
+        ...currentViews.filter(({ plot: currentPlot }) => currentPlot.id !== plot.id),
+        { view, plot },
+      ];
+    });
+
+    if (initializedViews.current.has(view)) return;
+    initializedViews.current.add(view);
+
+    view.addEventListener('mouseover', () => {
+      currentClick.current = plot;
+    });
+    view.addEventListener('mouseout', () => {
+      if (currentClick.current?.id === plot.id) currentClick.current = null;
+    });
+  }, []);
+
   // Syncs the default value of the plots on load to the current numerical query
   useEffect(() => {
     syncSelection();
-  }, [views, selection]);
+  }, [syncSelection]);
 
   return (
     <Box
@@ -198,13 +223,19 @@ export const ElementVisualization = () => {
           flexDirection: 'row',
           flexWrap: 'wrap',
           justifyContent: 'space-around',
+          gap: 1,
+          padding: '4px 8px 8px 12px',
         }}
       >
         {plots.length > 0 &&
           specs.map(({ plot, spec }) => (
             // Relative position is necessary so this serves as a positioning container for the close button
             <Box
-              style={{ display: 'inline-block', position: 'relative' }}
+              style={{
+                display: 'inline-block',
+                position: 'relative',
+                overflow: 'visible',
+              }}
               key={plot.id}
               onContextMenu={(e) => {
                 e.preventDefault();
@@ -223,7 +254,11 @@ export const ElementVisualization = () => {
                       label: 'Remove Plot',
                       onClick: () => {
                         actions.removePlot(plot);
-                        setViews(views.filter(({ plot: p }) => p.id !== plot.id));
+                        setViews((currentViews) =>
+                          currentViews.filter(
+                            ({ plot: currentPlot }) => currentPlot.id !== plot.id,
+                          ),
+                        );
                         setContextMenu(null);
                       },
                     },
@@ -231,7 +266,7 @@ export const ElementVisualization = () => {
                 });
               }}
             >
-              <VegaLite
+              <VegaLiteChart
                 spec={spec}
                 data={data}
                 actions={false}
@@ -239,17 +274,8 @@ export const ElementVisualization = () => {
                   [BRUSH_NAME]: (_: unknown, val: unknown) => brushHandler(plot, val),
                 }}
                 // Making room for the close button
-                style={{ marginLeft: '5px' }}
-                onNewView={(view: View) => {
-                  views.push({ view, plot });
-                  setViews([...views]);
-                  view.addEventListener('mouseover', () => {
-                    currentClick.current = plot;
-                  });
-                  view.addEventListener('mouseout', () => {
-                    currentClick.current = null;
-                  });
-                }}
+                style={{ marginLeft: '5px', overflow: 'visible' }}
+                onNewView={(view: View) => registerView(plot, view)}
               />
             </Box>
           ))}

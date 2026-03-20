@@ -1,5 +1,5 @@
 import { AttributePlotType } from '@visdesignlab/upset2-core';
-import { VisualizationSpec } from 'react-vega';
+import { VisualizationSpec } from 'vega-embed/build/embed';
 
 /**
  * Generate the vega-lite specification for an attribute plot.
