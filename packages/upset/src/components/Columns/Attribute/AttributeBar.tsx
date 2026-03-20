@@ -66,7 +66,6 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
           <DotPlot
             scale={scale}
             values={values}
-            attribute={attribute}
             isAggregate={isRowAggregate(row)}
             row={row}
           />
@@ -81,7 +80,6 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
             <StripPlot
               scale={scale}
               values={values}
-              attribute={attribute}
               isAggregate={isRowAggregate(row)}
               row={row}
             />
@@ -93,7 +91,6 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
             <DotPlot
               scale={scale}
               values={values}
-              attribute={attribute}
               isAggregate={isRowAggregate(row)}
               row={row}
               jitter
