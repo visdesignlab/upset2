@@ -107,43 +107,28 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     return 0;
   }, [queryBySetsInterface, dimensions, setQuery]);
 
-  let yTransform = 0;
+  let nextY = 0;
 
-  const rowTransitions = useTransition(
-    rows.map(({ row, id }, index) => {
-      // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
-      if (index > 0 && shouldRender(row, collapsedIds)) {
-        const prevRow = rows[index - 1].row;
-        // Only use aggRowHeight if the previous row is an aggregate containing set membership circles
-        // which is NOT contained in a collapsed parent aggregate
-        if (
-          isRowAggregate(prevRow) &&
-          TALL_ROW_TYPES.includes(prevRow.aggregateBy)
-        ) {
-          yTransform += dimensions.body.aggRowHeight;
-        } else if (
-          !isRowAggregate(prevRow)
-          && prevRow.parent
-          && collapsedIds.includes(prevRow.parent)
-        ) {
-          yTransform += dimensions.body.aggRowHeight;
-        } else {
-          yTransform += dimensions.body.rowHeight;
-        }
-      }
+  const positionedRows = rows.map(({ row, id }) => {
+    const rendered = shouldRender(row, collapsedIds);
+    const y = nextY + transformShift;
 
-      return {
-        id,
-        row,
-        y: yTransform + transformShift,
-      };
-    }),
-    {
-      keys: (d) => d.id,
-      enter: ({ y }) => ({ transform: translate(0, y) }),
-      update: ({ y }) => ({ transform: translate(0, y) }),
-    },
-  );
+    if (rendered) {
+      const rowHeight =
+        isRowAggregate(row) && TALL_ROW_TYPES.includes(row.aggregateBy)
+          ? dimensions.body.aggRowHeight
+          : dimensions.body.rowHeight;
+      nextY += rowHeight;
+    }
+
+    return { id, row, y };
+  });
+
+  const rowTransitions = useTransition(positionedRows, {
+    keys: (d) => d.id,
+    enter: ({ y }) => ({ transform: translate(0, y) }),
+    update: ({ y }) => ({ transform: translate(0, y) }),
+  });
 
   return (
     <g id="matrixRows" onClick={(e) => e.stopPropagation()}>
