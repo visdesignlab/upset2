@@ -566,7 +566,7 @@ export function secondAggregation(
         `${agg.id}-`,
       );
       // To add parent to nested aggs
-      const newAgg = { ...agg, items: itms };
+      const newAgg = { ...agg, rows: itms };
       aggs.values[aggId] = newAgg;
       aggs.order.push(aggId);
     }
