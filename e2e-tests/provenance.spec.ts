@@ -155,3 +155,28 @@ test('Overlap collapse with second aggregation', async ({ page }) => {
   expect(visibleRowsAfterCollapse).toBeLessThan(visibleRowsBeforeCollapse);
   expect(visibleSubsetsAfterCollapse).toBeLessThan(visibleSubsetsBeforeCollapse);
 });
+
+/**
+ * Tests that collapse all works and toggles to expand all without runtime errors.
+ */
+test('Collapse All Button', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.getByRole('radio', { name: 'Degree' }).check();
+
+  const consoleErrors = [];
+  page.on('pageerror', (error) => {
+    consoleErrors.push(error.message);
+  });
+
+  const collapseButton = page.locator('#upset-svg g[aria-label="Collapse All"]').first();
+  await expect(collapseButton).toHaveCount(1);
+
+  await collapseButton.click({ force: true });
+  await expect(page.locator('#upset-svg g[aria-label="Expand All"]').first()).toHaveCount(1);
+
+  expect(
+    consoleErrors.some((message) =>
+      message.includes("can't convert undefined to object"),
+    ),
+  ).toBeFalsy();
+});

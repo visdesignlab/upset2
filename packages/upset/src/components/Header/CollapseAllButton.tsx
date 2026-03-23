@@ -45,7 +45,7 @@ export const CollapseAllButton = () => {
       actions.expandAll();
       setAllCollapsed(false);
     } else {
-      Object.entries(rows.values).forEach((entry) => {
+      Object.entries(rows).forEach((entry) => {
         const row = entry[1];
         if (isRowAggregate(row)) {
           ids.push(row.id);
