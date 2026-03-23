@@ -129,3 +129,26 @@ test('Overlap History', async ({ page }) => {
   await expect(page.getByText('Second overlap by 5')).toHaveCount(1);
   await expect(page.getByText('Second overlap by 6')).toHaveCount(1);
 });
+
+/**
+ * Tests that collapsing first-level overlap aggregates hides nested rows when a second aggregation is enabled.
+ */
+test('Overlap collapse with second aggregation', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+
+  await page.getByRole('radio', { name: 'Overlaps' }).check();
+  await page.getByRole('button', { name: 'Second Aggregation' }).click();
+  await page.locator('[role="radiogroup"]').nth(1).getByLabel('Degree', { exact: true }).check();
+
+  const visibleRowsBeforeCollapse = await page.locator('#matrixRows > g').count();
+
+  await page
+    .locator('#matrixRows > g')
+    .first()
+    .locator('rect[fill="transparent"]')
+    .first()
+    .click();
+
+  const visibleRowsAfterCollapse = await page.locator('#matrixRows > g').count();
+  expect(visibleRowsAfterCollapse).toBeLessThan(visibleRowsBeforeCollapse);
+});

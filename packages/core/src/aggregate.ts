@@ -130,7 +130,7 @@ function aggregateByDegree(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     degreeMap[i] = id;
@@ -223,7 +223,7 @@ function aggregateBySets(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     setMap[set] = id;
@@ -325,7 +325,7 @@ function aggregateByDeviation(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     deviationMap[type] = id;
@@ -424,7 +424,7 @@ function aggregateByOverlaps(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     overlapAggMap[combo] = id;
