@@ -129,3 +129,28 @@ test('Overlap History', async ({ page }) => {
   await expect(page.getByText('Second overlap by 5')).toHaveCount(1);
   await expect(page.getByText('Second overlap by 6')).toHaveCount(1);
 });
+
+/**
+ * Tests that collapse all works and toggles to expand all without runtime errors.
+ */
+test('Collapse All Button', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.getByRole('radio', { name: 'Degree' }).check();
+
+  const consoleErrors = [];
+  page.on('pageerror', (error) => {
+    consoleErrors.push(error.message);
+  });
+
+  const collapseButton = page.locator('#upset-svg g[aria-label="Collapse All"]').first();
+  await expect(collapseButton).toHaveCount(1);
+
+  await collapseButton.click({ force: true });
+  await expect(page.locator('#upset-svg g[aria-label="Expand All"]').first()).toHaveCount(1);
+
+  expect(
+    consoleErrors.some((message) =>
+      message.includes("can't convert undefined to object"),
+    ),
+  ).toBeFalsy();
+});
