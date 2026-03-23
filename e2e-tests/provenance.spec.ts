@@ -141,6 +141,7 @@ test('Overlap collapse with second aggregation', async ({ page }) => {
   await page.locator('[role="radiogroup"]').nth(1).getByLabel('Degree', { exact: true }).check();
 
   const visibleRowsBeforeCollapse = await page.locator('#matrixRows > g').count();
+  const visibleSubsetsBeforeCollapse = await page.locator('#matrixRows [id^="Subset_"]').count();
 
   await page
     .locator('#matrixRows > g')
@@ -150,5 +151,7 @@ test('Overlap collapse with second aggregation', async ({ page }) => {
     .click();
 
   const visibleRowsAfterCollapse = await page.locator('#matrixRows > g').count();
+  const visibleSubsetsAfterCollapse = await page.locator('#matrixRows [id^="Subset_"]').count();
   expect(visibleRowsAfterCollapse).toBeLessThan(visibleRowsBeforeCollapse);
+  expect(visibleSubsetsAfterCollapse).toBeLessThan(visibleSubsetsBeforeCollapse);
 });
