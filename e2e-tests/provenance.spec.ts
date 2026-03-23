@@ -163,7 +163,7 @@ test('Collapse All Button', async ({ page }) => {
   await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
   await page.getByRole('radio', { name: 'Degree' }).check();
 
-  const consoleErrors = [];
+  const consoleErrors: string[] = [];
   page.on('pageerror', (error) => {
     consoleErrors.push(error.message);
   });
