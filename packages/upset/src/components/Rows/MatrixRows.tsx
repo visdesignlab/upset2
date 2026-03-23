@@ -45,24 +45,19 @@ export function rowRenderer(row: Row) {
  *
  * The function checks the following conditions:
  * 1. If the row has no parent ID, it should be rendered.
- * 2. If the parent ID contains a hyphen, it extracts the top-level aggregate ID and checks if it is in the list of collapsed IDs.
- * 3. If the parent ID is in the list of collapsed IDs, the row should not be rendered.
+ * 2. If the row's direct parent is collapsed, the row should not be rendered.
+ * 3. If the row's parent ID starts with any collapsed aggregate ID plus `-`, the row is a descendant
+ *    of that collapsed aggregate and should not be rendered.
  */
 const shouldRender = (row: Row, collapsedIds: string[]) => {
   const parentId = row.parent;
 
   if (parentId === undefined) return true;
 
-  if (parentId.includes('-')) {
-    const topLevelAggId = parentId.substring(0, parentId.indexOf('-'));
-    if (collapsedIds.includes(topLevelAggId)) {
-      return false;
-    }
-  }
-
-  if (collapsedIds.includes(parentId)) return false;
-
-  return true;
+  return !collapsedIds.some((collapsedId) => {
+    if (collapsedId === parentId) return true;
+    return parentId.startsWith(`${collapsedId}-`);
+  });
 };
 
 const rowMatchesSetQuery = (row: Row, membership: SetQueryMembership) => {
