@@ -1,13 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
 import {
-  UpsetProvenance,
-  UpsetActions,
   getActions,
   initializeProvenanceTracking,
   Upset,
   getAltTextConfig,
 } from '@visdesignlab/upset2-react';
+import type { UpsetActions, UpsetProvenance } from '@visdesignlab/upset2-react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import {
@@ -22,7 +21,6 @@ import {
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
-import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
 import { Root } from './components/Root';
 import { DataTable } from './components/DataTable';
@@ -35,7 +33,7 @@ import { generateAltText } from './api/generateAltText';
 
 /** @jsxImportSource @emotion/react */
 
-type SessionState = ProvenanceGraph<UpsetConfig, string> | null | 'not found';
+type SessionState = ReturnType<UpsetProvenance['exportObject']> | null | 'not found';
 
 const ALTTEXT_EMBED_ERR = 'Error generating alt text';
 

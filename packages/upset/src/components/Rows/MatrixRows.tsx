@@ -7,7 +7,7 @@ import {
   isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
-import { a, useTransition } from 'react-spring';
+import { useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -20,6 +20,7 @@ import {
   setQuerySelector,
 } from '../../atoms/config/queryBySetsAtoms';
 import { TALL_ROW_TYPES } from '../../dimensions';
+import { AnimatedGroup } from '../custom/AnimatedGroup';
 
 type Props = {
   rows: RenderRow[];
@@ -177,9 +178,9 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
       {rowTransitions(
         ({ transform }, item) =>
           shouldRender(item.row, collapsedIds) && (
-            <a.g key={item.id} transform={transform}>
+            <AnimatedGroup key={item.id} transform={transform}>
               {rowRenderer(item.row)}
-            </a.g>
+            </AnimatedGroup>
           ),
       )}
     </g>

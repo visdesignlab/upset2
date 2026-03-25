@@ -1,5 +1,5 @@
 import { ScaleLinear } from 'd3-scale';
-import { useMemo } from 'react';
+import { ReactNode, useMemo } from 'react';
 
 import translate from '../../utils/transform';
 import { TickLine, AxisType } from './AxisTickLine';
@@ -8,7 +8,7 @@ type Props = {
   scale: ScaleLinear<number, number>;
   transform?: string;
   type: AxisType;
-  label: string | Element;
+  label: ReactNode;
   margin: number;
   pixelsPerTick?: number;
   showLabel?: boolean;

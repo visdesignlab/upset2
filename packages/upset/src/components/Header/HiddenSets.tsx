@@ -1,7 +1,6 @@
-import { css } from '@emotion/react';
-import { a, useTransition } from 'react-spring';
+import { useTransition } from 'react-spring';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { FC, useContext } from 'react';
+import { FC, MouseEvent, useContext } from 'react';
 import { ScaleLinear } from 'd3-scale';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -11,6 +10,7 @@ import translate from '../../utils/transform';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { hiddenSetSortAtom } from '../../atoms/config/visibleSetsAtoms';
 import { UpsetActions } from '../../provenance';
+import { AnimatedGroup } from '../custom/AnimatedGroup';
 
 type Props = {
   hiddenSets: string[];
@@ -83,16 +83,14 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
   return (
     <g>
       {hiddenSetsTransition(({ transform }, item) => (
-        <a.g
+        <AnimatedGroup
           transform={transform}
-          onContextMenu={(e: any) => {
+          onContextMenu={(e: MouseEvent<SVGGElement>) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e, item.id);
           }}
-          css={css`
-            cursor: context-menu;
-          `}
+          style={{ cursor: 'context-menu' }}
         >
           <SetSizeBar
             scale={scale}
@@ -103,7 +101,7 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
             showLabel
             hideSizeText
           />
-        </a.g>
+        </AnimatedGroup>
       ))}
     </g>
   );

@@ -6,6 +6,10 @@ import { Root } from './Root';
 import { UpsetProps } from '../types';
 import { processRawData } from '../utils/data';
 
+const RecoilRootCompat = RecoilRoot as unknown as React.ComponentType<
+  React.PropsWithChildren
+>;
+
 /**
  * Renders the Upset component.
  *
@@ -62,7 +66,7 @@ export const Upset: FC<UpsetProps> = ({
           fontFamily: 'Roboto, Arial',
         }}
       >
-        <RecoilRoot>
+        <RecoilRootCompat>
           <Root
             data={processedData}
             config={config}
@@ -78,7 +82,7 @@ export const Upset: FC<UpsetProps> = ({
             footerHeight={footerHeight}
             generateAltText={generateAltText}
           />
-        </RecoilRoot>
+        </RecoilRootCompat>
       </Box>
     </ThemeProvider>
   );
