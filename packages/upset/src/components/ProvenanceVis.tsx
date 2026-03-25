@@ -24,14 +24,19 @@ export const ProvenanceVis = ({ open, close }: Props) => {
   useEffect(() => {
     let isMounted = true;
 
-    // Wrap in a try/catch as well for environments where dynamic import errors aren't promise-based
+    // Let Vite resolve/prebundle this dependency in dev so the import works when installed,
+    // while still keeping it runtime-optional for consumers that do not include it.
     try {
-      import(/* @vite-ignore */ '@trrack/vis-react')
+      import('@trrack/vis-react')
         .then((mod) => {
           if (!isMounted) return;
           setProvVis(() => mod.ProvVis ?? false);
         })
-        .catch(() => {
+        .catch((error) => {
+          console.error(
+            'Failed to load @trrack/vis-react. Please ensure it is installed to view the provenance visualization.',
+            error,
+          );
           if (isMounted) setProvVis(false);
         });
     } catch {
@@ -68,7 +73,13 @@ export const ProvenanceVis = ({ open, close }: Props) => {
       );
     }
     return null;
-  }, [ProvVis, provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
+  }, [
+    ProvVis,
+    provenance.root.id,
+    provenance.to,
+    provenance.graph.backend.nodes,
+    currentNodeId,
+  ]);
 
   return (
     <Sidebar
