@@ -31,12 +31,13 @@
     "react-router-dom": "^6.14.1",
     "recoil": "^0.6.1",
     "typedoc-plugin-missing-exports": "^4.0.0",
-    "typescript": "^4.5.5",
+    "typescript": "^5.9.3",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "dev": "vite dev --port 3000",
-    "build": "vite build"
+    "build": "vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "eslintConfig": {
     "extends": [

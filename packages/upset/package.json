@@ -35,6 +35,7 @@
     "dev": "vite build --watch",
     "build": "vite build",
     "lint": "eslint src --fix",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

@@ -14,7 +14,8 @@
     "storybook": "turbo run storybook",
     "test": "playwright test",
     "build": "turbo run build --force --filter=@visdesignlab/*",
-    "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*"
+    "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*",
+    "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
     "@eslint/js": "^8.57.0",
