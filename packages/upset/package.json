@@ -69,11 +69,7 @@
     }
   },
   "devDependencies": {
-    "@babel/core": "^7.16.7",
-    "@babel/preset-react": "^7.16.7",
     "@chromatic-com/storybook": "^1.6.1",
-    "@emotion/babel-plugin": "^11.7.2",
-    "@emotion/babel-preset-css-prop": "^11.2.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.13.0",
     "@mui/icons-material": "^7.0.2",
@@ -87,7 +83,6 @@
     "@types/d3": "^7.1.0",
     "@types/react": "^17.0.38",
     "@types/react-dom": "^18.3.1",
-    "babel-loader": "^8.2.3",
     "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^7.0.4",
     "prettier": "^3.5.3",
