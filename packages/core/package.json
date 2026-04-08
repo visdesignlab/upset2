@@ -37,7 +37,6 @@
   },
   "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner, Nate Lanza",
   "devDependencies": {
-    "d3-array": "^3.2.4",
     "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^7.0.4",
     "prettier": "^3.5.3",
