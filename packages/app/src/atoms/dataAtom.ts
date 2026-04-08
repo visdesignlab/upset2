@@ -33,6 +33,9 @@ export const encodedDataAtom = atom<CoreUpsetData | null>({
  * Selector that checks whether the loaded dataset contains any NaN values.
  * NaN values in set (boolean) or numeric columns can cause rendering failures.
  * Returns true if NaN values are present in any item attribute.
+ *
+ * Note: This selector is memoized by Recoil and is only recalculated when
+ * `dataSelector` changes (i.e., when new data is loaded), not on every render.
  */
 export const nanErrorSelector = selector<boolean>({
   key: 'nan-error',

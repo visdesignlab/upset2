@@ -170,7 +170,7 @@ export const Body = ({ data, config }: Props) => {
           <DialogContentText>
             The dataset contains NaN (Not a Number) values, which are incompatible with
             UpSet 2.0. Please fix the data by replacing NaN values with valid numeric or
-            boolean values and try again.
+            boolean values, then reload the page to try again.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
