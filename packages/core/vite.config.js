@@ -25,9 +25,5 @@ export default defineConfig({
       fileName: 'index',
       formats: ['es', 'cjs'],
     },
-    rollupOptions: {
-      // External packages that should not be bundled into your library.
-      external: ['d3'],
-    },
   },
 });
