@@ -28,3 +28,22 @@ export const encodedDataAtom = atom<CoreUpsetData | null>({
   key: 'encoded-upset-data',
   default: null,
 });
+
+/**
+ * Selector that checks whether the loaded dataset contains any NaN values.
+ * NaN values in set (boolean) or numeric columns can cause rendering failures.
+ * Returns true if NaN values are present in any item attribute.
+ */
+export const nanErrorSelector = selector<boolean>({
+  key: 'nan-error',
+  get: ({ get }) => {
+    const data = get(dataSelector);
+    if (!data) return false;
+
+    return Object.values(data.items).some((item) =>
+      Object.values(item.atts).some(
+        (val) => typeof val === 'number' && Number.isNaN(val),
+      ),
+    );
+  },
+});
