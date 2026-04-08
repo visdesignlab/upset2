@@ -68,7 +68,13 @@ export const ProvenanceVis = ({ open, close }: Props) => {
       );
     }
     return null;
-  }, [ProvVis, provenance.root.id, provenance.to, provenance.graph.backend.nodes, currentNodeId]);
+  }, [
+    ProvVis,
+    provenance.root.id,
+    provenance.to,
+    provenance.graph.backend.nodes,
+    currentNodeId,
+  ]);
 
   return (
     <Sidebar
