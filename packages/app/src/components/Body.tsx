@@ -2,8 +2,17 @@ import { Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
 import { AltText, CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Backdrop, CircularProgress } from '@mui/material';
-import { encodedDataAtom } from '../atoms/dataAtom';
+import {
+  Backdrop,
+  Button,
+  CircularProgress,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+} from '@mui/material';
+import { encodedDataAtom, nanErrorSelector } from '../atoms/dataAtom';
 import {
   doesHaveSavedQueryParam,
   queryParamAtom,
@@ -30,6 +39,7 @@ export const Body = ({ data, config }: Props) => {
   const { workspace, table, sessionId } = useRecoilValue(queryParamAtom);
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
+  const hasNaNError = useRecoilValue(nanErrorSelector);
   const [isProvVisOpen, setIsProvVisOpen] = useRecoilState(provenanceVisAtom);
   const [isElementSidebarOpen, setIsElementSidebarOpen] =
     useRecoilState(elementSidebarAtom);
@@ -150,6 +160,26 @@ export const Body = ({ data, config }: Props) => {
     (encodedData !== null && data.setColumns.length === 0)
   ) {
     return <div>Please click Load Data button to go to data interface.</div>;
+  }
+
+  if (hasNaNError) {
+    return (
+      <Dialog open={true}>
+        <DialogTitle>Data Error</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            The dataset contains NaN (Not a Number) values, which are incompatible with
+            UpSet 2.0. Please fix the data by replacing NaN values with valid numeric or
+            boolean values, then reload the page to try again.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => window.location.reload()} color="primary">
+            Reload
+          </Button>
+        </DialogActions>
+      </Dialog>
+    );
   }
 
   if (data.setColumns.length > 0) {
