@@ -4,8 +4,10 @@ import { useRecoilValue, useRecoilState } from 'recoil';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
   Backdrop,
+  Button,
   CircularProgress,
   Dialog,
+  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
@@ -171,6 +173,11 @@ export const Body = ({ data, config }: Props) => {
             boolean values and try again.
           </DialogContentText>
         </DialogContent>
+        <DialogActions>
+          <Button onClick={() => window.location.reload()} color="primary">
+            Reload
+          </Button>
+        </DialogActions>
       </Dialog>
     );
   }
