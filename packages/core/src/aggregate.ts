@@ -144,7 +144,7 @@ function aggregateByDegree(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     degreeMap[i] = id;
@@ -239,7 +239,7 @@ function aggregateBySets(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     setMap[set] = id;
@@ -343,7 +343,7 @@ function aggregateByDeviation(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     deviationMap[type] = id;
@@ -444,7 +444,7 @@ function aggregateByOverlaps(
     };
 
     if (agg.level === 2) {
-      agg.parent = parentPrefix.replace('-', '');
+      agg.parent = parentPrefix.replace(/-$/, '');
     }
 
     overlapAggMap[combo] = id;
@@ -617,7 +617,7 @@ export function secondAggregation(
         `${agg.id}-`,
       );
       // To add parent to nested aggs
-      const newAgg = { ...agg, items: itms };
+      const newAgg = { ...agg, rows: itms };
       aggs.values[aggId] = newAgg;
       aggs.order.push(aggId);
     }

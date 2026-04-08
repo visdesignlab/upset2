@@ -129,3 +129,54 @@ test('Overlap History', async ({ page }) => {
   await expect(page.getByText('Second overlap by 5')).toHaveCount(1);
   await expect(page.getByText('Second overlap by 6')).toHaveCount(1);
 });
+
+/**
+ * Tests that collapsing first-level overlap aggregates hides nested rows when a second aggregation is enabled.
+ */
+test('Overlap collapse with second aggregation', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+
+  await page.getByRole('radio', { name: 'Overlaps' }).check();
+  await page.getByRole('button', { name: 'Second Aggregation' }).click();
+  await page.locator('[role="radiogroup"]').nth(1).getByLabel('Degree', { exact: true }).check();
+
+  const visibleRowsBeforeCollapse = await page.locator('#matrixRows > g').count();
+  const visibleSubsetsBeforeCollapse = await page.locator('#matrixRows [id^="Subset_"]').count();
+
+  await page
+    .locator('#matrixRows > g')
+    .first()
+    .locator('rect[fill="transparent"]')
+    .first()
+    .click();
+
+  const visibleRowsAfterCollapse = await page.locator('#matrixRows > g').count();
+  const visibleSubsetsAfterCollapse = await page.locator('#matrixRows [id^="Subset_"]').count();
+  expect(visibleRowsAfterCollapse).toBeLessThan(visibleRowsBeforeCollapse);
+  expect(visibleSubsetsAfterCollapse).toBeLessThan(visibleSubsetsBeforeCollapse);
+});
+
+/**
+ * Tests that collapse all works and toggles to expand all without runtime errors.
+ */
+test('Collapse All Button', async ({ page }) => {
+  await page.goto('http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193');
+  await page.getByRole('radio', { name: 'Degree' }).check();
+
+  const consoleErrors: string[] = [];
+  page.on('pageerror', (error) => {
+    consoleErrors.push(error.message);
+  });
+
+  const collapseButton = page.locator('#upset-svg g[aria-label="Collapse All"]').first();
+  await expect(collapseButton).toHaveCount(1);
+
+  await collapseButton.click({ force: true });
+  await expect(page.locator('#upset-svg g[aria-label="Expand All"]').first()).toHaveCount(1);
+
+  expect(
+    consoleErrors.some((message) =>
+      message.includes("can't convert undefined to object"),
+    ),
+  ).toBeFalsy();
+});

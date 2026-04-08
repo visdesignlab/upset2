@@ -1,7 +1,9 @@
 import {
+  getBelongingSetsFromSetMembership,
   isRowAggregate,
   Row,
   RenderRow,
+  SetQueryMembership,
   isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
 import { FC, useMemo } from 'react';
@@ -43,24 +45,33 @@ export function rowRenderer(row: Row) {
  *
  * The function checks the following conditions:
  * 1. If the row has no parent ID, it should be rendered.
- * 2. If the parent ID contains a hyphen, it extracts the top-level aggregate ID and checks if it is in the list of collapsed IDs.
- * 3. If the parent ID is in the list of collapsed IDs, the row should not be rendered.
+ * 2. If the row's direct parent is collapsed, the row should not be rendered.
+ * 3. If the row's parent ID starts with any collapsed aggregate ID plus `-`, the row is a descendant
+ *    of that collapsed aggregate and should not be rendered.
  */
 const shouldRender = (row: Row, collapsedIds: string[]) => {
   const parentId = row.parent;
 
   if (parentId === undefined) return true;
 
-  if (parentId.includes('-')) {
-    const topLevelAggId = parentId.substring(0, parentId.indexOf('-'));
-    if (collapsedIds.includes(topLevelAggId)) {
-      return false;
+  return !collapsedIds.some((collapsedId) => {
+    if (collapsedId === parentId) return true;
+    return parentId.startsWith(`${collapsedId}-`);
+  });
+};
+
+const rowMatchesSetQuery = (row: Row, membership: SetQueryMembership) => {
+  const belongingSets = getBelongingSetsFromSetMembership(row.setMembership);
+
+  return Object.entries(membership).every(([set, status]) => {
+    if (status === 'Yes') {
+      return belongingSets.includes(set);
     }
-  }
-
-  if (collapsedIds.includes(parentId)) return false;
-
-  return true;
+    if (status === 'No') {
+      return !belongingSets.includes(set);
+    }
+    return true;
+  });
 };
 
 /**
@@ -107,40 +118,62 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     return 0;
   }, [queryBySetsInterface, dimensions, setQuery]);
 
-  let yTransform = 0;
+  const queryMembership =
+    setQuery && isPopulatedSetQuery(setQuery) ? setQuery.query : null;
 
-  const rowTransitions = useTransition(
-    rows.map(({ row, id }, index) => {
-      // account for double height "set" aggregate rows by doubling height AFTER the aggregate row is rendered
-      if (index > 0 && shouldRender(row, collapsedIds)) {
-        const prevRow = rows[index - 1].row;
-        // Only use aggRowHeight if the previous row is an aggregate containing set membership circles
-        // which is NOT contained in a collapsed parent aggregate
-        if (
-          isRowAggregate(prevRow) &&
-          !(prevRow.parent && collapsedIds.includes(prevRow.parent)) &&
-          TALL_ROW_TYPES.includes(prevRow.aggregateBy)
-        ) {
-          yTransform += dimensions.body.aggRowHeight;
-        } else yTransform += dimensions.body.rowHeight;
-      }
+  let nextY = 0;
+  let restOfDatasetSectionY: number | undefined;
+  let insertedRestOfDatasetSection = false;
 
-      return {
-        id,
-        row,
-        y: yTransform + transformShift,
-      };
-    }),
-    {
-      keys: (d) => d.id,
-      enter: ({ y }) => ({ transform: translate(0, y) }),
-      update: ({ y }) => ({ transform: translate(0, y) }),
-    },
-  );
+  const positionedRows = rows.map(({ row, id }) => {
+    const rendered = shouldRender(row, collapsedIds);
+    let y = nextY + transformShift;
+
+    if (
+      rendered &&
+      queryMembership &&
+      !rowMatchesSetQuery(row, queryMembership) &&
+      !insertedRestOfDatasetSection
+    ) {
+      restOfDatasetSectionY = y + dimensions.body.rowHeight / 1.5;
+      nextY += dimensions.body.rowHeight * 1.5;
+      y += dimensions.body.rowHeight * 1.5;
+      insertedRestOfDatasetSection = true;
+    }
+
+    if (rendered) {
+      const rowHeight =
+        isRowAggregate(row) && TALL_ROW_TYPES.includes(row.aggregateBy)
+          ? dimensions.body.aggRowHeight
+          : dimensions.body.rowHeight;
+      nextY += rowHeight;
+    }
+
+    return { id, row, y };
+  });
+
+  const rowTransitions = useTransition(positionedRows, {
+    keys: (d) => d.id,
+    enter: ({ y }) => ({ transform: translate(0, y) }),
+    update: ({ y }) => ({ transform: translate(0, y) }),
+  });
 
   return (
     <g id="matrixRows" onClick={(e) => e.stopPropagation()}>
       {isPopulatedSetQuery(setQuery) && <g id="setQuery" />}
+      {restOfDatasetSectionY !== undefined && (
+        <g transform={translate(0, restOfDatasetSectionY)}>
+          <line
+            x1={0}
+            y1={0}
+            x2={dimensions.body.rowWidth}
+            y2={0}
+            strokeWidth={4}
+            stroke="currentColor"
+            opacity={0.35}
+          />
+        </g>
+      )}
       {rowTransitions(
         ({ transform }, item) =>
           shouldRender(item.row, collapsedIds) && (

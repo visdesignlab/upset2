@@ -27,6 +27,20 @@ export type RenderRow = {
   row: Row;
 };
 
+const rowMatchesMembership = (row: Row, membership: SetQueryMembership): boolean => {
+  const belongingSets = getBelongingSetsFromSetMembership(row.setMembership);
+
+  return Object.entries(membership).every(([set, status]) => {
+    if (status === 'Yes') {
+      return belongingSets.includes(set);
+    }
+    if (status === 'No') {
+      return !belongingSets.includes(set);
+    }
+    return true;
+  });
+};
+
 /**
  * Flattens a hierarchical structure of rows into a flat array of RenderRow objects.
  *
@@ -119,23 +133,7 @@ const secondAggRR = (data: CoreUpsetData, state: UpsetConfig) => {
 export function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows {
   const queryResults: Rows = { order: [], values: {} };
   flattenRows(rows).forEach((renderRow) => {
-    let match = true;
-    Object.entries(membership).forEach(([set, status]) => {
-      if (
-        status === 'Yes' &&
-        !getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)
-      ) {
-        match = false;
-      }
-      if (
-        status === 'No' &&
-        getBelongingSetsFromSetMembership(renderRow.row.setMembership).includes(set)
-      ) {
-        match = false;
-      }
-    });
-
-    if (match) {
+    if (rowMatchesMembership(renderRow.row, membership)) {
       queryResults.order.push(renderRow.id);
       queryResults.values[renderRow.id] = renderRow.row;
     }
@@ -163,6 +161,7 @@ const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) 
   let renderRows: Rows;
 
   if (!ignoreQuery && state.setQuery !== null && isPopulatedSetQuery(state.setQuery)) {
+    const { query } = state.setQuery;
     const subsets: Rows = getSubsets(
       data.items,
       data.sets,
@@ -170,18 +169,53 @@ const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) 
       data.attributeColumns,
       data.columnTypes,
     );
-    renderRows = getQueryResult(subsets, state.setQuery.query);
+    const matching: Rows = { order: [], values: {} };
+    const nonMatching: Rows = { order: [], values: {} };
+
+    flattenRows(subsets).forEach((renderRow) => {
+      if (rowMatchesMembership(renderRow.row, query)) {
+        matching.order.push(renderRow.id);
+        matching.values[renderRow.id] = renderRow.row;
+      } else {
+        nonMatching.order.push(renderRow.id);
+        nonMatching.values[renderRow.id] = renderRow.row;
+      }
+    });
+
+    const sortedMatching = sortRows(
+      matching,
+      state.sortBy,
+      state.sortVisibleBy,
+      vSets,
+      state.sortByOrder,
+    );
+    const sortedNonMatching = sortRows(
+      nonMatching,
+      state.sortBy,
+      state.sortVisibleBy,
+      vSets,
+      state.sortByOrder,
+    );
+
+    renderRows = {
+      order: [...sortedMatching.order, ...sortedNonMatching.order],
+      values: {
+        ...sortedMatching.values,
+        ...sortedNonMatching.values,
+      },
+    };
   } else {
     renderRows = secondAggRR(data, state);
+    renderRows = sortRows(
+      renderRows,
+      state.sortBy,
+      state.sortVisibleBy,
+      vSets,
+      state.sortByOrder,
+    );
   }
 
-  return sortRows(
-    renderRows,
-    state.sortBy,
-    state.sortVisibleBy,
-    vSets,
-    state.sortByOrder,
-  );
+  return renderRows;
 };
 
 /**
