@@ -23,11 +23,11 @@ export const ProvenanceVis = ({ open, close }: Props) => {
 
   useEffect(() => {
     let isMounted = true;
+    const provVisModule = '@trrack/vis-react';
 
-    // Let Vite resolve/prebundle this dependency in dev so the import works when installed,
-    // while still keeping it runtime-optional for consumers that do not include it.
+    // Keep this runtime-optional for consumers that do not install the peer dependency.
     try {
-      import('@trrack/vis-react')
+      import(/* @vite-ignore */ provVisModule)
         .then((mod) => {
           if (!isMounted) return;
           setProvVis(() => mod.ProvVis ?? false);
