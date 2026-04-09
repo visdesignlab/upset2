@@ -91,7 +91,7 @@
     "react-dom": "^19.2.4",
     "react-vega": "^8.0.0",
     "recoil": "^0.5.2",
-    "storybook": "^8.2.8",
+    "storybook": "^10.3.5",
     "tslib": "^2.3.1",
     "typescript": "^5.9.3",
     "vega": "^5.32.0",
