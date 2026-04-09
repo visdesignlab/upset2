@@ -41,6 +41,7 @@ export const Upset: FC<UpsetProps> = ({
   hideSettings,
   extProvenance,
   provVis,
+  provVisComponent,
   elementSidebar,
   altTextSidebar,
   footerHeight,
@@ -77,6 +78,7 @@ export const Upset: FC<UpsetProps> = ({
             hideSettings={hideSettings}
             extProvenance={extProvenance}
             provVis={provVis}
+            provVisComponent={provVisComponent}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
             footerHeight={footerHeight}

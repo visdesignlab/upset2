@@ -1,5 +1,6 @@
 import { Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
 import { AltText, CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
+import { ProvVis } from '@trrack/vis-react';
 import { useRecoilValue, useRecoilState } from 'recoil';
 import { useCallback, useContext, useEffect, useState } from 'react';
 import {
@@ -201,6 +202,7 @@ export const Body = ({ data, config }: Props) => {
             canEditPlotInformation={permissions}
             config={config}
             provVis={provVis}
+            provVisComponent={ProvVis}
             elementSidebar={elementSidebar}
             altTextSidebar={altTextSidebar}
             footerHeight={FOOTER_HEIGHT}
