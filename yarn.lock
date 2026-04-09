@@ -3991,19 +3991,19 @@
   resolved "https://registry.yarnpkg.com/@testing-library/user-event/-/user-event-14.6.1.tgz#13e09a32d7a8b7060fe38304788ebf4197cd2149"
   integrity sha512-vq7fv0rnt+QTXgPxr5Hjc210p6YKq2kmdziLgnsZGgLJ9e6VAShx1pACLuRjd/AS/sr7phAR58OIIpf0LlmQNw==
 
-"@trrack/core@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.6.0.tgz#c1f0d2cdc91f6eb78a861185f779aecddca07748"
-  integrity sha512-fiBXq3sd+QXzaSYt2qhmPWMnYpyb3HuFUFz1TE/6OMlUFT0HHTBB5ZKYlJlodei2Yp0Ub5sNv3oCJdQFzNaKvg==
+"@trrack/core@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@trrack/core/-/core-1.6.1.tgz#ecf49053af297b9106edf7051dfd4f314467cf25"
+  integrity sha512-aDnvBKNsA01BX3Ct9csL/fZBdswQ6xVyfrSqgrm1RICSQWl2lAH4vSKzQt7rKXDFDOto8S3/ZW0VZy1i5qnTDA==
   dependencies:
     fast-json-patch "^3.1.1"
     immer "^9.0.21"
     uuid "^11.0.0"
 
-"@trrack/vis-react@^1.6.0":
-  version "1.6.0"
-  resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.6.0.tgz#a8ebde0b7d34957e273ab6e9b0ccfceb40677797"
-  integrity sha512-kzok5mlnGHra9Z2QWWhVK+pQuVKcbkS+MpmMYgNeT/m+alvN1noAWQk/YfA8aubnXMvlkgWimBtzidHZOpqnlw==
+"@trrack/vis-react@^1.6.1":
+  version "1.6.1"
+  resolved "https://registry.yarnpkg.com/@trrack/vis-react/-/vis-react-1.6.1.tgz#d37e52c3c25d25efcf5bad97a1722e563b69aaf8"
+  integrity sha512-C7L1pOTbF7qPMW05TQfMngQJQI1fOnwyFkmU081nRyM2pA8abE3UNzmUSmkBXDKQIybk1mdT3GNw9GbydlgK6A==
   dependencies:
     "@react-spring/web" "^10.0.3"
     d3-color "^3.1.0"
