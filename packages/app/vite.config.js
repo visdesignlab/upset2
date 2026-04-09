@@ -15,7 +15,7 @@ export default defineConfig(() => {
       }),
     ],
     optimizeDeps: {
-      include: ['@trrack/vis-react', '@trrack/core', '@reduxjs/toolkit'],
+      include: ['@trrack/vis-react', '@trrack/core'],
     },
     server: { hmr: process.env.NODE_TESTING !== 'true' },
   };
