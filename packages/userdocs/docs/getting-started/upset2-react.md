@@ -98,7 +98,7 @@ const main = () => {
 
 #### Pre-Processing Data
 
-If you want to pre-process your data to gain access to the data objects generated and use by UpSet, or are having issues with the raw data loading, you must use the [process function](https://vdl.sci.utah.edu/upset2/functions/_visdesignlab_upset2_core.process.html) from UpSet 2.0 Core. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments.
+If you want to pre-process your data to gain access to the data objects generated and use by UpSet, or are having issues with the raw data loading, you must use the [process function](https://vdl.sci.utah.edu/upset2/docs/typedoc/@visdesignlab/upset2-core/functions/process/) from UpSet 2.0 Core. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments.
 
 The `data` object should be the same as raw data defined in [Data Structure](#raw-data).
 
