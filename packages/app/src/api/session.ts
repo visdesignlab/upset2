@@ -1,19 +1,21 @@
-import { ProvenanceGraph } from '@trrack/core/graph/graph-slice';
+import type { UpsetProvenance } from '@visdesignlab/upset2-react';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { api } from './api';
 import { WorkspacePermissionsSpec } from 'multinet';
+
+type SessionGraph = ReturnType<UpsetProvenance['exportObject']>;
 
 /**
  * Updates a Multinet session.
  *
  * @param {string}workspace - The workspace where the session belongs.
  * @param {string}sessionId - The ID of the session to update.
- * @param {ProvenanceGraph<UpsetConfig, string>}provObject - The updated session object.
+ * @param {SessionGraph}provObject - The updated session object.
  */
 export function updateMultinetSession(
   workspace: string,
   sessionId: string,
-  provObject: ProvenanceGraph<UpsetConfig, string>,
+  provObject: SessionGraph,
 ) {
   api.updateSession(workspace, parseInt(sessionId), 'table', provObject);
 }

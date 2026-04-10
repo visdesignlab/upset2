@@ -21,6 +21,10 @@ import { api } from './api/api';
 import { oAuth } from './api/auth';
 import { client_id } from './api/env';
 
+const RecoilRootCompat = RecoilRoot as unknown as React.ComponentType<
+  React.PropsWithChildren
+>;
+
 // Not quite recommended but the only way I could get why-did-you-render to work with vite
 // from https://github.com/welldone-software/why-did-you-render/issues/243#issuecomment-1112542230
 // also, process is indeed defined in vite
@@ -78,7 +82,7 @@ oAuth.maybeRestoreLogin().then(() => {
   root.render(
     <React.StrictMode>
       <ThemeProvider theme={DefaultTheme}>
-        <RecoilRoot>
+        <RecoilRootCompat>
           <Suspense
             fallback={
               <Box
@@ -98,7 +102,7 @@ oAuth.maybeRestoreLogin().then(() => {
               <App />
             </Box>
           </Suspense>
-        </RecoilRoot>
+        </RecoilRootCompat>
       </ThemeProvider>
     </React.StrictMode>,
   );
