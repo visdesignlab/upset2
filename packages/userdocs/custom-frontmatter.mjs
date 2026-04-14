@@ -10,10 +10,17 @@ export function load(app) {
     MarkdownPageEvent.BEGIN,
     /** @param {import('typedoc-plugin-markdown').MarkdownPageEvent} page */
     (page) => {
+      const model = page.model;
+
       // If the page is a module, set the title to the module name
-      if (page.model?.kind === ReflectionKind.Module) {
+      if (
+        model &&
+        'kind' in model &&
+        'name' in model &&
+        model.kind === ReflectionKind.Module
+      ) {
         page.frontmatter = {
-          title: page.model?.name.replace("@visdesignlab/", ""),
+          title: model.name.replace("@visdesignlab/", ""),
           ...page.frontmatter,
         };
       }

@@ -15,6 +15,12 @@
     "lint": {
       "cache": false
     },
+    "typecheck": {
+      "dependsOn": [
+        "^build",
+        "^typecheck"
+      ]
+    },
     "storybook": {
       "cache": false
     }

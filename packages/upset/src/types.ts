@@ -4,6 +4,7 @@ import {
   SelectionType,
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
+import type { ComponentType } from 'react';
 import { UpsetProvenance, UpsetActions } from './provenance';
 
 /**
@@ -161,6 +162,11 @@ export interface UpsetProps {
    * Sidebar options for the provVis component.
    */
   provVis?: SidebarProps;
+
+  /**
+   * Optional provenance visualization component supplied by the host application.
+   */
+  provVisComponent?: ComponentType<any>;
 
   /**
    * Sidebar options for the element sidebar component.

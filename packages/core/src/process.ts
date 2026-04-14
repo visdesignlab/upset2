@@ -1,5 +1,3 @@
-import { max, mean, median, min, quantile } from 'd3-array';
-
 import {
   AttributeList,
   BaseIntersection,
@@ -14,6 +12,46 @@ import {
   Subsets,
   ColumnTypes,
 } from './types';
+
+function isValidNumber(value: unknown): value is number {
+  return typeof value === 'number' && !Number.isNaN(value);
+}
+
+function getSortedNumericValues(values: unknown[]): number[] {
+  return values.filter(isValidNumber).sort((a, b) => a - b);
+}
+
+function getMin(values: number[]): number | undefined {
+  return values[0];
+}
+
+function getMax(values: number[]): number | undefined {
+  return values[values.length - 1];
+}
+
+function getMean(values: number[]): number | undefined {
+  if (values.length === 0) return undefined;
+
+  return values.reduce((total, value) => total + value, 0) / values.length;
+}
+
+function getQuantile(values: number[], p: number): number | undefined {
+  if (values.length === 0) return undefined;
+  if (p <= 0 || values.length < 2) return values[0];
+  if (p >= 1) return values[values.length - 1];
+
+  const index = (values.length - 1) * p;
+  const lowerIndex = Math.floor(index);
+  const upperIndex = Math.ceil(index);
+  const lowerValue = values[lowerIndex];
+  const upperValue = values[upperIndex];
+
+  return lowerValue + (upperValue - lowerValue) * (index - lowerIndex);
+}
+
+function getMedian(values: number[]): number | undefined {
+  return getQuantile(values, 0.5);
+}
 
 /**
  * Calculates the deviation based on the total number of items, intersection size,
@@ -175,27 +213,25 @@ export function getSixNumberSummary(
   items: Items,
   memberItems: string[],
   attributeColumns: string[],
-  columnTypes: ColumnTypes,
+  columnTypes?: ColumnTypes,
 ): AttributeList {
   const attributes: AttributeList = {};
 
   // Only process numerical attributes; categorical attributes don't have meaningful numerical statistics
-  const numericalAttributes = attributeColumns.filter(
-    (attr) => columnTypes[attr] === 'number',
-  );
+  const numericalAttributes = columnTypes
+    ? attributeColumns.filter((attr) => columnTypes[attr] === 'number')
+    : attributeColumns;
 
   numericalAttributes.forEach((attribute) => {
-    const values = memberItems
-      .map((d) => items[d].atts[attribute] as number)
-      .filter((val) => !Number.isNaN(val));
+    const values = getSortedNumericValues(memberItems.map((d) => items[d].atts[attribute]));
 
     attributes[attribute] = {
-      min: min(values),
-      max: max(values),
-      median: median(values),
-      mean: mean(values),
-      first: quantile(values, 0.25),
-      third: quantile(values, 0.75),
+      min: getMin(values),
+      max: getMax(values),
+      median: getMedian(values),
+      mean: getMean(values),
+      first: getQuantile(values, 0.25),
+      third: getQuantile(values, 0.75),
     };
   });
 

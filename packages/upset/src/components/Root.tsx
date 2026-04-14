@@ -12,6 +12,7 @@ import {
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import { createContext, FC, useCallback, useEffect, useMemo } from 'react';
+import type { ComponentType } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
@@ -73,6 +74,7 @@ type Props = {
     open: boolean;
     close: () => void;
   };
+  provVisComponent?: ComponentType<any>;
   elementSidebar?: SidebarProps;
   altTextSidebar?: SidebarProps;
   footerHeight?: number;
@@ -89,6 +91,7 @@ export const Root: FC<Props> = ({
   canEditPlotInformation,
   extProvenance,
   provVis,
+  provVisComponent,
   elementSidebar,
   altTextSidebar,
   footerHeight,
@@ -272,7 +275,13 @@ export const Root: FC<Props> = ({
           embedded={elementSidebar.embedded}
         />
       )}
-      {provVis && <ProvenanceVis open={provVis.open} close={provVis.close} />}
+      {provVis && (
+        <ProvenanceVis
+          open={provVis.open}
+          close={provVis.close}
+          ProvVisComponent={provVisComponent}
+        />
+      )}
       {altTextSidebar && generateAltText && (
         <AltTextSidebar
           open={altTextSidebar.open}

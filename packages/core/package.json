@@ -27,7 +27,8 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "lint": "eslint src --fix"
+    "lint": "eslint src --fix",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {},
   "husky": {
@@ -37,18 +38,13 @@
   },
   "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner, Nate Lanza",
   "devDependencies": {
-    "@types/d3": "^7.1.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^7.0.4",
     "prettier": "^3.5.3",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4"
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "d3-array": "^3.2.4",
-    "d3-drag": "^3.0.0",
-    "d3-dsv": "^3.0.1",
-    "d3-selection": "^3.0.0",
     "hyperid": "^3.0.0"
   }
 }

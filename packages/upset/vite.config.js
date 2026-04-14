@@ -5,6 +5,9 @@ import dts from 'vite-plugin-dts';
 
 export default defineConfig({
   cacheDir: '../../node_modules/.vite/react',
+  resolve: {
+    dedupe: ['react', 'react-dom'],
+  },
   plugins: [
     dts({
       tsConfigFilePath: join(__dirname, 'tsconfig.json'),

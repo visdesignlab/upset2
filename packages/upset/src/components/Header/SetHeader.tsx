@@ -1,8 +1,7 @@
 import { ScaleLinear } from 'd3-scale';
 import React, { FC, useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
-import { a, useTransition } from 'react-spring';
-import { css } from '@mui/material';
+import { useTransition } from 'react-spring';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { SetLabel } from '../custom/SetLabel';
@@ -17,6 +16,7 @@ import translate from '../../utils/transform';
 import { columnHoverAtom } from '../../atoms/highlightAtom';
 import { sortBySelector } from '../../atoms/config/sortByAtom';
 import { UpsetActions } from '../../provenance';
+import { AnimatedGroup } from '../custom/AnimatedGroup';
 
 /**
  * Props for the SetHeader component.
@@ -154,20 +154,18 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
   return (
     <g>
       {columnTransitions(({ transform }, set) => (
-        <a.g
+        <AnimatedGroup
           key={set.setName}
           transform={transform}
-          onContextMenu={(e) => {
+          onContextMenu={(e: React.MouseEvent<SVGGElement>) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e, set.setName);
           }}
-          css={css`
-            cursor: context-menu;
-          `}
+          style={{ cursor: 'context-menu' }}
           onMouseEnter={() => setColumnHover([set.setName])}
           onMouseLeave={() => setColumnHover([])}
-          onClick={(e) => {
+          onClick={(e: React.MouseEvent<SVGGElement>) => {
             e.stopPropagation();
             if (sortBy !== set.setName) {
               actions.sortBy(set.setName, 'Descending');
@@ -181,7 +179,7 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
             label={sets[set.setName].elementName}
           />
           <SetLabel setId={sets[set.setName].id} name={sets[set.setName].elementName} />
-        </a.g>
+        </AnimatedGroup>
       ))}
     </g>
   );

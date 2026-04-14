@@ -4,17 +4,23 @@ sidebar_position: 2
 
 # Upset 2 as a React Component
 
-UpSet 2.0 is available as a modular React component. Using component configuration and plot configuration objects, many features of UpSet 2.0 can be enabled/disabled as needed.
+UpSet 2.0 is available as a modular React component. Using component configuration and plot configuration objects, many features of UpSet 2.0 can be enabled or disabled as needed.
 
 ## Installation
 
 ```console
-npm install @visdesignlab/upset2-react @mui/material@^7.0.0 @mui/system@^7.0.0 @mui/icons-material@^7.0.0 @mui/x-data-grid@^8.0.0 @emotion/react@^11.0.0 @emotion/styled@^11.0.0 recoil@^0.5.0 @trrack/core@^1.3.0-beta.1 @trrack/vis-react@^1.3.0 vega@^5.32.0 vega-lite@^5.2.0 vega-embed@^7.0.2 react-vega@^8.0.0
+npm install @visdesignlab/upset2-react @mui/material@^7.0.0 @mui/system@^7.0.0 @mui/icons-material@^7.0.0 @mui/x-data-grid@^8.0.0 @emotion/react@^11.0.0 @emotion/styled@^11.0.0 recoil@^0.5.0 @trrack/core@^1.6.1 vega@^5.32.0 vega-lite@^5.2.0 vega-embed@^7.0.2 react-vega@^8.0.0
+```
+
+If you want to render the provenance history visualization sidebar, also install:
+
+```console
+npm install @trrack/vis-react@^1.6.1
 ```
 
 Note that UpSet 2.0 requires a react version of 18.0 or higher.
 
-Import the component using `import { Upset } from @visdesignlab/upset2-react` in your react component.
+Import the component using `import { Upset } from '@visdesignlab/upset2-react'` in your react component.
 
 ## UpSet 2.0 Data
 
@@ -98,7 +104,7 @@ const main = () => {
 
 #### Pre-Processing Data
 
-If you want to pre-process your data to gain access to the data objects generated and use by UpSet, or are having issues with the raw data loading, you must use the [process function](https://vdl.sci.utah.edu/upset2/functions/_visdesignlab_upset2_core.process.html) from UpSet 2.0 Core. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments.
+If you want to pre-process your data to gain access to the data objects generated and use by UpSet, or are having issues with the raw data loading, you must use the [process function](https://vdl.sci.utah.edu/upset2/docs/typedoc/@visdesignlab/upset2-core/functions/process/) from UpSet 2.0 Core. First, import `process` from `@visdesignlab/upset2-react`. Then, before loading rendering the UpSet 2.0 component, call the `process` function, which takes the data and annotations objects as arguments.
 
 The `data` object should be the same as raw data defined in [Data Structure](#raw-data).
 
@@ -187,11 +193,36 @@ const main = () => {
 - `hideSettings` (optional)(`boolean`): Hide the aggregations/filter settings sidebar.
 - `parentHasHeight` (optional)(`boolean`): Indicates if the parent component has a fixed height. If this is set to `false`, the plot will occupy the full viewport height. When set to `true`, the plot will fit entirely within the parent component. Defaults to `false`.
 - `extProvenance` (optional): External provenance actions and [TrrackJS](https://github.com/Trrack/trrackjs) object for provenance history tracking and actions. This should only be used if your tool is using TrrackJS and the Trrack object you provide has all the actions used by UpSet 2.0. Provenance is still tracked if nothing is provided. See [App.tsx](https://github.com/visdesignlab/upset2/blob/main/packages/app/src/App.tsx) to see how UpSet 2.0 and Multinet use an external Trrack object. Note that [initializeProvenanceTracking](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L300) and [getActions](https://github.com/visdesignlab/upset2/blob/main/packages/upset/src/provenance/index.ts#L322) are used to ensure that the provided provenance object is compatible. The provided provenance object must have a type compatible with the [extProvenance](https://vdl.sci.utah.edu/upset2/interfaces/_visdesignlab_upset2_react.UpsetProps.html#extProvenance) UpSet 2.0 prop type.
-- `provVis` (optional): [Sidebar options](#sidebar-options) for the provenance visualization sidebar. See [Trrack-Vis](https://github.com/Trrack/trrackvis) for more information about Trrack provenance visualization.
+- `provVis` (optional): [Sidebar options](#sidebar-options) for the provenance visualization sidebar.
+- `provVisComponent` (optional): A provenance visualization React component supplied by the host application, typically `ProvVis` from `@trrack/vis-react`. Pass this together with `provVis` to render the provenance history visualization.
 - `elementSidebar` (optional): [Sidebar options](#sidebar-options) for the element visualization sidebar. This sidebar is used for element queries, element selection datatable, and supplemental plot generation.
 - `altTextSidebar` (optional): [Sidebar options](#sidebar-options) for the text description sidebar. This sidebar is used to display the generated text descriptions for an Upset 2.0 plot, given that the `generateAltText` function is provided.
 - `footerHeight` (optional)(`number`): Height of the footer overlayed on the upset plot, in px, if one exists. Used to prevent the bottom of the sidebars from overlapping with the footer.
 - `generateAltText` (optional)(`() => Promise<AltText>`): Async function which should return a generated AltText object. See [Alt Text Generation](#alt-text-generation) for more information about Alt Text generation.
+
+#### Optional provenance visualization
+
+To mount UpSet without the provenance history visualization, do not pass `provVis` or `provVisComponent`:
+
+```tsx
+<Upset data={data} />
+```
+
+To render the provenance history visualization, install `@trrack/vis-react` and pass both `provVis` and `provVisComponent`:
+
+```tsx
+import { Upset } from '@visdesignlab/upset2-react';
+import { ProvVis } from '@trrack/vis-react';
+
+<Upset
+  data={data}
+  provVis={{
+    open: isProvVisOpen,
+    close: () => setIsProvVisOpen(false),
+  }}
+  provVisComponent={ProvVis}
+/>
+```
 
 ##### Configuration (Grammar) options
 
