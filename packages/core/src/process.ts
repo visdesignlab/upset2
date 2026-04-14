@@ -215,7 +215,9 @@ export function getSixNumberSummary(
   const attributes: AttributeList = {};
 
   attributeColumns.forEach((attribute) => {
-    const values = getSortedNumericValues(memberItems.map((d) => items[d].atts[attribute]));
+    const values = getSortedNumericValues(
+      memberItems.map((d) => items[d].atts[attribute]),
+    );
 
     attributes[attribute] = {
       min: getMin(values),
