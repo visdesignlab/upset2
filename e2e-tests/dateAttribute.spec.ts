@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import type { Page } from '@playwright/test';
+import { parseDateValue } from '../packages/core/src/utils';
 import mockAnnotations from '../playwright/mock-data/date-attributes/date_attributes_annotations.json' with { type: 'json' };
 import mockData from '../playwright/mock-data/date-attributes/date_attributes_data.json' with { type: 'json' };
 
@@ -64,4 +65,8 @@ test('date attributes render formatted scales', async ({ page }) => {
       .first(),
   ).toBeVisible();
   await expect(page.locator('text').filter({ hasText: /^\d{13}$/ })).toHaveCount(0);
+});
+
+test('ambiguous slash-formatted dates are ignored', async () => {
+  expect(parseDateValue('03/04/2024')).toBeUndefined();
 });

@@ -37,7 +37,7 @@ export function parseDateValue(value: unknown): Date | undefined {
   if (value instanceof Date) return Number.isNaN(value.getTime()) ? undefined : value;
 
   if (typeof value === 'number' && Number.isFinite(value)) {
-    if (Number.isInteger(value) && value >= 0 && value <= 9999) {
+    if (Number.isInteger(value) && value >= 1 && value <= 9999) {
       return new Date(Date.UTC(value, 0, 1));
     }
 
@@ -54,6 +54,8 @@ export function parseDateValue(value: unknown): Date | undefined {
     return new Date(Date.UTC(parseInt(trimmed, 10), 0, 1));
   }
 
+  // Reject numeric-but-ambiguous formats such as 01/02/2024; only year-only,
+  // ISO-like numeric dates, and textual dates should be parsed automatically.
   if (!ISO_LIKE_DATE_REGEX.test(trimmed) && !/[A-Za-z]/.test(trimmed)) {
     return undefined;
   }
