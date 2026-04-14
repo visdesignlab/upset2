@@ -4,13 +4,15 @@ const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
 
 const inlineStyles = (sourceElement: Element, clonedElement: Element) => {
   const computedStyles = window.getComputedStyle(sourceElement);
-  const style = Array.from(computedStyles)
-    .map((property) => `${property}: ${computedStyles.getPropertyValue(property)};`)
-    .join(' ');
+  const styledElement = clonedElement as SVGElement;
 
-  if (style) {
-    clonedElement.setAttribute('style', style);
-  }
+  Array.from(computedStyles).forEach((property) => {
+    styledElement.style.setProperty(
+      property,
+      computedStyles.getPropertyValue(property),
+      computedStyles.getPropertyPriority(property),
+    );
+  });
 
   if (sourceElement.namespaceURI === XHTML_NAMESPACE) {
     clonedElement.setAttribute('xmlns', XHTML_NAMESPACE);
