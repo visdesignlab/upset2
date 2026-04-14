@@ -24,6 +24,7 @@ import { VegaNamedData } from '../VegaLiteChart';
 
 type Props = {
   handleClose: () => void;
+  active: boolean;
 };
 
 type ButtonProps = {
@@ -123,12 +124,20 @@ const AddButton: FC<ButtonProps> = ({
 };
 
 const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: 'center' };
+const EMPTY_PREVIEW_DATA: VegaNamedData = { elements: [] };
+const SCATTER_PREVIEW_ID = 'add-plot-scatter-preview';
+const HISTOGRAM_PREVIEW_ID = 'add-plot-histogram-preview';
 
-function createPreviewData(items: Items): VegaNamedData {
+function createPreviewData(items: Items, attributes: string[]): VegaNamedData {
+  const uniqueAttributes = Array.from(new Set(attributes));
+
   return {
-    elements: Object.values(items).map((item) => ({
-      ...item.atts,
-    })),
+    elements: Object.values(items).map((item) =>
+      uniqueAttributes.reduce<Record<string, unknown>>((acc, attribute) => {
+        acc[attribute] = item.atts[attribute];
+        return acc;
+      }, {}),
+    ),
   };
 }
 
@@ -136,14 +145,18 @@ function createPreviewData(items: Items): VegaNamedData {
  * UI for adding a scatterplot to the element view
  * @param param0 @see Props
  */
-export const AddScatterplot: FC<Props> = ({ handleClose }) => {
+export const AddScatterplot: FC<Props> = ({ handleClose, active }) => {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const items = useRecoilValue(itemsAtom);
-  const previewData = useMemo(() => createPreviewData(items), [items]);
   const [x, setX] = useState<string>(attributeColumns[0]);
   const [y, setY] = useState<string>(attributeColumns[1]);
   const [xScaleLog, setXLogScale] = useState(false);
   const [yScaleLog, setYLogScale] = useState(false);
+  const hasItems = useMemo(() => Object.keys(items).length > 0, [items]);
+  const previewData = useMemo(() => {
+    if (!active || !x || !y) return EMPTY_PREVIEW_DATA;
+    return createPreviewData(items, [x, y]);
+  }, [active, items, x, y]);
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -198,11 +211,11 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
           control={<Switch value={yScaleLog} onChange={() => setYLogScale(!yScaleLog)} />}
         />
       </Grid>
-      {x && y && Object.values(items).length && (
+      {active && x && y && hasItems && (
         <Box sx={PLOT_CONTAINER_STYLE}>
           <ScatterplotPlot
             spec={{
-              id: Date.now().toString(),
+              id: SCATTER_PREVIEW_ID,
               type: 'Scatterplot',
               x,
               y,
@@ -214,7 +227,7 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
         </Box>
       )}
       <AddButton
-        disabled={!(x && y && Object.values(items).length)}
+        disabled={!(x && y && hasItems)}
         handleClose={handleClose}
         type="Scatterplot"
         x={x}
@@ -232,13 +245,18 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
  */
 export const AddHistogram: FC<Props & { density: boolean }> = ({
   handleClose,
+  active,
   density,
 }) => {
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(dataAttributeSelector);
-  const previewData = useMemo(() => createPreviewData(items), [items]);
   const [attribute, setAttribute] = useState(attributeColumns[0]);
   const [bins, setBins] = useState(20);
+  const hasItems = useMemo(() => Object.keys(items).length > 0, [items]);
+  const previewData = useMemo(() => {
+    if (!active || !attribute) return EMPTY_PREVIEW_DATA;
+    return createPreviewData(items, [attribute]);
+  }, [active, items, attribute]);
 
   return (
     <Grid container spacing={1} sx={{ width: '100%', height: '100%' }}>
@@ -278,11 +296,11 @@ export const AddHistogram: FC<Props & { density: boolean }> = ({
       )}
 
       <Grid container item xs={12}>
-        {attribute && bins > 0 && Object.values(items).length && (
+        {active && attribute && bins > 0 && hasItems && (
           <Box sx={PLOT_CONTAINER_STYLE}>
             <HistogramPlot
               spec={{
-                id: Date.now().toString(),
+                id: HISTOGRAM_PREVIEW_ID,
                 type: 'Histogram',
                 attribute,
                 bins,
@@ -293,7 +311,7 @@ export const AddHistogram: FC<Props & { density: boolean }> = ({
           </Box>
         )}
         <AddButton
-          disabled={!(attribute && bins > 0 && Object.values(items).length)}
+          disabled={!(attribute && bins > 0 && hasItems)}
           handleClose={handleClose}
           type="Histogram"
           attribute={attribute}

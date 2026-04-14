@@ -1,5 +1,5 @@
 import { Histogram } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 import { createAddHistogramSpec } from './generatePlotSpec';
 import { VegaLiteChart, VegaNamedData } from '../VegaLiteChart';
@@ -9,10 +9,11 @@ type Props = {
   data: VegaNamedData;
 };
 
-export const HistogramPlot: FC<Props> = ({ spec, data }) => (
-  <VegaLiteChart
-    spec={createAddHistogramSpec(spec.attribute, spec.bins, spec.frequency)}
-    data={data}
-    actions={false}
-  />
-);
+export const HistogramPlot: FC<Props> = ({ spec, data }) => {
+  const chartSpec = useMemo(
+    () => createAddHistogramSpec(spec.attribute, spec.bins, spec.frequency),
+    [spec.attribute, spec.bins, spec.frequency],
+  );
+
+  return <VegaLiteChart spec={chartSpec} data={data} actions={false} />;
+};

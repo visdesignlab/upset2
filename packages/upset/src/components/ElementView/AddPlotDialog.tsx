@@ -13,23 +13,25 @@ type TabProps = {
 };
 
 function TabPanel({ children, index, value, ...others }: TabProps) {
+  const active = value === index;
+
   return (
     <Box
+      role="tabpanel"
+      hidden={!active}
       sx={{
         width: 600,
       }}
+      {...others}
     >
-      {value === index && (
-        <Box
-          sx={{
-            padding: '1em',
-            minHeight: 300,
-          }}
-          {...others}
-        >
-          {children}
-        </Box>
-      )}
+      <Box
+        sx={{
+          padding: '1em',
+          minHeight: 300,
+        }}
+      >
+        {children}
+      </Box>
     </Box>
   );
 }
@@ -43,7 +45,7 @@ export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
   const [currentTab, setCurrentTab] = useState<PlotType>('Scatterplot');
 
   return (
-    <Dialog open={open} onClose={onClose}>
+    <Dialog open={open} onClose={onClose} keepMounted>
       <DialogTitle>
         Add Plot
         <IconButton
@@ -69,13 +71,17 @@ export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
       </Tabs>
 
       <TabPanel index="Scatterplot" value={currentTab}>
-        <AddScatterplot handleClose={onClose} />
+        <AddScatterplot handleClose={onClose} active={currentTab === 'Scatterplot'} />
       </TabPanel>
       <TabPanel index="Histogram" value={currentTab}>
-        <AddHistogram handleClose={onClose} density={false} />
+        <AddHistogram
+          handleClose={onClose}
+          density={false}
+          active={currentTab === 'Histogram'}
+        />
       </TabPanel>
       <TabPanel index="KDE" value={currentTab}>
-        <AddHistogram handleClose={onClose} density />
+        <AddHistogram handleClose={onClose} density active={currentTab === 'KDE'} />
       </TabPanel>
     </Dialog>
   );
