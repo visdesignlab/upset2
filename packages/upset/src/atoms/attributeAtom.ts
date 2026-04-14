@@ -1,5 +1,5 @@
 import { atom, selector, selectorFamily } from 'recoil';
-import { ColumnTypes } from '@visdesignlab/upset2-core';
+import { ColumnTypes, getNumericValue } from '@visdesignlab/upset2-core';
 import { itemsAtom } from './itemsAtoms';
 import { dataAtom } from './dataAtom';
 import { rowItemsSelector } from './elementsSelectors';
@@ -46,9 +46,8 @@ export const attributeValuesSelector = selectorFamily<number[], string>({
     ({ get }) => {
       const items = get(itemsAtom);
       const values = Object.values(items)
-        // Cast to number so we get the correct return type; this cast is guaranteed by the filter statement
-        .map((item) => item.atts[attribute] as number)
-        .filter((val) => !Number.isNaN(val));
+        .map((item) => getNumericValue(item.atts[attribute]))
+        .filter((val): val is number => val !== undefined);
 
       return values;
     },
@@ -185,6 +184,7 @@ export const attributeMinMaxSelector = selectorFamily<
       const values = get(attributeValuesSelector(attribute));
 
       if (attTypes[attribute] === 'category') return { min: 0, max: maxSize };
+      if (values.length === 0) return { min: 0, max: 0 };
       return {
         min: Math.min(...values),
         max: Math.max(...values),

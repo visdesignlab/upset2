@@ -74,7 +74,7 @@ export type ContextMenuInfo = {
  * This is used to generate the processed data. Column annotations are inferred from the data types.
  */
 export interface UpsetItem {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | Date;
 }
 
 /**

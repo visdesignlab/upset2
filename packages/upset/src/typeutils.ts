@@ -1,5 +1,15 @@
-import { Item, Row, SelectionType } from '@visdesignlab/upset2-core';
+import { Item, Row, SelectionType, getNumericValue } from '@visdesignlab/upset2-core';
 import { VegaItem } from './types';
+
+export function getVegaCompatibleAttributes(item: Item): Record<string, string | number | boolean> {
+  return Object.fromEntries(
+    Object.entries(item.atts).map(([key, value]) => {
+      const numericValue = getNumericValue(value);
+      if (value instanceof Date) return [key, numericValue ?? value.toISOString()];
+      return [key, value];
+    }),
+  ) as Record<string, string | number | boolean>;
+}
 
 /**
  * Converts an item to a VegaItem by flattening its attributes and adding selection properties
@@ -22,7 +32,7 @@ export function itemToVega(
   bookmarkProps: { rowID: string; rowName: string; color: string } | false,
 ): VegaItem {
   return {
-    ...item.atts,
+    ...getVegaCompatibleAttributes(item),
     color: defaultElementColor,
     ...(bookmarkProps
       ? {

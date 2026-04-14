@@ -7,6 +7,65 @@ import {
   QuerySelection,
 } from './types';
 
+const YEAR_ONLY_REGEX = /^\d{4}$/;
+const ISO_LIKE_DATE_REGEX =
+  /^\d{4}(?:-\d{2}(?:-\d{2})?)?(?:[T\s]\d{2}(?::\d{2}(?::\d{2}(?:\.\d{1,3})?)?)?(?:\s?(?:Z|[+-]\d{2}:?\d{2}))?)?$/;
+
+/**
+ * Converts a numeric or Date value into a number, if possible.
+ * @param value Value to convert
+ * @returns Numeric representation of the value, or undefined if not numeric
+ */
+export function getNumericValue(value: unknown): number | undefined {
+  if (typeof value === 'number' && !Number.isNaN(value)) return value;
+  if (value instanceof Date) {
+    const timestamp = value.getTime();
+    if (!Number.isNaN(timestamp)) return timestamp;
+  }
+  return undefined;
+}
+
+/**
+ * Parses supported date values into native Date objects.
+ * Supports Date instances, 4-digit years, ISO-like date strings, and
+ * native JS-parsable textual dates. Ambiguous numeric formats (for example
+ * 01/02/2024) are intentionally rejected.
+ * @param value Value to parse
+ * @returns Parsed date, or undefined if the value is not in a supported format
+ */
+export function parseDateValue(value: unknown): Date | undefined {
+  if (value instanceof Date) return Number.isNaN(value.getTime()) ? undefined : value;
+
+  if (typeof value === 'number' && Number.isFinite(value)) {
+    if (Number.isInteger(value) && value >= 0 && value <= 9999) {
+      return new Date(Date.UTC(value, 0, 1));
+    }
+
+    const parsedNumberDate = new Date(value);
+    return Number.isNaN(parsedNumberDate.getTime()) ? undefined : parsedNumberDate;
+  }
+
+  if (typeof value !== 'string') return undefined;
+
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+
+  if (YEAR_ONLY_REGEX.test(trimmed)) {
+    return new Date(Date.UTC(parseInt(trimmed, 10), 0, 1));
+  }
+
+  if (!ISO_LIKE_DATE_REGEX.test(trimmed) && !/[A-Za-z]/.test(trimmed)) {
+    return undefined;
+  }
+
+  const normalized = ISO_LIKE_DATE_REGEX.test(trimmed)
+    ? trimmed.replace(/^(\d{4}-\d{2}-\d{2})\s/, '$1T')
+    : trimmed;
+  const parsed = new Date(normalized);
+
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed;
+}
+
 /**
  * Version safe deep copy using structured cloning.
  * Create a deep copy (with all fields recursively copied) of an object using structured cloning;
@@ -51,10 +110,10 @@ export function filterByVega(items: Item[], filter: VegaSelection): FilteredItem
   items.forEach((item) => {
     if (
       Object.entries(filter).every(
-        ([key, value]) =>
-          typeof item.atts[key] === 'number' &&
-          (item.atts[key] as number) >= value[0] &&
-          (item.atts[key] as number) <= value[1],
+        ([key, value]) => {
+          const itemValue = getNumericValue(item.atts[key]);
+          return itemValue !== undefined && itemValue >= value[0] && itemValue <= value[1];
+        },
       )
     )
       included.push(item);

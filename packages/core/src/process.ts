@@ -12,13 +12,17 @@ import {
   Subsets,
   ColumnTypes,
 } from './types';
+import { getNumericValue, parseDateValue } from './utils';
 
 function isValidNumber(value: unknown): value is number {
   return typeof value === 'number' && !Number.isNaN(value);
 }
 
 function getSortedNumericValues(values: unknown[]): number[] {
-  return values.filter(isValidNumber).sort((a, b) => a - b);
+  return values
+    .map((value) => getNumericValue(value))
+    .filter(isValidNumber)
+    .sort((a, b) => a - b);
 }
 
 function getMin(values: number[]): number | undefined {
@@ -139,7 +143,7 @@ function getSetColumns(columns: ColumnTypes): ColumnName[] {
  */
 function getAttributeColumns(columns: ColumnTypes): ColumnName[] {
   return Object.entries(columns)
-    .filter(([_, type]) => type === 'number' || type === 'category')
+    .filter(([_, type]) => type === 'number' || type === 'category' || type === 'date')
     .map(([name, _]) => name);
 }
 
@@ -172,6 +176,11 @@ function processRawData(data: TableRow[], columns: ColumnTypes) {
     Object.entries(columns).forEach(([col, type]) => {
       if (type === 'number' && typeof item.atts[col] === 'string') {
         item.atts[col] = parseFloat(item.atts[col]);
+      }
+
+      if (type === 'date') {
+        const parsedDate = parseDateValue(item.atts[col]);
+        if (parsedDate) item.atts[col] = parsedDate;
       }
 
       if (type === 'boolean') {
@@ -215,9 +224,7 @@ export function getSixNumberSummary(
   const attributes: AttributeList = {};
 
   attributeColumns.forEach((attribute) => {
-    const values = getSortedNumericValues(
-      memberItems.map((d) => items[d].atts[attribute]),
-    );
+    const values = getSortedNumericValues(memberItems.map((d) => items[d].atts[attribute]));
 
     attributes[attribute] = {
       min: getMin(values),

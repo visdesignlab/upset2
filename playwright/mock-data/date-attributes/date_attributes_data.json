@@ -1,0 +1,73 @@
+{
+  "count": 6,
+  "next": null,
+  "previous": null,
+  "results": [
+    {
+      "_key": "1",
+      "_id": "date_attributes/1",
+      "_rev": "1",
+      "Name": "Alpha",
+      "Group A": true,
+      "Group B": false,
+      "ReleaseDate": "1999",
+      "Premiere": "2024-01-02",
+      "Score": 1
+    },
+    {
+      "_key": "2",
+      "_id": "date_attributes/2",
+      "_rev": "1",
+      "Name": "Beta",
+      "Group A": true,
+      "Group B": true,
+      "ReleaseDate": "2001",
+      "Premiere": "2024-02-15",
+      "Score": 2
+    },
+    {
+      "_key": "3",
+      "_id": "date_attributes/3",
+      "_rev": "1",
+      "Name": "Gamma",
+      "Group A": false,
+      "Group B": true,
+      "ReleaseDate": "2003",
+      "Premiere": "2024-03-30",
+      "Score": 3
+    },
+    {
+      "_key": "4",
+      "_id": "date_attributes/4",
+      "_rev": "1",
+      "Name": "Delta",
+      "Group A": false,
+      "Group B": false,
+      "ReleaseDate": "2006",
+      "Premiere": "2024-04-10",
+      "Score": 4
+    },
+    {
+      "_key": "5",
+      "_id": "date_attributes/5",
+      "_rev": "1",
+      "Name": "Epsilon",
+      "Group A": true,
+      "Group B": false,
+      "ReleaseDate": "2004",
+      "Premiere": "2024-05-20T13:30:00Z",
+      "Score": 5
+    },
+    {
+      "_key": "6",
+      "_id": "date_attributes/6",
+      "_rev": "1",
+      "Name": "Zeta",
+      "Group A": false,
+      "Group B": true,
+      "ReleaseDate": "2002",
+      "Premiere": "03/04/2024",
+      "Score": 6
+    }
+  ]
+}

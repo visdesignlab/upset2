@@ -9,6 +9,7 @@ import {
   filterByQuery,
   SelectionType,
   isRowAggregate,
+  getNumericValue,
 } from '@visdesignlab/upset2-core';
 import { selector, selectorFamily } from 'recoil';
 import {
@@ -177,16 +178,9 @@ export const attValuesSelector = selectorFamily<number[], { row: Row; att: strin
         .map((itemId) => allItems[itemId])
         .filter((item): item is Item => item !== undefined);
 
-      // Basic check for performance reasons; we can eliminate most cases with this
-      if (!items[0] || typeof items[0].atts[att] !== 'number') {
-        return [];
-      }
-      return (
-        items
-          // Safely cast the attribute to a number since we filter after
-          .map((item) => item.atts[att] as number)
-          .filter((val) => !Number.isNaN(val))
-      );
+      return items
+        .map((item) => getNumericValue(item.atts[att]))
+        .filter((val): val is number => val !== undefined);
     },
 });
 

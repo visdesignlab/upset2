@@ -21,6 +21,7 @@ import { HistogramPlot } from './HistogramPlot';
 import { ScatterplotPlot } from './Scatterplot';
 import { UpsetActions } from '../../provenance';
 import { VegaNamedData } from '../VegaLiteChart';
+import { getVegaCompatibleAttributes } from '../../typeutils';
 
 type Props = {
   handleClose: () => void;
@@ -127,7 +128,7 @@ const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: '
 function createPreviewData(items: Items): VegaNamedData {
   return {
     elements: Object.values(items).map((item) => ({
-      ...item.atts,
+      ...getVegaCompatibleAttributes(item),
     })),
   };
 }

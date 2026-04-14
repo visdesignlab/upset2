@@ -18,6 +18,8 @@ import { DensityPlot } from './AttributePlots/DensityPlot';
 import { DeviationBar } from '../DeviationBar';
 import { attributePlotsSelector } from '../../../atoms/config/plotAtoms';
 import { attValuesSelector } from '../../../atoms/elementsSelectors';
+import { attTypesSelector } from '../../../atoms/attributeAtom';
+import { formatDateValue } from '../../../utils/date';
 
 /**
  * Attribute bar props
@@ -47,9 +49,12 @@ const DOT_PLOT_THRESHOLD = 5;
 export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
+  const attTypes = useRecoilValue(attTypesSelector);
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
   const values = useRecoilValue(attValuesSelector({ row, att: attribute }));
   const attributePlots = useRecoilValue(attributePlotsSelector);
+  const isDateAttribute = attTypes[attribute] === 'date';
+  const dateDomain: [number, number] = [min, max];
 
   /*
    * Get the attribute plot to render based on the selected attribute plot type
@@ -111,6 +116,14 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
     return Math.round(num * 1000) / 1000;
   }, []);
 
+  const formatSummaryValue = useCallback(
+    (num: number | undefined): string | number => {
+      if (isDateAttribute) return formatDateValue(num, dateDomain);
+      return round3(num);
+    },
+    [dateDomain, isDateAttribute, round3],
+  );
+
   if (
     typeof summary !== 'number' &&
     (summary.max === undefined ||
@@ -130,7 +143,7 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
         <Tooltip
           title={
             <div style={{ whiteSpace: 'pre-line' }}>
-              {`Q1: ${round3(summary.first)}\nMean: ${round3(summary.mean)}\nMedian: ${round3(summary.median)}\nQ3: ${round3(summary.third)}`}
+              {`Q1: ${formatSummaryValue(summary.first)}\nMean: ${formatSummaryValue(summary.mean)}\nMedian: ${formatSummaryValue(summary.median)}\nQ3: ${formatSummaryValue(summary.third)}`}
             </div>
           }
         >

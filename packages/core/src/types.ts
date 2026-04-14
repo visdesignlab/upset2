@@ -37,7 +37,7 @@ export type MultinetTableRow = {
  * and any additional fields that may be present in the table.
  */
 export type TableRow = MultinetTableRow & {
-  [key: string]: string | number | boolean;
+  [key: string]: string | number | boolean | Date;
 };
 
 /**
@@ -83,7 +83,7 @@ export type RowType =
 export type Item = {
   _id: string;
   _label: string;
-  atts: { [attr: string]: boolean | number | string };
+  atts: { [attr: string]: boolean | number | string | Date };
 };
 
 /** A list of items with labels mapped to item objects */

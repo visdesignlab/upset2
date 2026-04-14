@@ -5,7 +5,8 @@ import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import { AttributeButton } from './AttributeButton';
 import { AttributeScale } from './AttributeScale';
-import { attributeMinMaxSelector } from '../../atoms/attributeAtom';
+import { attTypesSelector, attributeMinMaxSelector } from '../../atoms/attributeAtom';
+import { createDateTickFormatter } from '../../utils/date';
 
 type Props = {
   attribute: string;
@@ -13,7 +14,9 @@ type Props = {
 
 export const AttributeHeader: FC<Props> = ({ attribute }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
+  const attTypes = useRecoilValue(attTypesSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
+  const domain: [number, number] = [min, max];
 
   return (
     <>
@@ -24,7 +27,12 @@ export const AttributeHeader: FC<Props> = ({ attribute }) => {
           dimensions.attribute.buttonHeight + dimensions.attribute.gap,
         )}
       >
-        <AttributeScale domain={[min, max]} />
+        <AttributeScale
+          domain={domain}
+          tickFormatter={
+            attTypes[attribute] === 'date' ? createDateTickFormatter(domain) : undefined
+          }
+        />
       </g>
     </>
   );

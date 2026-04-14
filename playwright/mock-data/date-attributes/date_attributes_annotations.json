@@ -1,0 +1,8 @@
+{
+  "Name": "label",
+  "Group A": "boolean",
+  "Group B": "boolean",
+  "ReleaseDate": "date",
+  "Premiere": "date",
+  "Score": "number"
+}

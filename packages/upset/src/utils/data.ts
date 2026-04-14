@@ -12,6 +12,11 @@ function deriveAttributeColumns(data: UpsetItem[]): Record<string, ColumnType> {
 
   if (data.length > 0) {
     Object.entries(data[0]).forEach(([key, value]) => {
+      if (value instanceof Date) {
+        attributeColumns[key] = 'date';
+        return;
+      }
+
       const type = typeof value;
       switch (type) {
         case 'string':
