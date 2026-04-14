@@ -13,6 +13,7 @@ import { ContextMenuItem } from '../../types';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 import { attributePlotsSelector } from '../../atoms/config/plotAtoms';
 import { UpsetActions } from '../../provenance';
+import { attTypesSelector } from '../../atoms/attributeAtom';
 
 type Props = {
   /**
@@ -44,8 +45,12 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
   const setContextMenu = useSetRecoilState(contextMenuAtom);
 
   const attributePlots = useRecoilValue(attributePlotsSelector);
+  const attTypes = useRecoilValue(attTypesSelector);
 
   const allowAttributeRemoval = useRecoilValue(allowAttributeRemovalAtom);
+
+  // Check if this attribute is categorical (categorical attributes cannot be sorted by mean)
+  const isCategorical = attTypes[label] === 'category';
 
   /**
    * Sorts the attribute in the specified order.
@@ -60,8 +65,15 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
    * Handles the click event of the button.
    * If the attribute is not currently sorted, it sorts it in ascending order.
    * If the attribute is already sorted, it toggles between ascending and descending order.
+   * Categorical attributes cannot be sorted, so clicking them does nothing.
    */
   const handleOnClick = (e: React.MouseEvent<SVGElement>) => {
+    // Don't allow sorting by categorical attributes
+    if (isCategorical) {
+      e.stopPropagation();
+      return;
+    }
+
     if (sortBy !== label) {
       sortByHeader('Ascending');
     } else {
@@ -84,26 +96,34 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
    * @returns An array of menu items.
    */
   function getMenuItems(): ContextMenuItem[] {
-    const items = [
-      {
-        label: `Sort by ${label} - Ascending`,
-        onClick: () => {
-          sortByHeader('Ascending');
-          handleContextMenuClose();
-        },
-        disabled: sortBy === label && sortByOrder === 'Ascending',
-      },
-      {
-        label: `Sort by ${label} - Descending`,
-        onClick: () => {
-          sortByHeader('Descending');
-          handleContextMenuClose();
-        },
-        disabled: sortBy === label && sortByOrder === 'Descending',
-      },
-    ];
+    const items: ContextMenuItem[] = [];
 
-    if (!UPSET_ATTS.includes(label)) {
+    // Only add sort options for non-categorical attributes
+    // Categorical attributes don't have meaningful numerical statistics (mean) to sort by
+    if (!isCategorical) {
+      items.push(
+        {
+          label: `Sort by ${label} - Ascending`,
+          onClick: () => {
+            sortByHeader('Ascending');
+            handleContextMenuClose();
+          },
+          disabled: sortBy === label && sortByOrder === 'Ascending',
+        },
+        {
+          label: `Sort by ${label} - Descending`,
+          onClick: () => {
+            sortByHeader('Descending');
+            handleContextMenuClose();
+          },
+          disabled: sortBy === label && sortByOrder === 'Descending',
+        },
+      );
+    }
+
+    // Only add plot type options for non-categorical, non-UPSET attributes
+    // Categorical attributes only have one visualization type (stacked bar) and cannot be changed
+    if (!UPSET_ATTS.includes(label) && !isCategorical) {
       // for every possible value of the type AttributePlotType (from core), add a menu item
       Object.values(AttributePlotType).forEach((plot) => {
         items.push({

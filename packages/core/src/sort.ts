@@ -197,11 +197,13 @@ function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: Sort
       meanA = values[a].atts.derived.deviation;
       meanB = values[b].atts.derived.deviation;
     } else {
-      meanA = values[a].atts.dataset[sortBy].mean;
-      meanB = values[b].atts.dataset[sortBy].mean;
+      // For categorical attributes, dataset[sortBy] will be undefined since
+      // getSixNumberSummary filters them out; they will be sorted to the bottom
+      meanA = values[a].atts.dataset[sortBy]?.mean;
+      meanB = values[b].atts.dataset[sortBy]?.mean;
     }
 
-    // If one of the values is undefined (empty subset), sort it to the bottom
+    // If one of the values is undefined (empty subset or categorical attribute), sort it to the bottom
     if (!meanA) {
       return 1;
     }

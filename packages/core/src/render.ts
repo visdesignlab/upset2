@@ -81,6 +81,7 @@ const firstAggRR = (data: CoreUpsetData, state: UpsetConfig) => {
     data.sets,
     state.visibleSets,
     data.attributeColumns,
+    data.columnTypes,
   );
   return firstAggregation(
     subsets,
@@ -89,6 +90,7 @@ const firstAggRR = (data: CoreUpsetData, state: UpsetConfig) => {
     data.sets,
     data.items,
     data.attributeColumns,
+    data.columnTypes,
   );
 };
 
@@ -112,6 +114,7 @@ const secondAggRR = (data: CoreUpsetData, state: UpsetConfig) => {
       data.sets,
       data.items,
       data.attributeColumns,
+      data.columnTypes,
     );
 
     return secondAgg;
@@ -164,6 +167,7 @@ const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) 
       data.sets,
       state.visibleSets,
       data.attributeColumns,
+      data.columnTypes,
     );
     const matching: Rows = { order: [], values: {} };
     const nonMatching: Rows = { order: [], values: {} };
