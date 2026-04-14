@@ -14,7 +14,12 @@ test('SVG download includes foreignObject content and preserves hidden bookmark 
   await page.evaluate(() => {
     const svgDownloadState = window as typeof window & {
       __capturedSvgBlob?: Blob;
+      __originalCreateObjectURL?: typeof URL.createObjectURL;
+      __originalAnchorClick?: typeof HTMLAnchorElement.prototype.click;
     };
+
+    svgDownloadState.__originalCreateObjectURL = URL.createObjectURL;
+    svgDownloadState.__originalAnchorClick = HTMLAnchorElement.prototype.click;
 
     URL.createObjectURL = ((object: Blob | MediaSource) => {
       if (object instanceof Blob && object.type === 'image/svg+xml') {
@@ -33,9 +38,19 @@ test('SVG download includes foreignObject content and preserves hidden bookmark 
   const exportDetails = await page.evaluate(async () => {
     const svgDownloadState = window as typeof window & {
       __capturedSvgBlob?: Blob;
+      __originalCreateObjectURL?: typeof URL.createObjectURL;
+      __originalAnchorClick?: typeof HTMLAnchorElement.prototype.click;
     };
 
     const svgText = await svgDownloadState.__capturedSvgBlob?.text();
+
+    if (svgDownloadState.__originalCreateObjectURL) {
+      URL.createObjectURL = svgDownloadState.__originalCreateObjectURL;
+    }
+
+    if (svgDownloadState.__originalAnchorClick) {
+      HTMLAnchorElement.prototype.click = svgDownloadState.__originalAnchorClick;
+    }
 
     if (!svgText) {
       return {
