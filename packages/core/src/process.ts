@@ -316,7 +316,7 @@ export function process(data: TableRow[], columns: ColumnTypes): CoreUpsetData {
  * @param sets - The sets used to calculate subsets.
  * @param vSets - The vSets used to calculate subsets.
  * @param attributeColumns - The attribute columns used to calculate subsets.
- * @param columnTypes - The column type definitions.
+ * @param columnTypes - Optional column type definitions used to filter numerical attributes.
  * @returns The calculated subsets.
  */
 export function getSubsets(
@@ -324,7 +324,7 @@ export function getSubsets(
   sets: Sets,
   vSets: string[],
   attributeColumns: string[],
-  columnTypes: ColumnTypes,
+  columnTypes?: ColumnTypes,
 ): Subsets {
   if (vSets.length === 0) {
     return {
