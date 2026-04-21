@@ -7,11 +7,11 @@ import {
   DialogTitle,
   Snackbar,
 } from '@mui/material';
-import { ProvenanceContext } from '../provenance';
 import { useSetRecoilState } from 'recoil';
+import { ProvenanceContext } from '../provenance';
 import { importErrorAtom } from '../atoms/importErrorAtom';
 
-export const ImportModal = (props: { open: boolean; close: () => void }) => {
+export function ImportModal(props: { open: boolean; close: () => void }) {
   const [isError, setIsError] = useState({
     isOpen: false,
     message: 'An Error has occurred.',
@@ -67,13 +67,14 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
           size="small"
           aria-errormessage="import-error"
           onClick={() => {
-            if (fileInput.current !== null && fileInput.current.files !== null)
+            if (fileInput.current !== null && fileInput.current.files !== null) {
               readFile(fileInput.current.files[0]).catch((e) => {
                 setIsError({
                   isOpen: true,
                   message: e.message,
                 });
               });
+            }
           }}
         >
           Submit
@@ -90,4 +91,4 @@ export const ImportModal = (props: { open: boolean; close: () => void }) => {
       </Snackbar>
     </Dialog>
   );
-};
+}

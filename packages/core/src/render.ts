@@ -8,7 +8,9 @@ import {
   isPopulatedSetQuery,
   isRowAggregate,
 } from './typeutils';
-import { CoreUpsetData, Row, Rows, SetQueryMembership, Sets, UpsetConfig } from './types';
+import {
+  CoreUpsetData, Row, Rows, SetQueryMembership, Sets, UpsetConfig,
+} from './types';
 
 /**
  * Maps Row IDs to Row objects
@@ -151,8 +153,7 @@ export function getQueryResult(rows: Rows, membership: SetQueryMembership): Rows
  * @returns The sorted rows based on the RR and the provided sorting options.
  */
 const sortByRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) => {
-  if (!data || typeof data !== 'object' || !Object.hasOwn(data, 'sets'))
-    return { order: [], values: {} };
+  if (!data || typeof data !== 'object' || !Object.hasOwn(data, 'sets')) return { order: [], values: {} };
 
   const vSets: Sets = Object.fromEntries(
     Object.entries(data.sets).filter(([name]) => state.visibleSets.includes(name)),
@@ -239,8 +240,7 @@ const filterRR = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) 
  * @param ignoreQuery - Whether to ignore the query when filtering the data. Set this to true to get the filtered rows as if there was no query.
  * @returns The filtered rows of data.
  */
-export const getRows = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) =>
-  filterRR(data, state, ignoreQuery);
+export const getRows = (data: CoreUpsetData, state: UpsetConfig, ignoreQuery = false) => filterRR(data, state, ignoreQuery);
 
 /**
  * Flattens the rows of data based on the provided state configuration.

@@ -365,26 +365,26 @@ export function generateHistogramSpec(
         }, // This layer displays probability density for the selected intersection
         ...(selectionTypeRow
           ? [
-              {
-                transform: [
-                  { filter: { field: 'isCurrent', equal: true } },
-                  { density: hist.attribute, groupby: ['subset', 'color'] },
-                  { calculate: 'datum["value"]', as: hist.attribute },
-                ],
-                mark: 'line' as AnyMark, // Vega is weird about some types in destructured objects
-                encoding: {
-                  // More vega weirdness
-                  x: {
-                    field: hist.attribute,
-                    type: 'quantitative' as StandardType,
-                    title: hist.attribute,
-                  },
-                  y: { field: 'density', type: 'quantitative' as StandardType },
-                  color: COLOR,
-                  opacity: { value: 1 },
+            {
+              transform: [
+                { filter: { field: 'isCurrent', equal: true } },
+                { density: hist.attribute, groupby: ['subset', 'color'] },
+                { calculate: 'datum["value"]', as: hist.attribute },
+              ],
+              mark: 'line' as AnyMark, // Vega is weird about some types in destructured objects
+              encoding: {
+                // More vega weirdness
+                x: {
+                  field: hist.attribute,
+                  type: 'quantitative' as StandardType,
+                  title: hist.attribute,
                 },
+                y: { field: 'density', type: 'quantitative' as StandardType },
+                color: COLOR,
+                opacity: { value: 1 },
               },
-            ]
+            },
+          ]
           : []),
       ],
     };
@@ -425,17 +425,17 @@ export function generateHistogramSpec(
       },
       ...(selectionTypeRow && haveSelection
         ? [
-            {
-              transform: [{ filter: { field: 'isCurrent', equal: true } }],
-              mark: 'bar' as AnyMark, // Vega is weird about some types in destructured objects
-              encoding: {
-                x: { field: hist.attribute, bin: { maxbins: hist.bins } },
-                y: { aggregate: 'count' as Aggregate, title: 'Frequency' },
-                color: COLOR,
-                opacity: { value: 1 },
-              },
+          {
+            transform: [{ filter: { field: 'isCurrent', equal: true } }],
+            mark: 'bar' as AnyMark, // Vega is weird about some types in destructured objects
+            encoding: {
+              x: { field: hist.attribute, bin: { maxbins: hist.bins } },
+              y: { aggregate: 'count' as Aggregate, title: 'Frequency' },
+              color: COLOR,
+              opacity: { value: 1 },
             },
-          ]
+          },
+        ]
         : []),
     ],
   };

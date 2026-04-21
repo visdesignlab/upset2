@@ -160,7 +160,7 @@ function processRawData(data: TableRow[], columns: ColumnTypes) {
   const setMembership: { [col: string]: string[] } = {};
 
   data.forEach((row, idx) => {
-    const id = row['_id'] ? row['_id'] : getId('Item', idx.toString());
+    const id = row._id ? row._id : getId('Item', idx.toString());
 
     const item: Item = {
       _label: labelColumn === 'id' ? id : row[labelColumn].toString(),
@@ -176,16 +176,15 @@ function processRawData(data: TableRow[], columns: ColumnTypes) {
 
       if (type === 'boolean') {
         const val = item.atts[col];
-        item.atts[col] =
-          typeof val === 'boolean'
-            ? +val
-            : typeof val === 'string'
-              ? parseInt(val, 10)
-              : val;
+        item.atts[col] = typeof val === 'boolean'
+          ? +val
+          : typeof val === 'string'
+            ? parseInt(val, 10)
+            : val;
 
         if (!setMembership[col]) setMembership[col] = [];
 
-        if (item.atts[col] === 1) setMembership[col].push(item['_id']);
+        if (item.atts[col] === 1) setMembership[col].push(item._id);
       }
     });
   });
@@ -295,8 +294,9 @@ function getSets(
  * @returns The core upset data object.
  */
 export function process(data: TableRow[], columns: ColumnTypes): CoreUpsetData {
-  const { items, setMembership, labelColumn, setColumns, attributeColumns } =
-    processRawData(data, columns);
+  const {
+    items, setMembership, labelColumn, setColumns, attributeColumns,
+  } = processRawData(data, columns);
   const sets = getSets(setMembership, setColumns, items, attributeColumns, columns);
 
   return {
@@ -356,14 +356,12 @@ export function getSubsets(
 
   items.forEach((item) => {
     const itemMembership = vSetNames
-      .map((v) =>
-        (typeof item.atts[v] === 'number' && !Number.isNaN(item.atts[v])) ||
-        typeof item.atts[v] === 'boolean'
-          ? item.atts[v]
-          : 0,
-      )
+      .map((v) => ((typeof item.atts[v] === 'number' && !Number.isNaN(item.atts[v]))
+        || typeof item.atts[v] === 'boolean'
+        ? item.atts[v]
+        : 0))
       .join('');
-    setIntersectionMembership[itemMembership].push(item['_id']);
+    setIntersectionMembership[itemMembership].push(item._id);
   });
 
   Object.entries(setIntersectionMembership).forEach(([comboBinary, itm]) => {

@@ -1,4 +1,6 @@
-import { useContext, useState, useEffect, useMemo } from 'react';
+import {
+  useContext, useState, useEffect, useMemo,
+} from 'react';
 import type { ComponentType } from 'react';
 import { ProvenanceContext } from './Root';
 import { Sidebar } from './custom/Sidebar';
@@ -15,7 +17,7 @@ type Props = {
  * Sidebar containing the Trrack provenance visualization.
  * Host apps can provide a provenance visualization component when available.
  */
-export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
+export function ProvenanceVis({ open, close, ProvVisComponent }: Props) {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
 
@@ -27,7 +29,11 @@ export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
     if (!ProvVisComponent) {
       return (
         <p style={{ padding: '1rem', color: 'gray' }}>
-          Install <code>@trrack/vis-react</code> to view the provenance history.
+          Install
+          {' '}
+          <code>@trrack/vis-react</code>
+          {' '}
+          to view the provenance history.
         </p>
       );
     }
@@ -63,4 +69,4 @@ export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
       {provVis}
     </Sidebar>
   );
-};
+}

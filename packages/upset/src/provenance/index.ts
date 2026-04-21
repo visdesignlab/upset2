@@ -122,7 +122,7 @@ const addToVisibleAction = register<ColumnName>(
 
     // If the sortVisibleBy is a custom order, append the new set to the end of it
     if (!['Alphabetical', 'Ascending', 'Descending'].includes(state.sortVisibleBy)) {
-      state.sortVisibleBy = state.sortVisibleBy + ',' + newSet;
+      state.sortVisibleBy = `${state.sortVisibleBy},${newSet}`;
     }
     return state;
   },
@@ -463,173 +463,138 @@ export type UpsetProvenance = ReturnType<typeof initializeProvenanceTracking>;
 
 export function getActions(provenance: UpsetProvenance) {
   return {
-    firstAggregateBy: (aggBy: AggregateBy) =>
-      provenance.apply(`First aggregate by ${aggBy}`, firstAggAction(aggBy)),
-    firstOverlapBy: (overlap: number) =>
-      provenance.apply(`First overlap by ${overlap}`, firstOverlapAction(overlap)),
-    secondAggregateBy: (aggBy: AggregateBy) =>
-      provenance.apply(`Second aggregate by ${aggBy}`, secondAggAction(aggBy)),
-    secondOverlapBy: (overlap: number) =>
-      provenance.apply(`Second overlap by ${overlap}`, secondOverlapAction(overlap)),
-    sortVisibleBy: (sort: SortVisibleBy) =>
-      provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
-    sortBy: (sort: string, sortByOrder: SortByOrder) =>
-      provenance.apply(
-        `Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`,
-        sortByAction({ sort, sortByOrder }),
-      ),
-    setMaxVisible: (val: number) =>
-      provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
-    setMinVisible: (val: number) =>
-      provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
-    setHideEmpty: (val: boolean) =>
-      provenance.apply(
-        val ? 'Hide empty intersections' : 'Show empty intersections',
-        hideEmptyAction(val),
-      ),
-    setHideNoSet: (val: boolean) =>
-      provenance.apply(
-        val ? 'Hide no-set intersection' : 'Show no-set intersection',
-        hideNoSetAction(val),
-      ),
-    addVisibleSet: (set: string) =>
-      provenance.apply(`Add set ${set}`, addToVisibleAction(set)),
-    removeVisibleSet: (set: string) =>
-      provenance.apply(`Remove set ${set}`, removeFromVisibleAction(set)),
-    addAttribute: (attr: string) =>
-      provenance.apply(`Show ${attr}`, addToVisibleAttributeAction(attr)),
-    removeAttribute: (attr: string) =>
-      provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
-    addMultipleAttributes: (attrs: string[]) =>
-      provenance.apply(
-        `Show ${attrs.length} attributes`,
-        addMultipleVisibleAttributes(attrs),
-      ),
-    removeMultipleVisibleAttributes: (attrs: string[]) =>
-      provenance.apply(
-        `Hide ${attrs.length} attributes`,
-        removeMultipleVisibleAttributes(attrs),
-      ),
-    updateAttributePlotType: (attr: string, plotType: string) =>
-      provenance.apply(
-        `Update ${attr} plot type to ${plotType}`,
-        updateAttributePlotType({ attr, plotType }),
-      ),
+    firstAggregateBy: (aggBy: AggregateBy) => provenance.apply(`First aggregate by ${aggBy}`, firstAggAction(aggBy)),
+    firstOverlapBy: (overlap: number) => provenance.apply(`First overlap by ${overlap}`, firstOverlapAction(overlap)),
+    secondAggregateBy: (aggBy: AggregateBy) => provenance.apply(`Second aggregate by ${aggBy}`, secondAggAction(aggBy)),
+    secondOverlapBy: (overlap: number) => provenance.apply(`Second overlap by ${overlap}`, secondOverlapAction(overlap)),
+    sortVisibleBy: (sort: SortVisibleBy) => provenance.apply(`Sort Visible Sets by ${sort}`, sortVisibleSetsAction(sort)),
+    sortBy: (sort: string, sortByOrder: SortByOrder) => provenance.apply(
+      `Sort by ${sort.replace('Set_', 'Set: ')}${sortByOrder ? `, ${sortByOrder}` : ''}`,
+      sortByAction({ sort, sortByOrder }),
+    ),
+    setMaxVisible: (val: number) => provenance.apply(`Hide intersections above ${val}`, maxVisibleAction(val)),
+    setMinVisible: (val: number) => provenance.apply(`Hide intersections below ${val}`, minVisibleAction(val)),
+    setHideEmpty: (val: boolean) => provenance.apply(
+      val ? 'Hide empty intersections' : 'Show empty intersections',
+      hideEmptyAction(val),
+    ),
+    setHideNoSet: (val: boolean) => provenance.apply(
+      val ? 'Hide no-set intersection' : 'Show no-set intersection',
+      hideNoSetAction(val),
+    ),
+    addVisibleSet: (set: string) => provenance.apply(`Add set ${set}`, addToVisibleAction(set)),
+    removeVisibleSet: (set: string) => provenance.apply(`Remove set ${set}`, removeFromVisibleAction(set)),
+    addAttribute: (attr: string) => provenance.apply(`Show ${attr}`, addToVisibleAttributeAction(attr)),
+    removeAttribute: (attr: string) => provenance.apply(`Hide ${attr}`, removeFromVisibleAttributes(attr)),
+    addMultipleAttributes: (attrs: string[]) => provenance.apply(
+      `Show ${attrs.length} attributes`,
+      addMultipleVisibleAttributes(attrs),
+    ),
+    removeMultipleVisibleAttributes: (attrs: string[]) => provenance.apply(
+      `Hide ${attrs.length} attributes`,
+      removeMultipleVisibleAttributes(attrs),
+    ),
+    updateAttributePlotType: (attr: string, plotType: string) => provenance.apply(
+      `Update ${attr} plot type to ${plotType}`,
+      updateAttributePlotType({ attr, plotType }),
+    ),
     /**
      * Adds a bookmark to the state
      * @param b bookmark to add
      */
-    addBookmark: (b: Bookmark) =>
-      provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
+    addBookmark: (b: Bookmark) => provenance.apply(`Bookmark ${b.label}`, addBookmarkAction(b)),
     /**
      * Removes a bookmark from the state
      * @param b bookmark to remove
      */
-    removeBookmark: (b: Bookmark) =>
-      provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
+    removeBookmark: (b: Bookmark) => provenance.apply(`Unbookmark ${b.label}`, removeBookmarkAction(b)),
     /**
      * Adds a plot to the state
      * @param plot plot to add
      */
-    addPlot: (plot: Plot) =>
-      provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
+    addPlot: (plot: Plot) => provenance.apply(`Add Plot: ${plot.type}`, addPlotAction(plot)),
     /**
      * Removes a plot from the state
      * @param plot plot to remove
      */
-    removePlot: (plot: Plot) =>
-      provenance.apply(`Remove ${plotToString(plot)}`, removePlotAction(plot)),
-    replaceState: (state: UpsetConfig) =>
-      provenance.apply('Replace state', replaceStateAction(state)),
-    addCollapsed: (id: string) =>
-      provenance.apply(`Collapsed ${id}`, addCollapsedAction(id)),
-    removeCollapsed: (id: string) =>
-      provenance.apply(`Expanded ${id}`, removeCollapsedAction(id)),
-    collapseAll: (ids: string[]) =>
-      provenance.apply('Collapsed all rows', collapseAllAction(ids)),
+    removePlot: (plot: Plot) => provenance.apply(`Remove ${plotToString(plot)}`, removePlotAction(plot)),
+    replaceState: (state: UpsetConfig) => provenance.apply('Replace state', replaceStateAction(state)),
+    addCollapsed: (id: string) => provenance.apply(`Collapsed ${id}`, addCollapsedAction(id)),
+    removeCollapsed: (id: string) => provenance.apply(`Expanded ${id}`, removeCollapsedAction(id)),
+    collapseAll: (ids: string[]) => provenance.apply('Collapsed all rows', collapseAllAction(ids)),
     expandAll: () => provenance.apply('Expanded all rows', expandAllAction([])),
-    setPlotInformation: (plotInformation: PlotInformation) =>
-      provenance.apply(
-        'Update plot information',
-        setPlotInformationAction(plotInformation),
-      ),
-    setRowSelection: (intersection: Row | null) =>
-      provenance.apply(
-        intersection
-          ? `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"`
-          : 'Deselect intersection',
-        setRowSelectionAction(intersection),
-      ),
+    setPlotInformation: (plotInformation: PlotInformation) => provenance.apply(
+      'Update plot information',
+      setPlotInformationAction(plotInformation),
+    ),
+    setRowSelection: (intersection: Row | null) => provenance.apply(
+      intersection
+        ? `Select intersection "${intersection.elementName.replaceAll('~&~', ' & ')}"`
+        : 'Deselect intersection',
+      setRowSelectionAction(intersection),
+    ),
     /**
      * Sets the vega selection and selection type to 'vega', and clears the row selection
      * @param selection The selection to set
      */
-    setVegaSelection: (selection: VegaSelection | null) =>
-      provenance.apply(
-        // Object.keys check is for numerical queries, which can come out of vega as {}
-        selection && Object.keys(selection).length > 0
-          ? `Selected elements based on the following keys: ${Object.keys(selection).join(' ')}`
-          : 'Cleared element selection',
-        setVegaSelectionAction(selection),
-      ),
+    setVegaSelection: (selection: VegaSelection | null) => provenance.apply(
+      // Object.keys check is for numerical queries, which can come out of vega as {}
+      selection && Object.keys(selection).length > 0
+        ? `Selected elements based on the following keys: ${Object.keys(selection).join(' ')}`
+        : 'Cleared element selection',
+      setVegaSelectionAction(selection),
+    ),
     /**
      * Activates a saved selection. This should ONLY be used when the selection of the given type has already been set.
      * If null, clears the selection type.
      * DON'T use this concurrently with setVegaSelection or setQuerySelection; these handle selection type themselves.
      * @param selectionType The selection type to activate
      */
-    activateSelectionType: (selectionType: 'vega' | 'query' | null) =>
-      provenance.apply(
-        selectionType
-          ? `Activated the ${selectionType === 'vega' ? 'graphical selection' : 'element query'}`
-          : 'Deactivated the active selection',
-        setSelectionTypeAction(selectionType),
-      ),
+    activateSelectionType: (selectionType: 'vega' | 'query' | null) => provenance.apply(
+      selectionType
+        ? `Activated the ${selectionType === 'vega' ? 'graphical selection' : 'element query'}`
+        : 'Deactivated the active selection',
+      setSelectionTypeAction(selectionType),
+    ),
     /**
      * Sets the element query and selection type to 'query', and clears the row selection
      * @param selection The query selection to set
      */
-    setQuerySelection: (selection: QuerySelection | null) =>
-      provenance.apply(
-        selection
-          ? `Selected elements based on ${selection.att}`
-          : 'Cleared query selection',
-        setQuerySelectionAction(selection),
-      ),
-    setUserAltText: (altText: AltText | null) =>
-      provenance.apply(
-        altText ? 'Set user alt text' : 'Cleared user alt text',
-        setUserAltTextAction(altText),
-      ),
+    setQuerySelection: (selection: QuerySelection | null) => provenance.apply(
+      selection
+        ? `Selected elements based on ${selection.att}`
+        : 'Cleared query selection',
+      setQuerySelectionAction(selection),
+    ),
+    setUserAltText: (altText: AltText | null) => provenance.apply(
+      altText ? 'Set user alt text' : 'Cleared user alt text',
+      setUserAltTextAction(altText),
+    ),
     /**
      * Sets whether set intersection size labels should be shown
      * @param show Whether to show intersection size labels
      */
-    setIntersectionSizeLabels: (show: boolean) =>
-      provenance.apply(
-        show ? 'Show intersection size labels' : 'Hide intersection size labels',
-        setIntersectionSizeLabelsAction(show),
-      ),
+    setIntersectionSizeLabels: (show: boolean) => provenance.apply(
+      show ? 'Show intersection size labels' : 'Hide intersection size labels',
+      setIntersectionSizeLabelsAction(show),
+    ),
     /**
      * Sets whether set size labels should be shown
      * @param show Whether to show set size labels
      */
-    setSetSizeLabels: (show: boolean) =>
-      provenance.apply(
-        show ? 'Show set size labels' : 'Hide set size labels',
-        setSetSizeLabelsAction(show),
-      ),
+    setSetSizeLabels: (show: boolean) => provenance.apply(
+      show ? 'Show set size labels' : 'Hide set size labels',
+      setSetSizeLabelsAction(show),
+    ),
     /**
      * Sets whether hidden sets should be shown
      * @param show Whether to show hidden sets
      */
-    setShowHiddenSets: (show: boolean) =>
-      provenance.apply(
-        show ? 'Show hidden sets' : 'Hide hidden sets',
-        setShowHiddenSetsAction(show),
-      ),
-    addSetQuery: (query: SetQuery, queryString: string) =>
-      provenance.apply(`Query ${query.name}: ${queryString}`, addSetQueryAction(query)),
+    setShowHiddenSets: (show: boolean) => provenance.apply(
+      show ? 'Show hidden sets' : 'Hide hidden sets',
+      setShowHiddenSetsAction(show),
+    ),
+    addSetQuery: (query: SetQuery, queryString: string) => provenance.apply(`Query ${query.name}: ${queryString}`, addSetQueryAction(query)),
     removeSetQuery: () => provenance.apply('Remove Query', removeSetQueryAction()),
   };
 }

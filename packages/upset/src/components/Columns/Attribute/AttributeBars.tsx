@@ -49,11 +49,9 @@ export const AttributeBars: FC<Props> = memo(
      * @returns The column component to render.
      */
     function getColToRender(attribute: string) {
-      if (attribute === 'Degree')
-        return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
-      if (attribute === 'Deviation')
-        return <DeviationBar deviation={row.atts.derived.deviation} />;
-      if (colTypes[attribute] === 'category')
+      if (attribute === 'Degree') return <Degree degree={getDegreeFromSetMembership(row.setMembership)} />;
+      if (attribute === 'Deviation') return <DeviationBar deviation={row.atts.derived.deviation} />;
+      if (colTypes[attribute] === 'category') {
         return (
           <CategoricalAttBar
             attribute={attribute}
@@ -61,6 +59,7 @@ export const AttributeBars: FC<Props> = memo(
             key={`${row}:${attribute}`}
           />
         );
+      }
       return (
         <AttributeBar
           summary={attributes.dataset[attribute]}
@@ -74,12 +73,12 @@ export const AttributeBars: FC<Props> = memo(
     return (
       <g
         transform={translate(
-          dimensions.matrixColumn.width +
-            dimensions.bookmarkStar.gap +
-            dimensions.bookmarkStar.width +
-            dimensions.bookmarkStar.gap +
-            dimensions.size.width +
-            dimensions.gap,
+          dimensions.matrixColumn.width
+            + dimensions.bookmarkStar.gap
+            + dimensions.bookmarkStar.width
+            + dimensions.bookmarkStar.gap
+            + dimensions.size.width
+            + dimensions.gap,
           (dimensions.body.rowHeight - dimensions.attribute.plotHeight) / 2,
         )}
       >
@@ -103,13 +102,11 @@ export const AttributeBars: FC<Props> = memo(
   },
   // Only re-render if the row or visible attributes change
   // Not checking the other attributes of the row object as they are not used in this component
-  (prevProps, nextProps) =>
-    prevProps.row.id === nextProps.row.id &&
-    prevProps.attributes.derived.deviation === nextProps.attributes.derived.deviation &&
-    prevProps.attributes.derived.degree === nextProps.attributes.derived.degree &&
-    Object.entries(prevProps.attributes.dataset).every(
-      ([k, v]) =>
-        Object.keys(nextProps.attributes.dataset).includes(k) &&
-        nextProps.attributes.dataset[k] === v,
+  (prevProps, nextProps) => prevProps.row.id === nextProps.row.id
+    && prevProps.attributes.derived.deviation === nextProps.attributes.derived.deviation
+    && prevProps.attributes.derived.degree === nextProps.attributes.derived.degree
+    && Object.entries(prevProps.attributes.dataset).every(
+      ([k, v]) => Object.keys(nextProps.attributes.dataset).includes(k)
+        && nextProps.attributes.dataset[k] === v,
     ),
 );

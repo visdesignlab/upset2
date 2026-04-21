@@ -88,17 +88,17 @@ export function calculateDimensions(
 
   const header = {
     totalWidth:
-      matrixColumn.width + // Matrix Column
-      bookmarkStar.gap +
-      bookmarkStar.width + // Bookmark Star
-      bookmarkStar.gap +
-      size.width + // Size
-      gap + // Gap for size labels
-      (degree
-        ? degreeColumn.width + // Degree Column
-          degreeColumn.gap
-        : 0) + // Add margin
-      (attribute.width + attribute.vGap) * nAttributes, // Attributes
+      matrixColumn.width // Matrix Column
+      + bookmarkStar.gap
+      + bookmarkStar.width // Bookmark Star
+      + bookmarkStar.gap
+      + size.width // Size
+      + gap // Gap for size labels
+      + (degree
+        ? degreeColumn.width // Degree Column
+          + degreeColumn.gap
+        : 0) // Add margin
+      + (attribute.width + attribute.vGap) * nAttributes, // Attributes
     totalHeight: set.size.height + set.label.height,
     buttonXOffset: 5,
   };
@@ -116,10 +116,9 @@ export function calculateDimensions(
     },
   };
 
-  const totalWidth =
-    matrixColumn.totalWidth > header.totalWidth
-      ? matrixColumn.totalWidth
-      : header.totalWidth;
+  const totalWidth = matrixColumn.totalWidth > header.totalWidth
+    ? matrixColumn.totalWidth
+    : header.totalWidth;
 
   const setQuery = {
     width: body.rowWidth,

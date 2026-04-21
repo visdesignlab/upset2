@@ -14,7 +14,7 @@ const iconSize = 16;
 /**
  * Query By Sets button to open the query by sets interface.
  */
-export const QueryButton = () => {
+export function QueryButton() {
   const dimensions = useRecoilValue(dimensionsSelector);
   const [queryBySetsInterface, setQueryBySetsInterface] = useRecoilState(
     queryBySetsInterfaceAtom,
@@ -65,4 +65,4 @@ export const QueryButton = () => {
       </Tooltip>
     </Group>
   );
-};
+}

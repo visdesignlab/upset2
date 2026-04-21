@@ -1,10 +1,10 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 
+import { assert } from 'console';
 import moviesData from './data/movies/data.json' assert { type: 'json' };
 
 import { Upset } from '../src';
-import { assert } from 'console';
 
 const meta = {
   title: 'Upset',
@@ -23,19 +23,21 @@ const meta = {
 
 export default meta;
 
-const Template = (args) => (moviesData ? (
-  <div style={{ height: 300 }}>
-    <Upset data={moviesData} hideSettings allowAttributeRemoval visibleDatasetAttributes={['AvgRating']} visualizeUpsetAttributes={false} />
-  </div>
-) : (
-  <div>
-    Loading
-    {' '}
-    {args.dataset}
-    {' '}
-    dataset
-  </div>
-));
+function Template(args) {
+  return moviesData ? (
+    <div style={{ height: 300 }}>
+      <Upset data={moviesData} hideSettings allowAttributeRemoval visibleDatasetAttributes={['AvgRating']} visualizeUpsetAttributes={false} />
+    </div>
+  ) : (
+    <div>
+      Loading
+      {' '}
+      {args.dataset}
+      {' '}
+      dataset
+    </div>
+  );
+}
 
 // By passing using the Args format for exported stories,
 // you can control the props for a component for reuse in a test

@@ -1,4 +1,6 @@
-import { Box, Button, Dialog, Link, Typography } from '@mui/material';
+import {
+  Box, Button, Dialog, Link, Typography,
+} from '@mui/material';
 import { Column, CoreUpsetData } from '@visdesignlab/upset2-core';
 import { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
@@ -16,7 +18,7 @@ type Props = {
  * MUI Dialog to display accessibility statement
  * @see https://www.w3.org/WAI/planning/statements/
  */
-export const AccessibilityStatement = ({ open, close, data }: Props) => {
+export function AccessibilityStatement({ open, close, data }: Props) {
   const { provenance } = useContext(ProvenanceContext);
   const rows = useRecoilValue(rowsSelector);
   const { visibleSets } = provenance.getState();
@@ -33,7 +35,8 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
         <p>
           The Visualization Design Lab at the University of Utah is committed to ensuring
           accessibility for all individuals, including those with disabilities. We strive
-          to make our software user-friendly, accessible, and compliant with the{' '}
+          to make our software user-friendly, accessible, and compliant with the
+          {' '}
           <Link
             href="https://www.w3.org/TR/WCAG21/"
             style={{ color: 'blue' }}
@@ -42,7 +45,8 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
             aria-label="Read more about web content accessibility guidelines"
           >
             Web Content Accessibility Guidelines (WCAG)
-          </Link>{' '}
+          </Link>
+          {' '}
           2.1 Level AA.
         </p>
         <p>
@@ -94,7 +98,8 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
         </p>
         <p>
           To report any accessibility issues you may encounter or to provide suggestions
-          for improvement, please contact us at{' '}
+          for improvement, please contact us at
+          {' '}
           <Link
             type="email"
             style={{ color: 'blue' }}
@@ -118,4 +123,4 @@ export const AccessibilityStatement = ({ open, close, data }: Props) => {
       </Box>
     </Dialog>
   );
-};
+}

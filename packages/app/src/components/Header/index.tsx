@@ -39,13 +39,11 @@ import { EmbedModal } from './EmbedModal';
 /**
  * Header component; displays above the plot
  */
-const Header = ({ data }: { data: CoreUpsetData }) => {
+function Header({ data }: { data: CoreUpsetData }) {
   const { workspace } = useRecoilValue(queryParamAtom);
   const [isProvVisOpen, setIsProvVisOpen] = useRecoilState(provenanceVisAtom);
-  const [isElementSidebarOpen, setIsElementSidebarOpen] =
-    useRecoilState(elementSidebarAtom);
-  const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] =
-    useRecoilState(altTextSidebarAtom);
+  const [isElementSidebarOpen, setIsElementSidebarOpen] = useRecoilState(elementSidebarAtom);
+  const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] = useRecoilState(altTextSidebarAtom);
   const importError = useRecoilValue(importErrorAtom);
 
   const { provenance } = useContext(ProvenanceContext);
@@ -350,15 +348,15 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
               alt="User login status icon"
               variant="circular"
             >
-              {userInfo !== null &&
-              userInfo.first_name &&
-              userInfo.last_name &&
-              userInfo.first_name.length > 0 &&
-              userInfo.last_name.length > 0 ? (
-                `${userInfo.first_name.charAt(0)}${userInfo.last_name.charAt(0)}`
-              ) : (
-                <AccountCircle sx={{ height: '90%', width: '90%' }} color="inherit" />
-              )}
+              {userInfo !== null
+              && userInfo.first_name
+              && userInfo.last_name
+              && userInfo.first_name.length > 0
+              && userInfo.last_name.length > 0 ? (
+                  `${userInfo.first_name.charAt(0)}${userInfo.last_name.charAt(0)}`
+                ) : (
+                  <AccountCircle sx={{ height: '90%', width: '90%' }} color="inherit" />
+                )}
             </Avatar>
           </IconButton>
           <Menu open={loginMenuOpen} onClose={handleLoginClose} anchorEl={anchorEl}>
@@ -388,6 +386,6 @@ const Header = ({ data }: { data: CoreUpsetData }) => {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default Header;

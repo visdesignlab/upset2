@@ -11,7 +11,9 @@ import {
   UPSET_ATTS,
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
-import { createContext, FC, useCallback, useEffect, useMemo } from 'react';
+import {
+  createContext, FC, useCallback, useEffect, useMemo,
+} from 'react';
 import type { ComponentType } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
@@ -114,15 +116,13 @@ export const Root: FC<Props> = ({
 
   // Set the initial state of canEditPlotInformation
   useEffect(() => {
-    if (canEditPlotInformation !== undefined)
-      setCanEditPlotInformation(canEditPlotInformation);
+    if (canEditPlotInformation !== undefined) setCanEditPlotInformation(canEditPlotInformation);
   }, [canEditPlotInformation, setCanEditPlotInformation]);
 
   // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    const provenance: UpsetProvenance & { _getState?: typeof provenance.getState } =
-      extProvenance?.provenance ??
-      initializeProvenanceTracking(
+    const provenance: UpsetProvenance & { _getState?: typeof provenance.getState } = extProvenance?.provenance
+      ?? initializeProvenanceTracking(
         // Populate config defaults if not already set (this is only done if extProvenance is not provided)
         populateConfigDefaults(
           config,

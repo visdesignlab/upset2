@@ -1,5 +1,7 @@
 import { Item } from '@visdesignlab/upset2-core';
-import { FC, useMemo, useEffect, useState } from 'react';
+import {
+  FC, useMemo, useEffect, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { selectedOrBookmarkedItemsSelector } from '../../atoms/elementsSelectors';
@@ -24,13 +26,11 @@ type DataGridComponent = React.ComponentType<any>;
  * @returns readonly array of rows
  */
 function useRows(items: Item[]): GridRow[] {
-  return useMemo(() => {
-    return items.map((item) => ({
-      ...item.atts,
-      _label: item._label,
-      id: item._id,
-    }));
-  }, [items]);
+  return useMemo(() => items.map((item) => ({
+    ...item.atts,
+    _label: item._label,
+    id: item._id,
+  })), [items]);
 }
 
 /**
@@ -41,17 +41,16 @@ function useRows(items: Item[]): GridRow[] {
 function useColumns(columns: string[]): GridColumn[] {
   const setColumns = useRecoilValue(setColumnsSelector);
   return useMemo(
-    () =>
-      columns.map((col) => {
-        // Prefixed with _ since that's how the Item object is structured
-        const displayName = col === '_id' ? 'ID' : col === '_label' ? 'Label' : col;
-        return {
-          field: col,
-          headerName: displayName,
-          type: setColumns.includes(col) ? 'boolean' : 'string',
-          description: displayName,
-        };
-      }),
+    () => columns.map((col) => {
+      // Prefixed with _ since that's how the Item object is structured
+      const displayName = col === '_id' ? 'ID' : col === '_label' ? 'Label' : col;
+      return {
+        field: col,
+        headerName: displayName,
+        type: setColumns.includes(col) ? 'boolean' : 'string',
+        description: displayName,
+      };
+    }),
     [columns, setColumns],
   );
 }
@@ -95,7 +94,11 @@ export const ElementTable: FC = () => {
   if (DataGrid === false) {
     return (
       <p style={{ padding: '1rem', color: 'gray' }}>
-        Install <code>@mui/x-data-grid</code> to view the element data table.
+        Install
+        {' '}
+        <code>@mui/x-data-grid</code>
+        {' '}
+        to view the element data table.
       </p>
     );
   }

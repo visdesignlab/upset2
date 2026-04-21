@@ -1,8 +1,12 @@
 import OpenInFullIcon from '@mui/icons-material/OpenInFull';
 import CloseFullscreen from '@mui/icons-material/CloseFullscreen';
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Divider, Drawer, IconButton, Tooltip } from '@mui/material';
-import React, { FC, PropsWithChildren, useCallback, useState } from 'react';
+import {
+  Box, Divider, Drawer, IconButton, Tooltip,
+} from '@mui/material';
+import React, {
+  FC, PropsWithChildren, useCallback, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { footerHeightAtom } from '../../atoms/dimensionsAtom';
 import { UpsetHeading } from './theme/heading';

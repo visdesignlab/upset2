@@ -153,14 +153,14 @@ const ToggleSwitch: FC<ToggleProps> = ({
         '& span': { fontSize: '0.8rem' },
       }}
       label={shortLabel}
-      control={
+      control={(
         <Switch
           size="small"
           checked={checked}
           onChange={onChange}
           style={{ marginLeft: 'auto' }}
         />
-      }
+      )}
       labelPlacement="start"
     />
     <HelpCircle text={longLabel} margin={{ ...defaultMargin, left: 12 }} />
@@ -170,7 +170,7 @@ const ToggleSwitch: FC<ToggleProps> = ({
 /**
  * Settings sidebar; appears to the left of the plot
  */
-export const SettingsSidebar = () => {
+export function SettingsSidebar() {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
   const visibleSets = useRecoilValue(visibleSetSelector);
@@ -228,10 +228,9 @@ export const SettingsSidebar = () => {
    */
   const handleAttChange = useCallback(
     (event: SelectChangeEvent<string[]>) => {
-      const newAtts =
-        typeof event.target.value === 'string'
-          ? [event.target.value]
-          : event.target.value;
+      const newAtts = typeof event.target.value === 'string'
+        ? [event.target.value]
+        : event.target.value;
       // Ensures that the order is always Degree, Deviation, then the rest;
       // this keeps the plot consistent & prevents graphical bugs
       newAtts.sort((a, b) => {
@@ -346,9 +345,7 @@ export const SettingsSidebar = () => {
                 multiple
                 value={visibleSets}
                 input={<OutlinedInput label="Sets" />}
-                renderValue={(selected) =>
-                  selected.map((s) => allSets[s].elementName).join(', ')
-                }
+                renderValue={(selected) => selected.map((s) => allSets[s].elementName).join(', ')}
                 onChange={handleSetChange}
               >
                 {Object.values(allSets).map((set: BaseRow) => (
@@ -594,4 +591,4 @@ export const SettingsSidebar = () => {
       <Box minHeight={footerHeight} />
     </Box>
   );
-};
+}

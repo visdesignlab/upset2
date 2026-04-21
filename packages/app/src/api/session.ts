@@ -1,7 +1,7 @@
 import type { UpsetProvenance } from '@visdesignlab/upset2-react';
 import { UpsetConfig } from '@visdesignlab/upset2-core';
-import { api } from './api';
 import { WorkspacePermissionsSpec } from 'multinet';
+import { api } from './api';
 
 type SessionGraph = ReturnType<UpsetProvenance['exportObject']>;
 

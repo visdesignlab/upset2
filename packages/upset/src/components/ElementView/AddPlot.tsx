@@ -11,7 +11,9 @@ import {
 } from '@mui/material';
 import { Items } from '@visdesignlab/upset2-core';
 import Grid from '@mui/material/GridLegacy';
-import { FC, useContext, useMemo, useState } from 'react';
+import {
+  FC, useContext, useMemo, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dataAttributeSelector } from '../../atoms/attributeAtom';

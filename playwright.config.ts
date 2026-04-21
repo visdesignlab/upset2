@@ -15,7 +15,7 @@ export default defineConfig({
     /* assertion timeout */
     timeout: 10 * 1000,
   },
-  /* global test timeout */
+  /* overall test timeout */
   timeout: 30 * 1000,
 
   /* Configure projects for major browsers */

@@ -12,7 +12,7 @@ import { ProvenanceContext } from '../Root';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 import { UpsetActions } from '../../provenance';
 
-export const DegreeHeader = () => {
+export function DegreeHeader() {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);
   const sortByOrder = useRecoilValue(sortByOrderSelector);
@@ -140,4 +140,4 @@ export const DegreeHeader = () => {
       </Tooltip>
     </g>
   );
-};
+}

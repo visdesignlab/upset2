@@ -1,7 +1,7 @@
 import { test, expect } from '@playwright/test';
 import type { Page } from '@playwright/test';
-import { beforeTest } from './common';
 import { RightSidebar } from '@visdesignlab/upset2-core';
+import { beforeTest } from './common';
 
 test.beforeEach(beforeTest);
 

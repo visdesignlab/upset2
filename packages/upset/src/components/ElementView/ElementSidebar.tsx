@@ -1,5 +1,7 @@
 import DownloadIcon from '@mui/icons-material/Download';
-import { Alert, Box, IconButton, Tooltip, Typography } from '@mui/material';
+import {
+  Alert, Box, IconButton, Tooltip, Typography,
+} from '@mui/material';
 import {
   Item,
   querySelectionToString,
@@ -77,7 +79,7 @@ function downloadElementsAsCSV(items: Item[], columns: string[], name: string) {
  * @param open Whether the sidebar is open
  * @param close Function to close the sidebar
  */
-export const ElementSidebar = ({ open, close, embedded }: SidebarProps) => {
+export function ElementSidebar({ open, close, embedded }: SidebarProps) {
   const [openAddPlot, setOpenAddPlot] = useState(false);
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
@@ -125,7 +127,7 @@ export const ElementSidebar = ({ open, close, embedded }: SidebarProps) => {
       label="Element View Sidebar"
       title="Element View"
       embedded={embedded}
-      buttons={
+      buttons={(
         <>
           <Tooltip title="Add plot">
             <IconButton onClick={() => setOpenAddPlot(true)} disabled={!haveAtts}>
@@ -143,7 +145,7 @@ export const ElementSidebar = ({ open, close, embedded }: SidebarProps) => {
             </IconButton>
           </Tooltip>
         </>
-      }
+      )}
     >
       <Box
         height={queryOpen ? 140 : 0}
@@ -191,4 +193,4 @@ export const ElementSidebar = ({ open, close, embedded }: SidebarProps) => {
       <ElementTable />
     </Sidebar>
   );
-};
+}

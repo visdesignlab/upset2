@@ -1,5 +1,7 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { ComponentType, FC, PropsWithChildren, useMemo } from 'react';
+import {
+  ComponentType, FC, PropsWithChildren, useMemo,
+} from 'react';
 import { RecoilRoot } from 'recoil';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';

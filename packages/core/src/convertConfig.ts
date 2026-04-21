@@ -360,8 +360,7 @@ type PreVersionConfig = {
 
 function convert0_1_0(config: Version0_1_0): Version0_1_1 {
   (config as unknown as Version0_1_1).version = '0.1.1';
-  (config as unknown as Version0_1_1).intersectionSizeLabels =
-    DefaultConfig.intersectionSizeLabels;
+  (config as unknown as Version0_1_1).intersectionSizeLabels = DefaultConfig.intersectionSizeLabels;
   (config as unknown as Version0_1_1).setSizeLabels = DefaultConfig.setSizeLabels;
   (config as unknown as Version0_1_1).showHiddenSets = DefaultConfig.showHiddenSets;
   return config as unknown as Version0_1_1;
@@ -387,8 +386,7 @@ function convert0_1_1(config: Version0_1_1): Version0_1_2 {
 function convert0_1_2(config: Version0_1_2): Version0_1_3 {
   delete (config as any).useUserAlt;
   const bookmarks = config.bookmarks.filter(
-    (bookmark) =>
-      (bookmark as any).type === 'intersection' || (bookmark as any).type === undefined,
+    (bookmark) => (bookmark as any).type === 'intersection' || (bookmark as any).type === undefined,
   );
   config.bookmarks = bookmarks;
   (config as unknown as Version0_1_3).version = '0.1.3';
@@ -414,17 +412,13 @@ function convert0_1_3(config: Version0_1_3): Version0_1_4 {
   if (config.elementSelection?.type === 'numerical') {
     (config as unknown as Version0_1_4).querySelection = null;
     (config as unknown as Version0_1_4).vegaSelection = config.elementSelection.query;
-    if (config.elementSelection.active)
-      (config as unknown as Version0_1_4).selectionType = 'vega';
-    else
-      (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
+    if (config.elementSelection.active) (config as unknown as Version0_1_4).selectionType = 'vega';
+    else (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
   } else if (config.elementSelection?.type === 'element') {
     (config as unknown as Version0_1_4).vegaSelection = null;
     (config as unknown as Version0_1_4).querySelection = config.elementSelection.query;
-    if (config.elementSelection.active)
-      (config as unknown as Version0_1_4).selectionType = 'query';
-    else
-      (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
+    if (config.elementSelection.active) (config as unknown as Version0_1_4).selectionType = 'query';
+    else (config as unknown as Version0_1_4).selectionType = config.selected ? 'row' : null;
   } else {
     (config as unknown as Version0_1_4).vegaSelection = null;
     (config as unknown as Version0_1_4).querySelection = null;
@@ -451,8 +445,7 @@ function convert0_1_4(config: Version0_1_4): UpsetConfig {
       },
       dataset: Object.fromEntries(
         Object.entries(config.rowSelection.attributes).filter(
-          ([key, value]) =>
-            key !== 'deviation' && key !== 'degree' && typeof value !== 'number',
+          ([key, value]) => key !== 'deviation' && key !== 'degree' && typeof value !== 'number',
         ) as [string, SixNumberSummary][], // Safe cast as we filter out non-SixNumberSummary attributes
       ),
     };

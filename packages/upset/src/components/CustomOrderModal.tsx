@@ -1,11 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { ProvenanceContext } from './Root';
-import type { UpsetActions } from '../provenance';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import {
-  visibleSetSelector,
-  customOrderModalAtom,
-} from '../atoms/config/visibleSetsAtoms';
 import {
   Button,
   Dialog,
@@ -35,10 +29,17 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  visibleSetSelector,
+  customOrderModalAtom,
+} from '../atoms/config/visibleSetsAtoms';
+import type { UpsetActions } from '../provenance';
+import { ProvenanceContext } from './Root';
 
 function SortableItem({ id, name }: { id: string; name: string }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
+  const {
+    attributes, listeners, setNodeRef, transform, transition, isDragging,
+  } = useSortable({ id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -55,11 +56,11 @@ function SortableItem({ id, name }: { id: string; name: string }) {
       component={Paper}
       sx={{ mb: 1, display: 'flex', alignItems: 'center' }}
       dense
-      secondaryAction={
+      secondaryAction={(
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <DragIndicatorIcon />
         </Box>
-      }
+      )}
       {...attributes}
       {...listeners}
     >
@@ -69,8 +70,7 @@ function SortableItem({ id, name }: { id: string; name: string }) {
 }
 
 export function CustomOrderModal() {
-  const [customOrderModalOpen, setCustomOrderModalOpen] =
-    useRecoilState(customOrderModalAtom);
+  const [customOrderModalOpen, setCustomOrderModalOpen] = useRecoilState(customOrderModalAtom);
   const visibleSets = useRecoilValue(visibleSetSelector);
 
   const [sortedSets, setSortedSets] = useState<string[]>([]);

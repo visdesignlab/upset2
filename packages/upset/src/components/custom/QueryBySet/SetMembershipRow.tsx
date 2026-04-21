@@ -1,4 +1,6 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react';
+import {
+  Dispatch, FC, SetStateAction, useCallback,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { SetMembershipStatus, SetQueryMembership } from '@visdesignlab/upset2-core';
 import { css } from '@emotion/react';
@@ -97,9 +99,9 @@ export const SetMembershipRow: FC<Props> = ({
           membershipStatus={getMembershipStatusInQuery(set)}
           showoutline
           css={
-            !combined &&
-            getMembershipStatusInQuery(set) === members[set] &&
-            highlightedSetMemberCircle
+            !combined
+            && getMembershipStatusInQuery(set) === members[set]
+            && highlightedSetMemberCircle
           }
         />
       ))}

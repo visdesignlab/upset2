@@ -33,11 +33,11 @@ export const BoxPlot: FC<Props> = ({ scale, summary }) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   if (
-    summary.max === undefined ||
-    summary.min === undefined ||
-    summary.first === undefined ||
-    summary.third === undefined ||
-    summary.median === undefined
+    summary.max === undefined
+    || summary.min === undefined
+    || summary.first === undefined
+    || summary.third === undefined
+    || summary.median === undefined
   ) {
     return null;
   }

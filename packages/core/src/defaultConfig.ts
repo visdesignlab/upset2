@@ -95,7 +95,7 @@ export function populateConfigDefaults(
    * visualizeAttributes can either be undefined or an array of strings.
    * if visualizeAttributes is defined, load the attributes named within. Otherwise, load the first DEFAULT_NUM_ATTRIBUTES.
    */
-  if (!newConf.visibleAttributes || newConf.visibleAttributes.length === 0)
+  if (!newConf.visibleAttributes || newConf.visibleAttributes.length === 0) {
     if (visibleDataAttributes) {
       newConf.visibleAttributes = [
         ...(visualizeUpsetAttributes ? UPSET_ATTS : []),
@@ -107,6 +107,7 @@ export function populateConfigDefaults(
         ...data.attributeColumns.slice(0, DEFAULT_NUM_ATTRIBUTES),
       ];
     }
+  }
 
   // Default: a histogram for each attribute if no plots exist
   if (!newConf.plots) newConf.plots = { scatterplots: [], histograms: [] };
@@ -125,7 +126,6 @@ export function populateConfigDefaults(
       }));
   }
 
-  if (!isUpsetConfig(newConf))
-    throw new Error('Config is not a valid UpsetConfig object');
+  if (!isUpsetConfig(newConf)) throw new Error('Config is not a valid UpsetConfig object');
   return newConf;
 }

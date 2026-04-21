@@ -84,7 +84,7 @@ oAuth.maybeRestoreLogin().then(() => {
       <ThemeProvider theme={DefaultTheme}>
         <RecoilRootCompat>
           <Suspense
-            fallback={
+            fallback={(
               <Box
                 sx={{
                   display: 'flex',
@@ -96,7 +96,7 @@ oAuth.maybeRestoreLogin().then(() => {
               >
                 <CircularProgress />
               </Box>
-            }
+            )}
           >
             <Box sx={{ overflow: 'hidden' }}>
               <App />

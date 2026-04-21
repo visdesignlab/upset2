@@ -2,7 +2,9 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
 import { SvgIcon, Tooltip } from '@mui/material';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useMemo, useState,
+} from 'react';
 import {
   getRows,
   getQueryResult,
@@ -39,7 +41,7 @@ const CHECK_ICON_SIZE = 16;
  * @component
  * @returns {JSX.Element} The rendered QueryBySets component.
  */
-export const QueryBySetInterface = () => {
+export function QueryBySetInterface() {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
   const state = useRecoilValue(upsetConfigAtom);
@@ -309,20 +311,20 @@ export const QueryBySetInterface = () => {
       {/* Query result text */}
       <g
         transform={translate(
-          dimensions.matrixColumn.width +
-            dimensions.bookmarkStar.gap +
-            dimensions.bookmarkStar.width +
-            dimensions.bookmarkStar.gap,
+          dimensions.matrixColumn.width
+            + dimensions.bookmarkStar.gap
+            + dimensions.bookmarkStar.width
+            + dimensions.bookmarkStar.gap,
           dimensions.body.rowHeight * 2.5,
         )}
       >
         <foreignObject
           width={
-            dimensions.setQuery.width -
-            (dimensions.matrixColumn.width + // gap from side to sizebar
-              dimensions.bookmarkStar.gap +
-              dimensions.bookmarkStar.width +
-              dimensions.bookmarkStar.gap)
+            dimensions.setQuery.width
+            - (dimensions.matrixColumn.width // gap from side to sizebar
+              + dimensions.bookmarkStar.gap
+              + dimensions.bookmarkStar.width
+              + dimensions.bookmarkStar.gap)
           }
           height={dimensions.setQuery.height - dimensions.body.rowHeight * 2.5}
         >
@@ -339,4 +341,4 @@ export const QueryBySetInterface = () => {
       </g>
     </g>
   );
-};
+}

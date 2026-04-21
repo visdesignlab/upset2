@@ -16,7 +16,7 @@ export const defaultMargin: Margin = {
   right: 2.5,
 };
 
-export const HelpCircle = ({
+export function HelpCircle({
   text,
   margin = { ...defaultMargin },
   size = 13,
@@ -26,18 +26,20 @@ export const HelpCircle = ({
   margin?: Margin;
   size?: number;
   style?: CSSProperties;
-}) => (
-  <Tooltip title={text} placement="top" arrow style={style}>
-    <IconButton
-      sx={{
-        alignSelf: 'center',
-        margin: `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`,
-        padding: '3px',
-      }}
-      disableTouchRipple
-      aria-hidden
-    >
-      <QuestionMark sx={{ height: size, width: size }} />
-    </IconButton>
-  </Tooltip>
-);
+}) {
+  return (
+    <Tooltip title={text} placement="top" arrow style={style}>
+      <IconButton
+        sx={{
+          alignSelf: 'center',
+          margin: `${margin.top}px ${margin.right}px ${margin.bottom}px ${margin.left}px`,
+          padding: '3px',
+        }}
+        disableTouchRipple
+        aria-hidden
+      >
+        <QuestionMark sx={{ height: size, width: size }} />
+      </IconButton>
+    </Tooltip>
+  );
+}

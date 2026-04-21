@@ -1,4 +1,6 @@
-import { Alert, Box, Button, TextField, Typography } from '@mui/material';
+import {
+  Alert, Box, Button, TextField, Typography,
+} from '@mui/material';
 import { useRecoilValue } from 'recoil';
 import { useContext, useState, useCallback } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
@@ -33,7 +35,9 @@ type Props = {
  * Uses up to 5 tab indices, starting from @param tabIndex
  * @param Props @see @type Props
  */
-export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props) => {
+export function PlotInformation({
+  onSave, setEditing, tabIndex, editing,
+}: Props) {
   /**
    * Width of the titles for all the fields in %.
    * Field entry boxes will occupy the rest of the space
@@ -112,13 +116,12 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
   const commitEdits = () => {
     if (
       // Need to manually check for changes since the state is an object
-      plotInformation.caption !== plotInformationState.caption ||
-      plotInformation.title !== plotInformationState.title ||
-      plotInformation.description !== plotInformationState.description ||
-      plotInformation.sets !== plotInformationState.sets ||
-      plotInformation.items !== plotInformationState.items
-    )
-      actions.setPlotInformation(plotInformation);
+      plotInformation.caption !== plotInformationState.caption
+      || plotInformation.title !== plotInformationState.title
+      || plotInformation.description !== plotInformationState.description
+      || plotInformation.sets !== plotInformationState.sets
+      || plotInformation.items !== plotInformationState.items
+    ) actions.setPlotInformation(plotInformation);
     if (onSave) onSave();
     setEditing(false);
   };
@@ -154,9 +157,7 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
           variant="standard"
           style={{ marginBottom: '5px' }}
           value={plotInformation.title ?? ''}
-          onChange={(e) =>
-            setPlotInformation({ ...plotInformation, title: e.target.value })
-          }
+          onChange={(e) => setPlotInformation({ ...plotInformation, title: e.target.value })}
           placeholder="Title"
           inputProps={{
             style: {
@@ -178,9 +179,7 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
             style: { height: '4em', overflow: 'auto', overflowX: 'hidden' },
           }}
           value={plotInformation.caption ?? ''}
-          onChange={(e) =>
-            setPlotInformation({ ...plotInformation, caption: e.target.value })
-          }
+          onChange={(e) => setPlotInformation({ ...plotInformation, caption: e.target.value })}
           placeholder="Caption"
         />
       </Box>
@@ -195,9 +194,7 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
           </Typography>
           <TextField
             tabIndex={tabIndex + 3}
-            onChange={(e) =>
-              setPlotInformation({ ...plotInformation, description: e.target.value })
-            }
+            onChange={(e) => setPlotInformation({ ...plotInformation, description: e.target.value })}
             sx={{ width: `${100 - fieldTitleWidth}%` }}
             multiline
             InputLabelProps={{ shrink: true }}
@@ -215,9 +212,7 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
           </Typography>
           <TextField
             tabIndex={tabIndex + 4}
-            onChange={(e) =>
-              setPlotInformation({ ...plotInformation, sets: e.target.value })
-            }
+            onChange={(e) => setPlotInformation({ ...plotInformation, sets: e.target.value })}
             sx={{ width: `${100 - fieldTitleWidth}%` }}
             multiline
             InputLabelProps={{ shrink: true }}
@@ -235,9 +230,7 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
           </Typography>
           <TextField
             tabIndex={tabIndex + 5}
-            onChange={(e) =>
-              setPlotInformation({ ...plotInformation, items: e.target.value })
-            }
+            onChange={(e) => setPlotInformation({ ...plotInformation, items: e.target.value })}
             sx={{ width: `${100 - fieldTitleWidth}%` }}
             multiline
             InputLabelProps={{ shrink: true }}
@@ -251,4 +244,4 @@ export const PlotInformation = ({ onSave, setEditing, tabIndex, editing }: Props
       <Typography>{generatePlotInformationText()}</Typography>
     </Box>
   );
-};
+}

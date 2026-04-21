@@ -1,11 +1,13 @@
-import { Dialog, Box, Typography, Button, Link } from '@mui/material';
+import {
+  Dialog, Box, Typography, Button, Link,
+} from '@mui/material';
 
 type Props = {
   open: boolean;
   close: () => void;
 };
 
-export const About = ({ open, close }: Props) => {
+export function About({ open, close }: Props) {
   return (
     <Dialog open={open} onClose={close} sx={{ padding: '20px' }}>
       <Box sx={{ padding: '20px' }}>
@@ -14,7 +16,8 @@ export const About = ({ open, close }: Props) => {
         </Typography>
         <Box>
           <p>
-            For information about VDL, please visit our{' '}
+            For information about VDL, please visit our
+            {' '}
             <Link
               href="https://vdl.sci.utah.edu/"
               target="_blank"
@@ -26,7 +29,8 @@ export const About = ({ open, close }: Props) => {
             .
           </p>
           <p>
-            To contact us, please email{' '}
+            To contact us, please email
+            {' '}
             <Link href="mailto:vdl-faculty@sci.utah.edu" aria-label="VDL faculty email">
               vdl-faculty@sci.utah.edu
             </Link>
@@ -38,22 +42,26 @@ export const About = ({ open, close }: Props) => {
         </Typography>
         <Box>
           <p>
-            UpSet 2 is an open source tool for visualizing set intersections based on{' '}
+            UpSet 2 is an open source tool for visualizing set intersections based on
+            {' '}
             <Link
               href="https://vdl.sci.utah.edu/publications/2014_infovis_upset/"
               target="_blank"
               rel="noreferrer"
             >
               UpSet: Visualization of Intersecting Sets (2014)
-            </Link>{' '}
-            and the original{' '} 
+            </Link>
+            {' '}
+            and the original
+            {' '}
             <Link href="https://upset.app" target="_blank" rel="noreferrer">
               UpSet web application
             </Link>
             .
           </p>
           <p>
-            To make contributions and/or report a bug, please visit our{' '}
+            To make contributions and/or report a bug, please visit our
+            {' '}
             <Link
               href="https://github.com/visdesignlab/upset2"
               target="_blank"
@@ -64,22 +72,33 @@ export const About = ({ open, close }: Props) => {
             .
           </p>
           <p>
-            Upset 2 was initially developed by{' '}
+            Upset 2 was initially developed by
+            {' '}
             <Link href="https://github.com/kirangadhave" target="_blank" rel="noreferrer">
-            Kiran Gadhave
-            </Link>,{' '}
-            with ongoing development by{' '}
+              Kiran Gadhave
+            </Link>
+            ,
+            {' '}
+            with ongoing development by
+            {' '}
             <Link href="https://github.com/JakeWags" target="_blank" rel="noreferrer">
-            Jake Wagoner
-            </Link>,{' '}
+              Jake Wagoner
+            </Link>
+            ,
+            {' '}
             <Link href="https://github.com/NateLanza" target="_blank" rel="noreferrer">
-            Nate Lanza
-            </Link>,{' '}
-            and{' '}
+              Nate Lanza
+            </Link>
+            ,
+            {' '}
+            and
+            {' '}
             <Link href="https://github.com/JackWilb" target="_blank" rel="noreferrer">
-            Jack Wilburn
-            </Link>{' '}
-            based on the work and ideas of Alex Lex and supported by the{' '}
+              Jack Wilburn
+            </Link>
+            {' '}
+            based on the work and ideas of Alex Lex and supported by the
+            {' '}
             <Link
               href="https://vdl.sci.utah.edu/projects/2022-czi-upset/"
               target="_blank"
@@ -98,4 +117,4 @@ export const About = ({ open, close }: Props) => {
       </Box>
     </Dialog>
   );
-};
+}

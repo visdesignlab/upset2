@@ -61,8 +61,8 @@ export const tallRowCountSelector = selector({
     let count = 0;
     get(flattenedRowsSelector).forEach((renderRow) => {
       if (
-        isRowAggregate(renderRow.row) &&
-        TALL_ROW_TYPES.includes(renderRow.row.aggregateBy)
+        isRowAggregate(renderRow.row)
+        && TALL_ROW_TYPES.includes(renderRow.row.aggregateBy)
       ) {
         count++;
       }

@@ -37,7 +37,9 @@ type Props = {
  * @param {Row} props.row - The row object. Rows can be either Subsets or Aggregates.
  * @returns {JSX.Element} The rendered strip plot.
  */
-export const StripPlot: FC<Props> = ({ scale, values, isAggregate, row }) => {
+export const StripPlot: FC<Props> = ({
+  scale, values, isAggregate, row,
+}) => {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   return (

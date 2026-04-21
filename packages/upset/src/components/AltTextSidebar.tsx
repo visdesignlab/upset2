@@ -9,7 +9,9 @@ import {
   Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { useState, useEffect, FC, useContext, useMemo, useCallback } from 'react';
+import {
+  useState, useEffect, FC, useContext, useMemo, useCallback,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { AltText } from '@visdesignlab/upset2-core/';
 import { ProvenanceContext } from './Root';
@@ -45,7 +47,9 @@ type Props = SidebarProps & {
  * @param {() => Promise<AltText>} props.generateAltText - Callback function to generate alternative text for the plot.
  * @returns {JSX.Element} The AltTextSidebar component.
  */
-export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedded }) => {
+export const AltTextSidebar: FC<Props> = ({
+  open, close, generateAltText, embedded,
+}) => {
   /**
    * State
    */
@@ -94,13 +98,14 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
 
     // This block of checks only fires the action if the user alt text has changed
     if (
-      currState.userAltText?.shortDescription !== short ||
-      currState.userAltText?.longDescription !== long
-    )
+      currState.userAltText?.shortDescription !== short
+      || currState.userAltText?.longDescription !== long
+    ) {
       actions.setUserAltText({
         shortDescription: userShortText ?? '',
         longDescription: userLongText ?? '',
       });
+    }
   }, [currState, userShortText, userLongText, actions, canEditPlotInformation, altText]);
 
   /**
@@ -112,10 +117,8 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
     if (!canEditPlotInformation) return;
 
     setTextEditing(true);
-    if (!currState.userAltText?.shortDescription)
-      setUserShortText(altText?.shortDescription);
-    if (!currState.userAltText?.longDescription)
-      setUserLongText(altText?.longDescription);
+    if (!currState.userAltText?.shortDescription) setUserShortText(altText?.shortDescription);
+    if (!currState.userAltText?.longDescription) setUserLongText(altText?.longDescription);
   }, [currState, altText, canEditPlotInformation]);
 
   /**
@@ -169,18 +172,16 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
    * Whether to display the plot information section
    */
   const displayPlotInfo: boolean = useMemo(
-    () =>
-      plotInfoEditing ||
-      (currState.plotInformation &&
-        Object.values(currState.plotInformation).some((v) => !!v)),
+    () => plotInfoEditing
+      || (currState.plotInformation
+        && Object.values(currState.plotInformation).some((v) => !!v)),
     [currState.plotInformation, plotInfoEditing],
   );
 
   const editPlotInfoTooltip: string = useMemo(
-    () =>
-      canEditPlotInformation
-        ? 'Edit Plot Information'
-        : 'You do not have permission to edit the plot information',
+    () => (canEditPlotInformation
+      ? 'Edit Plot Information'
+      : 'You do not have permission to edit the plot information'),
     [canEditPlotInformation],
   );
 
@@ -191,7 +192,7 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
       closeButtonTabIndex={PLOT_INFO_TABS + PLOT_INFO_TAB_INDEX}
       label="Alt Text and Plot Information Sidebar"
       embedded={embedded}
-      buttons={
+      buttons={(
         <Tooltip title={editPlotInfoTooltip}>
           <IconButton
             aria-label="Plot Information Editor"
@@ -205,36 +206,36 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
             <EditIcon />
           </IconButton>
         </Tooltip>
-      }
+      )}
       title={
         displayPlotInfo
           ? (plotInfo.title ?? 'Editing Plot Information')
           : 'Text Description'
       }
     >
-      {displayPlotInfo &&
+      {displayPlotInfo
       // We only want to display plotInfo if the user is editing OR if they've entered some field other than title
-      (plotInfoEditing ||
-        Object.entries(plotInfo)
+      && (plotInfoEditing
+        || Object.entries(plotInfo)
           .filter(([k, _]) => k !== 'title')
           .some(([_, v]) => !!v)) ? (
-        <PlotInformation
-          tabIndex={PLOT_INFO_TAB_INDEX}
-          editing={plotInfoEditing}
-          setEditing={setPlotInfoEditing}
-        />
-      ) : (
-        <Tooltip title={editPlotInfoTooltip}>
-          <Button
-            onClick={() => setPlotInfoEditing(true)}
-            tabIndex={PLOT_INFO_TAB_INDEX}
-            disabled={!canEditPlotInformation}
-            style={{ width: '100%', textAlign: 'center' }}
-          >
-            Add Plot Information
-          </Button>
-        </Tooltip>
-      )}
+            <PlotInformation
+              tabIndex={PLOT_INFO_TAB_INDEX}
+              editing={plotInfoEditing}
+              setEditing={setPlotInfoEditing}
+            />
+        ) : (
+          <Tooltip title={editPlotInfoTooltip}>
+            <Button
+              onClick={() => setPlotInfoEditing(true)}
+              tabIndex={PLOT_INFO_TAB_INDEX}
+              disabled={!canEditPlotInformation}
+              style={{ width: '100%', textAlign: 'center' }}
+            >
+              Add Plot Information
+            </Button>
+          </Tooltip>
+        )}
       {displayPlotInfo && (
         <UpsetHeading level="h2" divStyle={{ marginTop: '10px' }}>
           Text Description
@@ -278,11 +279,9 @@ export const AltTextSidebar: FC<Props> = ({ open, close, generateAltText, embedd
               <TextField
                 multiline
                 fullWidth
-                onChange={(e) =>
-                  useLong
-                    ? setUserLongText(e.target.value)
-                    : setUserShortText(e.target.value)
-                }
+                onChange={(e) => (useLong
+                  ? setUserLongText(e.target.value)
+                  : setUserShortText(e.target.value))}
                 value={displayAltText}
                 tabIndex={6}
                 aria-flowto="saveAltTextButton"

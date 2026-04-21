@@ -107,19 +107,18 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
    * Truncates the element name if it is longer than 14 characters and the aggregateBy value is 'Overlaps'.
    * Otherwise, description is the element name.
    */
-  const desc =
-    aggregateRow.elementName.length < 14 || aggregateRow.aggregateBy !== 'Overlaps'
-      ? aggregateRow.elementName
-      : `${aggregateRow.elementName.slice(0, 14)}...`;
+  const desc = aggregateRow.elementName.length < 14 || aggregateRow.aggregateBy !== 'Overlaps'
+    ? aggregateRow.elementName
+    : `${aggregateRow.elementName.slice(0, 14)}...`;
 
   return (
     <g
       id={aggregateRow.id}
       onClick={() => {
         if (
-          aggregateRow &&
-          currentIntersection?.id === aggregateRow.id &&
-          selectionType === 'row'
+          aggregateRow
+          && currentIntersection?.id === aggregateRow.id
+          && selectionType === 'row'
         ) {
           actions.setRowSelection(null);
         } else {
@@ -134,9 +133,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <rect
           transform={translate(0, 2)}
           css={
-            currentIntersection?.id === aggregateRow.id &&
-            selectionType === 'row' &&
-            highlight
+            currentIntersection?.id === aggregateRow.id
+            && selectionType === 'row'
+            && highlight
           }
           height={
             TALL_ROW_TYPES.includes(aggregateRow.aggregateBy)

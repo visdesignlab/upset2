@@ -6,7 +6,7 @@ import { contextMenuAtom } from '../atoms/contextMenuAtom';
  * Renders a context menu based on the provided context menu state.
  * @returns The rendered context menu component.
  */
-export const ContextMenu = () => {
+export function ContextMenu() {
   const [contextMenu, setContextMenu] = useRecoilState(contextMenuAtom);
 
   /**
@@ -41,4 +41,4 @@ export const ContextMenu = () => {
     );
   }
   return null;
-};
+}

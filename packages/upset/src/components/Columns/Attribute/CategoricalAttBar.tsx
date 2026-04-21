@@ -1,5 +1,7 @@
 import { Aggregate, Subset } from '@visdesignlab/upset2-core';
-import { FC, memo, useMemo, useState } from 'react';
+import {
+  FC, memo, useMemo, useState,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';

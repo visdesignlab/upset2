@@ -20,7 +20,7 @@ const collapseAllStyle = css`
   transform: translate(-${iconSize}px, 0);
 `;
 
-export const CollapseAllButton = () => {
+export function CollapseAllButton() {
   /*
    * State
    */
@@ -91,4 +91,4 @@ export const CollapseAllButton = () => {
       </Tooltip>
     </Group>
   );
-};
+}

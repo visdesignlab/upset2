@@ -27,7 +27,7 @@ const defaultTickFormatter = (d: number) => {
   return d;
 };
 
-export const Axis = ({
+export function Axis({
   transform = '',
   label,
   type,
@@ -38,7 +38,7 @@ export const Axis = ({
   showLabel = true,
   hideLine = false,
   tickFormatter = defaultTickFormatter,
-}: Props) => {
+}: Props) {
   const tickLength = 6;
   const tickFontHeight = fontSize * 14 * 1.2;
   const labelFontSize = 15;
@@ -148,4 +148,4 @@ export const Axis = ({
       )}
     </g>
   );
-};
+}

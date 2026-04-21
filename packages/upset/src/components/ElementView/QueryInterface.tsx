@@ -9,7 +9,9 @@ import {
 import { Box } from '@mui/system';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { ElementQueryType, NumericalQueryType } from '@visdesignlab/upset2-core';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
 import { ProvenanceContext } from '../Root';
 import { UpsetActions } from '../../provenance';
@@ -26,7 +28,7 @@ const DEFAULT_TYPE = ElementQueryType.EQUALS;
  * Component showing a form allowing element queries to be created based on non-numeric fields
  * @returns {EmotionJSX.Element}
  */
-export const QueryInterface = () => {
+export function QueryInterface() {
   /*
    * State
    */
@@ -75,11 +77,11 @@ export const QueryInterface = () => {
       setTypeField(undefined);
       setQueryField(undefined);
     } else if (
-      attField &&
-      typeField &&
-      queryField &&
-      Object.values(ElementQueryType).includes(typeField as ElementQueryType) &&
-      atts.includes(attField)
+      attField
+      && typeField
+      && queryField
+      && Object.values(ElementQueryType).includes(typeField as ElementQueryType)
+      && atts.includes(attField)
     ) {
       actions.setQuerySelection({
         att: attField,
@@ -121,8 +123,8 @@ export const QueryInterface = () => {
           value={typeField ?? ''}
           onChange={(e) => setTypeField(e.target.value)}
         >
-          {attField &&
-            Object.values(
+          {attField
+            && Object.values(
               attTypes[attField] === 'number' ? NumericalQueryType : ElementQueryType,
             ).map((type) => (
               <MenuItem key={type} value={type}>
@@ -155,4 +157,4 @@ export const QueryInterface = () => {
       </Box>
     </Box>
   ) : null;
-};
+}

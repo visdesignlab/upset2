@@ -1,7 +1,9 @@
 import { Row } from '@visdesignlab/upset2-core';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import { FC, MouseEvent, useContext, useMemo } from 'react';
+import {
+  FC, MouseEvent, useContext, useMemo,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { ProvenanceContext } from '../Root';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';

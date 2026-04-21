@@ -15,15 +15,13 @@ export const oneHotEncode = (
 
   // get the unique names of every new column to be added.
   //    ex: group1_a, group1_b, group2_a, group2_b, group3_c, ....
-  encodeList.forEach((s) =>
-    Object.entries(data.items).forEach(([_, row]) => {
-      const names = `${row.atts[s]}`
-        .split(',')
-        .filter((n) => n !== '')
-        .map((val) => `${s}_${val}`);
-      newColNames.push(...names);
-    }),
-  );
+  encodeList.forEach((s) => Object.entries(data.items).forEach(([_, row]) => {
+    const names = `${row.atts[s]}`
+      .split(',')
+      .filter((n) => n !== '')
+      .map((val) => `${s}_${val}`);
+    newColNames.push(...names);
+  }));
   const uniqueColNames: Set<string> = new Set(newColNames);
 
   // populate the data items group membership

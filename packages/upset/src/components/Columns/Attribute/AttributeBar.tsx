@@ -112,12 +112,12 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   }, []);
 
   if (
-    typeof summary !== 'number' &&
-    (summary.max === undefined ||
-      summary.min === undefined ||
-      summary.first === undefined ||
-      summary.third === undefined ||
-      summary.median === undefined)
+    typeof summary !== 'number'
+    && (summary.max === undefined
+      || summary.min === undefined
+      || summary.first === undefined
+      || summary.third === undefined
+      || summary.median === undefined)
   ) {
     return null;
   }
@@ -128,11 +128,11 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
         <DeviationBar deviation={summary} />
       ) : (
         <Tooltip
-          title={
+          title={(
             <div style={{ whiteSpace: 'pre-line' }}>
               {`Q1: ${round3(summary.first)}\nMean: ${round3(summary.mean)}\nMedian: ${round3(summary.median)}\nQ3: ${round3(summary.third)}`}
             </div>
-          }
+          )}
         >
           {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
           <g>{attPlotToRender}</g>

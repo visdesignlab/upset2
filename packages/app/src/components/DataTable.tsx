@@ -1,4 +1,6 @@
-import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
+import {
+  Backdrop, Box, Button, CircularProgress,
+} from '@mui/material';
 import {
   AccessibleData,
   AccessibleDataEntry,
@@ -152,19 +154,21 @@ type DownloadButtonProps = {
  * @param {Function} props.onClick - The click event handler for the button.
  * @returns {JSX.Element} The DownloadButton component.
  */
-const DownloadButton = ({ onClick }: DownloadButtonProps) => (
-  <Button
-    sx={downloadCSS}
-    color="info"
-    size="medium"
-    variant="contained"
-    disableElevation
-    onClick={onClick}
-    endIcon={<DownloadIcon />}
-  >
-    Download
-  </Button>
-);
+function DownloadButton({ onClick }: DownloadButtonProps) {
+  return (
+    <Button
+      sx={downloadCSS}
+      color="info"
+      size="medium"
+      variant="contained"
+      disableElevation
+      onClick={onClick}
+      endIcon={<DownloadIcon />}
+    >
+      Download
+    </Button>
+  );
+}
 
 /**
  * Renders a data table component that displays intersection data, visible sets, and hidden sets.
@@ -173,7 +177,7 @@ const DownloadButton = ({ onClick }: DownloadButtonProps) => (
  *
  * @returns The DataTable component.
  */
-export const DataTable = () => {
+export function DataTable() {
   const [data, setData] = useState<CoreUpsetData | null>(null);
   const [rows, setRows] = useState<AccessibleData | null>(null);
   const [visibleSets, setVisibleSets] = useState<string[] | null>(null);
@@ -195,10 +199,10 @@ export const DataTable = () => {
     ])
       .then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
         if (
-          storedData === null ||
-          storedRows === null ||
-          storedVisibleSets === null ||
-          storedHiddenSets === null
+          storedData === null
+          || storedRows === null
+          || storedVisibleSets === null
+          || storedHiddenSets === null
         ) {
           console.error('Data not found in local storage');
           setError('Error: Data not found in local storage');
@@ -361,13 +365,11 @@ export const DataTable = () => {
             <div style={headerCSS}>
               <h2>Intersection Data</h2>
               <DownloadButton
-                onClick={() =>
-                  downloadElementsAsCSV(
-                    tableRows,
-                    dataColumns.map((m) => m.field),
-                    'upset2_intersection_data',
-                  )
-                }
+                onClick={() => downloadElementsAsCSV(
+                  tableRows,
+                  dataColumns.map((m) => m.field),
+                  'upset2_intersection_data',
+                )}
               />
             </div>
             <DataGrid
@@ -390,13 +392,11 @@ export const DataTable = () => {
             <div style={headerCSS}>
               <h2>Visible Sets</h2>
               <DownloadButton
-                onClick={() =>
-                  downloadElementsAsCSV(
-                    visibleSetRows,
-                    ['setName', 'size'],
-                    'upset2_visiblesets_table',
-                  )
-                }
+                onClick={() => downloadElementsAsCSV(
+                  visibleSetRows,
+                  ['setName', 'size'],
+                  'upset2_visiblesets_table',
+                )}
               />
             </div>
             <DataGrid
@@ -419,13 +419,11 @@ export const DataTable = () => {
             <div style={headerCSS}>
               <h2>Hidden Sets</h2>
               <DownloadButton
-                onClick={() =>
-                  downloadElementsAsCSV(
-                    hiddenSetRows,
-                    ['setName', 'size'],
-                    'upset2_hiddensets_table',
-                  )
-                }
+                onClick={() => downloadElementsAsCSV(
+                  hiddenSetRows,
+                  ['setName', 'size'],
+                  'upset2_hiddensets_table',
+                )}
               />
             </div>
             <DataGrid
@@ -448,4 +446,4 @@ export const DataTable = () => {
       )}
     </>
   );
-};
+}
