@@ -1,14 +1,12 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { FC, useMemo } from 'react';
+import { ComponentType, FC, PropsWithChildren, useMemo } from 'react';
 import { RecoilRoot } from 'recoil';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
 import { UpsetProps } from '../types';
 import { processRawData } from '../utils/data';
 
-const RecoilRootCompat = RecoilRoot as unknown as React.ComponentType<
-  React.PropsWithChildren
->;
+const RecoilRootCompat = RecoilRoot as unknown as ComponentType<PropsWithChildren>;
 
 /**
  * Renders the Upset component.
