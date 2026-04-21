@@ -54,6 +54,7 @@ test('SVG download includes foreignObject content and preserves hidden bookmark 
 
     if (!svgText) {
       return {
+        bloatedSvgNodeCount: 0,
         foreignObjectCount: 0,
         xhtmlNodeCount: 0,
         hiddenMuiIconCount: 0,
@@ -66,8 +67,26 @@ test('SVG download includes foreignObject content and preserves hidden bookmark 
     ).filter((icon) =>
       /(?:opacity|fill-opacity):\s*0(?:;|$)/.test(icon.getAttribute('style') ?? ''),
     ).length;
+    const bloatedSvgNodeCount = Array.from(doc.querySelectorAll('[style]')).filter(
+      (element) => {
+        if (
+          element.closest('foreignObject') ||
+          element.classList.contains('MuiSvgIcon-root')
+        ) {
+          return false;
+        }
+
+        const styleDeclarationCount = (element.getAttribute('style') ?? '')
+          .split(';')
+          .map((declaration) => declaration.trim())
+          .filter(Boolean).length;
+
+        return styleDeclarationCount > 10;
+      },
+    ).length;
 
     return {
+      bloatedSvgNodeCount,
       foreignObjectCount: doc.querySelectorAll('foreignObject').length,
       xhtmlNodeCount: Array.from(doc.querySelectorAll('foreignObject *')).filter(
         (element) => element.getAttribute('xmlns') === 'http://www.w3.org/1999/xhtml',
@@ -79,6 +98,7 @@ test('SVG download includes foreignObject content and preserves hidden bookmark 
   expect(exportDetails.foreignObjectCount).toBeGreaterThan(0);
   expect(exportDetails.xhtmlNodeCount).toBeGreaterThan(0);
   expect(exportDetails.hiddenMuiIconCount).toBeGreaterThan(0);
+  expect(exportDetails.bloatedSvgNodeCount).toBe(0);
 });
 
 /**

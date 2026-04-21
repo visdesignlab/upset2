@@ -2,27 +2,124 @@ const SVG_NAMESPACE = 'http://www.w3.org/2000/svg';
 const XHTML_NAMESPACE = 'http://www.w3.org/1999/xhtml';
 const XLINK_NAMESPACE = 'http://www.w3.org/1999/xlink';
 
-const inlineStyles = (sourceElement: Element, clonedElement: Element) => {
-  const computedStyles = window.getComputedStyle(sourceElement);
-  const styledElement = clonedElement as SVGElement;
+const FOREIGN_OBJECT_HTML_STYLE_PROPERTIES = [
+  'display',
+  'visibility',
+  'opacity',
+  'overflow',
+  'overflow-x',
+  'overflow-y',
+  'width',
+  'height',
+  'max-width',
+  'max-height',
+  'min-width',
+  'min-height',
+  'margin',
+  'margin-top',
+  'margin-right',
+  'margin-bottom',
+  'margin-left',
+  'padding',
+  'padding-top',
+  'padding-right',
+  'padding-bottom',
+  'padding-left',
+  'color',
+  'font-family',
+  'font-size',
+  'font-weight',
+  'font-style',
+  'line-height',
+  'letter-spacing',
+  'text-align',
+  'text-overflow',
+  'text-wrap',
+  'white-space',
+  'word-break',
+  'box-sizing',
+  'position',
+] as const;
 
-  Array.from(computedStyles).forEach((property) => {
+const FOREIGN_OBJECT_SVG_STYLE_PROPERTIES = [
+  'display',
+  'visibility',
+  'opacity',
+  'overflow',
+  'width',
+  'height',
+  'max-width',
+  'max-height',
+  'position',
+] as const;
+
+const SVG_ICON_STYLE_PROPERTIES = [
+  'display',
+  'visibility',
+  'opacity',
+  'overflow',
+  'color',
+  'fill',
+  'fill-opacity',
+] as const;
+
+const isMuiSvgIcon = (element: Element) => element.classList.contains('MuiSvgIcon-root');
+
+const inlineSelectedStyles = (
+  sourceElement: Element,
+  clonedElement: Element,
+  properties: readonly string[],
+) => {
+  const computedStyles = window.getComputedStyle(sourceElement);
+  const styledElement = clonedElement as HTMLElement | SVGElement;
+
+  properties.forEach((property) => {
+    if (styledElement.style.getPropertyValue(property)) {
+      return;
+    }
+
+    const value = computedStyles.getPropertyValue(property);
+
+    if (!value) {
+      return;
+    }
+
     styledElement.style.setProperty(
       property,
-      computedStyles.getPropertyValue(property),
+      value,
       computedStyles.getPropertyPriority(property),
     );
   });
+};
+
+const serializeExportSubtree = (
+  sourceElement: Element,
+  clonedElement: Element,
+  inForeignObject = false,
+) => {
+  const isInsideForeignObject =
+    inForeignObject || sourceElement.localName === 'foreignObject';
 
   if (sourceElement.namespaceURI === XHTML_NAMESPACE) {
     clonedElement.setAttribute('xmlns', XHTML_NAMESPACE);
+  }
+
+  if (isMuiSvgIcon(sourceElement)) {
+    inlineSelectedStyles(sourceElement, clonedElement, SVG_ICON_STYLE_PROPERTIES);
+  } else if (isInsideForeignObject) {
+    const properties =
+      sourceElement.namespaceURI === XHTML_NAMESPACE
+        ? FOREIGN_OBJECT_HTML_STYLE_PROPERTIES
+        : FOREIGN_OBJECT_SVG_STYLE_PROPERTIES;
+
+    inlineSelectedStyles(sourceElement, clonedElement, properties);
   }
 
   Array.from(sourceElement.children).forEach((child, index) => {
     const clonedChild = clonedElement.children.item(index);
 
     if (clonedChild) {
-      inlineStyles(child, clonedChild);
+      serializeExportSubtree(child, clonedChild, isInsideForeignObject);
     }
   });
 };
@@ -32,7 +129,7 @@ export const serializeSVGForDownload = (svg: SVGSVGElement) => {
 
   clone.setAttribute('xmlns', SVG_NAMESPACE);
   clone.setAttribute('xmlns:xlink', XLINK_NAMESPACE);
-  inlineStyles(svg, clone);
+  serializeExportSubtree(svg, clone);
 
   return new XMLSerializer().serializeToString(clone);
 };
