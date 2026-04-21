@@ -39,7 +39,6 @@
   },
   "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner, Nate Lanza",
   "devDependencies": {
-    "eslint-plugin-react-hooks": "^5.2.0",
     "husky": "^7.0.4",
     "prettier": "^3.5.3",
     "tslib": "^2.3.1",
