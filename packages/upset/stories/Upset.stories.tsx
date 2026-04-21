@@ -1,8 +1,4 @@
-/* eslint-disable react/destructuring-assignment */
-import React from 'react';
-
-import { assert } from 'console';
-import moviesData from './data/movies/data.json' assert { type: 'json' };
+import moviesData from './data/movies/data.json' with { type: 'json' };
 
 import { Upset } from '../src';
 

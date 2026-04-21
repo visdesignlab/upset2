@@ -347,7 +347,7 @@ export function getSubsets(
 
   const intersectionName: { [key: string]: string } = {};
 
-  for (let b = 0; b <= comboCount; ++b) {
+  for (let b = 0; b <= comboCount; b += 1) {
     const combo = b.toString(2).padStart(vSets.length, '0');
     setIntersectionMembership[combo] = [];
     const name = vSetNames.filter((_, i) => combo[i] === '1').join('~&~');

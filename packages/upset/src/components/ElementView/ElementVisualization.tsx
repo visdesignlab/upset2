@@ -15,7 +15,7 @@ import {
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { vegaItemsSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import {
@@ -214,7 +214,7 @@ export function ElementVisualization() {
       // Save selection and cancel the onClick selection (which will now fire with null value)
       onMouseLeave={() => saveSelection(true)}
       // Make sure that we don't cancel the onClick selection if the mouse re-enters the box
-      onMouseEnter={() => (cancelNextSelection.current = false)}
+      onMouseEnter={() => { cancelNextSelection.current = false; }}
     >
       <Box
         sx={{

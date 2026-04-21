@@ -10,11 +10,11 @@ import {
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import {
-  useState, useEffect, FC, useContext, useMemo, useCallback,
+  useState, useEffect, useContext, useMemo, useCallback,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { AltText } from '@visdesignlab/upset2-core/';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../provenance/context';
 import { upsetConfigAtom } from '../atoms/config/upsetConfigAtoms';
 import ReactMarkdownWrapper from './custom/ReactMarkdownWrapper';
 import { PlotInformation } from './custom/PlotInformation';
@@ -47,9 +47,9 @@ type Props = SidebarProps & {
  * @param {() => Promise<AltText>} props.generateAltText - Callback function to generate alternative text for the plot.
  * @returns {JSX.Element} The AltTextSidebar component.
  */
-export const AltTextSidebar: FC<Props> = ({
+export function AltTextSidebar({
   open, close, generateAltText, embedded,
-}) => {
+}: Props) {
   /**
    * State
    */
@@ -339,4 +339,4 @@ export const AltTextSidebar: FC<Props> = ({
       )}
     </Sidebar>
   );
-};
+}

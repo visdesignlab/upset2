@@ -32,7 +32,6 @@ import { getUserInfo } from '../../api/getUserInfo';
 import { oAuth } from '../../api/auth';
 import { rowsSelector } from '../../atoms/selectors';
 import { DataTableLink } from '../../utils/DataTableLink';
-// @ts-expect-error ts doesn't know about SVG imports
 import vdlFlask from '../../assets/vdl_flask.svg';
 import { EmbedModal } from './EmbedModal';
 
@@ -123,7 +122,7 @@ function Header({ data }: { data: CoreUpsetData }) {
     };
 
     fetchInfo();
-  }, []);
+  }, [provenance]);
 
   const [trrackPosition, setTrrackPosition] = useState({
     isAtLatest: true,
@@ -137,7 +136,7 @@ function Header({ data }: { data: CoreUpsetData }) {
         isAtRoot: provenance.current.id === provenance.root.id,
       });
     });
-  }, []);
+  }, [provenance]);
 
   return (
     <AppBar sx={{ position: 'static', boxShadow: 'none', height: '48px' }}>

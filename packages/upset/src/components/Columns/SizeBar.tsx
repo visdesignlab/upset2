@@ -1,6 +1,6 @@
 import { Row } from '@visdesignlab/upset2-core';
 import {
-  FC, useMemo, JSX, useCallback,
+  useMemo, JSX, useCallback,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -72,9 +72,9 @@ function darkenColor(index: number, color: string): string {
 /*
  * Size bar for a row in the upset plot, showing number of elements in the subset.
  */
-export const SizeBar: FC<Props> = ({
+export function SizeBar({
   row, size, vegaSelected, querySelected,
-}) => {
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -102,7 +102,7 @@ export const SizeBar: FC<Props> = ({
    * @param index Index of the bar.
    * @returns Fill color for the bar.
    */
-  // eslint-disable-next-line no-unused-vars
+
   const getFillColor: (index: number) => string = useCallback(
     (index) => {
       // if the row is bookmarked, highlight the bar with the bookmark color
@@ -151,7 +151,7 @@ export const SizeBar: FC<Props> = ({
    *   fullBars  Number of full bars to display.
    *   remainder Remaining size after full bars are displayed.
    */
-  // eslint-disable-next-line no-unused-vars
+
   const calculateBars: (rowSize: number) => { fullBars: number; remainder: number } = useCallback(
     (rowSize) => {
       let fullBars = rowSize > 0 ? Math.floor(rowSize / sizeDomain) : rowSize;
@@ -162,7 +162,7 @@ export const SizeBar: FC<Props> = ({
       }
 
       // If the remainder is 0 and there are 1 or 2 full bars, remove a bar
-      if (remainder === 0 && fullBars > 0 && fullBars < 3) fullBars--;
+      if (remainder === 0 && fullBars > 0 && fullBars < 3) fullBars -= 1;
 
       return { fullBars, remainder };
     },
@@ -177,19 +177,19 @@ export const SizeBar: FC<Props> = ({
    * @param uniqueId Unique identifier for the elements
    * @returns SVG elements for the line and tick
    */
-  // eslint-disable-next-line no-unused-vars
+
   const lineAndTick: (x: number, lineColor: string, index: number) => JSX.Element = useCallback(
     (x, lineColor, index) => (
       <>
         {/* White border for selection tick */}
         <polygon
-          points={`${x},${1} ` + `${x - 7},${-6} ` + `${x + 7},${-6}`}
+          points={`${x},${1} ${x - 7},${-6} ${x + 7},${-6}`}
           fill="white"
           transform={translate(0, (index * OFFSET) / 2)}
         />
         {/* Selection tick */}
         <polygon
-          points={`${x},${0} ` + `${x - 5},${-5} ` + `${x + 5},${-5}`}
+          points={`${x},${0} ${x - 5},${-5} ${x + 5},${-5}`}
           fill={lineColor}
           transform={translate(0, (index * OFFSET) / 2)}
         />
@@ -217,7 +217,7 @@ export const SizeBar: FC<Props> = ({
    * @param remainder Number of items remaining after full bars are calculated.
    * @returns Width of the size bar.
    */
-  // eslint-disable-next-line no-unused-vars
+
   const calculateWidth: (total: number, remainder: number) => number = useCallback(
     (total, remainder) => {
       let result = scale(remainder);
@@ -291,7 +291,7 @@ export const SizeBar: FC<Props> = ({
   // Calculate all rectangles for the size bar
   const rectArray = useMemo(() => {
     const result: Rect[] = [];
-    for (let i = 0; i < 3; ++i) {
+    for (let i = 0; i < 3; i += 1) {
       // Full bars, which may be the selection color if the selection size is greater than the full bar size
       if (i < fullSizeBars) {
         result.push({
@@ -413,4 +413,4 @@ export const SizeBar: FC<Props> = ({
       )}
     </g>
   );
-};
+}

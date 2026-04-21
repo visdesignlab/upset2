@@ -64,7 +64,7 @@ export const tallRowCountSelector = selector({
         isRowAggregate(renderRow.row)
         && TALL_ROW_TYPES.includes(renderRow.row.aggregateBy)
       ) {
-        count++;
+        count += 1;
       }
     });
     return count;

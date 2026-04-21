@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
-import { FC, useContext } from 'react';
+import { useContext } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
@@ -24,7 +24,7 @@ import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
 import { BookmarkColumnIcon } from '../Columns/BookmarkColumnIcon';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 import { UpsetActions } from '../../provenance';
@@ -83,7 +83,7 @@ const secondLevelXOffset = 15;
  * @param {Aggregate} aggregateRow - The AggregateRow to render.
  * @returns {JSX.Element} The rendered AggregateRow component.
  */
-export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
+export function AggregateRow({ aggregateRow }: Props) {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -200,4 +200,4 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       </g>
     </g>
   );
-};
+}

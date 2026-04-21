@@ -14,11 +14,8 @@ type Props = {
   config?: UpsetConfig;
 };
 
-/** Height for the footer */
-export const FOOTER_HEIGHT = 46.5;
-
 export function Root({
-  provenance, actions, data, config,
+  provenance: _provenance, actions: _actions, data, config,
 }: Props) {
   const AppCss = useMemo(
     () => css`

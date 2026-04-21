@@ -6,7 +6,7 @@ import {
   SetQueryMembership,
   isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
@@ -99,7 +99,7 @@ const rowMatchesSetQuery = (row: Row, membership: SetQueryMembership) => {
  * @param {Object} config - The configuration object for the transitions.
  * @returns {Array} The array of transition objects.
  */
-export const MatrixRows: FC<Props> = ({ rows }) => {
+export function MatrixRows({ rows }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const setQuery = useRecoilValue(setQuerySelector);
@@ -182,4 +182,4 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
       )}
     </g>
   );
-};
+}

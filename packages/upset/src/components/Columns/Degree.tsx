@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
@@ -19,7 +18,7 @@ type Props = {
  * @param {number} props.degree - The degree value for the row.
  * @returns {JSX.Element} The rendered degree component.
  */
-export const Degree: FC<Props> = ({ degree }) => {
+export function Degree({ degree }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   return (
     <g
@@ -31,4 +30,4 @@ export const Degree: FC<Props> = ({ degree }) => {
       <text>{degree > -1 && degree}</text>
     </g>
   );
-};
+}

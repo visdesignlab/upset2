@@ -1,15 +1,15 @@
 import { css } from '@emotion/react';
-import { FC, PropsWithChildren, useContext } from 'react';
+import { PropsWithChildren, useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import translate from '../utils/transform';
 import { dimensionsSelector } from '../atoms/dimensionsAtom';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../provenance/context';
 import { currentIntersectionSelector } from '../atoms/config/selectionAtoms';
 import { queryBySetsInterfaceAtom } from '../atoms/config/queryBySetsAtoms';
 import { UpsetActions } from '../provenance';
 
-export const SvgBase: FC<PropsWithChildren> = ({ children }) => {
+export function SvgBase({ children }: PropsWithChildren) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const selectedIntersection = useRecoilValue(currentIntersectionSelector);
@@ -56,4 +56,4 @@ export const SvgBase: FC<PropsWithChildren> = ({ children }) => {
       </svg>
     </div>
   );
-};
+}

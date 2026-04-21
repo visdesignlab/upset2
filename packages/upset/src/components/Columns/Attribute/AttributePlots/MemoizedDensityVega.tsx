@@ -1,4 +1,4 @@
-import { FC, memo, useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { css as emotionCss } from '@emotion/react';
 import { AttributePlotType } from '@visdesignlab/upset2-core';
 import { generateAttributePlotSpec } from './generateAttributePlotSpec';
@@ -30,7 +30,7 @@ type Props = {
 /**
  * The VegaLite density plot component, memoized by direct value comparisons to prevent unnecessary re-renders.
  */
-export const MemoizedDensityVega: FC<Props> = memo(
+export const MemoizedDensityVega = memo(
   ({
     values, fillColor, min, max, height,
   }: Props) => {
@@ -77,3 +77,5 @@ export const MemoizedDensityVega: FC<Props> = memo(
     && prevProps.min === nextProps.min
     && prevProps.max === nextProps.max,
 );
+
+MemoizedDensityVega.displayName = 'MemoizedDensityVega';

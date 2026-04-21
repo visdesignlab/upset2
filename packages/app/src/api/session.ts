@@ -1,5 +1,4 @@
 import type { UpsetProvenance } from '@visdesignlab/upset2-react';
-import { UpsetConfig } from '@visdesignlab/upset2-core';
 import { WorkspacePermissionsSpec } from 'multinet';
 import { api } from './api';
 
@@ -17,7 +16,7 @@ export function updateMultinetSession(
   sessionId: string,
   provObject: SessionGraph,
 ) {
-  api.updateSession(workspace, parseInt(sessionId), 'table', provObject);
+  api.updateSession(workspace, parseInt(sessionId, 10), 'table', provObject);
 }
 
 export function updateWorkspacePrivacy(
@@ -40,7 +39,7 @@ export function updateWorkspacePrivacy(
  */
 export async function getMultinetSession(workspace: string, sessionId: string) {
   try {
-    return await api.getSession(workspace, parseInt(sessionId), 'table');
+    return await api.getSession(workspace, parseInt(sessionId, 10), 'table');
   } catch {
     return null;
   }

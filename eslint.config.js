@@ -10,7 +10,6 @@ import { FlatCompat } from '@eslint/eslintrc';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const lintableFiles = ['**/*.{js,mjs,cjs,jsx,ts,tsx}'];
 const typedFiles = ['**/*.{ts,tsx}'];
 const userdocsAliases = [
   '@docusaurus/Link',
@@ -31,6 +30,7 @@ export default [{
     '**/.turbo/**',
     '**/build/**',
     '**/dist/**',
+    '**/*.{js,mjs,cjs,jsx}',
     '**/node_modules/**',
     '**/public/**',
     '**/src/public/**',
@@ -46,9 +46,9 @@ export default [{
   'plugin:react-hooks/recommended',
 )).map((config) => ({
   ...config,
-  files: lintableFiles,
+  files: typedFiles,
 })), {
-  files: lintableFiles,
+  files: typedFiles,
   plugins: {
     '@typescript-eslint': fixupPluginRules(typescriptEslint),
     react: fixupPluginRules(react),
@@ -92,6 +92,7 @@ export default [{
     'no-restricted-syntax': 'off',
     'no-underscore-dangle': 'off',
     'no-nested-ternary': 'off',
+    'no-shadow': 'off',
 
     'no-console': ['error', {
       allow: ['warn', 'error'],
@@ -150,6 +151,7 @@ export default [{
     },
   },
   rules: {
+    'no-shadow': 'off',
     '@typescript-eslint/ban-ts-comment': 'warn',
     '@typescript-eslint/no-unused-expressions': ['error', {
       allowShortCircuit: true,
@@ -160,5 +162,6 @@ export default [{
       argsIgnorePattern: '^_',
       varsIgnorePattern: '^_',
     }],
+    '@typescript-eslint/no-shadow': 'error',
   },
 }];

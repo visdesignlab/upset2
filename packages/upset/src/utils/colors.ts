@@ -2,21 +2,18 @@
 // from https://natclark.com/tutorials/javascript-lighten-darken-hex-color/
 // bitwise operation for generating shades of hex values
 export const newShade = (hexColor: string, magnitude: number) => {
-  hexColor = hexColor.replace('#', '');
-  if (hexColor.length === 6) {
-    const decimalColor = parseInt(hexColor, 16);
-    let r = (decimalColor >> 16) + magnitude;
-    r > 255 && (r = 255);
-    r < 0 && (r = 0);
-    let g = (decimalColor & 0x0000ff) + magnitude;
-    g > 255 && (g = 255);
-    g < 0 && (g = 0);
-    let b = ((decimalColor >> 8) & 0x00ff) + magnitude;
-    b > 255 && (b = 255);
-    b < 0 && (b = 0);
+  const normalizedHex = hexColor.replace('#', '');
 
-    return `#${(g | (b << 8) | (r << 16)).toString(16)}`;
+  if (normalizedHex.length !== 6) {
+    return normalizedHex;
   }
 
-  return hexColor;
+  const decimalColor = parseInt(normalizedHex, 16);
+  const clamp = (value: number) => Math.max(0, Math.min(255, value));
+
+  const r = clamp(((decimalColor >> 16) & 0x00ff) + magnitude);
+  const g = clamp(((decimalColor >> 8) & 0x00ff) + magnitude);
+  const b = clamp((decimalColor & 0x00ff) + magnitude);
+
+  return `#${((r << 16) | (g << 8) | b).toString(16).padStart(6, '0')}`;
 };

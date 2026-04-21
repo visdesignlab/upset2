@@ -20,7 +20,7 @@ import {
   nextColorSelector,
   nextColorIndexSelector,
 } from '../../atoms/config/selectionAtoms';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
 import {
   extraQueryColor,

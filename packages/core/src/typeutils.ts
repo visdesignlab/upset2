@@ -28,12 +28,9 @@ export function vegaSelectionToString(selection: VegaSelection): string {
     if (min >= 10000 || min <= 0.0009) min = min.toPrecision(2);
     if (max >= 10000 || max <= 0.0009) max = max.toPrecision(2);
     // Truncate names
-    if (k.length > 16) {
-      k = k.slice(0, 13);
-      k += '...';
-    }
+    const truncatedKey = k.length > 16 ? `${k.slice(0, 13)}...` : k;
     if (label !== 'Atts: ') label += ', ';
-    label += `${k}: [${min} to ${max}]`;
+    label += `${truncatedKey}: [${min} to ${max}]`;
   });
 
   return label;

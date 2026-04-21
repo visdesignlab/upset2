@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { Tooltip } from '@mui/material';
@@ -14,7 +13,7 @@ const negativeDeviation = '#f46d43';
 
 const positiveDeviation = '#74add1';
 
-export const DeviationBar: FC<Props> = ({ deviation }) => {
+export function DeviationBar({ deviation }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const deviationScale = useRecoilValue(deviationScaleAtom);
@@ -37,4 +36,4 @@ export const DeviationBar: FC<Props> = ({ deviation }) => {
       </g>
     </Tooltip>
   );
-};
+}

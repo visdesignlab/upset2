@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3-scale';
 import { SixNumberSummary } from '@visdesignlab/upset2-core';
@@ -12,24 +11,26 @@ type Props = {
   summary: SixNumberSummary;
 };
 
-const Tick: FC<{ x1: number; x2: number; y1?: number; y2?: number }> = ({
+function Tick({
   x1,
   x2,
   y1 = -5,
   y2 = 5,
-}) => (
-  <line // Min Tick
-    opacity="0.4"
-    x1={x1}
-    x2={x2}
-    strokeWidth="2px"
-    y1={y1}
-    y2={y2}
-    stroke="black"
-  />
-);
+}: { x1: number; x2: number; y1?: number; y2?: number }) {
+  return (
+    <line // Min Tick
+      opacity="0.4"
+      x1={x1}
+      x2={x2}
+      strokeWidth="2px"
+      y1={y1}
+      y2={y2}
+      stroke="black"
+    />
+  );
+}
 
-export const BoxPlot: FC<Props> = ({ scale, summary }) => {
+export function BoxPlot({ scale, summary }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   if (
@@ -88,4 +89,4 @@ export const BoxPlot: FC<Props> = ({ scale, summary }) => {
       <Tick x1={scale(summary.max)} x2={scale(summary.max)} />
     </>
   );
-};
+}

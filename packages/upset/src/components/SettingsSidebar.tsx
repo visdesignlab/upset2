@@ -32,7 +32,6 @@ import {
 } from '@visdesignlab/upset2-core';
 import React, {
   CSSProperties,
-  FC,
   Fragment,
   useCallback,
   useContext,
@@ -55,7 +54,7 @@ import {
   minVisibleSelector,
 } from '../atoms/config/filterAtoms';
 import { visibleSetSelector } from '../atoms/config/visibleSetsAtoms';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../provenance/context';
 import { HelpCircle, defaultMargin } from './custom/HelpCircle';
 import { helpText } from '../utils/helpText';
 import { dimensionsSelector, footerHeightAtom } from '../atoms/dimensionsAtom';
@@ -122,7 +121,7 @@ type ToggleProps = {
   checked: boolean;
   /** The function to call when the toggle changes */
   onChange: (
-    // eslint-disable-next-line no-unused-vars
+
     ev: React.ChangeEvent<HTMLInputElement> | React.KeyboardEvent<HTMLDivElement>,
   ) => void;
 };
@@ -130,42 +129,44 @@ type ToggleProps = {
 /**
  * A toggle switch for a boolean setting
  */
-const ToggleSwitch: FC<ToggleProps> = ({
+function ToggleSwitch({
   shortLabel,
   longLabel,
   checked,
   onChange,
-}: ToggleProps) => (
-  <Box
-    css={ITEM_DIV_CSS}
-    aria-label={shortLabel}
-    onKeyDown={(e) => {
-      if (e.key === 'Enter') {
-        onChange(e);
-      }
-    }}
-  >
-    <FormControlLabel
-      sx={{
-        ml: 0,
-        width: '100%',
-        justifyContent: 'space-between',
-        '& span': { fontSize: '0.8rem' },
+}: ToggleProps) {
+  return (
+    <Box
+      css={ITEM_DIV_CSS}
+      aria-label={shortLabel}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+          onChange(e);
+        }
       }}
-      label={shortLabel}
-      control={(
-        <Switch
-          size="small"
-          checked={checked}
-          onChange={onChange}
-          style={{ marginLeft: 'auto' }}
-        />
-      )}
-      labelPlacement="start"
-    />
-    <HelpCircle text={longLabel} margin={{ ...defaultMargin, left: 12 }} />
-  </Box>
-);
+    >
+      <FormControlLabel
+        sx={{
+          ml: 0,
+          width: '100%',
+          justifyContent: 'space-between',
+          '& span': { fontSize: '0.8rem' },
+        }}
+        label={shortLabel}
+        control={(
+          <Switch
+            size="small"
+            checked={checked}
+            onChange={onChange}
+            style={{ marginLeft: 'auto' }}
+          />
+        )}
+        labelPlacement="start"
+      />
+      <HelpCircle text={longLabel} margin={{ ...defaultMargin, left: 12 }} />
+    </Box>
+  );
+}
 
 /**
  * Settings sidebar; appears to the left of the plot

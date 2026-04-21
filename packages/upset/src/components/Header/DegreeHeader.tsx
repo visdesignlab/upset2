@@ -8,7 +8,7 @@ import translate from '../../utils/transform';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { allowAttributeRemovalAtom } from '../../atoms/config/allowAttributeRemovalAtom';
 import { UpsetActions } from '../../provenance';
 
@@ -74,7 +74,7 @@ export function DegreeHeader() {
     return items;
   };
 
-  const openContextMenu = (e: MouseEvent) => {
+  const openContextMenu = (e: React.MouseEvent<SVGGElement, MouseEvent>) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -100,7 +100,7 @@ export function DegreeHeader() {
               transition: opacity 0s;
             }
           `}
-          onContextMenu={(e: any) => {
+          onContextMenu={(e) => {
             e.preventDefault();
             e.stopPropagation();
             openContextMenu(e);

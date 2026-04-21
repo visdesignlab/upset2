@@ -1,6 +1,6 @@
 import { Item } from '@visdesignlab/upset2-core';
 import {
-  FC, useMemo, useEffect, useState,
+  useMemo, useEffect, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
@@ -59,7 +59,7 @@ function useColumns(columns: string[]): GridColumn[] {
  * Table to display elements.
  * Requires @mui/x-data-grid to be installed; renders a warning if unavailable.
  */
-export const ElementTable: FC = () => {
+export function ElementTable() {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const elements = useRecoilValue(selectedOrBookmarkedItemsSelector);
   const rows = useRows(elements);
@@ -106,4 +106,4 @@ export const ElementTable: FC = () => {
   if (!DataGrid) return null;
 
   return <DataGrid style={{ height: 650 }} rows={rows} columns={columns} />;
-};
+}

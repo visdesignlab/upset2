@@ -4,7 +4,7 @@ import {
   Subset,
   getDegreeFromSetMembership,
 } from '@visdesignlab/upset2-core';
-import { FC, memo } from 'react';
+import { memo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { visibleAttributesSelector } from '../../../atoms/config/visibleAttributes';
@@ -33,7 +33,7 @@ type Props = {
  * @param row - The row to render the attribute bars for.
  * @returns The JSX element representing the attribute bars.
  */
-export const AttributeBars: FC<Props> = memo(
+export const AttributeBars = memo(
   ({ attributes, row }: Props) => {
     const dimensions = useRecoilValue(dimensionsSelector);
     const visibleAttributes = useRecoilValue(visibleAttributesSelector);
@@ -110,3 +110,5 @@ export const AttributeBars: FC<Props> = memo(
         && nextProps.attributes.dataset[k] === v,
     ),
 );
+
+AttributeBars.displayName = 'AttributeBars';

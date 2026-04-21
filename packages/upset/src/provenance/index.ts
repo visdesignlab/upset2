@@ -40,7 +40,7 @@ const registry = Registry.create();
 function register<
   DoActionPayload,
   UndoActionType extends string = string,
-  UndoActionPayload = any,
+  UndoActionPayload = unknown,
 >(type: string, func: StateChangeFunction<UpsetConfig, DoActionPayload>) {
   return registry.register<
     typeof type,
@@ -443,10 +443,10 @@ const removeSetQueryAction = register<void>('remove-set-query', (state: UpsetCon
 });
 
 export function initializeProvenanceTracking(
-  config: Partial<UpsetConfig> = {},
+  config?: Partial<UpsetConfig>,
   setter?: (state: UpsetConfig) => void,
 ) {
-  const finalConfig: UpsetConfig = { ...DefaultConfig, ...config };
+  const finalConfig: UpsetConfig = { ...DefaultConfig, ...(config ?? {}) };
 
   const provenance = initializeTrrack({ initialState: finalConfig, registry });
 

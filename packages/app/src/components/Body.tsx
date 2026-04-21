@@ -32,7 +32,7 @@ import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
 import { api } from '../api/api';
 import { rowsSelector } from '../atoms/selectors';
-import { FOOTER_HEIGHT } from './Root';
+import { FOOTER_HEIGHT } from './constants';
 import { ProvenanceContext } from '../provenance';
 
 type Props = {

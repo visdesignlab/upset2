@@ -3,7 +3,7 @@ import {
   getBelongingSetsFromSetMembership,
   Row,
 } from '@visdesignlab/upset2-core';
-import { FC, useContext } from 'react';
+import { useContext } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
 import { visibleSetSelector } from '../../atoms/config/visibleSetsAtoms';
@@ -27,7 +27,7 @@ import {
   columnSelectAtom,
   rowHoverAtom,
 } from '../../atoms/highlightAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { subsetSelectedCount } from '../../atoms/elementsSelectors';
 import { UpsetActions } from '../../provenance';
 
@@ -39,7 +39,7 @@ type Props = {
  * A row in the upset plot that represents a subset.
  * @param subset The subset to display data for
  */
-export const SubsetRow: FC<Props> = ({ subset }) => {
+export function SubsetRow({ subset }: Props) {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const selectionType = useRecoilValue(currentSelectionType);
@@ -116,4 +116,4 @@ export const SubsetRow: FC<Props> = ({ subset }) => {
       <AttributeBars attributes={subset.atts} row={subset} />
     </g>
   );
-};
+}

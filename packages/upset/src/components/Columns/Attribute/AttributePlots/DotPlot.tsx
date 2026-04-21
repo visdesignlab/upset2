@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3-scale';
 import { Aggregate, Subset } from '@visdesignlab/upset2-core';
@@ -42,13 +41,13 @@ type Props = {
  * @param {boolean} props.jitter - Whether to jitter the dots.
  * @returns {JSX.Element} The rendered dot plot.
  */
-export const DotPlot: FC<Props> = ({
+export function DotPlot({
   scale,
   values,
   isAggregate,
   row,
   jitter = false,
-}) => {
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   /**
@@ -98,4 +97,4 @@ export const DotPlot: FC<Props> = ({
       ))}
     </g>
   );
-};
+}

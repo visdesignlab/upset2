@@ -2,14 +2,12 @@ import { AccessibilityNew, BugReport } from '@mui/icons-material';
 import { Box, Button, Link } from '@mui/material';
 import { useRecoilState } from 'recoil';
 import { CoreUpsetData } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
-// @ts-expect-error TS does not understand SVG imports
 import vdlLogo from '../../assets/vdl_logo.svg';
 import { accessibilityStatementAtom } from '../../atoms/accessibilityStatementAtom';
 import { AccessibilityStatement } from '../AccessiblityStatement';
 import { About } from '../About';
 import { aboutAtom } from '../../atoms/aboutAtom';
-import { FOOTER_HEIGHT } from '../Root';
+import { FOOTER_HEIGHT } from '../constants';
 
 /**
  * Props for the Footer component
@@ -22,7 +20,7 @@ type Props = {
 /**
  * The footer below the plot
  */
-const Footer: FC<Props> = ({ data }) => {
+function Footer({ data }: Props) {
   const categoryCSS = {
     display: 'flex',
     justifyContent: 'space-around',
@@ -114,6 +112,6 @@ const Footer: FC<Props> = ({ data }) => {
       </footer>
     </Box>
   );
-};
+}
 
 export default Footer;

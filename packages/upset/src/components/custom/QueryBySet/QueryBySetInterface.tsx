@@ -24,7 +24,7 @@ import { SetMembershipRow } from './SetMembershipRow';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
-import { ProvenanceContext } from '../../Root';
+import { ProvenanceContext } from '../../../provenance/context';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { UpsetActions } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
@@ -58,18 +58,19 @@ export function QueryBySetInterface() {
 
   // update membership when visible sets change
   useEffect(() => {
-    const newMembership: SetQueryMembership = {};
-    visibleSets.forEach((set) => {
-      newMembership[set] = membership[set] || 'May';
-    });
+    setMembership((currentMembership) => {
+      const newMembership: SetQueryMembership = {};
+      visibleSets.forEach((set) => {
+        newMembership[set] = currentMembership[set] || 'May';
+      });
 
-    setMembership(newMembership);
+      return newMembership;
+    });
   }, [visibleSets]); // DO NOT add membership here, otherwise it will cause an infinite loop
 
   function handleEditQueryTitle() {
-    // There is likely a better way to do this, but for now alert works fine.
-
-    setQueryName(prompt('Edit Query Title', queryName) || 'Query');
+    // eslint-disable-next-line no-alert -- This lightweight rename flow is intentionally browser-native.
+    setQueryName(window.prompt('Edit Query Title', queryName) || 'Query');
   }
 
   /**

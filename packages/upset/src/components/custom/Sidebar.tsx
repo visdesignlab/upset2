@@ -5,7 +5,7 @@ import {
   Box, Divider, Drawer, IconButton, Tooltip,
 } from '@mui/material';
 import React, {
-  FC, PropsWithChildren, useCallback, useState,
+  PropsWithChildren, useCallback, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { footerHeightAtom } from '../../atoms/dimensionsAtom';
@@ -34,7 +34,7 @@ const BUTTON_DIMS = { height: '40px', width: '40px' };
 /**
  * A collapsible, right-sidebar for the plot
  */
-export const Sidebar: FC<PropsWithChildren<Props>> = ({
+export function Sidebar({
   open,
   close,
   closeButtonTabIndex,
@@ -43,7 +43,7 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
   title,
   buttons,
   embedded = false, // Default to false for non-embed mode
-}) => {
+}: PropsWithChildren<Props>) {
   /** Chosen so we don't get a horizontal scrollbar in the element view table */
   const INITIAL_DRAWER_WIDTH = 462;
   /** Chosen so we don't get a new line for the "Apply" button in the element query controls */
@@ -235,4 +235,4 @@ export const Sidebar: FC<PropsWithChildren<Props>> = ({
       </div>
     </Drawer>
   );
-};
+}

@@ -263,13 +263,13 @@ export function sortRows(
   visibleSets: Sets,
   sortByOrder?: SortByOrder,
 ): Rows {
-  const rows = deepCopy(baseRows);
+  const coppiedRows = deepCopy(baseRows);
 
-  if (areRowsSubsets(rows)) {
-    return sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
+  if (areRowsSubsets(coppiedRows)) {
+    return sortIntersections(coppiedRows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   }
 
-  const aggs = sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
+  const aggs = sortIntersections(coppiedRows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   aggs.order.forEach((aggId) => {
     const agg = aggs.values[aggId];
     if (!isRowAggregate(agg)) return;

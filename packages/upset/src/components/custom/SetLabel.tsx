@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -15,7 +14,7 @@ type Props = {
 /**
  * Label for the sets at the top of the membership matrix
  */
-export const SetLabel: FC<Props> = ({ setId, name }) => {
+export function SetLabel({ setId, name }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const columnHover = useRecoilValue(columnHoverAtom);
   const columnSelect = useRecoilValue(columnSelectAtom);
@@ -66,4 +65,4 @@ export const SetLabel: FC<Props> = ({ setId, name }) => {
       </foreignObject>
     </Group>
   );
-};
+}

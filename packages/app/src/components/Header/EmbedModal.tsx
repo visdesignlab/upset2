@@ -103,7 +103,7 @@ export function EmbedModal({ open, onClose }: Props) {
         );
       })
       .catch(() => {
-        alert('Failed to copy embed link: Permission denied');
+        console.error('Failed to copy embed link: Permission denied');
         setCopySuccess(false);
         copySuccessTimeout.current = setTimeout(
           () => setCopySuccess(null),

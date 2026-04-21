@@ -1,6 +1,6 @@
 import { Aggregate, Subset } from '@visdesignlab/upset2-core';
 import {
-  FC, memo, useMemo, useState,
+  memo, useMemo, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
@@ -47,7 +47,7 @@ type Bar = {
  * @param attribute - The attribute to render
  * @param row - The row to render the attribute bar for
  */
-export const CategoricalAttBar: FC<Props> = memo(({ attribute, row }: Props) => {
+export const CategoricalAttBar = memo(({ attribute, row }: Props) => {
   const dimensions = useRecoilValue(dimensionsSelector);
   const attCounts = useRecoilValue(categoricalCountSelector({ row: row.id, attribute }));
   const maxSize = useRecoilValue(maxCategorySizeSelector(attribute));
@@ -102,3 +102,5 @@ export const CategoricalAttBar: FC<Props> = memo(({ attribute, row }: Props) => 
     </g>
   );
 });
+
+CategoricalAttBar.displayName = 'CategoricalAttBar';

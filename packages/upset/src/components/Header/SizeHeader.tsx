@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { drag } from 'd3-drag';
 import { select } from 'd3-selection';
 import React, {
-  FC, useContext, useEffect, useRef, useState,
+  useContext, useEffect, useRef, useState,
 } from 'react';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
 
@@ -15,7 +15,7 @@ import { maxSize } from '../../atoms/maxSizeAtom';
 import { useScale } from '../../hooks/useScale';
 import translate from '../../utils/transform';
 import { Axis } from '../custom/Axis';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
 import { flattenedRowsSelector } from '../../atoms/renderRowsAtom';
@@ -36,7 +36,7 @@ const show = css`
 /**
  * Header showing label & axis for cardinality bars
  */
-export const SizeHeader: FC = () => {
+export function SizeHeader() {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const sliderRef = useRef<SVGRectElement>(null);
   const sliderParentRef = useRef<SVGGElement>(null);
@@ -329,4 +329,4 @@ export const SizeHeader: FC = () => {
       </g>
     </g>
   );
-};
+}

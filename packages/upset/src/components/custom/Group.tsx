@@ -1,4 +1,4 @@
-import { FC, SVGProps } from 'react';
+import { SVGProps } from 'react';
 
 import translate from '../../utils/transform';
 
@@ -8,7 +8,7 @@ type Props = SVGProps<SVGGElement> & {
 };
 
 // Custom component for grouping SVG elements with a transform
-const Group: FC<Props> = (props) => {
+function Group(props: Props) {
   const {
     tx = 0, ty = tx, children, ...base
   } = props;
@@ -18,6 +18,6 @@ const Group: FC<Props> = (props) => {
       {children}
     </g>
   );
-};
+}
 
 export default Group;

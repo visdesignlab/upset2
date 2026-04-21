@@ -86,7 +86,7 @@ async function compareSortedElements(page: Page, order: string[]) {
 
   const res = (await Promise.all(gElements.map((gElement) => gElement.innerHTML()))).slice(0, 5);
 
-  for (let i = 0; i < order.length; i++) {
+  for (let i = 0; i < order.length; i += 1) {
     expect(res[i]).toContain(order[i]);
   }
 }

@@ -1,5 +1,5 @@
 import { Subset, Aggregate } from '@visdesignlab/upset2-core';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { dimensionsSelector } from '../../../../atoms/dimensionsAtom';
 import { attributeMinMaxSelector } from '../../../../atoms/attributeAtom';
@@ -34,7 +34,7 @@ type Props = {
  * @param attribute - The attribute for which the density plot is displayed.
  * @param row - The row for which the density plot is displayed.
  */
-export const DensityPlot: FC<Props> = ({ values, attribute, row }) => {
+export function DensityPlot({ values, attribute, row }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
@@ -66,4 +66,4 @@ export const DensityPlot: FC<Props> = ({ values, attribute, row }) => {
       </foreignObject>
     </g>
   );
-};
+}

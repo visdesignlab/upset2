@@ -1,16 +1,14 @@
 import {
   useContext, useState, useEffect, useMemo,
 } from 'react';
-import type { ComponentType } from 'react';
-import { ProvenanceContext } from './Root';
+import { ProvenanceContext } from '../provenance/context';
 import { Sidebar } from './custom/Sidebar';
+import { ProvenanceVisComponent } from '../types';
 
 type Props = {
   open: boolean;
   close: () => void;
-  // Use a loose type so consumers can provide @trrack/vis-react without the library importing it.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ProvVisComponent?: ComponentType<any>;
+  ProvVisComponent?: ProvenanceVisComponent;
 };
 
 /**
@@ -38,13 +36,14 @@ export function ProvenanceVis({ open, close, ProvVisComponent }: Props) {
       );
     }
     if (Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
+      const nodeMap = provenance.graph.backend.nodes;
       return (
         <ProvVisComponent
           root={provenance.root.id}
           config={{
             changeCurrent: (node: string) => provenance.to(node),
           }}
-          nodeMap={provenance.graph.backend.nodes}
+          nodeMap={nodeMap}
           currentNode={currentNodeId}
         />
       );
@@ -52,9 +51,7 @@ export function ProvenanceVis({ open, close, ProvVisComponent }: Props) {
     return null;
   }, [
     ProvVisComponent,
-    provenance.root.id,
-    provenance.to,
-    provenance.graph.backend.nodes,
+    provenance,
     currentNodeId,
   ]);
 

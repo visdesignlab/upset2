@@ -42,7 +42,7 @@ export function Home() {
             Welcome to UpSet 2.0
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            You haven't loaded data, you can't access the workspace you are attemping to
+            You haven&apos;t loaded data, you can&apos;t access the workspace you are attempting to
             view, or you are not logged in. To log in, click the account icon in the top
             right corner. To load stored data or upload new data, visit
             {' '}

@@ -4,7 +4,6 @@ import {
   convertConfig,
   CoreUpsetData,
   deepCopy,
-  DefaultConfig,
   LEFT_SETTINGS_URL_PARAM,
   populateConfigDefaults,
   ShowSettings,
@@ -12,9 +11,8 @@ import {
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import {
-  createContext, FC, useCallback, useEffect, useMemo,
+  useCallback, useEffect, useMemo,
 } from 'react';
-import type { ComponentType } from 'react';
 import { useRecoilState, useSetRecoilState } from 'recoil';
 
 import { attributeAtom } from '../atoms/attributeAtom';
@@ -33,6 +31,7 @@ import {
   UpsetActions,
   UpsetProvenance,
 } from '../provenance';
+import { ProvenanceContext } from '../provenance/context';
 import { Body } from './Body';
 import { ElementSidebar } from './ElementView/ElementSidebar';
 import { Header } from './Header/Header';
@@ -42,18 +41,7 @@ import { ContextMenu } from './ContextMenu';
 import { ProvenanceVis } from './ProvenanceVis';
 import { AltTextSidebar } from './AltTextSidebar';
 import { CustomOrderModal } from './CustomOrderModal';
-import { SidebarProps } from '../types';
-
-// Necessary defaults for the createContext; otherwise we have to type as | null and check that in every file that uses this context
-const defaultProvenance = initializeProvenanceTracking(DefaultConfig, () => {
-  throw new Error('Setter called on default provenance object');
-});
-const defaultActions = getActions(defaultProvenance);
-
-export const ProvenanceContext = createContext<{
-  provenance: UpsetProvenance;
-  actions: UpsetActions;
-}>({ provenance: defaultProvenance, actions: defaultActions });
+import { ProvenanceVisComponent, SidebarProps } from '../types';
 
 const baseStyle = css`
   padding: 0.25em;
@@ -76,14 +64,14 @@ type Props = {
     open: boolean;
     close: () => void;
   };
-  provVisComponent?: ComponentType<any>;
+  provVisComponent?: ProvenanceVisComponent;
   elementSidebar?: SidebarProps;
   altTextSidebar?: SidebarProps;
   footerHeight?: number;
   generateAltText?: () => Promise<AltText>;
 };
 
-export const Root: FC<Props> = ({
+export function Root({
   data,
   config,
   visibleDatasetAttributes,
@@ -98,7 +86,7 @@ export const Root: FC<Props> = ({
   altTextSidebar,
   footerHeight,
   generateAltText,
-}) => {
+}: Props) {
   // Get setter for recoil config atom
   const setState = useSetRecoilState(upsetConfigAtom);
   const [sets, setSets] = useRecoilState(setsAtom);
@@ -121,7 +109,7 @@ export const Root: FC<Props> = ({
 
   // Initialize provenance & config state & set up listeners
   const { provenance, actions } = useMemo(() => {
-    const provenance: UpsetProvenance & { _getState?: typeof provenance.getState } = extProvenance?.provenance
+    const nextProvenance: UpsetProvenance = extProvenance?.provenance
       ?? initializeProvenanceTracking(
         // Populate config defaults if not already set (this is only done if extProvenance is not provided)
         populateConfigDefaults(
@@ -132,21 +120,24 @@ export const Root: FC<Props> = ({
         ),
         setState,
       );
-    const actions = extProvenance?.actions ?? getActions(provenance);
+    const nextActions = extProvenance?.actions ?? getActions(nextProvenance);
+    const provenanceWithGetState = nextProvenance as UpsetProvenance & {
+      _getState?: typeof nextProvenance.getState;
+    };
 
     // This syncs all linked atoms with the provenance state
-    provenance.currentChange(() => {
+    provenanceWithGetState.currentChange(() => {
       // Old provenance nodes may be using a different config version, so convert it if need be
-      const converted = convertConfig(provenance.getState());
+      const converted = convertConfig(provenanceWithGetState.getState());
       setState(converted);
     });
 
     // Ensure that the provenance state is always in the correct format
-    const originalGetState = provenance.getState.bind(provenance);
-    provenance.getState = () => convertConfig(originalGetState());
+    const originalGetState = provenanceWithGetState.getState.bind(provenanceWithGetState);
+    provenanceWithGetState.getState = () => convertConfig(originalGetState());
 
-    provenance.done();
-    return { provenance, actions };
+    provenanceWithGetState.done();
+    return { provenance: provenanceWithGetState, actions: nextActions };
   }, [
     config,
     extProvenance,
@@ -155,6 +146,11 @@ export const Root: FC<Props> = ({
     visibleDatasetAttributes,
     visualizeUpsetAttributes,
   ]);
+
+  const provenanceContextValue = useMemo(
+    () => ({ provenance, actions }),
+    [provenance, actions],
+  );
 
   /**
    * We don't want to populate the config defaults if the provenance is already set externally
@@ -222,7 +218,7 @@ export const Root: FC<Props> = ({
 
   if (Object.keys(sets).length === 0 || Object.keys(items).length === 0) return null;
   return (
-    <ProvenanceContext.Provider value={{ provenance, actions }}>
+    <ProvenanceContext.Provider value={provenanceContextValue}>
       {!hideSettings && (
         <div
           css={css`
@@ -292,4 +288,4 @@ export const Root: FC<Props> = ({
       )}
     </ProvenanceContext.Provider>
   );
-};
+}

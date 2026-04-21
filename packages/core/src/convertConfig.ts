@@ -1,3 +1,4 @@
+/* eslint-disable camelcase */
 // Disabled as using any cast is useful for converting and there's no point hard typechecking these fields
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {
@@ -505,7 +506,7 @@ export function convertConfig(config: unknown): UpsetConfig {
     case '0.1.4':
       convert0_1_4(config as Version0_1_4);
     default:
-      void 0;
+      break;
     /* eslint-enable no-fallthrough */
   }
 

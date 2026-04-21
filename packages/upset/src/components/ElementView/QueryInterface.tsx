@@ -13,7 +13,7 @@ import {
   useCallback, useContext, useEffect, useState,
 } from 'react';
 import { queryColumnsSelector } from '../../atoms/dataAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { UpsetActions } from '../../provenance';
 import { attTypesSelector } from '../../atoms/attributeAtom';
 import { currentQuerySelection } from '../../atoms/config/selectionAtoms';

@@ -30,9 +30,9 @@ export function deepCopy<T extends object>(obj: T): T {
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;
-  for (let i = 0; i < str.length; i++) {
+  for (let i = 0; i < str.length; i += 1) {
     const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
+    hash = (hash * 31) + char;
   }
   return hash;
 }

@@ -121,7 +121,7 @@ function aggregateByDegree(
 
   const setList = Object.keys(subsets.values[subsets.order[0]].setMembership);
 
-  for (let i = 0; i <= setList.length; ++i) {
+  for (let i = 0; i <= setList.length; i += 1) {
     const id = getId(`${parentPrefix}Agg`, `Degree ${i}`);
 
     const agg: Aggregate = {

@@ -12,13 +12,13 @@ import {
 import { Items } from '@visdesignlab/upset2-core';
 import Grid from '@mui/material/GridLegacy';
 import {
-  FC, useContext, useMemo, useState,
+  useContext, useMemo, useState,
 } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dataAttributeSelector } from '../../atoms/attributeAtom';
 import { itemsAtom } from '../../atoms/itemsAtoms';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { HistogramPlot } from './HistogramPlot';
 import { ScatterplotPlot } from './Scatterplot';
 import { UpsetActions } from '../../provenance';
@@ -76,7 +76,7 @@ type ButtonProps = {
  * @param param0 @see ButtonProps
  * @returns Button
  */
-const AddButton: FC<ButtonProps> = ({
+function AddButton({
   handleClose,
   type,
   bins,
@@ -87,7 +87,7 @@ const AddButton: FC<ButtonProps> = ({
   xScaleLog,
   yScaleLog,
   disabled,
-}) => {
+}: ButtonProps) {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
 
   return (
@@ -122,7 +122,7 @@ const AddButton: FC<ButtonProps> = ({
       Add Plot
     </Button>
   );
-};
+}
 
 const PLOT_CONTAINER_STYLE = { width: '100%', display: 'flex', justifyContent: 'center' };
 
@@ -138,7 +138,7 @@ function createPreviewData(items: Items): VegaNamedData {
  * UI for adding a scatterplot to the element view
  * @param param0 @see Props
  */
-export const AddScatterplot: FC<Props> = ({ handleClose }) => {
+export function AddScatterplot({ handleClose }: Props) {
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const items = useRecoilValue(itemsAtom);
   const previewData = useMemo(() => createPreviewData(items), [items]);
@@ -226,16 +226,16 @@ export const AddScatterplot: FC<Props> = ({ handleClose }) => {
       />
     </Grid>
   );
-};
+}
 
 /**
  * UI for adding a histogram to the element view
  * @param param0 @see Props
  */
-export const AddHistogram: FC<Props & { density: boolean }> = ({
+export function AddHistogram({
   handleClose,
   density,
-}) => {
+}: Props & { density: boolean }) {
   const items = useRecoilValue(itemsAtom);
   const attributeColumns = useRecoilValue(dataAttributeSelector);
   const previewData = useMemo(() => createPreviewData(items), [items]);
@@ -305,4 +305,4 @@ export const AddHistogram: FC<Props & { density: boolean }> = ({
       </Grid>
     </Grid>
   );
-};
+}

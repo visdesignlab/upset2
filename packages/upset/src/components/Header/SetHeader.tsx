@@ -1,12 +1,12 @@
 import { ScaleLinear } from 'd3-scale';
-import React, { FC, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { useTransition } from 'react-spring';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { SetLabel } from '../custom/SetLabel';
 import { SetSizeBar } from '../custom/SetSizeBar';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import {
   customOrderModalAtom,
@@ -41,7 +41,7 @@ type Props = {
  * @param {ScaleLinear<number, number>} props.scale - The scale value.
  * @returns {JSX.Element} The rendered component.
  */
-export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
+export function SetHeader({ visibleSets, scale }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
   const sortBy = useRecoilValue(sortBySelector);
@@ -183,4 +183,4 @@ export const SetHeader: FC<Props> = ({ visibleSets, scale }) => {
       ))}
     </g>
   );
-};
+}

@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -21,10 +20,10 @@ const defaultTickFormatter = (d: number) => {
   return d;
 };
 
-export const AttributeScale: FC<Props> = ({
+export function AttributeScale({
   domain,
   tickFormatter = defaultTickFormatter,
-}) => {
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const scale = useScale(domain, [0, dimensions.attribute.width]);
 
@@ -46,4 +45,4 @@ export const AttributeScale: FC<Props> = ({
       />
     </g>
   );
-};
+}

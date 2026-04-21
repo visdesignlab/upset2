@@ -4,8 +4,14 @@ import {
 import { useRecoilValue } from 'recoil';
 import { useContext, useState, useCallback } from 'react';
 import { plotInformationSelector } from '../../atoms/config/plotInformationAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { UpsetActions } from '../../provenance';
+
+const DEFAULT_PLOT_INFORMATION = {
+  description: '[dataset description]',
+  sets: '[set names]',
+  items: '[item names]',
+};
 
 /**
  * Props for the PlotInformation component.
@@ -67,12 +73,6 @@ export function PlotInformation({
     sets: 'name for the sets in this data, eg: "movie genres"',
     items: 'name for the items in this data, eg: "movies"',
   };
-  const defaultPlotInformation = {
-    description: '[dataset description]',
-    sets: '[set names]',
-    items: '[item names]',
-  };
-
   /**
    * State
    */
@@ -92,7 +92,7 @@ export function PlotInformation({
   const generatePlotInformationText: () => string = useCallback(() => {
     // return default string if there are no values filled in
     if (Object.values(plotInformation).filter((a) => a && a.length > 0).length === 0) {
-      return `This UpSet plot shows ${defaultPlotInformation.description}. The sets are ${defaultPlotInformation.sets}. The items are ${defaultPlotInformation.items}`;
+      return `This UpSet plot shows ${DEFAULT_PLOT_INFORMATION.description}. The sets are ${DEFAULT_PLOT_INFORMATION.sets}. The items are ${DEFAULT_PLOT_INFORMATION.items}`;
     }
 
     let str: string = '';
@@ -107,7 +107,7 @@ export function PlotInformation({
     }
 
     return str;
-  }, [plotInformation, defaultPlotInformation]);
+  }, [plotInformation]);
 
   /**
    * Commits changes to the plot information if the new state is different from the old state.

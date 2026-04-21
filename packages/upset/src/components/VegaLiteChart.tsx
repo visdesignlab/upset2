@@ -80,8 +80,10 @@ export function VegaLiteChart({
     Object.entries(data).forEach(([name, values]) => {
       embed.view.data(name, values);
     });
-    void embed.view.runAsync();
-  }, [embed, data]);
+    embed.view.runAsync().catch((error: unknown) => {
+      onError?.(error);
+    });
+  }, [embed, data, onError]);
 
   useEffect(() => {
     if (!embed) return;
@@ -96,11 +98,15 @@ export function VegaLiteChart({
       embed.view.height(height);
       shouldRun = true;
     }
-    if (shouldRun) void embed.view.runAsync();
-  }, [embed, height, width]);
+    if (shouldRun) {
+      embed.view.runAsync().catch((error: unknown) => {
+        onError?.(error);
+      });
+    }
+  }, [embed, height, onError, width]);
 
   useEffect(() => {
-    if (!embed || !signalListeners) return;
+    if (!embed || !signalListeners) return undefined;
 
     const listeners = Object.entries(signalListeners);
 

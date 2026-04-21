@@ -20,7 +20,6 @@ import {
   populateConfigDefaults,
   RIGHT_SIDEBAR_URL_PARAM,
   RightSidebar,
-  UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -85,7 +84,7 @@ function App() {
     prov.currentChange(() => setState(convertConfig(prov.getState())));
 
     return { provenance: prov, actions: act };
-  }, [conf, setState, sessionState]);
+  }, [conf, data, setState, sessionState]);
 
   /** State used by the embedded plot */
   const embedState = useMemo(() => provenance?.getState() ?? conf, [conf, provenance]);
