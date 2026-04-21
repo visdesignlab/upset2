@@ -14,10 +14,12 @@
     "storybook": "turbo run storybook",
     "test": "playwright test",
     "build": "turbo run build --force --filter=@visdesignlab/*",
-    "lint": "turbo run lint --parallel --no-cache --filter=@visdesignlab/*",
+    "lint": "eslint eslint.config.js playwright.config.ts e2e-tests packages",
+    "lint:fix": "eslint eslint.config.js playwright.config.ts e2e-tests packages --fix",
     "typecheck": "turbo run typecheck"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.0.5",
     "@eslint/js": "^8.57.0",
     "@types/node": "^22.7.4",
     "@typescript-eslint/eslint-plugin": "^6.3.0",
@@ -26,6 +28,7 @@
     "eslint": "^8.57.0",
     "eslint-config-airbnb": "^19.0.4",
     "eslint-config-prettier": "^10.1.5",
+    "eslint-import-resolver-typescript": "^4.4.4",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-jsx-a11y": "^6.5.1",
     "eslint-plugin-prettier": "^5.4.0",

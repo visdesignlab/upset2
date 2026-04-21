@@ -27,13 +27,14 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "lint": "eslint src --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "peerDependencies": {},
   "husky": {
     "hooks": {
-      "pre-commit": "eslint src"
+      "pre-commit": "yarn lint"
     }
   },
   "author": "Kiran Gadhave (kirangadhave2@gmail.com), Jake Wagoner, Nate Lanza",

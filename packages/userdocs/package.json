@@ -7,6 +7,8 @@
     "start": "docusaurus start --port 8082",
     "dev": "docusaurus start --port 8082",
     "build": "docusaurus build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",

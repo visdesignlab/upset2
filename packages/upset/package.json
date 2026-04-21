@@ -34,14 +34,15 @@
   "scripts": {
     "dev": "vite build --watch",
     "build": "vite build",
-    "lint": "eslint src --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit -p tsconfig.json",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "eslint src"
+      "pre-commit": "yarn lint"
     }
   },
   "peerDependencies": {
