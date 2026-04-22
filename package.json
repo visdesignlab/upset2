@@ -16,7 +16,11 @@
     "build": "turbo run build --force --filter=@visdesignlab/*",
     "lint": "eslint playwright.config.ts e2e-tests packages",
     "lint:fix": "eslint playwright.config.ts e2e-tests packages --fix",
+    "prepare": "husky install",
     "typecheck": "turbo run typecheck"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint --cache --max-warnings=0"
   },
   "devDependencies": {
     "@eslint/compat": "^2.0.5",
@@ -34,6 +38,8 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^4.3.0",
     "globals": "^16.1.0",
+    "husky": "^7.0.4",
+    "lint-staged": "^16.2.5",
     "turbo": "^2.4.1",
     "typescript": "^5.8.3"
   },
