@@ -86,7 +86,6 @@
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "husky": "^7.0.4",
-    "prettier": "^3.5.3",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-vega": "^8.0.0",

@@ -40,8 +40,6 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// import reportWebVitals from './reportWebVitals';
-
 localforage.config({
   name: 'UpSet2-Data',
   storeName: 'upset2-data',
