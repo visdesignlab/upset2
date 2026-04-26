@@ -97,8 +97,7 @@ const serializeExportSubtree = (
   clonedElement: Element,
   inForeignObject = false,
 ) => {
-  const isInsideForeignObject =
-    inForeignObject || sourceElement.localName === 'foreignObject';
+  const isInsideForeignObject = inForeignObject || sourceElement.localName === 'foreignObject';
 
   if (sourceElement.namespaceURI === XHTML_NAMESPACE) {
     clonedElement.setAttribute('xmlns', XHTML_NAMESPACE);
@@ -107,10 +106,9 @@ const serializeExportSubtree = (
   if (isMuiSvgIcon(sourceElement)) {
     inlineSelectedStyles(sourceElement, clonedElement, SVG_ICON_STYLE_PROPERTIES);
   } else if (isInsideForeignObject) {
-    const properties =
-      sourceElement.namespaceURI === XHTML_NAMESPACE
-        ? FOREIGN_OBJECT_HTML_STYLE_PROPERTIES
-        : FOREIGN_OBJECT_SVG_STYLE_PROPERTIES;
+    const properties = sourceElement.namespaceURI === XHTML_NAMESPACE
+      ? FOREIGN_OBJECT_HTML_STYLE_PROPERTIES
+      : FOREIGN_OBJECT_SVG_STYLE_PROPERTIES;
 
     inlineSelectedStyles(sourceElement, clonedElement, properties);
   }

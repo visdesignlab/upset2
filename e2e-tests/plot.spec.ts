@@ -62,17 +62,13 @@ test('SVG download includes foreignObject content and preserves hidden bookmark 
     }
 
     const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
-    const hiddenMuiIconCount = Array.from(
-      doc.querySelectorAll('svg.MuiSvgIcon-root'),
-    ).filter((icon) =>
-      /(?:opacity|fill-opacity):\s*0(?:;|$)/.test(icon.getAttribute('style') ?? ''),
-    ).length;
+    const hiddenMuiIconCount = Array
+      .from(doc.querySelectorAll('svg.MuiSvgIcon-root'))
+      .filter((icon) => /(?:opacity|fill-opacity):\s*0(?:;|$)/.test(icon.getAttribute('style') ?? ''))
+      .length;
     const bloatedSvgNodeCount = Array.from(doc.querySelectorAll('[style]')).filter(
       (element) => {
-        if (
-          element.closest('foreignObject') ||
-          element.classList.contains('MuiSvgIcon-root')
-        ) {
+        if (element.closest('foreignObject') || element.classList.contains('MuiSvgIcon-root')) {
           return false;
         }
 
