@@ -4,6 +4,103 @@ import { beforeTest } from './common';
 
 test.beforeEach(beforeTest);
 
+test('SVG download includes foreignObject content and preserves hidden bookmark styling', async ({
+  page,
+}) => {
+  await page.goto(
+    'http://localhost:3000/?workspace=Upset+Examples&table=simpsons&sessionId=193',
+  );
+
+  await page.evaluate(() => {
+    const svgDownloadState = window as typeof window & {
+      __capturedSvgBlob?: Blob;
+      __originalCreateObjectURL?: typeof URL.createObjectURL;
+      __originalAnchorClick?: typeof HTMLAnchorElement.prototype.click;
+    };
+
+    svgDownloadState.__originalCreateObjectURL = URL.createObjectURL;
+    svgDownloadState.__originalAnchorClick = HTMLAnchorElement.prototype.click;
+
+    URL.createObjectURL = ((object: Blob | MediaSource) => {
+      if (object instanceof Blob && object.type === 'image/svg+xml') {
+        svgDownloadState.__capturedSvgBlob = object;
+      }
+
+      return 'blob:captured-svg';
+    }) as typeof URL.createObjectURL;
+
+    HTMLAnchorElement.prototype.click = () => {};
+  });
+
+  await page.getByLabel('Additional options menu').click();
+  await page.getByRole('menuitem', { name: 'SVG Download of this upset plot' }).click();
+
+  const exportDetails = await page.evaluate(async () => {
+    const svgDownloadState = window as typeof window & {
+      __capturedSvgBlob?: Blob;
+      __originalCreateObjectURL?: typeof URL.createObjectURL;
+      __originalAnchorClick?: typeof HTMLAnchorElement.prototype.click;
+    };
+
+    const svgText = await svgDownloadState.__capturedSvgBlob?.text();
+
+    if (svgDownloadState.__originalCreateObjectURL) {
+      URL.createObjectURL = svgDownloadState.__originalCreateObjectURL;
+    }
+
+    if (svgDownloadState.__originalAnchorClick) {
+      HTMLAnchorElement.prototype.click = svgDownloadState.__originalAnchorClick;
+    }
+
+    if (!svgText) {
+      return {
+        bloatedSvgNodeCount: 0,
+        foreignObjectCount: 0,
+        xhtmlNodeCount: 0,
+        hiddenMuiIconCount: 0,
+      };
+    }
+
+    const doc = new DOMParser().parseFromString(svgText, 'image/svg+xml');
+    const hiddenMuiIconCount = Array.from(
+      doc.querySelectorAll('svg.MuiSvgIcon-root'),
+    ).filter((icon) =>
+      /(?:opacity|fill-opacity):\s*0(?:;|$)/.test(icon.getAttribute('style') ?? ''),
+    ).length;
+    const bloatedSvgNodeCount = Array.from(doc.querySelectorAll('[style]')).filter(
+      (element) => {
+        if (
+          element.closest('foreignObject') ||
+          element.classList.contains('MuiSvgIcon-root')
+        ) {
+          return false;
+        }
+
+        const styleDeclarationCount = (element.getAttribute('style') ?? '')
+          .split(';')
+          .map((declaration) => declaration.trim())
+          .filter(Boolean).length;
+
+        return styleDeclarationCount > 10;
+      },
+    ).length;
+
+    return {
+      bloatedSvgNodeCount,
+      foreignObjectCount: doc.querySelectorAll('foreignObject').length,
+      xhtmlNodeCount: Array.from(doc.querySelectorAll('foreignObject *')).filter(
+        (element) => element.getAttribute('xmlns') === 'http://www.w3.org/1999/xhtml',
+      ).length,
+      hiddenMuiIconCount,
+    };
+  });
+
+  expect(exportDetails.foreignObjectCount).toBeGreaterThan(0);
+  expect(exportDetails.xhtmlNodeCount).toBeGreaterThan(0);
+  expect(exportDetails.hiddenMuiIconCount).toBeGreaterThan(0);
+  expect(exportDetails.bloatedSvgNodeCount).toBe(0);
+});
+
 /**
  * Toggles the advanced scale slider. Must be awaited
  * @param page page provided to test function
