@@ -37,8 +37,8 @@ function filterIntersections<T extends Intersections>(
 
     // determine if the subset is within the filter range and meets the hide conditions
     if (
-      (degree >= filters.minVisible && degree <= filters.maxVisible) ||
-      subset.type === 'Aggregate'
+      (degree >= filters.minVisible && degree <= filters.maxVisible)
+      || subset.type === 'Aggregate'
     ) {
       if (degree === 0 && filters.hideNoSet) {
         return false;
@@ -82,8 +82,7 @@ export function filterRows(
 
   if (areRowsSubsets(rows)) {
     return filterIntersections(rows, filters);
-  } else if (!areRowsAggregates(rows, true))
-    console.error('Type error: Rows are not subsets or aggregates: ', rows);
+  } if (!areRowsAggregates(rows, true)) console.error('Type error: Rows are not subsets or aggregates: ', rows);
 
   const filtered = filterIntersections(rows, filters);
 

@@ -1,11 +1,7 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { ProvenanceContext } from './Root';
-import type { UpsetActions } from '../provenance';
+import React, {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
-import {
-  visibleSetSelector,
-  customOrderModalAtom,
-} from '../atoms/config/visibleSetsAtoms';
 import {
   Button,
   Dialog,
@@ -35,10 +31,17 @@ import {
   arrayMove,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  visibleSetSelector,
+  customOrderModalAtom,
+} from '../atoms/config/visibleSetsAtoms';
+import type { UpsetActions } from '../provenance';
+import { ProvenanceContext } from '../provenance/context';
 
 function SortableItem({ id, name }: { id: string; name: string }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
-    useSortable({ id });
+  const {
+    attributes, listeners, setNodeRef, transform, transition, isDragging,
+  } = useSortable({ id });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -55,11 +58,11 @@ function SortableItem({ id, name }: { id: string; name: string }) {
       component={Paper}
       sx={{ mb: 1, display: 'flex', alignItems: 'center' }}
       dense
-      secondaryAction={
+      secondaryAction={(
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <DragIndicatorIcon />
         </Box>
-      }
+      )}
       {...attributes}
       {...listeners}
     >
@@ -69,8 +72,7 @@ function SortableItem({ id, name }: { id: string; name: string }) {
 }
 
 export function CustomOrderModal() {
-  const [customOrderModalOpen, setCustomOrderModalOpen] =
-    useRecoilState(customOrderModalAtom);
+  const [customOrderModalOpen, setCustomOrderModalOpen] = useRecoilState(customOrderModalAtom);
   const visibleSets = useRecoilValue(visibleSetSelector);
 
   const [sortedSets, setSortedSets] = useState<string[]>([]);
@@ -83,7 +85,7 @@ export function CustomOrderModal() {
   // dnd-kit sensors
   const sensors = useSensors(useSensor(PointerSensor));
 
-  function handleDragEnd(event: DragEndEvent) {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (!over) return;
 
@@ -92,12 +94,21 @@ export function CustomOrderModal() {
     if (oldIndex !== -1 && newIndex !== -1 && oldIndex !== newIndex) {
       setSortedSets((prev) => arrayMove(prev, oldIndex, newIndex));
     }
-  }
+  }, [sortedSets]);
+
+  const handleCloseModal = () => {
+    setCustomOrderModalOpen(false);
+  };
+
+  const handleSave = () => {
+    actions.sortVisibleBy(sortedSets.join(','));
+    setCustomOrderModalOpen(false);
+  };
 
   return (
     <Dialog
       open={customOrderModalOpen}
-      onClose={() => setCustomOrderModalOpen(false)}
+      onClose={handleCloseModal}
       fullWidth
       maxWidth="sm"
     >
@@ -123,17 +134,10 @@ export function CustomOrderModal() {
         </DndContext>
       </DialogContent>
       <DialogActions>
-        <Button autoFocus onClick={() => setCustomOrderModalOpen(false)}>
+        <Button autoFocus onClick={handleCloseModal}>
           Cancel
         </Button>
-        <Button
-          onClick={() => {
-            // call your provenance action with the new ordering
-            actions.sortVisibleBy(sortedSets.join(','));
-            setCustomOrderModalOpen(false);
-          }}
-          variant="contained"
-        >
+        <Button onClick={handleSave} variant="contained">
           Ok
         </Button>
       </DialogActions>

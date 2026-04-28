@@ -1,5 +1,7 @@
 import { Box, ThemeProvider } from '@mui/material';
-import { ComponentType, FC, PropsWithChildren, useMemo } from 'react';
+import {
+  ComponentType, PropsWithChildren, useMemo,
+} from 'react';
 import { RecoilRoot } from 'recoil';
 import defaultTheme from '../utils/theme';
 import { Root } from './Root';
@@ -28,7 +30,7 @@ const RecoilRootCompat = RecoilRoot as unknown as ComponentType<PropsWithChildre
  * @param {() => Promise<AltText>} [generateAltText] - The function to generate alternative text.
  * @returns {JSX.Element} The rendered Upset component.
  */
-export const Upset: FC<UpsetProps> = ({
+export function Upset({
   data,
   parentHasHeight = false,
   config = {},
@@ -44,7 +46,7 @@ export const Upset: FC<UpsetProps> = ({
   altTextSidebar,
   footerHeight,
   generateAltText,
-}) => {
+}: UpsetProps) {
   // If the provided data is not already processed by UpSet core, process it
   const processedData = useMemo(() => {
     // the CoreUpsetData will never be an Array, and the UpsetItem[] will always be an Array
@@ -86,4 +88,4 @@ export const Upset: FC<UpsetProps> = ({
       </Box>
     </ThemeProvider>
   );
-};
+}

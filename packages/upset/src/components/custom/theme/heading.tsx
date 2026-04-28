@@ -1,5 +1,5 @@
 import { Typography, Divider } from '@mui/material';
-import { CSSProperties, FC, PropsWithChildren } from 'react';
+import { CSSProperties, PropsWithChildren } from 'react';
 
 /**
  * The level of the heading
@@ -36,14 +36,14 @@ const LEVELS: { [level in HeadingLevel]: { fontSize: string } } = {
 /**
  * A heading for use in the UI; keeps styles consistent
  */
-export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
+export function UpsetHeading({
   level,
   paddingLeft,
   divStyle,
   headingStyle,
   children,
   hideDivider = false,
-}) => {
+}: PropsWithChildren<Props>) {
   const IS_MAJOR = level === 'h1' || level === 'h2' || level === 'h3';
 
   return (
@@ -63,4 +63,4 @@ export const UpsetHeading: FC<PropsWithChildren<Props>> = ({
       )}
     </div>
   );
-};
+}

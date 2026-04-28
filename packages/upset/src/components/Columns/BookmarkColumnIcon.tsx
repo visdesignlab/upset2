@@ -1,9 +1,11 @@
 import { Row } from '@visdesignlab/upset2-core';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import BookmarkBorderIcon from '@mui/icons-material/BookmarkBorder';
-import { FC, MouseEvent, useContext, useMemo } from 'react';
+import {
+  MouseEvent, useContext, useMemo,
+} from 'react';
 import { useRecoilValue } from 'recoil';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
 import {
@@ -36,7 +38,7 @@ const BOOKMARKED_OPACITY = 1.0;
  * @example
  * <BookmarkStar row={row} />
  */
-export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
+export function BookmarkColumnIcon({ row }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const bookmarked = useRecoilValue(isRowBookmarkedSelector(row));
   const color = useRecoilValue(bookmarkColorSelector(row.id));
@@ -133,4 +135,4 @@ export const BookmarkColumnIcon: FC<Props> = ({ row }) => {
       )}
     </g>
   );
-};
+}

@@ -6,7 +6,7 @@ import translate from '../../utils/transform';
 import { AttributeButton } from './AttributeButton';
 import { AttributeScale } from './AttributeScale';
 
-export const DeviationHeader = () => {
+export function DeviationHeader() {
   const dimensions = useRecoilValue(dimensionsSelector);
   const maxDeviation = useRecoilValue(maxDeviationSelector);
 
@@ -29,4 +29,4 @@ export const DeviationHeader = () => {
       </g>
     </g>
   );
-};
+}

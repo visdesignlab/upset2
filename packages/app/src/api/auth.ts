@@ -1,6 +1,6 @@
 import OauthClient from '@girder/oauth-client';
-import { host, client_id } from './env';
+import { host, clientId } from './env';
 
-const login_url = `${host}/oauth/`;
+const loginUrl = `${host}/oauth/`;
 
-export const oAuth = new OauthClient(login_url, client_id);
+export const oAuth = new OauthClient(loginUrl, clientId);

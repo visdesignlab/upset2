@@ -1,6 +1,9 @@
 import type { ReactNode } from 'react';
 import clsx from 'clsx';
 import Heading from '@theme/Heading';
+import AccessibleDesignSvg from '@site/static/img/upset-accessible-design.svg';
+import EaseOfUseSvg from '@site/static/img/upset-ease-of-use.svg';
+import ModularComponentSvg from '@site/static/img/upset_modular_component.svg';
 import styles from './styles.module.css';
 
 // Images which must be imported as react modules (see import list)
@@ -18,14 +21,14 @@ type FeatureSVG = {
   Svg: React.ComponentType<React.ComponentProps<'svg'>>;
   description: ReactNode;
   className?: string;
-}
+};
 
 type FeatureItem = FeatureImage | FeatureSVG;
 
 const FeatureList: FeatureItem[] = [
   {
     title: 'Easy to Use',
-    Svg: require('@site/static/img/upset-ease-of-use.svg').default,
+    Svg: EaseOfUseSvg,
     className: styles.image3by2,
     description: (
       <>
@@ -35,7 +38,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Accessible Design',
-    Svg: require('@site/static/img/upset-accessible-design.svg').default,
+    Svg: AccessibleDesignSvg,
     description: (
       <>
         Many features such as generated text descriptions and data tables are designed to help make UpSet 2 accessible to BLV users and experts.
@@ -44,7 +47,7 @@ const FeatureList: FeatureItem[] = [
   },
   {
     title: 'Modular React Component',
-    Svg: require('@site/static/img/upset_modular_component.svg').default,
+    Svg: ModularComponentSvg,
     description: (
       <>
         Integrate UpSet 2 as a React component into your own environment. We provide a simple component configuration to allow you to customize the look and possible operations when using UpSet 2.

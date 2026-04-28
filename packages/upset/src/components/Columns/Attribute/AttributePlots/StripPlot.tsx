@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { ScaleLinear } from 'd3-scale';
 import { Aggregate, Subset } from '@visdesignlab/upset2-core';
@@ -37,7 +36,9 @@ type Props = {
  * @param {Row} props.row - The row object. Rows can be either Subsets or Aggregates.
  * @returns {JSX.Element} The rendered strip plot.
  */
-export const StripPlot: FC<Props> = ({ scale, values, isAggregate, row }) => {
+export function StripPlot({
+  scale, values, isAggregate, row,
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
 
   return (
@@ -55,7 +56,6 @@ export const StripPlot: FC<Props> = ({ scale, values, isAggregate, row }) => {
         // <circle key={`${row.id} + ${idx}`} cx={scale(value)} cy={0} r={dimensions.attribute.dotSize} fill="black" opacity="0.2" />
         <rect
           // There is no unique identifier for the attribute values other than index, so it is used as key
-
           key={`${row.id} + ${idx}`}
           x={scale(value)}
           y={-(dimensions.attribute.plotHeight / 2)}
@@ -67,4 +67,4 @@ export const StripPlot: FC<Props> = ({ scale, values, isAggregate, row }) => {
       ))}
     </g>
   );
-};
+}

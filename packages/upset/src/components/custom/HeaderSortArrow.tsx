@@ -1,6 +1,5 @@
 import { ArrowUpward, ArrowDownward } from '@mui/icons-material';
 import { SvgIcon } from '@mui/material';
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 import { sortByOrderSelector } from '../../atoms/config/sortByAtom';
 import translate from '../../utils/transform';
@@ -11,24 +10,16 @@ type Props = {
   translateY?: number;
 };
 
-export const HeaderSortArrow: FC<Props> = ({ translateX, translateY }) => {
+export function HeaderSortArrow({ translateX, translateY }: Props) {
   const sortByOrder = useRecoilValue(sortByOrderSelector);
-
   const dimensions = useRecoilValue(dimensionsSelector);
-
   const height = 16;
   const width = 16;
-
-  if (translateX === undefined) {
-    translateX = dimensions.attribute.width / 2 - width;
-  }
-
-  if (translateY === undefined) {
-    translateY = -(height / 2);
-  }
+  const x = translateX ?? (dimensions.attribute.width / 2 - width);
+  const y = translateY ?? -(height / 2);
 
   return (
-    <g transform={`${translate(translateX, translateY)}`}>
+    <g transform={translate(x, y)}>
       <SvgIcon
         height={`${height}px`}
         width={`${width}px`}
@@ -36,4 +27,4 @@ export const HeaderSortArrow: FC<Props> = ({ translateX, translateY }) => {
       />
     </g>
   );
-};
+}

@@ -1,5 +1,5 @@
 import { styled } from '@mui/material';
-import { ComponentProps, FC } from 'react';
+import { ComponentProps } from 'react';
 
 import translate from '../../utils/transform';
 
@@ -21,23 +21,25 @@ type Props = ComponentProps<typeof ButtonRect> & {
   ty?: number;
 };
 
-export const SvgRectButton: FC<Props> = ({
+export function SvgRectButton({
   label,
   height,
   width,
   tx = 0,
   ty = tx,
   ...props
-}) => (
-  <g transform={translate(tx - width / 2, ty)}>
-    <ButtonRect height={height} width={width} {...props} />
-    <text
-      transform={translate(width / 2, height / 2)}
-      dominantBaseline="middle"
-      textAnchor="middle"
-      pointerEvents="none"
-    >
-      {label}
-    </text>
-  </g>
-);
+}: Props) {
+  return (
+    <g transform={translate(tx - width / 2, ty)}>
+      <ButtonRect height={height} width={width} {...props} />
+      <text
+        transform={translate(width / 2, height / 2)}
+        dominantBaseline="middle"
+        textAnchor="middle"
+        pointerEvents="none"
+      >
+        {label}
+      </text>
+    </g>
+  );
+}

@@ -1,4 +1,6 @@
-import { Backdrop, Box, Button, CircularProgress } from '@mui/material';
+import {
+  Backdrop, Box, Button, CircularProgress,
+} from '@mui/material';
 import {
   AccessibleData,
   AccessibleDataEntry,
@@ -152,19 +154,21 @@ type DownloadButtonProps = {
  * @param {Function} props.onClick - The click event handler for the button.
  * @returns {JSX.Element} The DownloadButton component.
  */
-const DownloadButton = ({ onClick }: DownloadButtonProps) => (
-  <Button
-    sx={downloadCSS}
-    color="info"
-    size="medium"
-    variant="contained"
-    disableElevation
-    onClick={onClick}
-    endIcon={<DownloadIcon />}
-  >
-    Download
-  </Button>
-);
+function DownloadButton({ onClick }: DownloadButtonProps) {
+  return (
+    <Button
+      sx={downloadCSS}
+      color="info"
+      size="medium"
+      variant="contained"
+      disableElevation
+      onClick={onClick}
+      endIcon={<DownloadIcon />}
+    >
+      Download
+    </Button>
+  );
+}
 
 /**
  * Renders a data table component that displays intersection data, visible sets, and hidden sets.
@@ -173,7 +177,7 @@ const DownloadButton = ({ onClick }: DownloadButtonProps) => (
  *
  * @returns The DataTable component.
  */
-export const DataTable = () => {
+export function DataTable() {
   const [data, setData] = useState<CoreUpsetData | null>(null);
   const [rows, setRows] = useState<AccessibleData | null>(null);
   const [visibleSets, setVisibleSets] = useState<string[] | null>(null);
@@ -195,10 +199,10 @@ export const DataTable = () => {
     ])
       .then(([storedData, storedRows, storedVisibleSets, storedHiddenSets]) => {
         if (
-          storedData === null ||
-          storedRows === null ||
-          storedVisibleSets === null ||
-          storedHiddenSets === null
+          storedData === null
+          || storedRows === null
+          || storedVisibleSets === null
+          || storedHiddenSets === null
         ) {
           console.error('Data not found in local storage');
           setError('Error: Data not found in local storage');
@@ -252,16 +256,18 @@ export const DataTable = () => {
     if (rows) {
       Object.values(rows.values).forEach((r: AccessibleDataEntry) => {
         for (const key in r.attributes) {
-          if (!cols.find((m) => m.field === key)) {
-            // skip derived atts. Deviation is added above and degree is not needed in the table
-            if (UPSET_ATTS.includes(key)) continue;
-            cols.push({
-              field: key,
-              headerName: key,
-              width: 150,
-              editable: false,
-              description: `Attribute: ${key}`,
-            });
+          if (Object.hasOwn(r.attributes, key)) {
+            const hasColumn = cols.some((column) => column.field === key);
+            const isDerivedAttribute = UPSET_ATTS.includes(key);
+            if (!hasColumn && !isDerivedAttribute) {
+              cols.push({
+                field: key,
+                headerName: key,
+                width: 150,
+                editable: false,
+                description: `Attribute: ${key}`,
+              });
+            }
           }
         }
       });
@@ -302,16 +308,16 @@ export const DataTable = () => {
    * Each object includes the set name and its corresponding size.
    *
    * @param sets - An array of set names.
-   * @param data - An object containing the data for the sets.
+   * @param upsetData - An object containing the data for the sets.
    * @returns An array of objects with the set name and size.
    */
-  function getSetRows(sets: string[], data: CoreUpsetData): GridRowsProp {
+  function getSetRows(sets: string[], upsetData: CoreUpsetData): GridRowsProp {
     const retVal = sets.map((s: string) => {
       const name = s.replace('Set_', '');
       return {
         id: s,
         setName: name,
-        size: data.sets[s].size,
+        size: upsetData.sets[s].size,
         elementName: name,
       };
     });
@@ -348,104 +354,94 @@ export const DataTable = () => {
     return getSetRows(hiddenSets, data);
   }, [hiddenSets, data]);
 
-  return (
-    <>
-      {error ? (
-        <h1>{error}</h1>
-      ) : (
-        <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-          <Backdrop open={loading} style={{ zIndex: 1000 }}>
-            <CircularProgress color="inherit" />
-          </Backdrop>
-          <Box sx={{ width: '50%', margin: '20px' }}>
-            <div style={headerCSS}>
-              <h2>Intersection Data</h2>
-              <DownloadButton
-                onClick={() =>
-                  downloadElementsAsCSV(
-                    tableRows,
-                    dataColumns.map((m) => m.field),
-                    'upset2_intersection_data',
-                  )
-                }
-              />
-            </div>
-            <DataGrid
-              columns={dataColumns}
-              rows={tableRows}
-              autoHeight
-              disableSelectionOnClick
-              initialState={{
-                pagination: {
-                  // @ts-expect-error page is necessary, not sure why it's not in the type
-                  page: 0,
-                  pageSize: 10,
-                },
-              }}
-              paginationMode="client"
-              rowsPerPageOptions={[5, 10, 20]}
-            />
-          </Box>
-          <Box sx={{ width: '25%', margin: '20px' }}>
-            <div style={headerCSS}>
-              <h2>Visible Sets</h2>
-              <DownloadButton
-                onClick={() =>
-                  downloadElementsAsCSV(
-                    visibleSetRows,
-                    ['setName', 'size'],
-                    'upset2_visiblesets_table',
-                  )
-                }
-              />
-            </div>
-            <DataGrid
-              columns={setColumns}
-              rows={visibleSetRows}
-              autoHeight
-              disableSelectionOnClick
-              initialState={{
-                pagination: {
-                  // @ts-expect-error page is necessary, not sure why it's not in the type
-                  page: 0,
-                  pageSize: 10,
-                },
-              }}
-              paginationMode="client"
-              rowsPerPageOptions={[5, 10, 20]}
-            />
-          </Box>
-          <Box sx={{ width: '25%', margin: '20px' }}>
-            <div style={headerCSS}>
-              <h2>Hidden Sets</h2>
-              <DownloadButton
-                onClick={() =>
-                  downloadElementsAsCSV(
-                    hiddenSetRows,
-                    ['setName', 'size'],
-                    'upset2_hiddensets_table',
-                  )
-                }
-              />
-            </div>
-            <DataGrid
-              columns={setColumns}
-              rows={hiddenSetRows}
-              autoHeight
-              disableSelectionOnClick
-              initialState={{
-                pagination: {
-                  // @ts-expect-error page is necessary, not sure why it's not in the type
-                  page: 0,
-                  pageSize: 10,
-                },
-              }}
-              paginationMode="client"
-              rowsPerPageOptions={[5, 10, 20]}
-            />
-          </Box>
-        </Box>
-      )}
-    </>
+  return error ? (
+    <h1>{error}</h1>
+  ) : (
+    <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+      <Backdrop open={loading} style={{ zIndex: 1000 }}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
+      <Box sx={{ width: '50%', margin: '20px' }}>
+        <div style={headerCSS}>
+          <h2>Intersection Data</h2>
+          <DownloadButton
+            onClick={() => downloadElementsAsCSV(
+              tableRows,
+              dataColumns.map((m) => m.field),
+              'upset2_intersection_data',
+            )}
+          />
+        </div>
+        <DataGrid
+          columns={dataColumns}
+          rows={tableRows}
+          autoHeight
+          disableSelectionOnClick
+          initialState={{
+            pagination: {
+              // @ts-expect-error page is necessary, not sure why it's not in the type
+              page: 0,
+              pageSize: 10,
+            },
+          }}
+          paginationMode="client"
+          rowsPerPageOptions={[5, 10, 20]}
+        />
+      </Box>
+      <Box sx={{ width: '25%', margin: '20px' }}>
+        <div style={headerCSS}>
+          <h2>Visible Sets</h2>
+          <DownloadButton
+            onClick={() => downloadElementsAsCSV(
+              visibleSetRows,
+              ['setName', 'size'],
+              'upset2_visiblesets_table',
+            )}
+          />
+        </div>
+        <DataGrid
+          columns={setColumns}
+          rows={visibleSetRows}
+          autoHeight
+          disableSelectionOnClick
+          initialState={{
+            pagination: {
+              // @ts-expect-error page is necessary, not sure why it's not in the type
+              page: 0,
+              pageSize: 10,
+            },
+          }}
+          paginationMode="client"
+          rowsPerPageOptions={[5, 10, 20]}
+        />
+      </Box>
+      <Box sx={{ width: '25%', margin: '20px' }}>
+        <div style={headerCSS}>
+          <h2>Hidden Sets</h2>
+          <DownloadButton
+            onClick={() => downloadElementsAsCSV(
+              hiddenSetRows,
+              ['setName', 'size'],
+              'upset2_hiddensets_table',
+            )}
+          />
+        </div>
+        <DataGrid
+          columns={setColumns}
+          rows={hiddenSetRows}
+          autoHeight
+          disableSelectionOnClick
+          initialState={{
+            pagination: {
+              // @ts-expect-error page is necessary, not sure why it's not in the type
+              page: 0,
+              pageSize: 10,
+            },
+          }}
+          paginationMode="client"
+          rowsPerPageOptions={[5, 10, 20]}
+        />
+      </Box>
+    </Box>
   );
-};
+}

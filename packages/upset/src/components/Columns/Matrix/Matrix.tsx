@@ -4,7 +4,6 @@ import {
   getBelongingSetsFromSetMembership,
   isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import { FC } from 'react';
 import { useRecoilState, useRecoilValue } from 'recoil';
 
 import { Tooltip } from '@mui/material';
@@ -23,7 +22,7 @@ type Props = {
   showConnectingBar?: boolean;
 };
 
-export const Matrix: FC<Props> = ({ subset, showConnectingBar = true, sets = [] }) => {
+export function Matrix({ subset, showConnectingBar = true, sets = [] }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const setList = useRecoilValue(setsAtom);
   const [columnHover, setColumnHover] = useRecoilState(columnHoverAtom);
@@ -101,4 +100,4 @@ export const Matrix: FC<Props> = ({ subset, showConnectingBar = true, sets = [] 
       </Group>
     </Group>
   );
-};
+}

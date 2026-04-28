@@ -1,103 +1,167 @@
-import js from '@eslint/js';
+import { fixupConfigRules, fixupPluginRules } from '@eslint/compat';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
+import react from 'eslint-plugin-react';
 import globals from 'globals';
 import tsParser from '@typescript-eslint/parser';
-import tsPlugin from '@typescript-eslint/eslint-plugin';
-import pluginReact from 'eslint-plugin-react';
-import importPlugin from 'eslint-plugin-import';
-import jsxA11y from 'eslint-plugin-jsx-a11y';
-import eslintPluginPrettierRecommended from 'eslint-plugin-prettier/recommended';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import js from '@eslint/js';
+import { FlatCompat } from '@eslint/eslintrc';
 
-export default [
-  // Configs further down the array will override rules from earlier configs
-  js.configs.recommended,
-  {
-    files: ['**/*.{ts,tsx}'],
-    languageOptions: {
-      parser: tsParser,
-      parserOptions: {
-        ecmaVersion: 2020,
-        sourceType: 'module',
-        ecmaFeatures: {
-          jsx: true,
-        },
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const typedFiles = ['**/*.{ts,tsx}'];
+const userdocsAliases = [
+  '@docusaurus/Link',
+  '@docusaurus/useDocusaurusContext',
+  '@site/src/components/HomepageFeatures',
+  '@theme/Heading',
+  '@theme/Layout',
+];
+const compat = new FlatCompat({
+  baseDirectory: __dirname,
+  recommendedConfig: js.configs.recommended,
+  allConfig: js.configs.all,
+});
+
+export default [{
+  ignores: [
+    '**/.docusaurus/**',
+    '**/.turbo/**',
+    '**/build/**',
+    '**/dist/**',
+    '**/*.{js,mjs,cjs,jsx}',
+    '**/node_modules/**',
+    '**/public/**',
+    '**/src/public/**',
+    '**/static/**',
+  ],
+}, ...fixupConfigRules(compat.extends(
+  'airbnb-base',
+  'airbnb/rules/react',
+  'plugin:react/recommended',
+  'eslint:recommended',
+  'plugin:import/typescript',
+  'plugin:@typescript-eslint/recommended',
+  'plugin:react-hooks/recommended',
+)).map((config) => ({
+  ...config,
+  files: typedFiles,
+})), {
+  files: typedFiles,
+  plugins: {
+    '@typescript-eslint': fixupPluginRules(typescriptEslint),
+    react: fixupPluginRules(react),
+  },
+
+  languageOptions: {
+    globals: {
+      ...globals.browser,
+      ...globals.node,
+    },
+    ecmaVersion: 'latest',
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
+    },
+    sourceType: 'module',
+  },
+
+  settings: {
+    'import/core-modules': userdocsAliases,
+    react: {
+      version: 'detect',
+    },
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+        noWarnOnMultipleProjects: true,
         project: ['./tsconfig.json', './packages/*/tsconfig.json'],
       },
-      globals: globals.browser,
-    },
-    plugins: {
-      '@typescript-eslint': tsPlugin,
-    },
-    rules: {
-      ...tsPlugin.configs.recommended.rules,
-      '@typescript-eslint/no-unused-vars': [
-        'warn', // or "error"
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
+      node: {
+        extensions: ['.js', '.jsx', '.ts', '.tsx', '.d.ts'],
+      },
     },
   },
-  pluginReact.configs.flat.recommended,
-  importPlugin.flatConfigs.recommended,
-  eslintPluginPrettierRecommended,
-  {
-    files: ['**/*.{js,mjs,cjs,jsx}'],
-    languageOptions: {
-      globals: globals.browser,
+
+  rules: {
+    'class-methods-use-this': 'off',
+    'linebreak-style': 'off',
+    'no-restricted-exports': 'off',
+    'no-restricted-syntax': 'off',
+    'no-underscore-dangle': 'off',
+    'no-nested-ternary': 'off',
+    'no-shadow': 'off',
+
+    'no-console': ['error', {
+      allow: ['warn', 'error'],
+    }],
+
+    'react/no-array-index-key': 'off',
+    'jsx-a11y/click-events-have-key-events': 'off',
+    'no-return-await': 'off',
+
+    'max-classes-per-file': 'off',
+
+    'no-param-reassign': ['error', {
+      props: false,
+    }],
+
+    'import/no-extraneous-dependencies': 'off',
+    'import/prefer-default-export': 'off',
+    'import/order': 'error',
+
+    'prefer-destructuring': ['warn', {
+      object: true,
+      array: false,
+    }],
+
+    'prefer-promise-reject-errors': 'warn',
+    'prefer-spread': 'warn',
+    'react/react-in-jsx-scope': 0,
+    'max-len': 0,
+    'react/jsx-filename-extension': 0,
+    'react/no-unknown-property': ['error', {
+      ignore: ['css'],
+    }],
+    'import/extensions': ['error', 'never', {
+      json: 'always',
+    }],
+    'react/destructuring-assignment': 'off',
+    'react/jsx-props-no-spreading': 'off',
+    'react/no-unused-class-component-methods': 'warn',
+    'react/require-default-props': 'off',
+
+    'react/static-property-placement': ['warn', 'property assignment', {
+      childContextTypes: 'static getter',
+      contextTypes: 'static public field',
+      contextType: 'static public field',
+      displayName: 'static public field',
+    }],
+  },
+}, {
+  files: typedFiles,
+  languageOptions: {
+    parser: tsParser,
+    parserOptions: {
+      ecmaFeatures: {
+        jsx: true,
+      },
     },
   },
-  {
-    plugins: {
-      'jsx-a11y': jsxA11y,
-    },
-    rules: {
-      'prettier/prettier': [
-        'error',
-        {
-          endOfLine: 'auto',
-          singleQuote: true,
-          trailingComma: 'all',
-          printWidth: 90,
-          semi: true,
-          tabWidth: 2,
-          useTabs: false,
-        },
-      ],
-      'react/jsx-filename-extension': [2, { extensions: ['.js', '.jsx', '.ts', '.tsx'] }],
-      'import/prefer-default-export': 'off',
-      'react/function-component-definition': 'off',
-      'no-plusplus': ['warn', { allowForLoopAfterthoughts: true }],
-      'dot-notation': 'off',
-      'import/extensions': 'off',
-      'react/jsx-props-no-spreading': 'off',
-      'react/require-default-props': 'off',
-      'react/react-in-jsx-scope': 'off',
-      'react/no-unknown-property': ['error', { ignore: ['css'] }],
-      'operator-linebreak': 'off',
-      // needs to be duplicated because we have this rule in 2 plugins (=
-      'no-unused-vars': [
-        'warn', // or "error"
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-          caughtErrorsIgnorePattern: '^_',
-        },
-      ],
-      'max-len': 'off',
-      'no-param-reassign': 'off',
-      'import/no-cycle': 'off',
-      'no-underscore-dangle': 'off',
-      'no-nested-ternary': 'off',
-      'jsx-a11y/tabindex-no-positive': 'off',
-      'no-bitwise': 'warn',
-      'no-restricted-syntax': 'warn',
-      'no-trailing-spaces': 'error',
-      'import/named': 'off',
-      'import/no-unresolved': 'off',
-      'no-multiple-empty-lines': ['error', { max: 1, maxEOF: 0, maxBOF: 0 }],
-      'react/display-name': 'off',
-    },
+  rules: {
+    'no-shadow': 'off',
+    '@typescript-eslint/ban-ts-comment': 'warn',
+    '@typescript-eslint/no-unused-expressions': ['error', {
+      allowShortCircuit: true,
+      allowTernary: true,
+      allowTaggedTemplates: true,
+    }],
+    '@typescript-eslint/no-unused-vars': ['error', {
+      argsIgnorePattern: '^_',
+      varsIgnorePattern: '^_',
+    }],
+    '@typescript-eslint/no-shadow': 'error',
   },
-];
+}];

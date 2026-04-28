@@ -14,10 +14,9 @@ type Props = {
   config?: UpsetConfig;
 };
 
-/** Height for the footer */
-export const FOOTER_HEIGHT = 46.5;
-
-export const Root = ({ provenance, actions, data, config }: Props) => {
+export function Root({
+  provenance: _provenance, actions: _actions, data, config,
+}: Props) {
   const AppCss = useMemo(
     () => css`
       overflow: ${data === null ? 'auto' : 'hidden'};
@@ -42,4 +41,4 @@ export const Root = ({ provenance, actions, data, config }: Props) => {
       {data && <Footer data={data} />}
     </div>
   );
-};
+}

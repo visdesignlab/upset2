@@ -29,10 +29,9 @@ import { itemToVega } from '../typeutils';
 
 const visibleSubsetRowsSelector = selector<Subset[]>({
   key: 'visible-subset-rows',
-  get: ({ get }) =>
-    get(flattenedRowsSelector)
-      .map(({ row }) => row)
-      .filter((row): row is Subset => !isRowAggregate(row)),
+  get: ({ get }) => get(flattenedRowsSelector)
+    .map(({ row }) => row)
+    .filter((row): row is Subset => !isRowAggregate(row)),
 });
 
 /**
@@ -45,8 +44,7 @@ const visibleSubsetRowsSelector = selector<Subset[]>({
 export const rowItemsSelector = selectorFamily<Item[], string | null | undefined>({
   key: 'row-items',
   get:
-    (id: string | null | undefined) =>
-    ({ get }) => {
+    (id: string | null | undefined) => ({ get }) => {
       if (!id) return [];
 
       const items = get(itemsAtom);
@@ -76,9 +74,8 @@ export const vegaItemsSelector = selector<VegaItem[]>({
     const result: VegaItem[] = [];
 
     rows.forEach((row) => {
-      const bookmarkProps =
-        (bookmarkedIDs.includes(row.id) || row.id === currentIntersection?.id) &&
-        ({
+      const bookmarkProps = (bookmarkedIDs.includes(row.id) || row.id === currentIntersection?.id)
+        && ({
           rowID: row.id,
           rowName: row.elementName,
           color: get(bookmarkColorSelector(row.id)),
@@ -156,8 +153,7 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
       if (selection) return filterByQuery(get(visibleItemsSelector), selection).included;
       return get(visibleItemsSelector);
     }
-    if (type === 'row')
-      return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
+    if (type === 'row') return get(rowItemsSelector(get(currentIntersectionSelector)?.id));
     return get(visibleItemsSelector);
   },
 });
@@ -170,8 +166,7 @@ export const selectedOrBookmarkedItemsSelector = selector<Item[]>({
 export const attValuesSelector = selectorFamily<number[], { row: Row; att: string }>({
   key: 'att-values',
   get:
-    ({ row, att }) =>
-    ({ get }) => {
+    ({ row, att }) => ({ get }) => {
       const allItems = get(itemsAtom);
       const items = getItems(row)
         .map((itemId) => allItems[itemId])
@@ -201,8 +196,7 @@ export const intersectionCountSelector = selectorFamily<
 >({
   key: 'intersection-count',
   get:
-    (id: string | null | undefined) =>
-    ({ get }) => {
+    (id: string | null | undefined) => ({ get }) => {
       if (!id) return 0;
 
       const data = get(dataAtom);
@@ -238,8 +232,7 @@ export const subsetSelectedCount = selectorFamily<
 >({
   key: 'subset-selected',
   get:
-    ({ id, type }) =>
-    ({ get }) => {
+    ({ id, type }) => ({ get }) => {
       if (!id) return 0;
       const rowItems = get(rowItemsSelector(id));
 
@@ -274,8 +267,7 @@ export const aggregateSelectedCount = selectorFamily<
 >({
   key: 'aggregate-selected',
   get:
-    ({ agg, type }) =>
-    ({ get }) => {
+    ({ agg, type }) => ({ get }) => {
       let total = 0;
       Object.entries(agg.rows.values).forEach(([id, value]) => {
         total += isRowAggregate(value)

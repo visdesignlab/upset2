@@ -11,7 +11,7 @@ import { DegreeHeader } from './DegreeHeader';
  * Renders the attribute headers component.
  * This component displays the headers for each attribute in the plot.
  */
-export const AttributeHeaders = () => {
+export function AttributeHeaders() {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleAttributes = useRecoilValue(visibleAttributesSelector);
 
@@ -37,12 +37,12 @@ export const AttributeHeaders = () => {
   return (
     <g
       transform={translate(
-        dimensions.matrixColumn.width +
-          dimensions.gap +
-          dimensions.size.width +
-          dimensions.bookmarkStar.gap +
-          dimensions.bookmarkStar.width +
-          dimensions.bookmarkStar.gap,
+        dimensions.matrixColumn.width
+          + dimensions.gap
+          + dimensions.size.width
+          + dimensions.bookmarkStar.gap
+          + dimensions.bookmarkStar.width
+          + dimensions.bookmarkStar.gap,
         dimensions.header.totalHeight - dimensions.attribute.height,
       )}
     >
@@ -63,4 +63,4 @@ export const AttributeHeaders = () => {
       ))}
     </g>
   );
-};
+}

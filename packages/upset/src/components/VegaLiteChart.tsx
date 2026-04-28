@@ -1,5 +1,7 @@
 import { css as emotionCss, Interpolation, Theme } from '@emotion/react';
-import { HTMLAttributes, useEffect, useMemo, useRef } from 'react';
+import {
+  HTMLAttributes, useEffect, useMemo, useRef,
+} from 'react';
 import { useVegaEmbed } from 'react-vega';
 import { View } from 'vega';
 import { EmbedOptions, VisualizationSpec } from 'vega-embed/build/embed';
@@ -21,7 +23,7 @@ type Props = Omit<HTMLAttributes<HTMLDivElement>, 'ref' | 'onError'> & {
   css?: Interpolation<Theme>;
 };
 
-export const VegaLiteChart = ({
+export function VegaLiteChart({
   spec,
   data,
   actions = false,
@@ -34,7 +36,7 @@ export const VegaLiteChart = ({
   style,
   css,
   ...divProps
-}: Props) => {
+}: Props) {
   const clipBufferCss = useMemo(
     () => emotionCss`
       & .vega-embed svg {
@@ -78,8 +80,10 @@ export const VegaLiteChart = ({
     Object.entries(data).forEach(([name, values]) => {
       embed.view.data(name, values);
     });
-    void embed.view.runAsync();
-  }, [embed, data]);
+    embed.view.runAsync().catch((error: unknown) => {
+      onError?.(error);
+    });
+  }, [embed, data, onError]);
 
   useEffect(() => {
     if (!embed) return;
@@ -94,11 +98,15 @@ export const VegaLiteChart = ({
       embed.view.height(height);
       shouldRun = true;
     }
-    if (shouldRun) void embed.view.runAsync();
-  }, [embed, height, width]);
+    if (shouldRun) {
+      embed.view.runAsync().catch((error: unknown) => {
+        onError?.(error);
+      });
+    }
+  }, [embed, height, onError, width]);
 
   useEffect(() => {
-    if (!embed || !signalListeners) return;
+    if (!embed || !signalListeners) return undefined;
 
     const listeners = Object.entries(signalListeners);
 
@@ -128,4 +136,4 @@ export const VegaLiteChart = ({
   }, [clipBufferCss, css]);
 
   return <div ref={ref} css={resolvedCss} style={resolvedStyle} {...divProps} />;
-};
+}

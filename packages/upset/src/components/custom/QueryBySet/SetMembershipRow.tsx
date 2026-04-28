@@ -1,4 +1,6 @@
-import { Dispatch, FC, SetStateAction, useCallback } from 'react';
+import {
+  Dispatch, SetStateAction, useCallback,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 import { SetMembershipStatus, SetQueryMembership } from '@visdesignlab/upset2-core';
 import { css } from '@emotion/react';
@@ -36,12 +38,12 @@ const highlightedSetMemberCircle = css`
  * Set Membership Rows for the query by sets interface.
  * @param props - The component props. @see @Props
  */
-export const SetMembershipRow: FC<Props> = ({
+export function SetMembershipRow({
   members,
   setMembers,
   membershipType,
   combined = false,
-}) => {
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
 
@@ -89,6 +91,7 @@ export const SetMembershipRow: FC<Props> = ({
       )}
       {visibleSets.map((set, index) => (
         <MemberShipCircle
+          key={`${membershipType ?? 'combined'}-${set}`}
           onClick={() => selectMembershipCircle(set)}
           transform={translate(
             (dimensions.set.width / 2 + dimensions.gap / 2) * index,
@@ -97,12 +100,12 @@ export const SetMembershipRow: FC<Props> = ({
           membershipStatus={getMembershipStatusInQuery(set)}
           showoutline
           css={
-            !combined &&
-            getMembershipStatusInQuery(set) === members[set] &&
-            highlightedSetMemberCircle
+            !combined
+            && getMembershipStatusInQuery(set) === members[set]
+            && highlightedSetMemberCircle
           }
         />
       ))}
     </g>
   );
-};
+}

@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback, useEffect, useMemo, useState,
+} from 'react';
 
 import {
   getActions,
@@ -18,7 +20,6 @@ import {
   populateConfigDefaults,
   RIGHT_SIDEBAR_URL_PARAM,
   RightSidebar,
-  UpsetConfig,
 } from '@visdesignlab/upset2-core';
 import { CircularProgress } from '@mui/material';
 import { dataSelector, encodedDataAtom } from './atoms/dataAtom';
@@ -56,18 +57,15 @@ function App() {
     return undefined;
   }, [data]);
 
-  const rows = useMemo(() => {
-    return data ? getRows(data, conf ?? DefaultConfig) : null;
-  }, [data, conf]);
+  const rows = useMemo(() => (data ? getRows(data, conf ?? DefaultConfig) : null), [data, conf]);
 
   const generateAltTextFunc: () => Promise<AltText> = useCallback(
-    () =>
-      data && rows && conf
-        ? generateAltText(getAltTextConfig(conf, data, rows)).then((text) => text.alttxt)
-        : Promise.resolve({
-            longDescription: ALTTEXT_EMBED_ERR,
-            shortDescription: ALTTEXT_EMBED_ERR,
-          }),
+    () => (data && rows && conf
+      ? generateAltText(getAltTextConfig(conf, data, rows)).then((text) => text.alttxt)
+      : Promise.resolve({
+        longDescription: ALTTEXT_EMBED_ERR,
+        shortDescription: ALTTEXT_EMBED_ERR,
+      })),
     [conf, data, rows],
   );
 
@@ -86,7 +84,7 @@ function App() {
     prov.currentChange(() => setState(convertConfig(prov.getState())));
 
     return { provenance: prov, actions: act };
-  }, [conf, setState, sessionState]);
+  }, [conf, data, setState, sessionState]);
 
   /** State used by the embedded plot */
   const embedState = useMemo(() => provenance?.getState() ?? conf, [conf, provenance]);
@@ -101,9 +99,9 @@ function App() {
         const session = await getMultinetSession(workspace || '', sessionId);
         // Load the session if the object is not empty
         if (
-          session?.state &&
-          typeof session.state === 'object' &&
-          Object.keys(session.state).length !== 0
+          session?.state
+          && typeof session.state === 'object'
+          && Object.keys(session.state).length !== 0
         ) {
           setSessionState(session.state);
         } else {
@@ -138,14 +136,14 @@ function App() {
             <>
               <Route
                 path="*"
-                element={
+                element={(
                   <Root
                     provenance={provenance}
                     actions={actions}
                     data={null}
                     config={conf}
                   />
-                }
+                )}
               />
               <Route
                 path="/embed"
@@ -157,19 +155,19 @@ function App() {
                       altTextSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ALTTEXT
                           ? {
-                              open: sidebarOpen,
-                              close: () => setSidebarOpen(false),
-                              embedded: true,
-                            }
+                            open: sidebarOpen,
+                            close: () => setSidebarOpen(false),
+                            embedded: true,
+                          }
                           : undefined
                       }
                       elementSidebar={
                         urlParams.get(RIGHT_SIDEBAR_URL_PARAM) === RightSidebar.ELEMENT
                           ? {
-                              open: sidebarOpen,
-                              close: () => setSidebarOpen(false),
-                              embedded: true,
-                            }
+                            open: sidebarOpen,
+                            close: () => setSidebarOpen(false),
+                            embedded: true,
+                          }
                           : undefined
                       }
                       generateAltText={
@@ -185,14 +183,14 @@ function App() {
               />
               <Route
                 path="/"
-                element={
+                element={(
                   <Root
                     provenance={provenance}
                     actions={actions}
                     data={data}
                     config={conf}
                   />
-                }
+                )}
               />
             </>
           )}

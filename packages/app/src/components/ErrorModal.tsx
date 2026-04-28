@@ -28,7 +28,7 @@ const MenuProps = {
   },
 };
 
-export const ErrorModal = () => {
+export function ErrorModal() {
   const data = useRecoilValue(dataSelector);
   const setEncodedDataAtom = useSetRecoilState(encodedDataAtom);
   const [encodeList, setEncodeList] = useState<string[]>([]);
@@ -38,8 +38,8 @@ export const ErrorModal = () => {
   if (data === null) return null;
 
   if (
-    Object.values(data.columnTypes).includes('category') ||
-    Object.values(data.columnTypes).includes('label')
+    Object.values(data.columnTypes).includes('category')
+    || Object.values(data.columnTypes).includes('label')
   ) {
     needOneHot = true;
   }
@@ -56,7 +56,7 @@ export const ErrorModal = () => {
   };
 
   return (
-    <Dialog open={true}>
+    <Dialog open>
       <DialogTitle>Import Error</DialogTitle>
       <DialogContent>
         <DialogContentText>
@@ -121,4 +121,4 @@ export const ErrorModal = () => {
       </DialogContent>
     </Dialog>
   );
-};
+}

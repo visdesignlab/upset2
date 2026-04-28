@@ -10,7 +10,6 @@ declare module '@mui/material/styles' {
     };
   }
 
-  // eslint-disable-next-line no-shadow
   interface ThemeOptions {
     matrix?: {
       member?: {

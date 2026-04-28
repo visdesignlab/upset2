@@ -1,5 +1,5 @@
 import { ScaleLinear } from 'd3-scale';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -22,7 +22,7 @@ type Props = {
   hideSizeText?: boolean;
 };
 
-export const SetSizeBar: FC<Props> = ({
+export function SetSizeBar({
   scale,
   size,
   setId,
@@ -32,7 +32,7 @@ export const SetSizeBar: FC<Props> = ({
   foregroundOpacity = 1,
   showLabel = false,
   hideSizeText = false,
-}) => {
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const columnHover = useRecoilValue(columnHoverAtom);
   const columnSelect = useRecoilValue(columnSelectAtom);
@@ -147,4 +147,4 @@ export const SetSizeBar: FC<Props> = ({
       )}
     </Group>
   );
-};
+}

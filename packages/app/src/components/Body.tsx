@@ -1,8 +1,12 @@
 import { Upset, getAltTextConfig } from '@visdesignlab/upset2-react';
-import { AltText, CoreUpsetData, deepCopy, UpsetConfig } from '@visdesignlab/upset2-core';
+import {
+  AltText, CoreUpsetData, deepCopy, UpsetConfig,
+} from '@visdesignlab/upset2-core';
 import { ProvVis } from '@trrack/vis-react';
 import { useRecoilValue, useRecoilState } from 'recoil';
-import { useCallback, useContext, useEffect, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useState,
+} from 'react';
 import {
   Backdrop,
   Button,
@@ -28,7 +32,7 @@ import { updateMultinetSession } from '../api/session';
 import { generateAltText } from '../api/generateAltText';
 import { api } from '../api/api';
 import { rowsSelector } from '../atoms/selectors';
-import { FOOTER_HEIGHT } from './Root';
+import { FOOTER_HEIGHT } from './constants';
 import { ProvenanceContext } from '../provenance';
 
 type Props = {
@@ -36,16 +40,14 @@ type Props = {
   config?: UpsetConfig;
 };
 
-export const Body = ({ data, config }: Props) => {
+export function Body({ data, config }: Props) {
   const { workspace, table, sessionId } = useRecoilValue(queryParamAtom);
   const provObject = useContext(ProvenanceContext);
   const encodedData = useRecoilValue(encodedDataAtom);
   const hasNaNError = useRecoilValue(nanErrorSelector);
   const [isProvVisOpen, setIsProvVisOpen] = useRecoilState(provenanceVisAtom);
-  const [isElementSidebarOpen, setIsElementSidebarOpen] =
-    useRecoilState(elementSidebarAtom);
-  const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] =
-    useRecoilState(altTextSidebarAtom);
+  const [isElementSidebarOpen, setIsElementSidebarOpen] = useRecoilState(elementSidebarAtom);
+  const [isAltTextSidebarOpen, setIsAltTextSidebarOpen] = useRecoilState(altTextSidebarAtom);
   const loading = useRecoilValue(loadingAtom);
   const rows = useRecoilValue(rowsSelector);
 
@@ -157,15 +159,15 @@ export const Body = ({ data, config }: Props) => {
 
   // if no data has been loaded or if the error/one-hot modal has been closed by the user
   if (
-    ((!workspace || !table) && !doesHaveSavedQueryParam()) ||
-    (encodedData !== null && data.setColumns.length === 0)
+    ((!workspace || !table) && !doesHaveSavedQueryParam())
+    || (encodedData !== null && data.setColumns.length === 0)
   ) {
     return <div>Please click Load Data button to go to data interface.</div>;
   }
 
   if (hasNaNError) {
     return (
-      <Dialog open={true}>
+      <Dialog open>
         <DialogTitle>Data Error</DialogTitle>
         <DialogContent>
           <DialogContentText>
@@ -214,4 +216,4 @@ export const Body = ({ data, config }: Props) => {
       )}
     </div>
   );
-};
+}

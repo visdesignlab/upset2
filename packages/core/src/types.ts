@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */ // Eslint apparently has never heard of enums...
+/* eslint @typescript-eslint/no-unused-vars: "off" */
 /**
  * Values of URL param showSettings.
  * Left settings sidebar should only be hidden if this is FALSE.

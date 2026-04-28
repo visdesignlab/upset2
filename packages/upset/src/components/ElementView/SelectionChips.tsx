@@ -20,7 +20,7 @@ import {
   nextColorSelector,
   nextColorIndexSelector,
 } from '../../atoms/config/selectionAtoms';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { UpsetActions, UpsetProvenance } from '../../provenance';
 import {
   extraQueryColor,
@@ -38,16 +38,14 @@ const SELECTED_BACKGROUND = 'rgba(0,0,0,0.2)';
  * Shows a stack of chips representing bookmarks and the current intersection/element selection,
  * with options to add and remove bookmarks
  */
-export const SelectionChips = () => {
-  const { actions }: { provenance: UpsetProvenance; actions: UpsetActions } =
-    useContext(ProvenanceContext);
+export function SelectionChips() {
+  const { actions }: { provenance: UpsetProvenance; actions: UpsetActions } = useContext(ProvenanceContext);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
   const nextColor = useRecoilValue(nextColorSelector);
   const rows = useRecoilValue(rowsSelector);
   const bookmarked = useRecoilValue(bookmarkSelector);
   const nextColorIndex = useRecoilValue(nextColorIndexSelector);
-  const currentIntersectionDisplayName =
-    currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
+  const currentIntersectionDisplayName = currentIntersection?.elementName.replaceAll('~&~', ' & ') || '';
   const vegaSelection = useRecoilValue(currentVegaSelection);
   const querySelection = useRecoilValue(currentQuerySelection);
   const selectionType = useRecoilValue(currentSelectionType);
@@ -59,8 +57,7 @@ export const SelectionChips = () => {
   function chipClicked(bookmark: Bookmark) {
     if (currentIntersection?.id === bookmark.id && selectionType === 'row') {
       actions.setRowSelection(null);
-    } else if (currentIntersection?.id !== bookmark.id)
-      actions.setRowSelection(rows[bookmark.id]);
+    } else if (currentIntersection?.id !== bookmark.id) actions.setRowSelection(rows[bookmark.id]);
   }
 
   return (
@@ -87,7 +84,7 @@ export const SelectionChips = () => {
             }
           }}
           label={`${bookmark.label} - ${bookmark.size}`}
-          icon={
+          icon={(
             <BookmarkIcon
               fontSize={CHIP_ICON_FONT_SIZE}
               onClick={(e) => {
@@ -98,7 +95,7 @@ export const SelectionChips = () => {
                 e.stopPropagation(); // Prevents the onclick on the chip from firing
               }}
             />
-          }
+          )}
           onContextMenu={(e) => {
             e.preventDefault();
             e.stopPropagation();
@@ -111,8 +108,8 @@ export const SelectionChips = () => {
         />
       ))}
       {/* Chip for the currently selected intersection */}
-      {currentIntersection &&
-        !bookmarked.find((b) => b.id === currentIntersection.id) && (
+      {currentIntersection
+        && !bookmarked.find((b) => b.id === currentIntersection.id) && (
           <Chip
             sx={(theme) => ({
               margin: theme.spacing(0.5),
@@ -121,7 +118,7 @@ export const SelectionChips = () => {
               },
               backgroundColor: selectionType === 'row' ? SELECTED_BACKGROUND : 'default',
             })}
-            icon={
+            icon={(
               <BookmarkBorderIcon
                 fontSize={CHIP_ICON_FONT_SIZE}
                 onClick={(e) => {
@@ -134,7 +131,7 @@ export const SelectionChips = () => {
                   e.stopPropagation(); // Prevents the onclick on the chip from firing
                 }}
               />
-            }
+            )}
             aria-label={`Selected intersection ${currentIntersectionDisplayName}, size ${currentIntersection.size}`}
             onKeyDown={(e) => {
               if (e.key === 'Enter') {
@@ -151,7 +148,7 @@ export const SelectionChips = () => {
             }}
             label={`${currentIntersectionDisplayName} - ${currentIntersection.size}`}
           />
-        )}
+      )}
       {/* Chip for the current vega selection */}
       {vegaSelection && (
         <Chip
@@ -202,4 +199,4 @@ export const SelectionChips = () => {
       )}
     </Stack>
   );
-};
+}

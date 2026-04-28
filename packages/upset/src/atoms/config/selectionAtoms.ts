@@ -95,8 +95,7 @@ export const nextColorSelector = selector<string>({
 export const bookmarkColorSelector = selectorFamily<string, string | undefined>({
   key: 'bookmark-color-selector',
   get:
-    (id) =>
-    ({ get }) => {
+    (id) => ({ get }) => {
       const bookmarks = get(bookmarkSelector);
       const nextColor = get(nextColorSelector);
 
@@ -125,8 +124,7 @@ export const bookmarkColorSelector = selectorFamily<string, string | undefined>(
 export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
   key: 'is-row-bookmarked',
   get:
-    (row: Row) =>
-    ({ get }) => {
+    (row: Row) => ({ get }) => {
       const bookmarks = get(bookmarkSelector);
       return bookmarks.some((b) => b.id === row.id);
     },
@@ -140,8 +138,7 @@ export const isRowBookmarkedSelector = selectorFamily<boolean, Row>({
 export const isRowBookmarkedOrSelected = selectorFamily<boolean, Row>({
   key: 'is-row-bookmarked-or-selected',
   get:
-    (row: Row) =>
-    ({ get }) => {
+    (row: Row) => ({ get }) => {
       const isBookmarked = get(isRowBookmarkedSelector(row));
       const currentIntersection = get(currentIntersectionSelector);
       return isBookmarked || currentIntersection?.id === row.id;

@@ -4,7 +4,8 @@ import {
   SelectionType,
   UpsetConfig,
 } from '@visdesignlab/upset2-core';
-import type { ComponentType } from 'react';
+import type { ReactElement } from 'react';
+import type { NodeId, Nodes } from '@trrack/core';
 import { UpsetProvenance, UpsetActions } from './provenance';
 
 /**
@@ -26,6 +27,19 @@ export interface SidebarProps {
    */
   embedded?: boolean;
 }
+
+export type ProvenanceVisComponentProps<T, S extends string> = {
+  root: NodeId;
+  config?: {
+    changeCurrent: (node: NodeId) => void;
+  };
+  nodeMap: Nodes<T, S>;
+  currentNode: NodeId;
+};
+
+export type ProvenanceVisComponent = <T, S extends string>(
+  props: ProvenanceVisComponentProps<T, S>,
+) => ReactElement | null;
 
 export type ContextMenuItem = {
   /**
@@ -166,7 +180,7 @@ export interface UpsetProps {
   /**
    * Optional provenance visualization component supplied by the host application.
    */
-  provVisComponent?: ComponentType<any>;
+  provVisComponent?: ProvenanceVisComponent;
 
   /**
    * Sidebar options for the element sidebar component.

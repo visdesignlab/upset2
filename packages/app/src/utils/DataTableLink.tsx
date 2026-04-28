@@ -3,7 +3,7 @@ import { getAccessibleData } from '@visdesignlab/upset2-react';
 import localforage from 'localforage';
 import { SetterOrUpdater, useRecoilState } from 'recoil';
 import { Link } from 'react-router-dom';
-import { FC, PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { getQueryParam, saveQueryParam } from '../atoms/queryParamAtom';
 import { loadingAtom } from '../atoms/loadingAtom';
 
@@ -57,14 +57,14 @@ type Props = {
  * which automatically dispatches the state needed by the table to local storage
  * @returns
  */
-export const DataTableLink: FC<PropsWithChildren<Props>> = ({
+export function DataTableLink({
   data,
   rows,
   visibleSets,
   hiddenSets,
   tabIndex,
   children,
-}) => {
+}: PropsWithChildren<Props>) {
   const [loading, setLoading] = useRecoilState(loadingAtom);
   return loading ? (
     <p>Loading...</p>
@@ -83,4 +83,4 @@ export const DataTableLink: FC<PropsWithChildren<Props>> = ({
       {children}
     </Link>
   );
-};
+}

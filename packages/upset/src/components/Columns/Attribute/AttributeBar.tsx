@@ -4,7 +4,7 @@ import {
   Subset,
   isRowAggregate,
 } from '@visdesignlab/upset2-core';
-import React, { FC, useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { useRecoilValue } from 'recoil';
 import { Tooltip } from '@mui/material';
 import { attributeMinMaxSelector } from '../../../atoms/attributeAtom';
@@ -44,7 +44,7 @@ const DOT_PLOT_THRESHOLD = 5;
 /**
  * A single attribute chart, visualizing one attribute's values for one intersection.
  */
-export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
+export function AttributeBar({ attribute, summary, row }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
   const scale = useScale([min, max], [0, dimensions.attribute.width]);
@@ -112,12 +112,12 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
   }, []);
 
   if (
-    typeof summary !== 'number' &&
-    (summary.max === undefined ||
-      summary.min === undefined ||
-      summary.first === undefined ||
-      summary.third === undefined ||
-      summary.median === undefined)
+    typeof summary !== 'number'
+    && (summary.max === undefined
+      || summary.min === undefined
+      || summary.first === undefined
+      || summary.third === undefined
+      || summary.median === undefined)
   ) {
     return null;
   }
@@ -128,11 +128,11 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
         <DeviationBar deviation={summary} />
       ) : (
         <Tooltip
-          title={
+          title={(
             <div style={{ whiteSpace: 'pre-line' }}>
               {`Q1: ${round3(summary.first)}\nMean: ${round3(summary.mean)}\nMedian: ${round3(summary.median)}\nQ3: ${round3(summary.third)}`}
             </div>
-          }
+          )}
         >
           {/* Wrapping <g> is necessary for the Tooltip to work (it needs a specific contained component that can take a ref) */}
           <g>{attPlotToRender}</g>
@@ -140,4 +140,4 @@ export const AttributeBar: FC<Props> = ({ attribute, summary, row }) => {
       )}
     </g>
   );
-};
+}

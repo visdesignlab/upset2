@@ -43,10 +43,8 @@ export const nanErrorSelector = selector<boolean>({
     const data = get(dataSelector);
     if (!data) return false;
 
-    return Object.values(data.items).some((item) =>
-      Object.values(item.atts).some(
-        (val) => typeof val === 'number' && Number.isNaN(val),
-      ),
-    );
+    return Object.values(data.items).some((item) => Object.values(item.atts).some(
+      (val) => typeof val === 'number' && Number.isNaN(val),
+    ));
   },
 });

@@ -137,9 +137,7 @@ function sortBySet(
   const setMembers: Intersections = { values: {}, order: [] };
 
   // setMembers needs to be a filtered list of values that contain the set membership, as well as order which corresponds
-  const setMemberEntries = Object.entries(rows.values).filter(([, value]) =>
-    getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy),
-  );
+  const setMemberEntries = Object.entries(rows.values).filter(([, value]) => getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy));
   setMemberEntries.forEach(([key, value]) => {
     setMembers.values[key] = value;
     setMembers.order.push(key);
@@ -150,8 +148,7 @@ function sortBySet(
 
   // filter the list for entries which do not have the selected set as members
   const nonSetMemberEntries = Object.entries(rows.values).filter(
-    ([, value]) =>
-      !getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy),
+    ([, value]) => !getBelongingSetsFromSetMembership(value.setMembership).includes(sortBy),
   );
   nonSetMemberEntries.forEach(([key, value]) => {
     nonSetMembers.values[key] = value;
@@ -187,12 +184,10 @@ function sortByAttribute(rows: Intersections, sortBy: string, sortByOrder?: Sort
     let meanA: number | undefined = 0;
     let meanB: number | undefined = 0;
     if (sortBy === 'Degree') {
-      meanA =
-        values[a].atts.derived.degree ??
-        getDegreeFromSetMembership(values[a].setMembership);
-      meanB =
-        values[b].atts.derived.degree ??
-        getDegreeFromSetMembership(values[b].setMembership);
+      meanA = values[a].atts.derived.degree
+        ?? getDegreeFromSetMembership(values[a].setMembership);
+      meanB = values[b].atts.derived.degree
+        ?? getDegreeFromSetMembership(values[b].setMembership);
     } else if (sortBy === 'Deviation') {
       meanA = values[a].atts.derived.deviation;
       meanB = values[b].atts.derived.deviation;
@@ -268,13 +263,13 @@ export function sortRows(
   visibleSets: Sets,
   sortByOrder?: SortByOrder,
 ): Rows {
-  const rows = deepCopy(baseRows);
+  const coppiedRows = deepCopy(baseRows);
 
-  if (areRowsSubsets(rows)) {
-    return sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
+  if (areRowsSubsets(coppiedRows)) {
+    return sortIntersections(coppiedRows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   }
 
-  const aggs = sortIntersections(rows, sortBy, vSetSortBy, visibleSets, sortByOrder);
+  const aggs = sortIntersections(coppiedRows, sortBy, vSetSortBy, visibleSets, sortByOrder);
   aggs.order.forEach((aggId) => {
     const agg = aggs.values[aggId];
     if (!isRowAggregate(agg)) return;

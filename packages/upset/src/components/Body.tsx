@@ -12,7 +12,7 @@ import {
   setQuerySelector,
 } from '../atoms/config/queryBySetsAtoms';
 
-export const Body = () => {
+export function Body() {
   const dimensions = useRecoilValue(dimensionsSelector);
   const rows = useRecoilValue(flattenedRowsSelector);
   const queryBySetInterface = useRecoilValue(queryBySetsInterfaceAtom);
@@ -23,10 +23,10 @@ export const Body = () => {
       {rows.length === 0 ? (
         <text
           transform={translate(
-            dimensions.matrixColumn.width +
-              dimensions.bookmarkStar.gap +
-              dimensions.bookmarkStar.width +
-              dimensions.bookmarkStar.gap,
+            dimensions.matrixColumn.width
+              + dimensions.bookmarkStar.gap
+              + dimensions.bookmarkStar.width
+              + dimensions.bookmarkStar.gap,
             dimensions.body.rowHeight,
           )}
           style={{ zIndex: 10 }}
@@ -42,4 +42,4 @@ export const Body = () => {
       )}
     </g>
   );
-};
+}

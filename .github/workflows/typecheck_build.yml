@@ -1,4 +1,4 @@
-name: Typecheck and Build
+name: Lint, Typecheck, and Build
 
 on:
   pull_request:
@@ -10,8 +10,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  typecheck:
-    name: Typecheck
+  checks:
+    name: Lint, Typecheck, and Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -29,3 +29,6 @@ jobs:
 
       - name: Run build
         run: yarn build
+
+      - name: Run lint
+        run: yarn lint

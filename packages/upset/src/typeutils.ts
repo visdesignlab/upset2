@@ -26,10 +26,10 @@ export function itemToVega(
     color: defaultElementColor,
     ...(bookmarkProps
       ? {
-          subset: bookmarkProps.rowID,
-          subsetName: bookmarkProps.rowName,
-          color: bookmarkProps.color,
-        }
+        subset: bookmarkProps.rowID,
+        subsetName: bookmarkProps.rowName,
+        color: bookmarkProps.color,
+      }
       : {}),
     isCurrentSelected: !!currentIntersection,
     isCurrent: bookmarkProps && currentIntersection?.id === bookmarkProps.rowID,

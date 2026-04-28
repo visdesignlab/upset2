@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
@@ -11,7 +10,7 @@ type Props = {
   attribute: string;
 };
 
-export const AttributeHeader: FC<Props> = ({ attribute }) => {
+export function AttributeHeader({ attribute }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { min, max } = useRecoilValue(attributeMinMaxSelector(attribute));
 
@@ -28,4 +27,4 @@ export const AttributeHeader: FC<Props> = ({ attribute }) => {
       </g>
     </>
   );
-};
+}

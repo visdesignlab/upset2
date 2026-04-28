@@ -49,7 +49,7 @@ export default defineConfig({
         'vega',
         'vega-embed',
         'vega-lite',
-        'react-vega'
+        'react-vega',
       ],
       treeshake: true,
     },

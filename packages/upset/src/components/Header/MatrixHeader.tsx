@@ -15,7 +15,7 @@ import { showHiddenSetsSelector } from '../../atoms/config/displayAtoms';
 /**
  * Header for the plot: shows both visible and hidden sets at the top of the page
  */
-export const MatrixHeader = () => {
+export function MatrixHeader() {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const maxSize = useRecoilValue(maxSetSizeSelector);
@@ -34,10 +34,10 @@ export const MatrixHeader = () => {
           width={dimensions.size.width + dimensions.gap + dimensions.attribute.width}
           height={dimensions.set.size.height + 15}
           transform={translate(
-            dimensions.matrixColumn.width +
-              dimensions.bookmarkStar.gap +
-              dimensions.bookmarkStar.width +
-              dimensions.bookmarkStar.gap,
+            dimensions.matrixColumn.width
+              + dimensions.bookmarkStar.gap
+              + dimensions.bookmarkStar.width
+              + dimensions.bookmarkStar.gap,
             0,
           )}
         >
@@ -60,4 +60,4 @@ export const MatrixHeader = () => {
       )}
     </>
   );
-};
+}

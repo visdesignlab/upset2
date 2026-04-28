@@ -7,6 +7,8 @@
     "start": "docusaurus start --port 8082",
     "dev": "docusaurus start --port 8082",
     "build": "docusaurus build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
     "clear": "docusaurus clear",
@@ -32,7 +34,6 @@
     "typedoc": "^0.28.0",
     "typedoc-plugin-frontmatter": "^1.3.0",
     "typedoc-plugin-markdown": "^4.5.0",
-    "typedoc-plugin-missing-exports": "^4.1.2",
     "typescript": "~5.9.3"
   },
   "browserslist": {

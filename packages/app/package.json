@@ -12,13 +12,8 @@
     "@mui/icons-material": "^7.0.2",
     "@mui/material": "^7.0.2",
     "@mui/system": "^7.0.2",
-    "@testing-library/jest-dom": "^5.16.2",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/react": "^16.3.2",
-    "@testing-library/user-event": "^14.6.1",
     "@trrack/core": "^1.6.1",
     "@trrack/vis-react": "^1.6.1",
-    "@types/jest": "^27.4.0",
     "@types/node": "^16.11.22",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
@@ -30,20 +25,14 @@
     "react-dom": "^19.2.4",
     "react-router-dom": "^6.14.1",
     "recoil": "^0.6.1",
-    "typedoc-plugin-missing-exports": "^4.0.0",
-    "typescript": "^5.9.3",
-    "web-vitals": "^2.1.4"
+    "typescript": "^5.9.3"
   },
   "scripts": {
     "dev": "vite dev --port 3000",
     "build": "vite build",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit -p tsconfig.json"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
   },
   "browserslist": {
     "production": [
@@ -60,8 +49,6 @@
   "devDependencies": {
     "@vitejs/plugin-react-swc": "^4.2.2",
     "@welldone-software/why-did-you-render": "^10.0.1",
-    "eslint-plugin-react-hooks": "^5.2.0",
-    "prettier": "^3.5.3",
     "vite": "^7.2.6"
   }
 }

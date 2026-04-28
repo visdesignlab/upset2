@@ -1,6 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
-import { Box, Dialog, DialogTitle, IconButton, Tab, Tabs } from '@mui/material';
-import { FC, ReactNode, useState } from 'react';
+import {
+  Box, Dialog, DialogTitle, IconButton, Tab, Tabs,
+} from '@mui/material';
+import { ReactNode, useState } from 'react';
 
 import { AddHistogram, AddScatterplot } from './AddPlot';
 
@@ -12,7 +14,9 @@ type TabProps = {
   value: PlotType;
 };
 
-function TabPanel({ children, index, value, ...others }: TabProps) {
+function TabPanel({
+  children, index, value, ...others
+}: TabProps) {
   return (
     <Box
       sx={{
@@ -39,7 +43,7 @@ type Props = {
   onClose: () => void;
 };
 
-export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
+export function AddPlotDialog({ open, onClose }: Props) {
   const [currentTab, setCurrentTab] = useState<PlotType>('Scatterplot');
 
   return (
@@ -79,4 +83,4 @@ export const AddPlotDialog: FC<Props> = ({ open, onClose }) => {
       </TabPanel>
     </Dialog>
   );
-};
+}

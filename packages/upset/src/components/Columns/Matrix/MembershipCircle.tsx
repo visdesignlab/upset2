@@ -1,6 +1,6 @@
 import { useTheme } from '@mui/material';
 import { SetMembershipStatus } from '@visdesignlab/upset2-core';
-import { FC, SVGProps } from 'react';
+import { SVGProps } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { dimensionsSelector } from '../../../atoms/dimensionsAtom';
@@ -10,7 +10,7 @@ type Props = SVGProps<SVGCircleElement> & {
   showoutline: boolean;
 };
 
-const MemberShipCircle: FC<Props> = (props) => {
+function MemberShipCircle(props: Props) {
   const { membershipStatus, showoutline, ...base } = props;
   const theme = useTheme();
   const dimensions = useRecoilValue(dimensionsSelector);
@@ -36,6 +36,6 @@ const MemberShipCircle: FC<Props> = (props) => {
       )}
     </>
   );
-};
+}
 
 export default MemberShipCircle;

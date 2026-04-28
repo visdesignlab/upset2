@@ -16,6 +16,5 @@ export const maxSize = atom({
  */
 export const maxRowSizeSelector = selector<number>({
   key: 'max-subset-size',
-  get: ({ get }) =>
-    Math.max(...Object.values(get(rowsSelector)).map((subset) => subset.size)),
+  get: ({ get }) => Math.max(...Object.values(get(rowsSelector)).map((subset) => subset.size)),
 });

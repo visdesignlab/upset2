@@ -7,24 +7,25 @@
  * @returns {T[][]} - An array of combinations of length 'n'.
  */
 export function combinationsFromArray<T>(collection: T[], n: number): T[][] {
-  const array: T[] = Object.values(collection);
-  if (array.length < n) {
+  const input: T[] = Object.values(collection);
+  if (input.length < n) {
     return [];
   }
-  const recur = (array: T[], n: number) => {
-    if (--n < 0) {
+  const recur = (array: T[], innerN: number) => {
+    const nextN = innerN - 1;
+    if (nextN < 0) {
       return [[]];
     }
     const combinations: T[][] = [];
-    array = array.slice();
-    while (array.length - n) {
-      const value = array.shift();
-      recur(array, n).forEach((combination) => {
-        if (value) combination.unshift(value);
+    const remaining = array.slice();
+    while (remaining.length > nextN) {
+      const value = remaining.shift();
+      recur(remaining, nextN).forEach((combination) => {
+        if (value !== undefined) combination.unshift(value);
         combinations.push(combination);
       });
     }
     return combinations;
   };
-  return recur(array, n);
+  return recur(input, n);
 }

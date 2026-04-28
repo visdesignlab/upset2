@@ -11,7 +11,7 @@ export const rowsSelector = selector<Rows>({
   get: ({ get }) => {
     const data = get(dataSelector);
     if (data) return getRows(data, get(configAtom));
-    else return { values: {}, order: [] };
+    return { values: {}, order: [] };
   },
 });
 
@@ -32,9 +32,7 @@ export const itemsSelector = selector<Item[]>({
 export const attributeValuesCount = selectorFamily<number, string>({
   key: 'attribute-count',
   get:
-    (att: string) =>
-    ({ get }) =>
-      Object.values(get(itemsSelector)).filter((item) => !!item.atts[att]).length,
+    (att: string) => ({ get }) => Object.values(get(itemsSelector)).filter((item) => !!item.atts[att]).length,
 });
 
 /**
@@ -45,8 +43,7 @@ export const attributeValuesCount = selectorFamily<number, string>({
 export const countValuesForAttributes = selectorFamily<Record<string, number>, string[]>({
   key: 'multi-att-count',
   get:
-    (atts: string[]) =>
-    ({ get }) => {
+    (atts: string[]) => ({ get }) => {
       const counts: Record<string, number> = {};
       atts.forEach((att) => {
         counts[att] = get(attributeValuesCount(att));

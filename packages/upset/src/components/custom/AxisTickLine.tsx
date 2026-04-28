@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import translate from '../../utils/transform';
 
 const shadow = css`
@@ -20,14 +20,14 @@ type Props = {
 /**
  * The tick line on an attribute scale axis, with a label on top of the line.
  */
-export const TickLine: FC<Props> = ({
+export function TickLine({
   type,
   value,
   fontSize,
   tickLength,
   tickFontHeight,
   hideLine,
-}) => {
+}: Props) {
   const textTransform = useMemo(() => {
     switch (type) {
       case 'bottom':
@@ -96,4 +96,4 @@ export const TickLine: FC<Props> = ({
       </text>
     </>
   );
-};
+}

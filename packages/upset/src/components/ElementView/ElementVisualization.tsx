@@ -1,5 +1,7 @@
 import { Box } from '@mui/system';
-import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useMemo, useRef, useState,
+} from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { View } from 'vega';
 
@@ -13,7 +15,7 @@ import {
 import { histogramSelector, scatterplotsSelector } from '../../atoms/config/plotAtoms';
 import { vegaItemsSelector } from '../../atoms/elementsSelectors';
 import { generateVegaSpec } from './generatePlotSpec';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { UpsetActions } from '../../provenance';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import {
@@ -57,7 +59,7 @@ async function signalView(view: View, val: VegaSelection, sync = false): Promise
  * Displays a matrix of plots representing the elements in the current intersection selection & bookmarks.
  * @returns
  */
-export const ElementVisualization = () => {
+export function ElementVisualization() {
   /**
    * External state
    */
@@ -92,11 +94,10 @@ export const ElementVisualization = () => {
     [scatterplots, histograms],
   );
   const specs = useMemo(
-    () =>
-      plots.map((plot) => ({
-        plot,
-        spec: generateVegaSpec(plot, selectionType, !!selection),
-      })),
+    () => plots.map((plot) => ({
+      plot,
+      spec: generateVegaSpec(plot, selectionType, !!selection),
+    })),
     [plots, selectionType, selection],
   );
 
@@ -113,11 +114,10 @@ export const ElementVisualization = () => {
   const brushHandler = useCallback(
     (signaled: Plot, value: unknown) => {
       if (
-        !isVegaSelection(value) ||
-        signaled.id !== currentClick.current?.id ||
-        preventSignal.current
-      )
-        return;
+        !isVegaSelection(value)
+        || signaled.id !== currentClick.current?.id
+        || preventSignal.current
+      ) return;
 
       mouseDown.current = true; // We don't get onMouseDown events bubbling from VegaLite; this is a working proxy
       draftSelection.current = value;
@@ -146,9 +146,9 @@ export const ElementVisualization = () => {
       if (!mouseDown.current) return;
 
       if (
-        draftSelection.current &&
-        Object.keys(draftSelection.current).length > 0 &&
-        !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
+        draftSelection.current
+        && Object.keys(draftSelection.current).length > 0
+        && !vegaSelectionsEqual(draftSelection.current, selection ?? undefined)
       ) {
         actions.setVegaSelection(draftSelection.current);
         // reset the column selection highlight state because the selection has changed
@@ -214,7 +214,7 @@ export const ElementVisualization = () => {
       // Save selection and cancel the onClick selection (which will now fire with null value)
       onMouseLeave={() => saveSelection(true)}
       // Make sure that we don't cancel the onClick selection if the mouse re-enters the box
-      onMouseEnter={() => (cancelNextSelection.current = false)}
+      onMouseEnter={() => { cancelNextSelection.current = false; }}
     >
       <Box
         sx={{
@@ -227,8 +227,8 @@ export const ElementVisualization = () => {
           padding: '4px 8px 8px 12px',
         }}
       >
-        {plots.length > 0 &&
-          specs.map(({ plot, spec }) => (
+        {plots.length > 0
+          && specs.map(({ plot, spec }) => (
             // Relative position is necessary so this serves as a positioning container for the close button
             <Box
               style={{
@@ -254,11 +254,9 @@ export const ElementVisualization = () => {
                       label: 'Remove Plot',
                       onClick: () => {
                         actions.removePlot(plot);
-                        setViews((currentViews) =>
-                          currentViews.filter(
-                            ({ plot: currentPlot }) => currentPlot.id !== plot.id,
-                          ),
-                        );
+                        setViews((currentViews) => currentViews.filter(
+                          ({ plot: currentPlot }) => currentPlot.id !== plot.id,
+                        ));
                         setContextMenu(null);
                       },
                     },
@@ -282,4 +280,4 @@ export const ElementVisualization = () => {
       </Box>
     </Box>
   );
-};
+}

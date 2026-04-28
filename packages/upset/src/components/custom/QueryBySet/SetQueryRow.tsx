@@ -1,4 +1,4 @@
-import React, { FC, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useRecoilValue } from 'recoil';
 
 import { SetMembershipStatus } from '@visdesignlab/upset2-core';
@@ -10,7 +10,7 @@ import translate from '../../../utils/transform';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import MemberShipCircle from '../../Columns/Matrix/MembershipCircle';
 import { setQuerySelector } from '../../../atoms/config/queryBySetsAtoms';
-import { ProvenanceContext } from '../../Root';
+import { ProvenanceContext } from '../../../provenance/context';
 import { SizeBar } from '../../Columns/SizeBar';
 import {
   DEFAULT_ROW_BACKGROUND_COLOR,
@@ -33,7 +33,7 @@ const REMOVE_ICON_SIZE = 16;
  * @component
  * @returns {JSX.Element} The rendered SetQueryRow component.
  */
-export const SetQueryRow: FC = () => {
+export function SetQueryRow() {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const visibleSets = useRecoilValue(visibleSetSelector);
@@ -118,6 +118,7 @@ export const SetQueryRow: FC = () => {
           >
             {visibleSets.map((set, index) => (
               <MemberShipCircle
+                key={set}
                 transform={translate(
                   (dimensions.set.width / 2 + dimensions.gap / 2) * index,
                   0,
@@ -134,4 +135,4 @@ export const SetQueryRow: FC = () => {
       </g>
     </g>
   );
-};
+}

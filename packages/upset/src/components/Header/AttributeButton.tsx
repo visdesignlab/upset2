@@ -1,11 +1,11 @@
-import React, { FC, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useSetRecoilState, useRecoilValue } from 'recoil';
 import { SortByOrder, AttributePlotType, UPSET_ATTS } from '@visdesignlab/upset2-core';
 
 import { Tooltip } from '@mui/material';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import translate from '../../utils/transform';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { sortByOrderSelector, sortBySelector } from '../../atoms/config/sortByAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
 import { HeaderSortArrow } from '../custom/HeaderSortArrow';
@@ -37,7 +37,7 @@ type Props = {
  *   <AttributeButton label="Name" />
  * )
  */
-export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
+export function AttributeButton({ label, tooltip }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const sortBy = useRecoilValue(sortBySelector);
@@ -157,7 +157,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
    *
    * @param e - The mouse event.
    */
-  const openContextMenu = (e: MouseEvent) => {
+  const openContextMenu = (e: React.MouseEvent<SVGGElement, MouseEvent>) => {
     setContextMenu({
       mouseX: e.clientX,
       mouseY: e.clientY,
@@ -168,6 +168,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
 
   return (
     <Tooltip
+      // eslint-disable-next-line react/no-danger -- Tooltip content can intentionally include host-provided HTML.
       title={<div dangerouslySetInnerHTML={{ __html: tooltip ?? label }} />}
       arrow
       placement="top"
@@ -179,7 +180,7 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
           },
           cursor: 'context-menu',
         }}
-        onContextMenu={(e: any) => {
+        onContextMenu={(e) => {
           e.preventDefault();
           e.stopPropagation();
           openContextMenu(e);
@@ -215,4 +216,4 @@ export const AttributeButton: FC<Props> = ({ label, tooltip }) => {
       </g>
     </Tooltip>
   );
-};
+}

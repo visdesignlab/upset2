@@ -19,7 +19,7 @@ import App from './App';
 import DefaultTheme from './components/theme';
 import { api } from './api/api';
 import { oAuth } from './api/auth';
-import { client_id } from './api/env';
+import { clientId } from './api/env';
 
 const RecoilRootCompat = RecoilRoot as unknown as React.ComponentType<
   React.PropsWithChildren
@@ -28,7 +28,6 @@ const RecoilRootCompat = RecoilRoot as unknown as React.ComponentType<
 // Not quite recommended but the only way I could get why-did-you-render to work with vite
 // from https://github.com/welldone-software/why-did-you-render/issues/243#issuecomment-1112542230
 // also, process is indeed defined in vite
-// eslint-disable-next-line no-undef
 if (process.env.NODE_ENV === 'development') {
   // Ignoring this because... it actually works
   // @ts-expect-error: await at top level
@@ -41,8 +40,6 @@ if (process.env.NODE_ENV === 'development') {
   });
 }
 
-// import reportWebVitals from './reportWebVitals';
-
 localforage.config({
   name: 'UpSet2-Data',
   storeName: 'upset2-data',
@@ -51,7 +48,7 @@ localforage.config({
   driver: [localforage.INDEXEDDB, localforage.WEBSQL, localforage.LOCALSTORAGE], // fallback drivers
 });
 
-const loginTokenKey = `oauth-token-${client_id}`;
+const loginTokenKey = `oauth-token-${clientId}`;
 const sharedLoginCookie = readSharedLoginCookie();
 if (sharedLoginCookie !== null) {
   localStorage.setItem(loginTokenKey, sharedLoginCookie);
@@ -84,7 +81,7 @@ oAuth.maybeRestoreLogin().then(() => {
       <ThemeProvider theme={DefaultTheme}>
         <RecoilRootCompat>
           <Suspense
-            fallback={
+            fallback={(
               <Box
                 sx={{
                   display: 'flex',
@@ -96,7 +93,7 @@ oAuth.maybeRestoreLogin().then(() => {
               >
                 <CircularProgress />
               </Box>
-            }
+            )}
           >
             <Box sx={{ overflow: 'hidden' }}>
               <App />

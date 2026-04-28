@@ -1,5 +1,7 @@
 import { Row } from '@visdesignlab/upset2-core';
-import { FC, useMemo, JSX, useCallback } from 'react';
+import {
+  useMemo, JSX, useCallback,
+} from 'react';
 import { useRecoilValue } from 'recoil';
 
 import {
@@ -70,7 +72,9 @@ function darkenColor(index: number, color: string): string {
 /*
  * Size bar for a row in the upset plot, showing number of elements in the subset.
  */
-export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) => {
+export function SizeBar({
+  row, size, vegaSelected, querySelected,
+}: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const sizeDomain = useRecoilValue(maxSize);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -98,21 +102,20 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    * @param index Index of the bar.
    * @returns Fill color for the bar.
    */
-  // eslint-disable-next-line no-unused-vars
+
   const getFillColor: (index: number) => string = useCallback(
     (index) => {
       // if the row is bookmarked, highlight the bar with the bookmark color
-      const selectedSize =
-        selectionType === 'vega'
-          ? vegaSelected
-          : selectionType === 'query'
-            ? querySelected
-            : 0;
+      const selectedSize = selectionType === 'vega'
+        ? vegaSelected
+        : selectionType === 'query'
+          ? querySelected
+          : 0;
       if (
-        row &&
-        selectedSize === 0 &&
-        bookmarks.some((bookmark) => bookmark.id === row.id) &&
-        selectionType === 'row'
+        row
+        && selectedSize === 0
+        && bookmarks.some((bookmark) => bookmark.id === row.id)
+        && selectionType === 'row'
       ) {
         // darken the color for advanced scale sub-bars
         return darkenColor(index, color);
@@ -120,10 +123,10 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
 
       // We don't want to evaluate this to true if both currentIntersection and row are undefined, hence the 1st condition
       if (
-        currentIntersection &&
-        selectedSize === 0 &&
-        currentIntersection?.id === row?.id &&
-        selectionType === 'row'
+        currentIntersection
+        && selectedSize === 0
+        && currentIntersection?.id === row?.id
+        && selectionType === 'row'
       ) {
         // if currently selected, use the highlight colors
         return color;
@@ -148,24 +151,23 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    *   fullBars  Number of full bars to display.
    *   remainder Remaining size after full bars are displayed.
    */
-  // eslint-disable-next-line no-unused-vars
-  const calculateBars: (rowSize: number) => { fullBars: number; remainder: number } =
-    useCallback(
-      (rowSize) => {
-        let fullBars = rowSize > 0 ? Math.floor(rowSize / sizeDomain) : rowSize;
-        const remainder = rowSize % sizeDomain;
 
-        if (fullBars >= 3) {
-          fullBars = 3;
-        }
+  const calculateBars: (rowSize: number) => { fullBars: number; remainder: number } = useCallback(
+    (rowSize) => {
+      let fullBars = rowSize > 0 ? Math.floor(rowSize / sizeDomain) : rowSize;
+      const remainder = rowSize % sizeDomain;
 
-        // If the remainder is 0 and there are 1 or 2 full bars, remove a bar
-        if (remainder === 0 && fullBars > 0 && fullBars < 3) fullBars--;
+      if (fullBars >= 3) {
+        fullBars = 3;
+      }
 
-        return { fullBars, remainder };
-      },
-      [sizeDomain],
-    );
+      // If the remainder is 0 and there are 1 or 2 full bars, remove a bar
+      if (remainder === 0 && fullBars > 0 && fullBars < 3) fullBars -= 1;
+
+      return { fullBars, remainder };
+    },
+    [sizeDomain],
+  );
 
   /**
    * Creates a vertical line capped by a bordered tick
@@ -175,37 +177,36 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    * @param uniqueId Unique identifier for the elements
    * @returns SVG elements for the line and tick
    */
-  // eslint-disable-next-line no-unused-vars
-  const lineAndTick: (x: number, lineColor: string, index: number) => JSX.Element =
-    useCallback(
-      (x, lineColor, index) => (
-        <>
-          {/* White border for selection tick */}
-          <polygon
-            points={`${x},${1} ` + `${x - 7},${-6} ` + `${x + 7},${-6}`}
-            fill="white"
-            transform={translate(0, (index * OFFSET) / 2)}
-          />
-          {/* Selection tick */}
-          <polygon
-            points={`${x},${0} ` + `${x - 5},${-5} ` + `${x + 5},${-5}`}
-            fill={lineColor}
-            transform={translate(0, (index * OFFSET) / 2)}
-          />
-          {/* Vertical white line */}
-          <line
-            stroke="white"
-            strokeWidth="1px"
-            x1={x}
-            x2={x}
+
+  const lineAndTick: (x: number, lineColor: string, index: number) => JSX.Element = useCallback(
+    (x, lineColor, index) => (
+      <>
+        {/* White border for selection tick */}
+        <polygon
+          points={`${x},${1} ${x - 7},${-6} ${x + 7},${-6}`}
+          fill="white"
+          transform={translate(0, (index * OFFSET) / 2)}
+        />
+        {/* Selection tick */}
+        <polygon
+          points={`${x},${0} ${x - 5},${-5} ${x + 5},${-5}`}
+          fill={lineColor}
+          transform={translate(0, (index * OFFSET) / 2)}
+        />
+        {/* Vertical white line */}
+        <line
+          stroke="white"
+          strokeWidth="1px"
+          x1={x}
+          x2={x}
             // y1 is the top of the selection bar, y2 is the bottom of the row
-            y1={(index * OFFSET) / 2}
-            y2={dimensions.size.plotHeight}
-          />
-        </>
-      ),
-      [dimensions.size.plotHeight, OFFSET],
-    );
+          y1={(index * OFFSET) / 2}
+          y2={dimensions.size.plotHeight}
+        />
+      </>
+    ),
+    [dimensions.size.plotHeight, OFFSET],
+  );
 
   const scale = useScale([0, sizeDomain], [0, dimensions.attribute.width]);
 
@@ -216,7 +217,7 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
    * @param remainder Number of items remaining after full bars are calculated.
    * @returns Width of the size bar.
    */
-  // eslint-disable-next-line no-unused-vars
+
   const calculateWidth: (total: number, remainder: number) => number = useCallback(
     (total, remainder) => {
       let result = scale(remainder);
@@ -264,36 +265,33 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
 
   /** The number of full selection color bars to display */
   const fullSelectBars = useMemo(
-    () =>
-      selectionType === 'vega'
-        ? fullVegaBars
-        : selectionType === 'query'
-          ? fullQueryBars
-          : 0,
+    () => (selectionType === 'vega'
+      ? fullVegaBars
+      : selectionType === 'query'
+        ? fullQueryBars
+        : 0),
     [selectionType, fullVegaBars, fullQueryBars],
   );
 
   /** The width of the selection color bar, based on the selection type */
   const selectionWidth = useMemo(
-    () =>
-      selectionType === 'vega' ? vegaWidth : selectionType === 'query' ? queryWidth : 0,
+    () => (selectionType === 'vega' ? vegaWidth : selectionType === 'query' ? queryWidth : 0),
     [selectionType, vegaWidth, queryWidth],
   );
 
   const selectionColor = useMemo(
-    () =>
-      selectionType === 'vega'
-        ? vegaSelectionColor
-        : selectionType === 'query'
-          ? querySelectionColor
-          : color,
+    () => (selectionType === 'vega'
+      ? vegaSelectionColor
+      : selectionType === 'query'
+        ? querySelectionColor
+        : color),
     [selectionType, color],
   );
 
   // Calculate all rectangles for the size bar
   const rectArray = useMemo(() => {
     const result: Rect[] = [];
-    for (let i = 0; i < 3; ++i) {
+    for (let i = 0; i < 3; i += 1) {
       // Full bars, which may be the selection color if the selection size is greater than the full bar size
       if (i < fullSizeBars) {
         result.push({
@@ -350,10 +348,10 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
   return (
     <g
       transform={translate(
-        dimensions.matrixColumn.width +
-          dimensions.bookmarkStar.gap +
-          dimensions.bookmarkStar.width +
-          dimensions.bookmarkStar.gap,
+        dimensions.matrixColumn.width
+          + dimensions.bookmarkStar.gap
+          + dimensions.bookmarkStar.width
+          + dimensions.bookmarkStar.gap,
         (dimensions.body.rowHeight - dimensions.size.plotHeight) / 2,
       )}
     >
@@ -369,18 +367,18 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
         />
       ))}
       {/* Tick & line at end of vega selection */}
-      {fullVegaBars < 3 &&
-        vegaSelected > 0 &&
-        lineAndTick(vegaWidth, vegaSelectionColor, fullVegaBars)}
+      {fullVegaBars < 3
+        && vegaSelected > 0
+        && lineAndTick(vegaWidth, vegaSelectionColor, fullVegaBars)}
       {/* Tick & line at end of query selection */}
-      {fullQueryBars < 3 &&
-        querySelected > 0 &&
-        lineAndTick(queryWidth, querySelectionColor, fullQueryBars)}
+      {fullQueryBars < 3
+        && querySelected > 0
+        && lineAndTick(queryWidth, querySelectionColor, fullQueryBars)}
       {/* Tick & line at end of size bar */}
-      {fullSizeBars < 3 &&
-        ((currentIntersection && currentIntersection?.id === row?.id) ||
-          (row && bookmarks.some((bookmark) => bookmark.id === row.id))) &&
-        lineAndTick(sizeWidth, color, fullSizeBars)}
+      {fullSizeBars < 3
+        && ((currentIntersection && currentIntersection?.id === row?.id)
+          || (row && bookmarks.some((bookmark) => bookmark.id === row.id)))
+        && lineAndTick(sizeWidth, color, fullSizeBars)}
       {fullSizeBars === 3 && (
         <>
           <line
@@ -415,4 +413,4 @@ export const SizeBar: FC<Props> = ({ row, size, vegaSelected, querySelected }) =
       )}
     </g>
   );
-};
+}

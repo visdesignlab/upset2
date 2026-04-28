@@ -24,7 +24,7 @@ const cardStyle = {
   height: '100%',
 };
 
-export const Home = () => {
+export function Home() {
   return (
     <Box
       sx={{
@@ -42,9 +42,10 @@ export const Home = () => {
             Welcome to UpSet 2.0
           </Typography>
           <Typography variant="body1" color="text.secondary">
-            You haven't loaded data, you can't access the workspace you are attemping to
+            You haven&apos;t loaded data, you can&apos;t access the workspace you are attempting to
             view, or you are not logged in. To log in, click the account icon in the top
-            right corner. To load stored data or upload new data, visit{' '}
+            right corner. To load stored data or upload new data, visit
+            {' '}
             <Link
               href="https://multinet.app"
               aria-label="Multinet homepage"
@@ -86,9 +87,7 @@ export const Home = () => {
             >
               <Card sx={cardStyle} aria-label="Example of a dataset of movies in UpSet">
                 <CardActionArea
-                  onClick={() =>
-                    window.open('/?workspace=Upset+Examples&table=movies&sessionId=2939')
-                  }
+                  onClick={() => window.open('/?workspace=Upset+Examples&table=movies&sessionId=2939')}
                 >
                   <CardMedia
                     component="img"
@@ -108,11 +107,9 @@ export const Home = () => {
                 aria-label="Example of a dataset of Covid Symptoms in UpSet"
               >
                 <CardActionArea
-                  onClick={() =>
-                    window.open(
-                      '/?workspace=Upset+Examples&table=Covid_Symptoms&sessionId=2938',
-                    )
-                  }
+                  onClick={() => window.open(
+                    '/?workspace=Upset+Examples&table=Covid_Symptoms&sessionId=2938',
+                  )}
                 >
                   <CardMedia
                     component="img"
@@ -132,11 +129,9 @@ export const Home = () => {
                 aria-label="Example of a dataset of Tennis Grandslam Championships in UpSet"
               >
                 <CardActionArea
-                  onClick={() =>
-                    window.open(
-                      '/?workspace=Upset+Examples&table=Tennis_Grand_Slam_Champions&sessionId=2937',
-                    )
-                  }
+                  onClick={() => window.open(
+                    '/?workspace=Upset+Examples&table=Tennis_Grand_Slam_Champions&sessionId=2937',
+                  )}
                 >
                   <CardMedia
                     component="img"
@@ -156,11 +151,9 @@ export const Home = () => {
                 aria-label="Example of a dataset of World Organizations in UpSet"
               >
                 <CardActionArea
-                  onClick={() =>
-                    window.open(
-                      '/?workspace=Upset+Examples&table=International_Organizations&sessionId=2936',
-                    )
-                  }
+                  onClick={() => window.open(
+                    '/?workspace=Upset+Examples&table=International_Organizations&sessionId=2936',
+                  )}
                 >
                   <CardMedia
                     component="img"
@@ -181,4 +174,4 @@ export const Home = () => {
       </Card>
     </Box>
   );
-};
+}

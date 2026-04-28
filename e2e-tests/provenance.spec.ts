@@ -175,8 +175,6 @@ test('Collapse All Button', async ({ page }) => {
   await expect(page.locator('#upset-svg g[aria-label="Expand All"]').first()).toHaveCount(1);
 
   expect(
-    consoleErrors.some((message) =>
-      message.includes("can't convert undefined to object"),
-    ),
+    consoleErrors.some((message) => message.includes("can't convert undefined to object")),
   ).toBeFalsy();
 });

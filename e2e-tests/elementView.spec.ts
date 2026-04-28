@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import type { Page, Locator } from '@playwright/test'
+import type { Page, Locator } from '@playwright/test';
 import { beforeTest } from './common';
 
 test.beforeEach(beforeTest);

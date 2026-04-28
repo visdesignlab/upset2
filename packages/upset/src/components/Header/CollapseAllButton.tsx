@@ -5,7 +5,7 @@ import { useRecoilValue } from 'recoil';
 import { useCallback, useContext, useState } from 'react';
 import Group from '../custom/Group';
 import { mousePointer } from '../../utils/styles';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { firstAggregateSelector } from '../../atoms/config/aggregateAtoms';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { rowsSelector } from '../../atoms/renderRowsAtom';
@@ -20,7 +20,7 @@ const collapseAllStyle = css`
   transform: translate(-${iconSize}px, 0);
 `;
 
-export const CollapseAllButton = () => {
+export function CollapseAllButton() {
   /*
    * State
    */
@@ -65,7 +65,7 @@ export const CollapseAllButton = () => {
       return `rotate(-90) translate(-${iconSize}, -${iconSize})`;
     }
     return 'rotate(90)';
-  }, [allCollapsed, iconSize]);
+  }, [allCollapsed]);
 
   return (
     <Group
@@ -91,4 +91,4 @@ export const CollapseAllButton = () => {
       </Tooltip>
     </Group>
   );
-};
+}

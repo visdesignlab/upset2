@@ -43,15 +43,15 @@ export function isObject(v: unknown): v is object {
  */
 export function isRowType(t: unknown): t is RowType {
   return (
-    !!t &&
-    typeof t === 'string' &&
-    (t === 'Set' ||
-      t === 'Subset' ||
-      t === 'Group' ||
-      t === 'Aggregate' ||
-      t === 'Query Group' ||
-      t === 'Seperator' ||
-      t === 'Undefined')
+    !!t
+    && typeof t === 'string'
+    && (t === 'Set'
+      || t === 'Subset'
+      || t === 'Group'
+      || t === 'Aggregate'
+      || t === 'Query Group'
+      || t === 'Seperator'
+      || t === 'Undefined')
   );
 }
 
@@ -62,20 +62,20 @@ export function isRowType(t: unknown): t is RowType {
  */
 export function isBaseRow(r: unknown): r is BaseRow {
   return (
-    isObject(r) &&
-    Object.hasOwn(r, 'id') &&
-    Object.hasOwn(r, 'elementName') &&
-    Object.hasOwn(r, 'size') &&
-    Object.hasOwn(r, 'type') &&
-    Object.hasOwn(r, 'atts') &&
-    typeof (r as BaseRow).id === 'string' &&
-    typeof (r as BaseRow).elementName === 'string' &&
-    typeof (r as BaseRow).size === 'number' &&
-    typeof (r as BaseRow).atts === 'object' &&
-    isRowType((r as BaseRow).type) &&
-    (!Object.hasOwn(r, 'items') ||
-      (Array.isArray((r as { items: Item[] }).items) &&
-        (r as { items: Item[] }).items.every((i: unknown) => typeof i === 'string')))
+    isObject(r)
+    && Object.hasOwn(r, 'id')
+    && Object.hasOwn(r, 'elementName')
+    && Object.hasOwn(r, 'size')
+    && Object.hasOwn(r, 'type')
+    && Object.hasOwn(r, 'atts')
+    && typeof (r as BaseRow).id === 'string'
+    && typeof (r as BaseRow).elementName === 'string'
+    && typeof (r as BaseRow).size === 'number'
+    && typeof (r as BaseRow).atts === 'object'
+    && isRowType((r as BaseRow).type)
+    && (!Object.hasOwn(r, 'items')
+      || (Array.isArray((r as { items: Item[] }).items)
+        && (r as { items: Item[] }).items.every((i: unknown) => typeof i === 'string')))
   );
 }
 
@@ -86,11 +86,11 @@ export function isBaseRow(r: unknown): r is BaseRow {
  */
 export function isBaseIntersection(i: unknown): i is BaseIntersection {
   return (
-    !!i &&
-    isBaseRow(i) &&
-    Object.hasOwn(i, 'setMembership') &&
-    typeof (i as BaseIntersection).setMembership === 'object' &&
-    Object.values((i as BaseIntersection).setMembership).every(
+    !!i
+    && isBaseRow(i)
+    && Object.hasOwn(i, 'setMembership')
+    && typeof (i as BaseIntersection).setMembership === 'object'
+    && Object.values((i as BaseIntersection).setMembership).every(
       (v: unknown) => v === 'Yes' || v === 'No' || v === 'May',
     )
   );
@@ -112,8 +112,8 @@ export function isSubset(s: unknown): s is Subset {
  */
 export function isAttributePlots(a: unknown): a is AttributePlots {
   return (
-    isObject(a) &&
-    Object.values(a).every((v) => Object.values(AttributePlotType).includes(v))
+    isObject(a)
+    && Object.values(a).every((v) => Object.values(AttributePlotType).includes(v))
   );
 }
 
@@ -124,11 +124,11 @@ export function isAttributePlots(a: unknown): a is AttributePlots {
  */
 export function isAltText(val: unknown): val is AltText {
   return (
-    isObject(val) &&
-    Object.hasOwn(val, 'longDescription') &&
-    Object.hasOwn(val, 'shortDescription') &&
-    typeof (val as AltText).longDescription === 'string' &&
-    typeof (val as AltText).shortDescription === 'string'
+    isObject(val)
+    && Object.hasOwn(val, 'longDescription')
+    && Object.hasOwn(val, 'shortDescription')
+    && typeof (val as AltText).longDescription === 'string'
+    && typeof (val as AltText).shortDescription === 'string'
   );
 }
 
@@ -139,16 +139,15 @@ export function isAltText(val: unknown): val is AltText {
  */
 export function isVegaSelection(value: unknown): value is VegaSelection {
   return (
-    isObject(value) &&
-    Object.values(value).every(
-      (v) =>
-        Array.isArray(v) &&
-        v.length === 2 &&
-        typeof v[0] === 'number' &&
-        typeof v[1] === 'number' &&
-        v[0] <= v[1] &&
-        !Number.isNaN(v[0]) &&
-        !Number.isNaN(v[1]),
+    isObject(value)
+    && Object.values(value).every(
+      (v) => Array.isArray(v)
+        && v.length === 2
+        && typeof v[0] === 'number'
+        && typeof v[1] === 'number'
+        && v[0] <= v[1]
+        && !Number.isNaN(v[0])
+        && !Number.isNaN(v[1]),
     )
   );
 }
@@ -160,13 +159,13 @@ export function isVegaSelection(value: unknown): value is VegaSelection {
  */
 export function isQuerySelection(val: unknown): val is QuerySelection {
   return (
-    isObject(val) &&
-    Object.hasOwn(val, 'att') &&
-    Object.hasOwn(val, 'type') &&
-    Object.hasOwn(val, 'query') &&
-    typeof (val as QuerySelection).att === 'string' &&
-    Object.values(ElementQueryType).includes((val as QuerySelection).type) &&
-    typeof (val as QuerySelection).query === 'string'
+    isObject(val)
+    && Object.hasOwn(val, 'att')
+    && Object.hasOwn(val, 'type')
+    && Object.hasOwn(val, 'query')
+    && typeof (val as QuerySelection).att === 'string'
+    && Object.values(ElementQueryType).includes((val as QuerySelection).type)
+    && typeof (val as QuerySelection).query === 'string'
   );
 }
 
@@ -177,13 +176,13 @@ export function isQuerySelection(val: unknown): val is QuerySelection {
  */
 export function isScatterplot(s: unknown): s is Scatterplot {
   return (
-    isObject(s) &&
-    Object.hasOwn(s, 'type') &&
-    Object.hasOwn(s, 'x') &&
-    Object.hasOwn(s, 'y') &&
-    (s as Scatterplot).type === 'Scatterplot' &&
-    typeof (s as Scatterplot).x === 'string' &&
-    typeof (s as Scatterplot).y === 'string'
+    isObject(s)
+    && Object.hasOwn(s, 'type')
+    && Object.hasOwn(s, 'x')
+    && Object.hasOwn(s, 'y')
+    && (s as Scatterplot).type === 'Scatterplot'
+    && typeof (s as Scatterplot).x === 'string'
+    && typeof (s as Scatterplot).y === 'string'
   );
 }
 
@@ -194,15 +193,15 @@ export function isScatterplot(s: unknown): s is Scatterplot {
  */
 export function isHistogram(h: unknown): h is Histogram {
   return (
-    isObject(h) &&
-    Object.hasOwn(h, 'attribute') &&
-    Object.hasOwn(h, 'type') &&
-    Object.hasOwn(h, 'bins') &&
-    Object.hasOwn(h, 'frequency') &&
-    (h as Histogram).type === 'Histogram' &&
-    typeof (h as Histogram).attribute === 'string' &&
-    typeof (h as Histogram).bins === 'number' &&
-    typeof (h as Histogram).frequency === 'boolean'
+    isObject(h)
+    && Object.hasOwn(h, 'attribute')
+    && Object.hasOwn(h, 'type')
+    && Object.hasOwn(h, 'bins')
+    && Object.hasOwn(h, 'frequency')
+    && (h as Histogram).type === 'Histogram'
+    && typeof (h as Histogram).attribute === 'string'
+    && typeof (h as Histogram).bins === 'number'
+    && typeof (h as Histogram).frequency === 'boolean'
   );
 }
 
@@ -213,15 +212,15 @@ export function isHistogram(h: unknown): h is Histogram {
  */
 export function isBookmark(b: unknown): b is Bookmark {
   return (
-    isObject(b) &&
-    Object.hasOwn(b, 'id') &&
-    Object.hasOwn(b, 'label') &&
-    Object.hasOwn(b, 'size') &&
-    Object.hasOwn(b, 'colorIndex') &&
-    typeof (b as Bookmark).id === 'string' &&
-    typeof (b as Bookmark).label === 'string' &&
-    typeof (b as Bookmark).size === 'number' &&
-    typeof (b as Bookmark).colorIndex === 'number'
+    isObject(b)
+    && Object.hasOwn(b, 'id')
+    && Object.hasOwn(b, 'label')
+    && Object.hasOwn(b, 'size')
+    && Object.hasOwn(b, 'colorIndex')
+    && typeof (b as Bookmark).id === 'string'
+    && typeof (b as Bookmark).label === 'string'
+    && typeof (b as Bookmark).size === 'number'
+    && typeof (b as Bookmark).colorIndex === 'number'
   );
 }
 
@@ -232,11 +231,11 @@ export function isBookmark(b: unknown): b is Bookmark {
  */
 export function isColumn(c: unknown): c is Column {
   return (
-    isObject(c) &&
-    Object.hasOwn(c, 'name') &&
-    Object.hasOwn(c, 'size') &&
-    typeof (c as Column).name === 'string' &&
-    typeof (c as Column).size === 'number'
+    isObject(c)
+    && Object.hasOwn(c, 'name')
+    && Object.hasOwn(c, 'size')
+    && typeof (c as Column).name === 'string'
+    && typeof (c as Column).size === 'number'
   );
 }
 
@@ -256,15 +255,15 @@ export function isAggregateBy(a: unknown): a is AggregateBy {
  */
 export function isSubsets(s: unknown): s is Subsets {
   return (
-    isObject(s) &&
-    Object.hasOwn(s, 'values') &&
-    Object.hasOwn(s, 'order') &&
-    typeof (s as Subsets).values === 'object' &&
-    Array.isArray((s as Subsets).order) &&
-    Object.entries((s as Subsets).values).every(
+    isObject(s)
+    && Object.hasOwn(s, 'values')
+    && Object.hasOwn(s, 'order')
+    && typeof (s as Subsets).values === 'object'
+    && Array.isArray((s as Subsets).order)
+    && Object.entries((s as Subsets).values).every(
       ([k, v]) => typeof k === 'string' && isSubset(v),
-    ) &&
-    (s as Subsets).order.every((o: unknown) => typeof o === 'string')
+    )
+    && (s as Subsets).order.every((o: unknown) => typeof o === 'string')
   );
 }
 
@@ -283,23 +282,23 @@ export function isAggregate(a: unknown): a is Aggregate {
 
   // We can now assume a is an object, but I add type guards here for the compiler
   return (
-    Object.hasOwn(a, 'aggregateBy') &&
-    Object.hasOwn(a, 'level') &&
-    Object.hasOwn(a, 'description') &&
-    Object.hasOwn(a, 'items') &&
-    isAggregateBy((a as Aggregate).aggregateBy) &&
-    typeof (a as Aggregate).level === 'number' &&
-    typeof (a as Aggregate).description === 'string' &&
-    (isSubsets((a as Aggregate).rows) ||
-      (typeof (a as Aggregate).rows === 'object' &&
-        Object.hasOwn((a as Aggregate).rows, 'values') &&
-        Object.hasOwn((a as Aggregate).rows, 'order') &&
-        typeof (a as Aggregate).rows.values === 'object' &&
-        Object.entries((a as Aggregate).rows.values).every(
+    Object.hasOwn(a, 'aggregateBy')
+    && Object.hasOwn(a, 'level')
+    && Object.hasOwn(a, 'description')
+    && Object.hasOwn(a, 'items')
+    && isAggregateBy((a as Aggregate).aggregateBy)
+    && typeof (a as Aggregate).level === 'number'
+    && typeof (a as Aggregate).description === 'string'
+    && (isSubsets((a as Aggregate).rows)
+      || (typeof (a as Aggregate).rows === 'object'
+        && Object.hasOwn((a as Aggregate).rows, 'values')
+        && Object.hasOwn((a as Aggregate).rows, 'order')
+        && typeof (a as Aggregate).rows.values === 'object'
+        && Object.entries((a as Aggregate).rows.values).every(
           (k, v) => typeof k === 'string' && isAggregate(v),
-        ) &&
-        Array.isArray((a as Aggregate).rows.order) &&
-        (a as Aggregate).rows.order.every((o: unknown) => typeof o === 'string')))
+        )
+        && Array.isArray((a as Aggregate).rows.order)
+        && (a as Aggregate).rows.order.every((o: unknown) => typeof o === 'string')))
   );
 }
 
@@ -319,16 +318,16 @@ export function isRow(r: unknown): r is Row {
  */
 export function isPlotInformation(p: unknown): p is PlotInformation {
   return (
-    isObject(p) &&
-    Object.hasOwn(p, 'description') &&
-    Object.hasOwn(p, 'sets') &&
-    Object.hasOwn(p, 'items') &&
-    (typeof (p as PlotInformation).description === 'string' ||
-      (p as PlotInformation).description === null) &&
-    (typeof (p as PlotInformation).sets === 'string' ||
-      (p as PlotInformation).sets === null) &&
-    (typeof (p as PlotInformation).items === 'string' ||
-      (p as PlotInformation).items === null)
+    isObject(p)
+    && Object.hasOwn(p, 'description')
+    && Object.hasOwn(p, 'sets')
+    && Object.hasOwn(p, 'items')
+    && (typeof (p as PlotInformation).description === 'string'
+      || (p as PlotInformation).description === null)
+    && (typeof (p as PlotInformation).sets === 'string'
+      || (p as PlotInformation).sets === null)
+    && (typeof (p as PlotInformation).items === 'string'
+      || (p as PlotInformation).items === null)
   );
 }
 
@@ -358,8 +357,8 @@ export function isSetMembershipStatus(s: unknown): s is SetMembershipStatus {
  */
 export function isSetQueryMembership(s: unknown): s is SetQueryMembership {
   return (
-    isObject(s) &&
-    Object.entries(s).every(([k, v]) => typeof k === 'string' && isSetMembershipStatus(v))
+    isObject(s)
+    && Object.entries(s).every(([k, v]) => typeof k === 'string' && isSetMembershipStatus(v))
   );
 }
 
@@ -375,11 +374,11 @@ export function isSetQueryMembership(s: unknown): s is SetQueryMembership {
  */
 export function isSetQuery(s: unknown): s is SetQuery {
   return (
-    isObject(s) &&
-    Object.hasOwn(s, 'name') &&
-    Object.hasOwn(s, 'query') &&
-    typeof (s as SetQuery).name === 'string' &&
-    isSetQueryMembership((s as SetQuery).query)
+    isObject(s)
+    && Object.hasOwn(s, 'name')
+    && Object.hasOwn(s, 'query')
+    && typeof (s as SetQuery).name === 'string'
+    && isSetQueryMembership((s as SetQuery).query)
   );
 }
 
@@ -395,33 +394,33 @@ export function isSetQuery(s: unknown): s is SetQuery {
 export function isUpsetConfig(config: unknown): config is UpsetConfig {
   if (
     !(
-      isObject(config) &&
-      Object.hasOwn(config, 'plotInformation') &&
-      Object.hasOwn(config, 'horizontal') &&
-      Object.hasOwn(config, 'firstAggregateBy') &&
-      Object.hasOwn(config, 'firstOverlapDegree') &&
-      Object.hasOwn(config, 'secondAggregateBy') &&
-      Object.hasOwn(config, 'secondOverlapDegree') &&
-      Object.hasOwn(config, 'sortVisibleBy') &&
-      Object.hasOwn(config, 'sortBy') &&
-      Object.hasOwn(config, 'sortByOrder') &&
-      Object.hasOwn(config, 'filters') &&
-      Object.hasOwn(config, 'visibleSets') &&
-      Object.hasOwn(config, 'visibleAttributes') &&
-      Object.hasOwn(config, 'bookmarks') &&
-      Object.hasOwn(config, 'collapsed') &&
-      Object.hasOwn(config, 'plots') &&
-      Object.hasOwn(config, 'allSets') &&
-      Object.hasOwn(config, 'rowSelection') &&
-      Object.hasOwn(config, 'vegaSelection') &&
-      Object.hasOwn(config, 'querySelection') &&
-      Object.hasOwn(config, 'selectionType') &&
-      Object.hasOwn(config, 'version') &&
-      Object.hasOwn(config, 'userAltText') &&
-      Object.hasOwn(config, 'intersectionSizeLabels') &&
-      Object.hasOwn(config, 'setSizeLabels') &&
-      Object.hasOwn(config, 'showHiddenSets') &&
-      Object.hasOwn(config, 'setQuery')
+      isObject(config)
+      && Object.hasOwn(config, 'plotInformation')
+      && Object.hasOwn(config, 'horizontal')
+      && Object.hasOwn(config, 'firstAggregateBy')
+      && Object.hasOwn(config, 'firstOverlapDegree')
+      && Object.hasOwn(config, 'secondAggregateBy')
+      && Object.hasOwn(config, 'secondOverlapDegree')
+      && Object.hasOwn(config, 'sortVisibleBy')
+      && Object.hasOwn(config, 'sortBy')
+      && Object.hasOwn(config, 'sortByOrder')
+      && Object.hasOwn(config, 'filters')
+      && Object.hasOwn(config, 'visibleSets')
+      && Object.hasOwn(config, 'visibleAttributes')
+      && Object.hasOwn(config, 'bookmarks')
+      && Object.hasOwn(config, 'collapsed')
+      && Object.hasOwn(config, 'plots')
+      && Object.hasOwn(config, 'allSets')
+      && Object.hasOwn(config, 'rowSelection')
+      && Object.hasOwn(config, 'vegaSelection')
+      && Object.hasOwn(config, 'querySelection')
+      && Object.hasOwn(config, 'selectionType')
+      && Object.hasOwn(config, 'version')
+      && Object.hasOwn(config, 'userAltText')
+      && Object.hasOwn(config, 'intersectionSizeLabels')
+      && Object.hasOwn(config, 'setSizeLabels')
+      && Object.hasOwn(config, 'showHiddenSets')
+      && Object.hasOwn(config, 'setQuery')
     )
   ) {
     console.warn('Upset config is missing required fields');
@@ -499,10 +498,10 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // sortVisibleBy
   if (
     !(
-      sortVisibleBy === 'Alphabetical' ||
-      sortVisibleBy === 'Ascending' ||
-      sortVisibleBy === 'Descending' ||
-      typeof sortVisibleBy === 'string'
+      sortVisibleBy === 'Alphabetical'
+      || sortVisibleBy === 'Ascending'
+      || sortVisibleBy === 'Descending'
+      || typeof sortVisibleBy === 'string'
     )
   ) {
     console.warn('Upset config error: Invalid sort visible by');
@@ -518,9 +517,9 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
   // sortByOrder
   if (
     !(
-      sortByOrder === 'Ascending' ||
-      sortByOrder === 'Descending' ||
-      sortByOrder === 'None'
+      sortByOrder === 'Ascending'
+      || sortByOrder === 'Descending'
+      || sortByOrder === 'None'
     )
   ) {
     console.warn('Upset config error: Invalid sort by order');
@@ -715,21 +714,20 @@ export function isUpsetConfig(config: unknown): config is UpsetConfig {
 /** Checks if a variable is a TableRow */
 export function isTableRow(row: unknown): row is TableRow {
   return (
-    typeof row === 'object' &&
-    row !== null &&
-    !Array.isArray(row) &&
-    Object.keys(row).length > 0 &&
-    Object.hasOwn(row, '_id') &&
-    typeof (row as TableRow)._id === 'string' &&
-    Object.hasOwn(row, '_key') &&
-    typeof (row as TableRow)._key === 'string' &&
-    Object.hasOwn(row, '_rev') &&
-    typeof (row as TableRow)._rev === 'string' &&
-    Object.values(row).every(
-      (value) =>
-        typeof value === 'string' ||
-        typeof value === 'number' ||
-        typeof value === 'boolean',
+    typeof row === 'object'
+    && row !== null
+    && !Array.isArray(row)
+    && Object.keys(row).length > 0
+    && Object.hasOwn(row, '_id')
+    && typeof (row as TableRow)._id === 'string'
+    && Object.hasOwn(row, '_key')
+    && typeof (row as TableRow)._key === 'string'
+    && Object.hasOwn(row, '_rev')
+    && typeof (row as TableRow)._rev === 'string'
+    && Object.values(row).every(
+      (value) => typeof value === 'string'
+        || typeof value === 'number'
+        || typeof value === 'boolean',
     )
   );
 }

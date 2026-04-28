@@ -1,21 +1,21 @@
-import { useContext, useState, useEffect, useMemo } from 'react';
-import type { ComponentType } from 'react';
-import { ProvenanceContext } from './Root';
+import {
+  useContext, useState, useEffect, useMemo,
+} from 'react';
+import { ProvenanceContext } from '../provenance/context';
 import { Sidebar } from './custom/Sidebar';
+import { ProvenanceVisComponent } from '../types';
 
 type Props = {
   open: boolean;
   close: () => void;
-  // Use a loose type so consumers can provide @trrack/vis-react without the library importing it.
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  ProvVisComponent?: ComponentType<any>;
+  ProvVisComponent?: ProvenanceVisComponent;
 };
 
 /**
  * Sidebar containing the Trrack provenance visualization.
  * Host apps can provide a provenance visualization component when available.
  */
-export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
+export function ProvenanceVis({ open, close, ProvVisComponent }: Props) {
   const { provenance } = useContext(ProvenanceContext);
   const [currentNodeId, setCurrentNodeId] = useState(provenance.current.id);
 
@@ -27,18 +27,23 @@ export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
     if (!ProvVisComponent) {
       return (
         <p style={{ padding: '1rem', color: 'gray' }}>
-          Install <code>@trrack/vis-react</code> to view the provenance history.
+          Install
+          {' '}
+          <code>@trrack/vis-react</code>
+          {' '}
+          to view the provenance history.
         </p>
       );
     }
     if (Object.keys(provenance.graph.backend.nodes).includes(currentNodeId)) {
+      const nodeMap = provenance.graph.backend.nodes;
       return (
         <ProvVisComponent
           root={provenance.root.id}
           config={{
             changeCurrent: (node: string) => provenance.to(node),
           }}
-          nodeMap={provenance.graph.backend.nodes}
+          nodeMap={nodeMap}
           currentNode={currentNodeId}
         />
       );
@@ -46,9 +51,7 @@ export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
     return null;
   }, [
     ProvVisComponent,
-    provenance.root.id,
-    provenance.to,
-    provenance.graph.backend.nodes,
+    provenance,
     currentNodeId,
   ]);
 
@@ -63,4 +66,4 @@ export const ProvenanceVis = ({ open, close, ProvVisComponent }: Props) => {
       {provVis}
     </Sidebar>
   );
-};
+}

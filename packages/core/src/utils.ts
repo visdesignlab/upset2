@@ -30,9 +30,9 @@ export function deepCopy<T extends object>(obj: T): T {
 export function hashString(str: string): number {
   let hash = 0;
   if (str.length === 0) return hash;
-  for (let i = 0; i < str.length; i++) {
+  for (let i = 0; i < str.length; i += 1) {
     const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
+    hash = (hash * 31) + char;
   }
   return hash;
 }
@@ -51,13 +51,11 @@ export function filterByVega(items: Item[], filter: VegaSelection): FilteredItem
   items.forEach((item) => {
     if (
       Object.entries(filter).every(
-        ([key, value]) =>
-          typeof item.atts[key] === 'number' &&
-          (item.atts[key] as number) >= value[0] &&
-          (item.atts[key] as number) <= value[1],
+        ([key, value]) => typeof item.atts[key] === 'number'
+          && (item.atts[key] as number) >= value[0]
+          && (item.atts[key] as number) <= value[1],
       )
-    )
-      included.push(item);
+    ) included.push(item);
     else excluded.push(item);
   });
   return { included, excluded };
@@ -108,10 +106,9 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
               add = Number(item.atts[att]) > Number(query);
               break;
             case 'string':
-              add =
-                `${item.atts[att]}`.localeCompare(query, undefined, {
-                  numeric: typeof item.atts[att] === 'number',
-                }) > 0;
+              add = `${item.atts[att]}`.localeCompare(query, undefined, {
+                numeric: typeof item.atts[att] === 'number',
+              }) > 0;
               break;
             default:
               add = `${item.atts[att]}` < `${query}`;
@@ -123,10 +120,9 @@ export function filterByQuery(items: Item[], filter: QuerySelection): FilteredIt
               add = Number(item.atts[att]) < Number(query);
               break;
             case 'string':
-              add =
-                `${item.atts[att]}`.localeCompare(query, undefined, {
-                  numeric: typeof item.atts[att] === 'number',
-                }) < 0;
+              add = `${item.atts[att]}`.localeCompare(query, undefined, {
+                numeric: typeof item.atts[att] === 'number',
+              }) < 0;
               break;
             default:
               add = `${item.atts[att]}` > `${query}`;

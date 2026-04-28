@@ -23,12 +23,12 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
   Object.values(rows.values).forEach((r: Row) => {
     // if the key is ONLY one set, the name should be "Just {set name}"
     // any key with more than one set should include "&" between the set names
-    const degree = getDegreeFromSetMembership(r['setMembership']);
+    const degree = getDegreeFromSetMembership(r.setMembership);
 
-    data['values'][r['id']] = {
-      elementName: r['elementName'],
-      type: r['type'],
-      size: r['size'],
+    data.values[r.id] = {
+      elementName: r.elementName,
+      type: r.type,
+      size: r.size,
       attributes: {
         ...r.atts.dataset,
         ...(r.atts.derived.degree && { degree: r.atts.derived.degree }),
@@ -38,13 +38,13 @@ export const getAccessibleData = (rows: Rows, includeId = false): AccessibleData
     };
 
     if (includeId) {
-      data['values'][r['id']].id = r['id'];
+      data.values[r.id].id = r.id;
     }
 
     if (isRowAggregate(r)) {
-      data['values'][r['id']]['rows'] = getAccessibleData(r['rows'], includeId).values;
+      data.values[r.id].rows = getAccessibleData(r.rows, includeId).values;
     } else {
-      data['values'][r['id']]['setMembership'] = r['setMembership'];
+      data.values[r.id].setMembership = r.setMembership;
     }
   });
 

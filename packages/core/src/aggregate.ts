@@ -121,7 +121,7 @@ function aggregateByDegree(
 
   const setList = Object.keys(subsets.values[subsets.order[0]].setMembership);
 
-  for (let i = 0; i <= setList.length; ++i) {
+  for (let i = 0; i <= setList.length; i += 1) {
     const id = getId(`${parentPrefix}Agg`, `Degree ${i}`);
 
     const agg: Aggregate = {
@@ -501,7 +501,7 @@ function aggregateSubsets(
   level: number = 1,
   parentPrefix: string = '',
 ) {
-  if (aggregateBy === 'Degree')
+  if (aggregateBy === 'Degree') {
     return aggregateByDegree(
       subsets,
       level,
@@ -510,7 +510,8 @@ function aggregateSubsets(
       columnTypes,
       parentPrefix,
     );
-  if (aggregateBy === 'Sets')
+  }
+  if (aggregateBy === 'Sets') {
     return aggregateBySets(
       subsets,
       sets,
@@ -520,7 +521,8 @@ function aggregateSubsets(
       columnTypes,
       parentPrefix,
     );
-  if (aggregateBy === 'Deviations')
+  }
+  if (aggregateBy === 'Deviations') {
     return aggregateByDeviation(
       subsets,
       level,
@@ -529,6 +531,7 @@ function aggregateSubsets(
       columnTypes,
       parentPrefix,
     );
+  }
   if (aggregateBy === 'Overlaps') {
     return aggregateByOverlaps(
       subsets,

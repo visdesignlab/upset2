@@ -1,11 +1,11 @@
 import { useTransition } from 'react-spring';
 import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
-import { FC, MouseEvent, useContext } from 'react';
+import { MouseEvent, useContext } from 'react';
 import { ScaleLinear } from 'd3-scale';
 import { SetSizeBar } from '../custom/SetSizeBar';
 import { dimensionsSelector } from '../../atoms/dimensionsAtom';
 import { contextMenuAtom } from '../../atoms/contextMenuAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import translate from '../../utils/transform';
 import { setsAtom } from '../../atoms/setsAtoms';
 import { hiddenSetSortAtom } from '../../atoms/config/visibleSetsAtoms';
@@ -17,7 +17,7 @@ type Props = {
   scale: ScaleLinear<number, number>;
 };
 
-export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
+export function HiddenSets({ hiddenSets, scale }: Props) {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const dimensions = useRecoilValue(dimensionsSelector);
   const sets = useRecoilValue(setsAtom);
@@ -105,4 +105,4 @@ export const HiddenSets: FC<Props> = ({ hiddenSets, scale }) => {
       ))}
     </g>
   );
-};
+}

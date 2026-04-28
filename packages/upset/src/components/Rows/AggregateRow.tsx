@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { Aggregate } from '@visdesignlab/upset2-core';
-import { FC, useContext } from 'react';
+import { useContext } from 'react';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import SvgIcon from '@mui/material/SvgIcon';
@@ -24,7 +24,7 @@ import { SizeBar } from '../Columns/SizeBar';
 import { Matrix } from '../Columns/Matrix/Matrix';
 import { BookmarkColumnIcon } from '../Columns/BookmarkColumnIcon';
 import { collapsedSelector } from '../../atoms/collapsedAtom';
-import { ProvenanceContext } from '../Root';
+import { ProvenanceContext } from '../../provenance/context';
 import { AttributeBars } from '../Columns/Attribute/AttributeBars';
 import { aggregateSelectedCount } from '../../atoms/elementsSelectors';
 import { UpsetActions } from '../../provenance';
@@ -83,7 +83,7 @@ const secondLevelXOffset = 15;
  * @param {Aggregate} aggregateRow - The AggregateRow to render.
  * @returns {JSX.Element} The rendered AggregateRow component.
  */
-export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
+export function AggregateRow({ aggregateRow }: Props) {
   const visibleSets = useRecoilValue(visibleSetSelector);
   const dimensions = useRecoilValue(dimensionsSelector);
   const currentIntersection = useRecoilValue(currentIntersectionSelector);
@@ -107,19 +107,18 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
    * Truncates the element name if it is longer than 14 characters and the aggregateBy value is 'Overlaps'.
    * Otherwise, description is the element name.
    */
-  const desc =
-    aggregateRow.elementName.length < 14 || aggregateRow.aggregateBy !== 'Overlaps'
-      ? aggregateRow.elementName
-      : `${aggregateRow.elementName.slice(0, 14)}...`;
+  const desc = aggregateRow.elementName.length < 14 || aggregateRow.aggregateBy !== 'Overlaps'
+    ? aggregateRow.elementName
+    : `${aggregateRow.elementName.slice(0, 14)}...`;
 
   return (
     <g
       id={aggregateRow.id}
       onClick={() => {
         if (
-          aggregateRow &&
-          currentIntersection?.id === aggregateRow.id &&
-          selectionType === 'row'
+          aggregateRow
+          && currentIntersection?.id === aggregateRow.id
+          && selectionType === 'row'
         ) {
           actions.setRowSelection(null);
         } else {
@@ -134,9 +133,9 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
         <rect
           transform={translate(0, 2)}
           css={
-            currentIntersection?.id === aggregateRow.id &&
-            selectionType === 'row' &&
-            highlight
+            currentIntersection?.id === aggregateRow.id
+            && selectionType === 'row'
+            && highlight
           }
           height={
             TALL_ROW_TYPES.includes(aggregateRow.aggregateBy)
@@ -201,4 +200,4 @@ export const AggregateRow: FC<Props> = ({ aggregateRow }) => {
       </g>
     </g>
   );
-};
+}

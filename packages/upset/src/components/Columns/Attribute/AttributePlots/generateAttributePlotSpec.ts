@@ -20,7 +20,7 @@ export function generateAttributePlotSpec(
   // for every value provided, add it to an object with the key: density
   // this will be used to generate the density plot
   const data = {
-    values: values.map((value: any) => ({ density: value })),
+    values: values.map((value) => ({ density: value })),
   };
 
   if (plotType === AttributePlotType.DensityPlot) {

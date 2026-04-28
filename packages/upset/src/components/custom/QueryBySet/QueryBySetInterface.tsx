@@ -2,7 +2,9 @@ import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { css } from '@emotion/react';
 import { Check, Edit } from '@mui/icons-material';
 import { SvgIcon, Tooltip } from '@mui/material';
-import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  useCallback, useContext, useEffect, useMemo, useState,
+} from 'react';
 import {
   getRows,
   getQueryResult,
@@ -22,7 +24,7 @@ import { SetMembershipRow } from './SetMembershipRow';
 import { visibleSetSelector } from '../../../atoms/config/visibleSetsAtoms';
 import { SizeBar } from '../../Columns/SizeBar';
 import { dataAtom } from '../../../atoms/dataAtom';
-import { ProvenanceContext } from '../../Root';
+import { ProvenanceContext } from '../../../provenance/context';
 import { queryBySetsInterfaceAtom } from '../../../atoms/config/queryBySetsAtoms';
 import { UpsetActions } from '../../../provenance';
 import { columnSelectAtom } from '../../../atoms/highlightAtom';
@@ -39,7 +41,7 @@ const CHECK_ICON_SIZE = 16;
  * @component
  * @returns {JSX.Element} The rendered QueryBySets component.
  */
-export const QueryBySetInterface = () => {
+export function QueryBySetInterface() {
   const { actions }: { actions: UpsetActions } = useContext(ProvenanceContext);
   const data = useRecoilValue(dataAtom);
   const state = useRecoilValue(upsetConfigAtom);
@@ -56,18 +58,19 @@ export const QueryBySetInterface = () => {
 
   // update membership when visible sets change
   useEffect(() => {
-    const newMembership: SetQueryMembership = {};
-    visibleSets.forEach((set) => {
-      newMembership[set] = membership[set] || 'May';
-    });
+    setMembership((currentMembership) => {
+      const newMembership: SetQueryMembership = {};
+      visibleSets.forEach((set) => {
+        newMembership[set] = currentMembership[set] || 'May';
+      });
 
-    setMembership(newMembership);
+      return newMembership;
+    });
   }, [visibleSets]); // DO NOT add membership here, otherwise it will cause an infinite loop
 
   function handleEditQueryTitle() {
-    // There is likely a better way to do this, but for now alert works fine.
-
-    setQueryName(prompt('Edit Query Title', queryName) || 'Query');
+    // eslint-disable-next-line no-alert -- This lightweight rename flow is intentionally browser-native.
+    setQueryName(window.prompt('Edit Query Title', queryName) || 'Query');
   }
 
   /**
@@ -309,20 +312,20 @@ export const QueryBySetInterface = () => {
       {/* Query result text */}
       <g
         transform={translate(
-          dimensions.matrixColumn.width +
-            dimensions.bookmarkStar.gap +
-            dimensions.bookmarkStar.width +
-            dimensions.bookmarkStar.gap,
+          dimensions.matrixColumn.width
+            + dimensions.bookmarkStar.gap
+            + dimensions.bookmarkStar.width
+            + dimensions.bookmarkStar.gap,
           dimensions.body.rowHeight * 2.5,
         )}
       >
         <foreignObject
           width={
-            dimensions.setQuery.width -
-            (dimensions.matrixColumn.width + // gap from side to sizebar
-              dimensions.bookmarkStar.gap +
-              dimensions.bookmarkStar.width +
-              dimensions.bookmarkStar.gap)
+            dimensions.setQuery.width
+            - (dimensions.matrixColumn.width // gap from side to sizebar
+              + dimensions.bookmarkStar.gap
+              + dimensions.bookmarkStar.width
+              + dimensions.bookmarkStar.gap)
           }
           height={dimensions.setQuery.height - dimensions.body.rowHeight * 2.5}
         >
@@ -339,4 +342,4 @@ export const QueryBySetInterface = () => {
       </g>
     </g>
   );
-};
+}

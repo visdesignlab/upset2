@@ -7,7 +7,7 @@ import { CollapseAllButton } from './CollapseAllButton';
 import { QueryButton } from './QueryButton';
 import { setQuerySelector } from '../../atoms/config/queryBySetsAtoms';
 
-export const Header = () => {
+export function Header() {
   const setQuery = useRecoilValue(setQuerySelector);
 
   return (
@@ -24,4 +24,4 @@ export const Header = () => {
       <AttributeHeaders />
     </>
   );
-};
+}

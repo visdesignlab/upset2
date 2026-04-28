@@ -6,7 +6,7 @@ import {
   SetQueryMembership,
   isPopulatedSetQuery,
 } from '@visdesignlab/upset2-core';
-import { FC, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useTransition } from 'react-spring';
 import { useRecoilValue } from 'recoil';
 
@@ -99,7 +99,7 @@ const rowMatchesSetQuery = (row: Row, membership: SetQueryMembership) => {
  * @param {Object} config - The configuration object for the transitions.
  * @returns {Array} The array of transition objects.
  */
-export const MatrixRows: FC<Props> = ({ rows }) => {
+export function MatrixRows({ rows }: Props) {
   const dimensions = useRecoilValue(dimensionsSelector);
   const collapsedIds = useRecoilValue(collapsedSelector);
   const setQuery = useRecoilValue(setQuerySelector);
@@ -119,8 +119,7 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     return 0;
   }, [queryBySetsInterface, dimensions, setQuery]);
 
-  const queryMembership =
-    setQuery && isPopulatedSetQuery(setQuery) ? setQuery.query : null;
+  const queryMembership = setQuery && isPopulatedSetQuery(setQuery) ? setQuery.query : null;
 
   let nextY = 0;
   let restOfDatasetSectionY: number | undefined;
@@ -131,10 +130,10 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     let y = nextY + transformShift;
 
     if (
-      rendered &&
-      queryMembership &&
-      !rowMatchesSetQuery(row, queryMembership) &&
-      !insertedRestOfDatasetSection
+      rendered
+      && queryMembership
+      && !rowMatchesSetQuery(row, queryMembership)
+      && !insertedRestOfDatasetSection
     ) {
       restOfDatasetSectionY = y + dimensions.body.rowHeight / 1.5;
       nextY += dimensions.body.rowHeight * 1.5;
@@ -143,10 +142,9 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
     }
 
     if (rendered) {
-      const rowHeight =
-        isRowAggregate(row) && TALL_ROW_TYPES.includes(row.aggregateBy)
-          ? dimensions.body.aggRowHeight
-          : dimensions.body.rowHeight;
+      const rowHeight = isRowAggregate(row) && TALL_ROW_TYPES.includes(row.aggregateBy)
+        ? dimensions.body.aggRowHeight
+        : dimensions.body.rowHeight;
       nextY += rowHeight;
     }
 
@@ -176,13 +174,12 @@ export const MatrixRows: FC<Props> = ({ rows }) => {
         </g>
       )}
       {rowTransitions(
-        ({ transform }, item) =>
-          shouldRender(item.row, collapsedIds) && (
-            <AnimatedGroup key={item.id} transform={transform}>
-              {rowRenderer(item.row)}
-            </AnimatedGroup>
-          ),
+        ({ transform }, item) => shouldRender(item.row, collapsedIds) && (
+        <AnimatedGroup key={item.id} transform={transform}>
+          {rowRenderer(item.row)}
+        </AnimatedGroup>
+        ),
       )}
     </g>
   );
-};
+}
