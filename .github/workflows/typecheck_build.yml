@@ -24,11 +24,11 @@ jobs:
       - name: Install dependencies
         run: yarn install --immutable
 
-      - name: Run lint
-        run: yarn lint
-
       - name: Run typecheck
         run: yarn typecheck
 
       - name: Run build
         run: yarn build
+
+      - name: Run lint
+        run: yarn lint
