@@ -8,12 +8,14 @@ permissions:
   contents: read
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        package: [core, upset]
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
     steps:
+      - name: Extract package version
+        id: get_version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
       - uses: actions/checkout@v4
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -24,20 +26,21 @@ jobs:
         run: yarn install --immutable
       - name: Build
         run: yarn build
-      - name: Copy README
-        run: cp README.md packages/${{ matrix.package }}/README.md
-      - name: Extract tag name
-        id: get_tag
-        run: echo "TAG=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+      - name: Copy README to core
+        run: cp README.md packages/core/README.md
+      - name: Publish core package
+        run: |
+          cd packages/core
+          npm version ${{ steps.get_version.outputs.version }} --no-git-tag-version --allow-same-version
+          npm publish --tag latest
+      - name: Copy README to upset
+        run: cp README.md packages/upset/README.md
       - name: Update core dependency in upset package
-        if: matrix.package == 'upset'
         run: |
           cd packages/upset
-          npm pkg set dependencies.@visdesignlab/upset2-core="${{ steps.get_tag.outputs.TAG }}"
-      - name: Update package version and publish
+          npm pkg set dependencies.@visdesignlab/upset2-core="${{ steps.get_version.outputs.version }}"
+      - name: Publish upset package
         run: |
-          cd packages/${{ matrix.package }}
-          npm version ${{ steps.get_tag.outputs.TAG }} --no-git-tag-version --allow-same-version
+          cd packages/upset
+          npm version ${{ steps.get_version.outputs.version }} --no-git-tag-version --allow-same-version
           npm publish --tag latest
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
