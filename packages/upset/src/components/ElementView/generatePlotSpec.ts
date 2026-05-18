@@ -6,14 +6,24 @@ import {
   Scatterplot,
   SelectionType,
 } from '@visdesignlab/upset2-core';
-import { SelectionParameter } from 'vega-lite/build/src/selection';
-import { Predicate } from 'vega-lite/build/src/predicate';
-import { LogicalComposition } from 'vega-lite/build/src/logical';
-import { AnyMark } from 'vega-lite/build/src/mark';
-import { Aggregate } from 'vega-lite/build/src/aggregate';
-import { StandardType } from 'vega-lite/build/src/type';
 import { VisualizationSpec } from 'vega-embed/build/embed';
 import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
+
+type IntervalSelectionParameter = {
+  name: string;
+  select: {
+    type: 'interval';
+    encodings?: Array<'x' | 'y'>;
+    clear?: string;
+  };
+};
+
+type BrushLogicalComposition =
+  | { and: BrushLogicalComposition[] }
+  | { or: BrushLogicalComposition[] }
+  | { not: BrushLogicalComposition }
+  | { param: string; empty?: boolean }
+  | { field: string; equal: string | boolean };
 
 /**
  * Janky gadget which can be inserted into a condition and returns TRUE if the brush param is empty
@@ -21,7 +31,7 @@ import { DEFAULT_ELEMENT_COLOR, vegaSelectionColor } from '../../utils/styles';
  *          the right-side predicate evaluates to true if the item is selected OR the brush is empty.
  *          This creates a logical gadget that evaluates to true if the brush is empty regardless of the item state.
  */
-const BRUSH_EMPTY: LogicalComposition<Predicate> = {
+const BRUSH_EMPTY: BrushLogicalComposition = {
   and: [{ not: { param: 'brush', empty: false } }, { param: 'brush' }],
 };
 
@@ -59,12 +69,12 @@ export function createAddScatterplotSpec(
     encoding: {
       x: {
         field: x.attribute,
-        type: 'quantitative',
+        type: 'quantitative' as const,
         scale: { zero: false, type: x.logScale ? 'log' : 'linear' },
       },
       y: {
         field: y.attribute,
-        type: 'quantitative',
+        type: 'quantitative' as const,
         scale: { zero: false, type: y.logScale ? 'log' : 'linear' },
       },
     },
@@ -98,13 +108,13 @@ export function generateScatterplotSpec(spec: Scatterplot): VisualizationSpec {
       x: {
         field: spec.x,
         title: spec.x,
-        type: 'quantitative',
+        type: 'quantitative' as const,
         scale: { zero: false, type: spec.xScaleLog ? 'log' : 'linear' },
       },
       y: {
         field: spec.y,
         title: spec.y,
-        type: 'quantitative',
+        type: 'quantitative' as const,
         scale: { zero: false, type: spec.yScaleLog ? 'log' : 'linear' },
       },
       color: {
@@ -227,8 +237,8 @@ export function createAddHistogramSpec(
       ],
       mark: 'line',
       encoding: {
-        x: { field: 'value', type: 'quantitative' },
-        y: { field: 'density', type: 'quantitative' },
+        x: { field: 'value', type: 'quantitative' as const },
+        y: { field: 'density', type: 'quantitative' as const },
       },
     };
 
@@ -247,7 +257,7 @@ export function createAddHistogramSpec(
         bin: { maxbins: bins },
         field: attribute,
       },
-      y: { aggregate: 'count' },
+      y: { aggregate: 'count' as const },
     },
   };
 
@@ -275,7 +285,7 @@ export function generateHistogramSpec(
         clear: 'mousedown',
       },
     },
-  ] as SelectionParameter[];
+  ] as IntervalSelectionParameter[];
 
   /** Color for layers showing all elements (not selection layers) */
   const COLOR = {
@@ -312,14 +322,14 @@ export function generateHistogramSpec(
               as: hist.attribute,
             },
           ],
-          mark: 'line',
+          mark: 'line' as const,
           encoding: {
             x: {
               field: hist.attribute,
-              type: 'quantitative',
+              type: 'quantitative' as const,
               title: hist.attribute,
             },
-            y: { field: 'density', type: 'quantitative', title: 'Probability' },
+            y: { field: 'density', type: 'quantitative' as const, title: 'Probability' },
             color: { value: DEFAULT_ELEMENT_COLOR },
             opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
           },
@@ -332,14 +342,14 @@ export function generateHistogramSpec(
             { density: hist.attribute, groupby: ['subset', 'color'] },
             { calculate: 'datum["value"]', as: hist.attribute },
           ],
-          mark: 'line',
+          mark: 'line' as const,
           encoding: {
             x: {
               field: hist.attribute,
-              type: 'quantitative',
+              type: 'quantitative' as const,
               title: hist.attribute,
             },
-            y: { field: 'density', type: 'quantitative', title: 'Probability' },
+            y: { field: 'density', type: 'quantitative' as const, title: 'Probability' },
             color: COLOR,
             opacity: selectionTypeRow ? { value: 0.4 } : OPACITY,
           },
@@ -351,14 +361,14 @@ export function generateHistogramSpec(
             { density: hist.attribute },
             { calculate: 'datum["value"]', as: hist.attribute },
           ],
-          mark: 'line',
+          mark: 'line' as const,
           encoding: {
             x: {
               field: hist.attribute,
-              type: 'quantitative',
+              type: 'quantitative' as const,
               title: hist.attribute,
             },
-            y: { field: 'density', type: 'quantitative' },
+            y: { field: 'density', type: 'quantitative' as const },
             color: { value: vegaSelectionColor },
             opacity: { value: selectionTypeRow ? 0.4 : 1 },
           },
@@ -371,15 +381,15 @@ export function generateHistogramSpec(
                 { density: hist.attribute, groupby: ['subset', 'color'] },
                 { calculate: 'datum["value"]', as: hist.attribute },
               ],
-              mark: 'line' as AnyMark, // Vega is weird about some types in destructured objects
+              mark: 'line' as const,
               encoding: {
                 // More vega weirdness
                 x: {
                   field: hist.attribute,
-                  type: 'quantitative' as StandardType,
+                  type: 'quantitative' as const,
                   title: hist.attribute,
                 },
-                y: { field: 'density', type: 'quantitative' as StandardType },
+                y: { field: 'density', type: 'quantitative' as const },
                 color: COLOR,
                 opacity: { value: 1 },
               },
@@ -397,10 +407,10 @@ export function generateHistogramSpec(
     layer: [
       {
         params,
-        mark: 'bar',
+        mark: 'bar' as const,
         encoding: {
           x: { bin: { maxbins: hist.bins }, field: hist.attribute },
-          y: { aggregate: 'count', title: 'Frequency' },
+          y: { aggregate: 'count' as const, title: 'Frequency' },
           color: COLOR,
           opacity: OPACITY,
         },
@@ -411,14 +421,14 @@ export function generateHistogramSpec(
             filter: { param: 'brush', empty: false },
           },
         ],
-        mark: 'bar',
+        mark: 'bar' as const,
         encoding: {
           x: {
             field: hist.attribute,
             bin: { maxbins: hist.bins },
             title: hist.attribute,
           },
-          y: { aggregate: 'count', title: 'Frequency' },
+          y: { aggregate: 'count' as const, title: 'Frequency' },
           color: { value: vegaSelectionColor },
           opacity: { value: 1 },
         },
@@ -427,10 +437,10 @@ export function generateHistogramSpec(
         ? [
           {
             transform: [{ filter: { field: 'isCurrent', equal: true } }],
-            mark: 'bar' as AnyMark, // Vega is weird about some types in destructured objects
+            mark: 'bar' as const,
             encoding: {
               x: { field: hist.attribute, bin: { maxbins: hist.bins } },
-              y: { aggregate: 'count' as Aggregate, title: 'Frequency' },
+              y: { aggregate: 'count' as const, title: 'Frequency' },
               color: COLOR,
               opacity: { value: 1 },
             },
